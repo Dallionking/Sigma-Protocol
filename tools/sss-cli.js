@@ -653,7 +653,7 @@ ${bodyContent}
 }
 
 // Generate AGENTS.md for OpenCode
-function generateAgentsMd(modules) {
+function generateAgentsMd(_modules) {
   return `# SSS Protocol - OpenCode Configuration
 
 ## Overview
@@ -708,7 +708,7 @@ See https://github.com/your-org/sss-protocol for full documentation.
 }
 
 // Generate opencode.json config
-function generateOpenCodeConfig(modules) {
+function generateOpenCodeConfig(_modules) {
   return {
     "$schema": "https://opencode.dev/schemas/config.json",
     "name": "sss-protocol",
