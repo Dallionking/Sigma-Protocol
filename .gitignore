@@ -32,11 +32,15 @@ Thumbs.db
 **/secrets*.json
 **/*-key.json
 **/*-credentials.json
+**/api-key*.json
+**/token*.json
 
-# Archives
+# Archives (should never be committed)
 *.zip
 *.tar.gz
+*.tar
 *.rar
+*.7z
 
 # Logs
 *.log
@@ -80,3 +84,29 @@ temp/
 .Trashes
 ehthumbs.db
 
+# Private/internal content (should never be in public repo)
+course/
+claude-code/
+Inspo/
+assets/
+docs/notebooklm/
+commands-private-archive/
+
+# Personal/internal docs (not for public)
+MOBILE_APP_DESIGN_LEARNINGS.md
+SIGMAVUE-FRAMEWORK-COMPLIANCE-PROMPT.md
+SSS-FULL-METHODOLOGY-REBUILD.md
+SKILL.md
+*-ANALYSIS-*.md
+*-SUMMARY*.md
+GAP-ANALYSIS*.md
+HOLES-ANALYSIS*.md
+PHASE-*-SUMMARY.md
+IMPLEMENTATION-SUMMARY.md
+CHANGELOG-*.md
+
+# Cursor plans (internal)
+.cursor/plans/
+
+# Workspace files (IDE-specific)
+*.code-workspace

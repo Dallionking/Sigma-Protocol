@@ -1,33 +1,28 @@
 # Boilerplate Ignore File
 # Files and folders listed here are EXCLUDED from boilerplate bundles
-# These are kept private or are not needed in student-facing templates
+# These are kept in the main repo but not synced to boilerplate templates
 
 # Meta/recursive - would create infinite nesting
 boilerplates/
 
-# Paid/private content
-course/
-
-# Personal assets and inspiration
-assets/
-Inspo/
-
-# Internal documentation
-docs/notebooklm/
-
-# Internal tooling
-claude-code/
+# Internal tooling and testing
+tools/
+scripts/
+schemas/
 test/
 
-# Personal plans and workspace files
-.cursor/plans/
-*.code-workspace
+# Source definitions (protocol internals)
+src/
 
 # Development files
 *.zip
-OAuth Client ID JSON*.json
+node_modules/
+package-lock.json
 
-# Personal notes and learnings
-MOBILE_APP_DESIGN_LEARNINGS.md
-SIGMAVUE-FRAMEWORK-COMPLIANCE-PROMPT.md
+# Cursor plans and workspace files
+.cursor/plans/
+*.code-workspace
 
+# Git internals
+.git/
+.github/
