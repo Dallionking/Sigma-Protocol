@@ -142,7 +142,7 @@ const stepFiles = {
   9: 'steps/step-9-landing-page',              // Landing Page (optional)
   10: 'steps/step-10-feature-breakdown',       // Feature Breakdown
   11: 'steps/step-11-prd-generation',          // PRD Generation
-  12: 'steps/step-12-cursor-rules',            // Cursor Rules
+  12: 'steps/step-12-context-engine',            // Cursor Rules
 };
 
 // Legacy file aliases for back-compatibility

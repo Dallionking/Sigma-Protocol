@@ -888,7 +888,7 @@ const CASCADE_RULES: Record<string, string[]> = {
   'step-9-landing-page': [],  // Standalone (depends on 1.5 and 5)
   'step-10-feature-breakdown': ['step-11'],
   'step-11-prd-generation': ['step-12'],
-  'step-12-cursor-rules': [],  // Terminal step
+  'step-12-context-engine': [],  // Terminal step
   
   // Audit Commands (typically no cascade)
   'audit/verify-prd': [],

@@ -23,7 +23,7 @@ These commands guide you through the complete SSS workflow, from ideation to dep
 | `@step-9-landing-page` | Landing Page (optional) | LANDING-PAGE-COPY.md |
 | `@step-10-feature-breakdown` | Feature Breakdown | FEATURE-BREAKDOWN.md |
 | `@step-11-prd-generation` | PRD Generation | /docs/prds/*.md |
-| `@step-12-cursor-rules` | Context Engine | .cursorrules, .cursor/rules/*.mdc |
+| `@step-12-context-engine` | Context Engine | .cursorrules, .cursor/rules/*.mdc |
 | `@step-13-skillpack-generator` | Platform Configuration | Skills/rules per platform |
 
 ## Usage

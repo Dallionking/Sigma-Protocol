@@ -47,7 +47,7 @@
 | **Landing page** | `@step-9-landing-page` | Conversion copywriting |
 | **Break down features** | `@step-10-feature-breakdown` | Feature roadmap |
 | **Generate PRDs** | `@step-11-prd-generation` | Executable PRDs |
-| **AI context** | `@step-12-cursor-rules` | .cursorrules generation |
+| **AI context** | `@step-12-context-engine` | .cursorrules generation |
 
 ---
 

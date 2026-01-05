@@ -103,7 +103,7 @@ This document defines the **official file paths** for all outputs created by the
 - `/docs/prds/F[N]-[FEATURE-NAME].md`
 
 ### Step 12: Cursor Rules
-**Command:** `@step-12-cursor-rules`
+**Command:** `@step-12-context-engine`
 **Outputs:**
 - `.cursorrules`
 - `.cursor/rules/*.mdc`

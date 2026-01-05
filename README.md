@@ -94,7 +94,7 @@ The 13-step methodology commands that guide product development.
 | `@step-9-landing-page` | Landing Page Design |
 | `@step-10-feature-breakdown` | Feature Breakdown |
 | `@step-11-prd-generation` | PRD Generation |
-| `@step-12-cursor-rules` | Context Engine Setup |
+| `@step-12-context-engine` | Context Engine Setup |
 | `@step-13-skillpack-generator` | Platform-specific Configuration |
 
 ### Audit Commands (`audit/`)

@@ -448,7 +448,7 @@ Recommended Actions:
 4. Enhance Step 10 outputs: @step-10-feature-breakdown
    - Will create: BETTING-TABLE.md, INVEST-SCORECARD.md, OUTCOME-MAP.md
 
-5. Run: @step-12-cursor-rules
+5. Run: @step-12-context-engine
    - Will create: .cursorrules, .cursor/rules/*.mdc
 
 6. Verify with: /validate-methodology

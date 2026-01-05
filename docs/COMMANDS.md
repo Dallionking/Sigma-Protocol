@@ -56,7 +56,7 @@ The core 13-step product development methodology.
 | `step-9-landing-page` | Landing page design | LANDING-PAGE-COPY.md |
 | `step-10-feature-breakdown` | Feature breakdown | FEATURE-BREAKDOWN.md |
 | `step-11-prd-generation` | PRD generation | /docs/prds/*.md |
-| `step-12-cursor-rules` | Context engine setup | .cursorrules |
+| `step-12-context-engine` | Context engine setup | .cursorrules |
 | `step-13-skillpack-generator` | Platform configuration | Skills/rules |
 
 ---

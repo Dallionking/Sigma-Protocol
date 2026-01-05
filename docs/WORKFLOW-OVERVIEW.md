@@ -127,7 +127,7 @@ This enables the AI to resume work after context window resets.
 
 ### Using the Agentic Layer
 
-1. **Generate tools**: Run `@step-12-cursor-rules` to create `.sss/tools/`
+1. **Generate tools**: Run `@step-12-context-engine` to create `.sss/tools/`
 2. **Implement with memory**: `@implement-prd` writes to `active_task.md`
 3. **Self-correct**: `@dev-loop` uses `@gap-analysis` when verification fails
 4. **Resume**: Use `--resume` flag to continue from active task state
@@ -136,7 +136,7 @@ This enables the AI to resume work after context window resets.
 
 | Command | Agentic Feature |
 |---------|-----------------|
-| `@step-12-cursor-rules` | Generates `.sss/tools/` scripts |
+| `@step-12-context-engine` | Generates `.sss/tools/` scripts |
 | `@implement-prd` | Writes to `.sss/memory/active_task.md` |
 | `@verify-prd` | Uses `.sss/tools/` for verification |
 | `@dev-loop` | Auto-fix loop + active task memory |
