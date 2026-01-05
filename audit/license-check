@@ -1,0 +1,720 @@
+---
+version: "2.0.0"
+last_updated: "2025-12-04"
+changelog:
+  - "2.0.0: Updated for 13-step workflow"
+  - "1.0.0: Initial release"
+description: "Open-source license compliance checker - identify risks, ensure legal safety, generate attribution files"
+allowed-tools:
+  # PRIMARY MCP Tools (Use First)
+  - mcp_Ref_ref_search_documentation
+  - mcp_Ref_ref_read_url
+  - mcp_exa_web_search_exa
+  - mcp_exa_get_code_context_exa
+  - mcp_exa_crawling_exa
+  - mcp_exa_company_research_exa
+  - mcp_exa_linkedin_search_exa
+  - mcp_exa_deep_researcher_start
+  - mcp_exa_deep_researcher_check
+  
+  # BACKUP MCP Tools (Use only if primary fails)
+  - mcp_perplexity-ask_perplexity_ask
+  
+  # OTHER TOOLS
+  - read_file
+  - write
+  - list_dir
+  - grep
+  - run_terminal_cmd
+parameters:
+  - --fix-auto
+  - --output
+---
+
+# @license-check
+
+**Open-source license compliance with risk assessment and legal safeguards**
+
+## 🎯 Purpose
+
+Ensure legal compliance with open-source licenses and avoid costly lawsuits. **65% of companies unknowingly use incompatible licenses**, and **license violations can result in $150k+ fines or forced code disclosure**. This command identifies licensing risks and ensures compliance.
+
+**For agencies:** Protects clients from legal liability, demonstrates professionalism, enables safe commercial use.
+
+---
+
+## 📋 Command Usage
+
+```bash
+@license-check
+@license-check --fix-auto
+@license-check --output=/docs/legal/
+```
+
+### Parameters
+
+| Parameter | Description | Default |
+|-----------|-------------|---------|
+| `--fix-auto` | Auto-generate attribution files | `false` |
+| `--output` | Custom output directory | `/docs/legal/` |
+
+---
+
+## 📁 File Management (CRITICAL)
+
+**This command follows the File Creation & Organization Protocol from `.cursorrules`.**
+
+### Before Creating Files
+
+1. **Check manifest**: Use `checkManifest('@license-check')` from `/lib/manifest.ts`
+2. **Strategy**: Two files with different strategies:
+   - `ATTRIBUTION.md`: `merge` (add new packages to existing file)
+   - `LICENSE-COMPLIANCE-[DATE].md`: `append-dated` (historical tracking)
+
+### Output Location
+
+```
+/docs/legal/
+  ATTRIBUTION.md                      ← SINGLE FILE (merge new packages)
+  LICENSE-COMPLIANCE-2025-11-06.md   ← Dated compliance report
+```
+
+### After Creating Files
+
+```typescript
+// Update manifest for both files
+updateManifest('@license-check', '/docs/legal/ATTRIBUTION.md', 'merge');
+updateManifest('@license-check', '/docs/legal/LICENSE-COMPLIANCE-[DATE].md', 'append-dated');
+```
+
+---
+
+## 📦 What Gets Checked
+
+### 1. License Identification
+- ✅ All dependencies scanned
+- ✅ License types detected
+- ✅ Unlicensed packages flagged
+- ✅ Custom licenses analyzed
+
+### 2. License Compatibility
+- ✅ GPL conflicts with proprietary code
+- ✅ Copyleft obligations
+- ✅ Attribution requirements
+- ✅ Commercial use restrictions
+
+### 3. Risk Assessment
+- ✅ Red flags (GPL, AGPL, restrictive)
+- ✅ Yellow flags (MPL, EPL, LGPL)
+- ✅ Green flags (MIT, Apache, BSD, ISC)
+
+### 4. Compliance Requirements
+- ✅ Attribution notices
+- ✅ Copyright statements
+- ✅ License file inclusion
+- ✅ Source code disclosure obligations
+
+---
+
+## 📄 License Compliance Report
+
+```markdown
+# License Compliance Report
+**Date:** November 6, 2025  
+**Project:** SSS Platform  
+**Total Dependencies:** 427
+
+---
+
+## 📊 Summary
+
+**License Risk:** 🟢 Low (safe for commercial use)  
+**Red Flags:** 0  
+**Yellow Flags:** 2  
+**Green Flags:** 425
+
+**Compliance Status:** ✅ Compliant  
+**Action Required:** Update ATTRIBUTION.md
+
+---
+
+## 🎯 License Distribution
+
+| License | Count | Risk | Commercial Use |
+|---------|-------|------|----------------|
+| MIT | 312 | 🟢 Low | ✅ Yes |
+| Apache-2.0 | 78 | 🟢 Low | ✅ Yes |
+| ISC | 24 | 🟢 Low | ✅ Yes |
+| BSD-3-Clause | 11 | 🟢 Low | ✅ Yes |
+| MPL-2.0 | 2 | 🟡 Medium | ✅ Yes (with conditions) |
+| Unlicensed | 0 | 🔴 High | ❌ Unknown |
+| GPL/AGPL | 0 | 🔴 High | ❌ No (forces open source) |
+
+---
+
+## 🚨 Red Flags (0)
+
+None found! 🎉
+
+Your project is safe for commercial/proprietary use.
+
+---
+
+## ⚠️ Yellow Flags (2)
+
+### 1. MPL-2.0 (Mozilla Public License 2.0)
+
+**Packages:**
+- `some-library@1.2.3`
+- `another-lib@4.5.6`
+
+**Risk Level:** 🟡 Medium (Weak Copyleft)
+
+**What It Means:**
+- **File-level copyleft:** Modifications to MPL files must be open-sourced
+- **Safe linking:** Can use in proprietary software without disclosing your code
+- **Attribution required:** Must include copyright notice
+
+**Requirements:**
+- ✅ Include copyright notice (add to ATTRIBUTION.md)
+- ✅ Provide copy of MPL-2.0 license
+- ⚠️ If you modified MPL files → Disclose modifications
+- ✅ Your proprietary code remains private
+
+**Action Required:**
+\`\`\`bash
+# Check if you modified these packages
+git log --all -- node_modules/some-library/
+git log --all -- node_modules/another-lib/
+
+# If no modifications → Safe to use
+# If modified → Consider alternative package
+\`\`\`
+
+**Recommendation:** Safe to use as-is (no modifications detected)
+
+---
+
+## 🟢 Green Flags (425)
+
+All permissive licenses! Safe for commercial use.
+
+**Breakdown:**
+- **MIT (312):** Most permissive, minimal requirements
+- **Apache-2.0 (78):** Patent protection included
+- **ISC (24):** Functionally identical to MIT
+- **BSD-3-Clause (11):** Cannot use author's name for endorsement
+
+**Requirements:**
+- ✅ Include copyright notices
+- ✅ Include license text
+- ✅ That's it!
+
+---
+
+## 📋 Compliance Checklist
+
+### Required Files
+
+#### 1. ATTRIBUTION.md ⚠️ Missing (auto-generate with `--fix-auto`)
+
+**Purpose:** Credit all open-source authors
+
+**Template:**
+\`\`\`markdown
+# Open Source Attributions
+
+This project uses the following open-source packages:
+
+## MIT License
+
+### next (14.2.3)
+- **License:** MIT
+- **Copyright:** © Vercel, Inc.
+- **Repository:** https://github.com/vercel/next.js
+- **License Text:** https://github.com/vercel/next.js/blob/main/LICENSE
+
+### react (18.3.1)
+- **License:** MIT
+- **Copyright:** © Meta Platforms, Inc.
+- **Repository:** https://github.com/facebook/react
+- **License Text:** https://github.com/facebook/react/blob/main/LICENSE
+
+[... repeat for all 427 packages ...]
+\`\`\`
+
+**Auto-generate:** `@license-check --fix-auto`
+
+---
+
+#### 2. LICENSE ✅ Present
+
+**Your Project License:** MIT  
+**Location:** `/LICENSE`  
+**Status:** ✅ Valid
+
+---
+
+#### 3. Third-Party Licenses (Optional but Recommended)
+
+**Create `/THIRD_PARTY_LICENSES.txt`:**
+\`\`\`bash
+# Auto-generate with
+npx license-checker --production --out THIRD_PARTY_LICENSES.txt
+\`\`\`
+
+---
+
+### Client Deliverable Checklist
+
+When delivering to clients, include:
+
+- [ ] **ATTRIBUTION.md** - Credits all libraries
+- [ ] **LICENSE** - Your project's license
+- [ ] **THIRD_PARTY_LICENSES.txt** - Full license texts (optional)
+- [ ] **README.md** - Installation and usage
+- [ ] **License compliance statement** in handoff docs
+
+---
+
+## 🔍 Detailed Analysis
+
+### Packages Requiring Attribution (Top 20)
+
+| Package | Version | License | Copyright |
+|---------|---------|---------|-----------|
+| next | 14.2.3 | MIT | © Vercel, Inc. |
+| react | 18.3.1 | MIT | © Meta Platforms, Inc. |
+| typescript | 5.3.3 | Apache-2.0 | © Microsoft Corporation |
+| tailwindcss | 3.4.1 | MIT | © Tailwind Labs, Inc. |
+| drizzle-orm | 0.33.0 | Apache-2.0 | © Drizzle Team |
+| @supabase/supabase-js | 2.45.0 | MIT | © Supabase, Inc. |
+| @radix-ui/react-dialog | 1.1.1 | MIT | © WorkOS |
+| zod | 3.23.8 | MIT | © Colin McDonnell |
+| framer-motion | 11.5.4 | MIT | © Framer |
+| lucide-react | 0.441.0 | ISC | © Lucide Contributors |
+| clsx | 2.1.1 | MIT | © Luke Edwards |
+| class-variance-authority | 0.7.0 | Apache-2.0 | © Joe Bell |
+| date-fns | 3.6.0 | MIT | © Sasha Koss |
+| react-hook-form | 7.53.0 | MIT | © Bluebits |
+| @tanstack/react-query | 5.56.2 | MIT | © Tanner Linsley |
+| stripe | 16.12.0 | MIT | © Stripe, Inc. |
+| nanoid | 5.0.7 | MIT | © Andrey Sitnik |
+| sharp | 0.33.5 | Apache-2.0 | © Lovell Fuller |
+| eslint | 9.11.1 | MIT | © OpenJS Foundation |
+| prettier | 3.3.3 | MIT | © James Long |
+
+[... 407 more packages ...]
+
+---
+
+## ⚠️ Packages Without License
+
+**None found!** All 427 dependencies have valid licenses. ✅
+
+---
+
+## 🚨 Potentially Risky Packages (0)
+
+No GPL, AGPL, or highly restrictive licenses detected.
+
+Your dependency tree is clean for commercial use! 🎉
+
+---
+
+## 📜 License Compatibility Matrix
+
+| Your License | Compatible With | Incompatible With |
+|--------------|-----------------|-------------------|
+| MIT (Your project) | MIT, Apache, BSD, ISC, MPL (file-level) | GPL, AGPL |
+| Apache-2.0 | MIT, Apache, BSD, ISC, MPL | GPL-2.0, AGPL |
+| GPL-3.0 | MIT, Apache, BSD, ISC, GPL-2.0+, AGPL | Proprietary |
+
+**Your Project:** MIT → Can use MIT, Apache, BSD, ISC, MPL dependencies ✅
+
+---
+
+## 🎯 Action Plan
+
+### Immediate (Required)
+1. ✅ Run `@license-check --fix-auto` to generate ATTRIBUTION.md
+2. ✅ Add ATTRIBUTION.md to repository
+3. ✅ Include in client deliverables
+
+**Estimated Time:** 5 minutes
+
+### Optional (Recommended)
+4. Generate THIRD_PARTY_LICENSES.txt for full compliance
+5. Add license check to CI/CD pipeline
+6. Review licenses quarterly
+
+**Estimated Time:** 15 minutes
+
+---
+
+## 🔄 CI/CD Integration
+
+**Automated license checks in pipeline:**
+
+\`\`\`yaml
+# .github/workflows/license-check.yml
+name: License Compliance
+on: [push, pull_request]
+jobs:
+  license-check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+      - run: pnpm install
+      - run: @license-check
+      - name: Fail on Red Flags
+        run: |
+          if grep -q "Red Flags: [1-9]" license-report.md; then
+            echo "❌ License violations detected!"
+            exit 1
+          fi
+\`\`\`
+
+---
+
+## 📊 Historical Comparison
+
+**Previous Check:** October 1, 2025
+
+| Metric | Oct 1 | Nov 6 | Change |
+|--------|-------|-------|--------|
+| Total Dependencies | 398 | 427 | +29 |
+| Red Flags | 0 | 0 | ✅ |
+| Yellow Flags | 1 | 2 | +1 |
+| Unlicensed Packages | 2 | 0 | -2 ✅ |
+
+**Trend:** ✅ Compliance improving (unlicensed packages resolved)
+
+---
+
+## 🔗 Resources
+
+- [Choose a License](https://choosealicense.com/)
+- [SPDX License List](https://spdx.org/licenses/)
+- [TL;DR Legal](https://tldrlegal.com/)
+- [Open Source Initiative](https://opensource.org/licenses)
+- [GitHub License Picker](https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/licensing-a-repository)
+
+---
+
+## 💡 License Quick Reference
+
+### 🟢 Low Risk (Permissive)
+
+**MIT** - Most permissive
+- ✅ Commercial use
+- ✅ Modification
+- ✅ Distribution
+- ✅ Private use
+- ⚠️ Must include copyright notice
+
+**Apache-2.0** - Includes patent grant
+- ✅ Same as MIT
+- ✅ **Plus:** Patent protection
+- ⚠️ Must state changes
+
+**BSD-3-Clause** - Similar to MIT
+- ✅ Same as MIT
+- ⚠️ Cannot use author's name for endorsement
+
+**ISC** - Functionally identical to MIT
+- ✅ Same as MIT
+- Simpler legal wording
+
+---
+
+### 🟡 Medium Risk (Weak Copyleft)
+
+**MPL-2.0** (Mozilla)
+- ✅ Commercial use
+- ✅ Can mix with proprietary
+- ⚠️ File-level copyleft (modified MPL files must be open)
+
+**LGPL** (Lesser GPL)
+- ✅ Can link to proprietary
+- ⚠️ Modified LGPL code must be open
+- Complex compliance requirements
+
+**EPL** (Eclipse)
+- ✅ Commercial use
+- ⚠️ Module-level copyleft
+- Patent retaliation clause
+
+---
+
+### 🔴 High Risk (Strong Copyleft)
+
+**GPL-2.0/3.0** (GNU General Public)
+- ❌ **Forces entire project open-source**
+- ❌ Cannot use in proprietary software
+- ⚠️ Derivative works must use GPL
+
+**AGPL** (Affero GPL)
+- ❌ **Strictest copyleft**
+- ❌ Network use = distribution (must open source)
+- ⚠️ SaaS applications affected
+
+**Avoid in commercial projects!**
+
+---
+
+## ⚖️ Legal Disclaimer
+
+**This tool provides guidance only and is not legal advice.**
+
+For mission-critical projects or complex licensing scenarios:
+- Consult with a software attorney
+- Use professional tools (FOSSA, WhiteSource, Black Duck)
+- Document all licensing decisions
+
+---
+
+**Next Check:** December 6, 2025 (quarterly)
+
+$END$
+```
+
+---
+
+## 🛠️ Implementation Phases
+
+### Phase 1: Scan Dependencies
+
+**Extract all dependencies:**
+```bash
+# Use license-checker npm package
+npx license-checker --json --production > /tmp/licenses.json
+```
+
+**Parse licenses:**
+```typescript
+interface Dependency {
+  name: string;
+  version: string;
+  license: string;
+  repository: string;
+  publisher: string;
+  copyright: string;
+}
+
+async function scanDependencies(): Promise<Dependency[]> {
+  const licenseData = JSON.parse(await readFile('/tmp/licenses.json'));
+  
+  return Object.entries(licenseData).map(([key, value]: any) => ({
+    name: key.split('@')[0],
+    version: key.split('@')[1],
+    license: value.licenses,
+    repository: value.repository,
+    publisher: value.publisher,
+    copyright: value.copyright,
+  }));
+}
+```
+
+---
+
+### Phase 2: Classify License Risk
+
+**Risk assessment:**
+```typescript
+type RiskLevel = 'red' | 'yellow' | 'green';
+
+const LICENSE_RISK_MAP: Record<string, RiskLevel> = {
+  // Green (permissive)
+  'MIT': 'green',
+  'Apache-2.0': 'green',
+  'BSD-2-Clause': 'green',
+  'BSD-3-Clause': 'green',
+  'ISC': 'green',
+  '0BSD': 'green',
+  'CC0-1.0': 'green',
+  
+  // Yellow (weak copyleft)
+  'MPL-2.0': 'yellow',
+  'LGPL-2.1': 'yellow',
+  'LGPL-3.0': 'yellow',
+  'EPL-2.0': 'yellow',
+  
+  // Red (strong copyleft)
+  'GPL-2.0': 'red',
+  'GPL-3.0': 'red',
+  'AGPL-3.0': 'red',
+  'CC-BY-SA': 'red',
+  'UNLICENSED': 'red',
+};
+
+function classifyRisk(license: string): RiskLevel {
+  return LICENSE_RISK_MAP[license] || 'yellow'; // Unknown = yellow
+}
+```
+
+---
+
+### Phase 3: Check License Compatibility
+
+**Compatibility matrix:**
+```typescript
+function checkCompatibility(
+  projectLicense: string,
+  dependencyLicense: string
+): { compatible: boolean; reason?: string } {
+  
+  // MIT/Apache can use almost everything except GPL
+  if (['MIT', 'Apache-2.0'].includes(projectLicense)) {
+    if (['GPL-2.0', 'GPL-3.0', 'AGPL-3.0'].includes(dependencyLicense)) {
+      return {
+        compatible: false,
+        reason: 'GPL/AGPL forces entire project to be GPL/AGPL',
+      };
+    }
+  }
+  
+  // GPL can use MIT/Apache/BSD (they become GPL)
+  if (projectLicense.startsWith('GPL')) {
+    if (['MIT', 'Apache-2.0', 'BSD-2-Clause', 'BSD-3-Clause', 'ISC'].includes(dependencyLicense)) {
+      return { compatible: true };
+    }
+  }
+  
+  return { compatible: true };
+}
+```
+
+---
+
+### Phase 4: Generate Attribution File
+
+**If `--fix-auto`:**
+```typescript
+async function generateAttributionFile(deps: Dependency[]): Promise<void> {
+  let content = '# Open Source Attributions\n\n';
+  content += 'This project uses the following open-source packages:\n\n';
+  
+  // Group by license
+  const byLicense = deps.reduce((acc, dep) => {
+    if (!acc[dep.license]) acc[dep.license] = [];
+    acc[dep.license].push(dep);
+    return acc;
+  }, {} as Record<string, Dependency[]>);
+  
+  for (const [license, packages] of Object.entries(byLicense)) {
+    content += `## ${license}\n\n`;
+    
+    for (const pkg of packages) {
+      content += `### ${pkg.name} (${pkg.version})\n`;
+      content += `- **License:** ${pkg.license}\n`;
+      if (pkg.copyright) content += `- **Copyright:** ${pkg.copyright}\n`;
+      if (pkg.repository) content += `- **Repository:** ${pkg.repository}\n`;
+      content += '\n';
+    }
+  }
+  
+  await writeFile('ATTRIBUTION.md', content);
+}
+```
+
+---
+
+### Phase 5: AI-Powered Risk Analysis
+
+**Use Perplexity for complex licenses:**
+```typescript
+async function analyzeCustomLicense(licenseText: string): Promise<RiskAssessment> {
+  const analysis = await mcp_perplexity_ask([{
+    role: 'user',
+    content: `Analyze this software license for commercial use compatibility: ${licenseText}. Is it permissive, weak copyleft, or strong copyleft? What are the key requirements?`
+  }]);
+  
+  return parseAnalysis(analysis);
+}
+```
+
+---
+
+### Phase 6: Validation & Output
+
+**Final checks:**
+- [ ] All dependencies scanned
+- [ ] Licenses classified
+- [ ] Red flags identified
+- [ ] Attribution file generated (if --fix-auto)
+- [ ] Compliance report created
+
+**Output summary:**
+```
+✅ License Compliance Check Complete
+
+📊 Total Dependencies: 427
+🟢 Green Flags: 425 (safe)
+🟡 Yellow Flags: 2 (review)
+🔴 Red Flags: 0 (critical)
+
+Risk Level: 🟢 Low (safe for commercial use)
+
+Action Required:
+  1. Generate ATTRIBUTION.md (run with --fix-auto)
+  2. Review 2 MPL-2.0 packages
+
+📄 Report: /docs/legal/LICENSE-COMPLIANCE-2025-11-06.md
+
+Next Check: December 6, 2025 (quarterly)
+```
+
+---
+
+## 🎯 Success Metrics
+
+**Compliance Quality:**
+- All dependencies scanned ✅
+- No GPL/AGPL in commercial project ✅
+- Attribution file generated ✅
+- Legal risks documented ✅
+
+---
+
+## 🔄 Maintenance
+
+**Run quarterly** or when adding new dependencies.
+
+**Add to CI/CD** to prevent risky licenses from entering codebase.
+
+---
+
+## 💡 Pro Tips
+
+1. **Add to pre-commit hook** - Catch issues early
+2. **Review before adding deps** - Check license on npm page
+3. **Prefer MIT/Apache** - Most permissive
+4. **Avoid GPL/AGPL** - Forces open source
+5. **Document exceptions** - If you must use restrictive license
+6. **Include in client contracts** - Specify license terms
+7. **Legal review for enterprise** - Consult attorney for big clients
+
+---
+
+## 🚨 Common Mistakes
+
+**Don't:**
+- ❌ Use GPL in proprietary software
+- ❌ Remove copyright notices
+- ❌ Ignore unlicensed packages
+- ❌ Assume all MIT licenses are identical
+- ❌ Forget transitive dependencies
+
+**Do:**
+- ✅ Check licenses before adding dependencies
+- ✅ Generate attribution files
+- ✅ Include license compliance in client handoff
+- ✅ Review licenses quarterly
+- ✅ Document your own project's license
+
+---
+
+$END$
+

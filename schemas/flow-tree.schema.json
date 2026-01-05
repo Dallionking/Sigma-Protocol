@@ -1,0 +1,217 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://sss.dev/schemas/flow-tree.schema.json",
+  "title": "SSS Flow Tree",
+  "description": "Machine-readable flow tree for module selection and screen inventory",
+  "type": "object",
+  "required": ["$schema", "meta", "modules", "screens"],
+  "properties": {
+    "$schema": {
+      "type": "string",
+      "description": "Schema reference"
+    },
+    "meta": {
+      "type": "object",
+      "required": ["appName", "platform", "generatedAt"],
+      "properties": {
+        "appName": {
+          "type": "string",
+          "description": "Project/application name"
+        },
+        "platform": {
+          "type": "string",
+          "enum": ["web", "mobile", "both"],
+          "description": "Target platform(s)"
+        },
+        "generatedAt": {
+          "type": "string",
+          "format": "date",
+          "description": "Generation date (YYYY-MM-DD)"
+        },
+        "designDNA": {
+          "type": "string",
+          "description": "Selected Design DNA archetype from Step 4"
+        },
+        "uiProfile": {
+          "type": "object",
+          "description": "Selected UI Profile (from Step 3). Used to enforce consistent UI across steps.",
+          "required": ["id"],
+          "additionalProperties": false,
+          "properties": {
+            "id": {
+              "type": "string",
+              "description": "UI Profile identifier (kebab-case), e.g. satin-dark-soft-depth"
+            },
+            "name": {
+              "type": "string",
+              "description": "Human-readable UI Profile name"
+            },
+            "version": {
+              "type": "string",
+              "description": "UI Profile version (semver)"
+            }
+          }
+        },
+        "uiProfileId": {
+          "type": "string",
+          "description": "Deprecated: use meta.uiProfile.id"
+        },
+        "uiProfileName": {
+          "type": "string",
+          "description": "Deprecated: use meta.uiProfile.name"
+        },
+        "totalScreens": {
+          "type": "integer",
+          "minimum": 1,
+          "description": "Total screen count"
+        },
+        "prdSource": {
+          "type": "string",
+          "description": "Path to source PRD document"
+        }
+      }
+    },
+    "modules": {
+      "type": "array",
+      "description": "Application modules/feature areas",
+      "items": {
+        "type": "object",
+        "required": ["id", "name", "platform", "required"],
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^[a-z][a-zA-Z0-9]*$",
+            "description": "Module identifier (camelCase)"
+          },
+          "name": {
+            "type": "string",
+            "description": "Human-readable module name"
+          },
+          "platform": {
+            "type": "string",
+            "enum": ["web", "mobile", "both"],
+            "description": "Platform this module applies to"
+          },
+          "required": {
+            "type": "boolean",
+            "description": "Whether this module is required (cannot be removed)"
+          },
+          "routes": {
+            "type": "array",
+            "items": { "type": "string" },
+            "description": "Route paths this module owns"
+          },
+          "screens": {
+            "type": "array",
+            "items": { "type": "string" },
+            "description": "Screen IDs belonging to this module"
+          },
+          "dependsOn": {
+            "type": "array",
+            "items": { "type": "string" },
+            "description": "Module IDs this module depends on"
+          },
+          "envVars": {
+            "type": "array",
+            "items": { "type": "string" },
+            "description": "Environment variables this module requires"
+          }
+        }
+      }
+    },
+    "screens": {
+      "type": "array",
+      "description": "Complete screen inventory",
+      "items": {
+        "type": "object",
+        "required": ["id", "title", "moduleId", "priority"],
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^[a-z][a-z0-9-]*$",
+            "description": "Screen identifier (kebab-case)"
+          },
+          "title": {
+            "type": "string",
+            "description": "Human-readable screen title"
+          },
+          "platform": {
+            "type": "string",
+            "enum": ["web", "mobile", "both"],
+            "description": "Platform this screen appears on"
+          },
+          "route": {
+            "type": "string",
+            "description": "URL/route path for this screen"
+          },
+          "moduleId": {
+            "type": "string",
+            "description": "Parent module ID"
+          },
+          "priority": {
+            "type": "string",
+            "enum": ["P0", "P1", "P2", "P3"],
+            "description": "Build priority"
+          },
+          "complexity": {
+            "type": "string",
+            "enum": ["Simple", "Medium", "Complex"],
+            "description": "Implementation complexity"
+          },
+          "animationComplexity": {
+            "type": "string",
+            "enum": ["Simple", "Medium", "Complex"],
+            "description": "Animation/motion complexity"
+          },
+          "entryPoints": {
+            "type": "array",
+            "items": { "type": "string" },
+            "description": "How users arrive at this screen"
+          },
+          "exitPoints": {
+            "type": "array",
+            "items": { "type": "string" },
+            "description": "Where users can go from this screen"
+          },
+          "prdFeatures": {
+            "type": "array",
+            "items": { "type": "string" },
+            "description": "PRD feature IDs this screen implements"
+          }
+        }
+      }
+    },
+    "flows": {
+      "type": "array",
+      "description": "Named user flows connecting screens",
+      "items": {
+        "type": "object",
+        "required": ["id", "name", "screens"],
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Flow identifier"
+          },
+          "name": {
+            "type": "string",
+            "description": "Human-readable flow name"
+          },
+          "description": {
+            "type": "string",
+            "description": "Flow purpose"
+          },
+          "screens": {
+            "type": "array",
+            "items": { "type": "string" },
+            "description": "Ordered list of screen IDs in this flow"
+          },
+          "entryCondition": {
+            "type": "string",
+            "description": "When/how this flow is triggered"
+          }
+        }
+      }
+    }
+  }
+}
+

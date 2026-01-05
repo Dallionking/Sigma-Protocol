@@ -1,0 +1,526 @@
+---
+version: "5.0.0"
+last_updated: "2025-12-29"
+changelog:
+  - "5.0.0: Added Epistemic Confidence Gate (Tier 2) - emits Evidence Ledger, Gap Score, and confidence artifacts for @status integration"
+  - "4.0.0: Added Agentic Layer integration - uses .sss/tools/ for verification, updates active_task.md, Grade 4 closed-loop support for @dev-loop"
+  - "3.0.0: Enhanced with clear differentiation from @holes (POST vs PRE implementation), workflow integration with @status, auto-generated actionable task lists, handoff documentation generation, cross-platform compatibility"
+  - "2.0.0: Updated for 13-step workflow"
+  - "1.0.0: Initial release - post-implementation gap analysis with auto-fix loop and UI Healer validation gate"
+description: "POST-implementation gap analysis + auto-fix. Compares actual CODE to requirements, builds traceability matrix, fills missing pieces, and runs UI Healer when frontend work is involved. Use @holes for PRE-implementation planning gaps."
+allowed-tools:
+  # PRIMARY MCP Tools (Use First)
+  - mcp_exa_get_code_context_exa
+  - mcp_exa_web_search_exa
+  - mcp_exa_deep_researcher_start
+  - mcp_exa_deep_researcher_check
+  - mcp_Ref_ref_search_documentation
+  - mcp_Ref_ref_read_url
+  - mcp_sequential-thinking_sequentialthinking
+
+  # ALWAYS ACTIVE (UI Validation Gate)
+  - mcp_cursor-ide-browser_browser_navigate
+  - mcp_cursor-ide-browser_browser_snapshot
+  - mcp_cursor-ide-browser_browser_click
+  - mcp_cursor-ide-browser_browser_take_screenshot
+  - mcp_cursor-ide-browser_browser_console_messages
+  - mcp_cursor-ide-browser_browser_network_requests
+  - mcp_cursor-ide-browser_browser_resize
+  - mcp_21st-devmagic_21st_magic_component_refiner
+
+  # BACKUP MCP Tools (Use only if primary fails)
+  - mcp_perplexity-ask_perplexity_ask
+
+  # OTHER TOOLS
+  - read_file
+  - write
+  - search_replace
+  - list_dir
+  - glob_file_search
+  - grep
+  - codebase_search
+  - run_terminal_cmd
+  - todo_write
+parameters:
+  - --spec
+  - --depth
+  - --max-iterations
+  - --ui
+  - --url
+  - --output
+  - --generate-todos
+  - --workflow-integration
+  - --emit-confidence
+---
+
+# @gap-analysis — Post-Implementation Gap Analysis + Auto-Fill (with UI Healer Gate)
+
+**POST-IMPLEMENTATION: Verify implementation matches requirements and auto-fix gaps**
+
+Turn "I implemented the plan" into "it's actually done."
+
+## 🎯 Mission
+
+You are a **Principal Engineer + QA Lead** operating at a **$1B valuation standard**.
+
+**When to Use:** Run `@gap-analysis` AFTER implementation is complete - compares actual code to requirements, finds missing features, and auto-fixes issues.
+
+**What It Does:**
+1. Do a **full gap analysis** on the implementation vs the requirements/spec/plan.
+2. **Fill the gaps** you find (auto-fix loop; do not stop at "found issues").
+3. If any gaps (or fixes) touch **frontend/UI**, you must **open the browser and run UI validation using the UI Healer methodology**.
+
+This command is **project-agnostic** (works on any repo), but becomes even stronger when SSS artifacts exist (Step 4/5/6/7/11 docs, bulletproof gates, etc.).
+
+## 🔄 Workflow Position
+
+**Before:** `@implement-prd`, manual coding, `@scaffold`  
+**After:** `@ship-check`, `@ship-stage`, `@ship-prod`  
+**Related:** `@holes` (PRE-implementation), `@status` (workflow tracking)
+
+**Key Difference from @holes:**
+- `@holes` = PRE-implementation (finds gaps in PLANS before coding)
+- `@gap-analysis` = POST-implementation (finds gaps in CODE after coding)
+
+---
+
+## 🧭 Usage
+
+```bash
+@gap-analysis
+@gap-analysis --spec=docs/prds/F01-user-auth.md
+@gap-analysis --spec=/absolute/path/to/PRD.md
+@gap-analysis --depth=deep
+@gap-analysis --max-iterations=5
+@gap-analysis --ui=auto --url=http://localhost:3000
+@gap-analysis --ui=never
+@gap-analysis --output=docs/analysis/
+```
+
+### Parameters
+
+| Parameter | Values | Default | Meaning |
+|----------|--------|---------|---------|
+| `--spec` | filepath or ID (e.g. `F01`) | auto-detect | The requirements source to verify against |
+| `--depth` | `quick`, `standard`, `deep` | `standard` | How exhaustive the checks are |
+| `--max-iterations` | integer | `3` | Auto-fix loop max iterations |
+| `--ui` | `auto`, `always`, `never` | `auto` | Whether to run UI Healer validation |
+| `--url` | URL | `http://localhost:3000` | URL to validate in the browser when UI involved |
+| `--output` | dir | `docs/analysis/` | Where to save the report |
+| `--generate-todos` | boolean | `true` | Generate actionable todo list from findings |
+| `--workflow-integration` | boolean | `true` | Cross-reference with @status for workflow tracking |
+| `--emit-confidence` | boolean | `true` | Emit Epistemic Confidence artifact to .sss/confidence/ |
+
+---
+
+## 📚 Frameworks (research-backed, practical)
+
+### 1) Requirements Coverage / Traceability Matrix (QA/ALM standard)
+- **Concept:** Every requirement must map to concrete evidence (code, tests, UI).
+- **Application here:** We build a traceability matrix: Requirement → Evidence → Status → Fix.
+
+### 2) Gap-Driven Iterative Refinement (LLM self-critique → revise loop)
+- **Concept:** Detect “reasoning/output gaps,” then iteratively correct them against explicit criteria.
+- **Application here:** We run a bounded fix loop: analyze → patch → re-verify → repeat until pass or max iterations.
+
+### 3) Red-Flag Gates (production sanity)
+- **Concept:** Certain issues are immediate blockers regardless of “mostly done.”
+- **Application here:** We scan for red flags inspired by `@verify-prd` (TODOs, console logs, missing validation, failing tests, etc.).
+
+---
+
+## 📁 Output
+
+**File Strategy:** `append-dated`  
+**Default Output:** `docs/analysis/GAP-ANALYSIS-YYYY-MM-DD.md`
+
+---
+
+## ⚡ Preflight (auto)
+
+1) **Get date**
+```bash
+date +"%Y-%m-%d"
+```
+
+2) **Detect repo type / stack**
+- If `docs/stack-profile.json` exists, read it (SSS).
+- Otherwise infer from `package.json`, `pyproject.toml`, `go.mod`, etc.
+
+3) **Resolve spec (requirements source)**
+- If `--spec` provided:
+  - If it looks like a file path → use it.
+  - If it looks like `F01` → locate `docs/prds/F01-*.md`.
+- Else auto-detect (best effort):
+  - If repo has `docs/prds/` → choose the PRD most relevant to the current session (if ambiguous, ask the user).
+  - Else use the PRD/plan text present in the current conversation.
+
+4) **Detect what changed (implementation scope)**
+- Prefer `git diff --name-only` (if git exists).
+- Otherwise infer from files mentioned in the session.
+
+---
+
+## 🚨 Red Flags (Automatic BLOCKERS)
+
+If any of these exist, they are **blocking** until fixed:
+- Any `TODO` or `FIXME` in production code
+- `console.log` in production paths (unless explicitly allowed and guarded)
+- Empty `try/catch` blocks
+- Endpoints/mutations without auth checks (where applicable)
+- DB tables without RLS (if using Postgres/Supabase patterns)
+- Forms without validation (server + client side as appropriate)
+- `// @ts-ignore` or blanket `eslint-disable` without justification
+- Hardcoded secrets/API keys
+- Failing tests
+- Linter/type errors
+- Build warnings treated as regressions
+- Missing loading/error/empty states for user-facing flows
+
+---
+
+## 🧩 Core Workflow
+
+### Phase A — Build the Requirements List
+
+Create a normalized checklist from the spec:
+- **Functional requirements**
+- **Acceptance criteria** (checkboxes, Given/When/Then, explicit pass/fail)
+- **UI screens / routes / flows** (especially for flow PRDs)
+- **Error cases + edge cases**
+- **Non-functional** (performance, security, accessibility)
+
+Output as a table with stable IDs:
+
+```markdown
+| Req ID | Requirement | Source | Priority | Status |
+|-------:|-------------|--------|----------|--------|
+| R01 | Users can create X | AC#3 | P0 | ? |
+```
+
+### Phase B — Create Traceability (Requirement → Evidence)
+
+For each requirement, find evidence:
+- **Code evidence:** files/functions/routes/services (include file paths + snippets)
+- **Test evidence:** unit/integration/e2e tests that assert behavior
+- **UI evidence:** pages/components and visible behavior
+
+Traceability matrix:
+
+```markdown
+| Req ID | Status | Evidence | Tests | Notes |
+|-------:|--------|----------|-------|------|
+| R01 | ✅ | `src/...` | `tests/...` |  |
+| R02 | ❌ | — | — | missing endpoint + UI state |
+```
+
+### Phase C — Identify Gaps (with Fix Actions)
+
+Convert all failures into an ordered gap list:
+- **Blockers** (red flags, test failures, missing auth, missing validation)
+- **Missing requirements** (no code path / no UI / no tests)
+- **Partial requirements** (happy path only; missing edge states)
+- **Quality gaps** (DX, types, error boundaries, loading states, a11y basics)
+
+Each gap must include:
+- What’s missing
+- Where it should live (file path)
+- The smallest correct fix
+- How we’ll verify it (test/UI step)
+
+### Phase D — Auto-Fill Fix Loop (bounded)
+
+Default behavior: **auto-fix** (no approval wait).
+
+Run up to `--max-iterations` (default 3):
+1. Apply the highest-impact fixes first (blockers → P0 → P1).
+2. Re-run verification checks (tests/lint/build as applicable).
+3. Rebuild the traceability matrix and confirm coverage improved.
+
+If after max iterations gaps remain, stop with:
+- Remaining gaps
+- Exact next steps
+- What you tried
+
+### Phase E — UI Healer Validation Gate (when UI involved)
+
+Trigger UI validation if any of the following are true:
+- `--ui=always`
+- `--ui=auto` AND (any UI files changed OR spec includes screens/routes OR gaps include UI/states)
+
+**When triggered, you MUST:**
+1. **Open the browser tab** and navigate to `--url` (default `http://localhost:3000`).
+   - If the dev server isn’t running or the URL is wrong, ask the user to start it and provide the correct URL.
+2. Validate key user journeys from the spec (happy path + failure states).
+3. Capture evidence:
+   - `browser_snapshot`
+   - console errors (`browser_console_messages`)
+   - network failures (`browser_network_requests`)
+   - screenshots before/after for material UI changes
+4. Heal issues you find (layout, states, accessibility basics). Follow the methodology in `@ui-healer`.
+
+**Minimum UI Gate:** No console errors, no broken layouts at common breakpoints, and required screens/flows match the spec.
+
+### Phase F — Report + Close-Out
+
+Write a dated report to `--output`:
+- Summary (what you checked)
+- Traceability matrix (final)
+- Gaps found → fixed
+- Remaining gaps (if any)
+- UI Healer results (if run) + screenshot references
+
+End with a crisp ship/no-ship recommendation.
+
+---
+
+## ✅ Quality Gates (must pass to declare “done”)
+
+1. **No blockers** (red flags cleared)
+2. **Acceptance criteria coverage**: every AC has evidence + a verification method
+3. **Tests**: relevant tests exist and pass (or an explicit rationale if not applicable)
+4. **Build/lint**: clean (or explicitly documented exceptions)
+5. **UI Gate** (if UI involved): browser validation completed and issues healed
+
+---
+
+## 📋 Actionable Task List (Auto-Generated)
+
+```typescript
+async function generateActionableTasks(gaps: ImplementationGap[]): Promise<void> {
+  if (!params.generateTodos) return;
+  
+  const todos = gaps
+    .filter(g => !g.autoFixed && (g.severity === 'critical' || g.severity === 'high'))
+    .map(g => ({
+      id: `gap-${g.id}`,
+      content: `[POST-IMPLEMENTATION] ${g.title}: ${g.description}`,
+      status: g.autoFixed ? 'completed' : 'pending' as const,
+    }));
+  
+  await todo_write({ merge: false, todos });
+  
+  console.log(`\n✅ Generated ${todos.length} actionable tasks`);
+  console.log(`   ${gaps.filter(g => g.autoFixed).length} gaps auto-fixed`);
+  console.log(`   Run @status to see workflow integration`);
+}
+```
+
+## 🔄 Workflow Integration
+
+```typescript
+async function integrateWithStatus(gaps: ImplementationGap[]): Promise<void> {
+  if (!params.workflowIntegration) return;
+  
+  // Read current status
+  const statusReport = await readFile('docs/status/WORKFLOW-STATUS.md').catch(() => null);
+  
+  // Update status based on gap analysis results
+  const criticalGaps = gaps.filter(g => g.severity === 'critical' && !g.autoFixed);
+  const allGapsFixed = gaps.every(g => g.autoFixed || g.severity === 'low');
+  
+  if (criticalGaps.length > 0) {
+    await updateStatus({
+      step: 11,
+      status: 'needs-fix',
+      reason: `${criticalGaps.length} critical gaps found in implementation`,
+      action: 'Review @gap-analysis report and fix remaining gaps',
+    });
+  } else if (allGapsFixed) {
+    await updateStatus({
+      step: 11,
+      status: 'complete',
+      reason: 'All gaps resolved - ready for deployment',
+      action: 'Proceed with @ship-check',
+    });
+  }
+  
+  console.log('\n✅ Integrated with @status workflow tracking');
+}
+```
+
+## 📄 Handoff Documentation
+
+```typescript
+async function generateHandoffDocumentation(gaps: ImplementationGap[]): Promise<string> {
+  const autoFixed = gaps.filter(g => g.autoFixed).length;
+  const remaining = gaps.filter(g => !g.autoFixed);
+  
+  return `
+# Post-Implementation Handoff
+
+**Generated:** ${new Date().toISOString()}
+**Analysis:** @gap-analysis --spec=${params.spec} --depth=${params.depth}
+
+## Summary
+
+- **Total Gaps Found:** ${gaps.length}
+- **Auto-Fixed:** ${autoFixed}
+- **Remaining:** ${remaining.length}
+- **Status:** ${remaining.length === 0 ? '✅ COMPLETE - Ready for deployment' : 
+  remaining.some(g => g.severity === 'critical') ? '⚠️ BLOCKED - Critical gaps remain' : 
+  '⚠️ REVIEW - Some gaps need attention'}
+
+## Auto-Fixed Gaps
+
+${gaps
+  .filter(g => g.autoFixed)
+  .map(g => `- ✅ **${g.title}**: ${g.description}`)
+  .join('\n')}
+
+## Remaining Gaps
+
+${remaining
+  .map(g => `- ${g.severity === 'critical' ? '🔴' : g.severity === 'high' ? '🟡' : '🟢'} **${g.title}**: ${g.description}\n  - Recommendation: ${g.recommendation}`)
+  .join('\n\n')}
+
+## Next Steps
+
+${remaining.length === 0 ? `
+✅ All gaps resolved! Proceed with:
+\`\`\`bash
+@ship-check --environment=staging
+@ship-stage
+\`\`\`
+` : `
+⚠️ Review and fix remaining gaps, then re-run:
+\`\`\`bash
+@gap-analysis --spec=${params.spec}
+\`\`\`
+`}
+
+## Related Analysis
+
+- **Pre-Implementation:** Run \`@holes\` before coding to find gaps in plans
+- **Workflow Status:** Run \`@status\` to see overall workflow progress
+- **Deployment:** Run \`@ship-check\` before deploying
+`;
+}
+```
+
+---
+
+## 🧠 Epistemic Confidence Gate (Tier 2)
+
+**This is a Tier 2 (Analysis) command. Emits Evidence Ledger + Gap Score.**
+
+### Evidence Requirements
+
+When making claims about external APIs, libraries, or patterns, verify with MCP tools:
+
+| Claim Type | Verification Method |
+|------------|---------------------|
+| Framework behavior | `mcp_Ref_ref_search_documentation` |
+| Library APIs | `mcp_Ref_ref_search_documentation` |
+| Code patterns | `mcp_exa_get_code_context_exa` |
+| Best practices | `mcp_exa_web_search_exa` |
+
+### Gap Score Calculation
+
+```typescript
+function computeGapScore(gaps: ImplementationGap[]): number {
+  const critical = gaps.filter(g => g.severity === 'critical' && !g.autoFixed).length;
+  const high = gaps.filter(g => g.severity === 'high' && !g.autoFixed).length;
+  const medium = gaps.filter(g => g.severity === 'medium' && !g.autoFixed).length;
+  
+  // Formula: 100 - (Critical × 50) - (High × 10) - (Medium × 2)
+  return Math.max(0, 100 - (critical * 50) - (high * 10) - (medium * 2));
+}
+```
+
+### Emit Epistemic Artifact
+
+After completing the analysis, emit:
+
+```markdown
+<!-- EPISTEMIC-GATE-START -->
+## Epistemic Confidence Report (Gap Analysis)
+
+**Confidence:** [X]% [✅ | ⚠️ | ⛔]
+**Computed:** [TIMESTAMP]
+**Command:** @gap-analysis
+**Tier:** 2
+
+### Gap Summary
+| Severity | Found | Auto-Fixed | Remaining |
+|----------|-------|------------|-----------|
+| Critical | [X] | [X] | [X] |
+| High | [X] | [X] | [X] |
+| Medium | [X] | [X] | [X] |
+| Low | [X] | [X] | [X] |
+| **Gap Score** | - | - | **[X]%** |
+
+### Evidence Ledger
+| # | Claim | Source | Citation |
+|---|-------|--------|----------|
+| 1 | [External claim verified] | [Ref/Exa] | [URL] |
+
+### Remaining Gaps
+- **CRITICAL:** [List or "None - all auto-fixed"]
+- **HIGH:** [List or "None"]
+
+### Uncertainties
+- **CRITICAL:** [List or "None"]
+- **NON-CRITICAL:** [List]
+
+### Integration Note
+This Gap Score feeds into the Epistemic Confidence system.
+Run @status to see overall workflow confidence.
+<!-- EPISTEMIC-GATE-END -->
+```
+
+### Save Confidence Artifact
+
+```typescript
+async function saveConfidenceArtifact(gaps: ImplementationGap[], evidenceLedger: Evidence[]): Promise<void> {
+  const gapScore = computeGapScore(gaps);
+  const timestamp = new Date().toISOString();
+  
+  const artifact = {
+    version: '1.0.0',
+    command: '@gap-analysis',
+    timestamp,
+    tier: 2,
+    confidence: {
+      gapScore,
+      evidenceScore: evidenceLedger.filter(e => e.verified).length / Math.max(1, evidenceLedger.length) * 100,
+      passed: gapScore >= 70,
+    },
+    gaps: {
+      critical: gaps.filter(g => g.severity === 'critical').length,
+      criticalFixed: gaps.filter(g => g.severity === 'critical' && g.autoFixed).length,
+      high: gaps.filter(g => g.severity === 'high').length,
+      highFixed: gaps.filter(g => g.severity === 'high' && g.autoFixed).length,
+      medium: gaps.filter(g => g.severity === 'medium').length,
+      mediumFixed: gaps.filter(g => g.severity === 'medium' && g.autoFixed).length,
+    },
+    evidence: evidenceLedger,
+    uncertainties: {
+      critical: gaps.filter(g => g.severity === 'critical' && !g.autoFixed).map(g => g.title),
+      nonCritical: gaps.filter(g => g.severity !== 'critical' && !g.autoFixed).map(g => g.title),
+    },
+  };
+  
+  // Ensure directory exists
+  await run_terminal_cmd('mkdir -p .sss/confidence');
+  
+  // Save artifact
+  const filename = `.sss/confidence/gap-analysis-${timestamp.split('T')[0]}.json`;
+  await write(filename, JSON.stringify(artifact, null, 2));
+  
+  console.log(`\n📊 Epistemic artifact saved: ${filename}`);
+  console.log(`   Gap Score: ${gapScore}%`);
+  console.log(`   Evidence: ${evidenceLedger.filter(e => e.verified).length}/${evidenceLedger.length} claims verified`);
+}
+```
+
+---
+
+## 🔗 Related Commands
+
+- **Complementary:** `@verify-prd` — scoring-oriented PRD verification (if you're using SSS PRDs)
+- **UI Gate:** `@ui-healer` — deep browser-based UI testing/healing
+- **Pre-build gap finding:** `@holes` — find requirement/spec holes BEFORE implementing
+- **Workflow:** `@status` — workflow progress tracking (integrated with Epistemic Confidence)
+- **Deployment:** `@ship-check` — pre-deployment validation (after gaps fixed)
+- **Epistemic Docs:** See `docs/epistemic/` for confidence scoring details

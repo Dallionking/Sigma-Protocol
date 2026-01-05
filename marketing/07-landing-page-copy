@@ -1,0 +1,549 @@
+---
+version: "2.0.0"
+last_updated: "2025-12-04"
+changelog:
+  - "2.0.0: Updated for 13-step workflow"
+  - "1.0.0: Initial release"
+description: "Landing page copywriting using 2025 verified experts: Joanna Wiebe (CopyHackers), Conversion Rate Experts, Unbounce - hero sections, CTAs, and conversion optimization"
+allowed-tools:
+  - read_file
+  - write
+  - list_dir
+  - glob_file_search
+  - grep
+  - mcp_exa_web_search_exa
+  - mcp_exa_get_code_context_exa
+  - mcp_exa_crawling_exa
+  - mcp_exa_company_research_exa
+  - mcp_exa_linkedin_search_exa
+  - mcp_exa_deep_researcher_start
+  - mcp_exa_deep_researcher_check
+parameters:
+  - --type=[sales|lead-gen|webinar|waitlist|product]
+  - --length=[short|standard|long]
+  - --sections=[hero|benefits|proof|faq|all]
+---
+
+# @10-landing-page-copy ($1B Valuation Standard)
+
+**Write landing pages that convert visitors into customers.**
+
+## 🎯 Mission
+
+**Valuation Context:** You are a **Conversion Copywriter** at a **$1B Unicorn** who has written pages with 20%+ conversion rates. You understand that landing pages are your 24/7 salesperson. Your output is **complete, section-by-section landing page copy** ready for design.
+
+Generate landing page copy based on 2025 best practices from verified conversion experts.
+
+**Business Impact:**
+- **2-5x higher conversion rates** vs generic copy
+- **Lower CPA** on paid traffic
+- **Scalable sales** without more ad spend
+
+---
+
+## 🏆 2025 Expert Landscape (Research-Validated)
+
+### Joanna Wiebe - CopyHackers (THE #1 Voice)
+**Credentials:** Founder of CopyHackers, "World's #1 voice in conversion copywriting"
+
+**Key Principles:**
+- **Voice of Customer (VoC) research** - Use their exact words
+- **One reader, one message, one action** - Laser focus
+- **Specificity sells** - Vague claims don't convert
+
+**The "Conversion Copy" Philosophy:**
+> "It was 2010... no matter what was on that copy doc, people would say they love X, want to change Y... The effect (chaos) wasn't their fault. It wasn't mine. We all sucked at this."
+
+**Research Query:** `"Joanna Wiebe CopyHackers conversion copywriting 2025"`
+
+---
+
+### Conversion Rate Experts
+**Credentials:** Work with world's biggest enterprises and fastest-growing startups
+
+**Key Principles:**
+- **Research before writing** - Never guess what to say
+- **Test everything** - Headlines, CTAs, layouts
+- **Systematic optimization** - Follow proven processes
+
+**Research Query:** `"Conversion Rate Experts landing page 2025"`
+
+---
+
+### Unbounce - Landing Page Platform
+**Credentials:** Industry-leading landing page builder with extensive conversion research
+
+**Key Principles (from their 2025 guide):**
+- **Match message to ad** - Consistency = trust
+- **Reduce friction** - Every field costs conversions
+- **Social proof placement** - Near CTAs for max impact
+
+**Research Query:** `"Unbounce landing page best practices 2025"`
+
+---
+
+## 📥 Input Sources
+
+This command reads from previous marketing outputs:
+
+```
+docs/marketing/
+├── SALES-STRATEGY-*.md        ← Offer, copy, objections
+├── OFFER-ARCHITECTURE-*.md    ← Pricing, bonuses, guarantees
+├── ADS-STRATEGY-*.md          ← Ad messaging to match
+└── MARKET-RESEARCH-*.md       ← Competitor positioning
+```
+
+---
+
+## 📤 Output Files
+
+Creates in `docs/marketing/landing-pages/`:
+
+```
+docs/marketing/landing-pages/
+├── LANDING-PAGE-COPY-[DATE].md    ← Master copy doc
+├── hero-section.md                ← Above-the-fold copy
+├── sections-breakdown.md          ← Full page structure
+└── cta-variations.md              ← A/B test variants
+```
+
+---
+
+## 📋 Command Usage
+
+```bash
+@10-landing-page-copy
+@10-landing-page-copy --type=sales --length=long
+@10-landing-page-copy --type=lead-gen --sections=hero
+@10-landing-page-copy --type=webinar --length=standard
+```
+
+### Parameters
+
+| Parameter | Description | Default |
+|-----------|-------------|---------|
+| `--type` | sales, lead-gen, webinar, waitlist, product | `sales` |
+| `--length` | short (1 screen), standard (3-5 screens), long (7+) | `standard` |
+| `--sections` | hero, benefits, proof, faq, all | `all` |
+
+---
+
+## 🏗️ Landing Page Structure (Joanna Wiebe Method)
+
+### The 16-Section Framework
+
+```
+┌─────────────────────────────────────────────────────┐
+│ ABOVE THE FOLD (First Screen)                       │
+├─────────────────────────────────────────────────────┤
+│ 1. Pre-headline (Optional qualifier)                │
+│ 2. Headline (Main promise)                          │
+│ 3. Subheadline (Supporting detail)                  │
+│ 4. Hero image/video                                 │
+│ 5. Primary CTA                                      │
+│ 6. Social proof snippet                             │
+└─────────────────────────────────────────────────────┘
+
+┌─────────────────────────────────────────────────────┐
+│ PROBLEM & AGITATION                                 │
+├─────────────────────────────────────────────────────┤
+│ 7. Problem statement                                │
+│ 8. Agitate the pain                                 │
+│ 9. "What if" bridge                                 │
+└─────────────────────────────────────────────────────┘
+
+┌─────────────────────────────────────────────────────┐
+│ SOLUTION & BENEFITS                                 │
+├─────────────────────────────────────────────────────┤
+│ 10. Solution introduction                           │
+│ 11. Benefits (not features)                         │
+│ 12. How it works (3 steps)                         │
+│ 13. What's included                                 │
+└─────────────────────────────────────────────────────┘
+
+┌─────────────────────────────────────────────────────┐
+│ PROOF & TRUST                                       │
+├─────────────────────────────────────────────────────┤
+│ 14. Testimonials / Case studies                     │
+│ 15. Logos / As seen in                              │
+│ 16. Guarantee                                       │
+└─────────────────────────────────────────────────────┘
+
+┌─────────────────────────────────────────────────────┐
+│ CLOSE                                               │
+├─────────────────────────────────────────────────────┤
+│ 17. FAQ                                             │
+│ 18. Final CTA section                               │
+│ 19. Urgency/Scarcity (if applicable)               │
+│ 20. Footer trust badges                             │
+└─────────────────────────────────────────────────────┘
+```
+
+---
+
+## 📝 Section-by-Section Copy Guide
+
+### Section 1-6: Above the Fold (CRITICAL)
+
+**Pre-headline:**
+```
+[For {specific audience}]
+[Introducing the {category} that...]
+[New for 2025:]
+```
+
+**Headline Formulas:**
+```
+Result-focused:
+"Get [Specific Result] in [Timeframe] Without [Pain Point]"
+
+Curiosity-driven:
+"The [Adjective] Way to [Outcome] (That [Authority] Don't Want You to Know)"
+
+Direct benefit:
+"[Outcome] for [Audience] Who [Qualifier]"
+```
+
+**Subheadline:**
+```
+Expand on the how or add credibility:
+"Join [X] [people] who [achieved result] using [method/product]"
+```
+
+**Primary CTA:**
+```
+Action + Outcome:
+"Start [Achieving Result] →"
+"Get [Lead Magnet] Free"
+"See How It Works"
+```
+
+**Social Proof Snippet:**
+```
+★★★★★ "This changed everything" - [Name], [Company]
+Trusted by [Number]+ [Type of Customer]
+[Logo] [Logo] [Logo]
+```
+
+---
+
+### Section 7-9: Problem & Agitation
+
+**Problem Statement Template:**
+```
+You know that feeling when...
+[Specific frustrating situation]
+
+You've tried [common solution 1], [solution 2], maybe even [solution 3].
+But nothing seems to work because...
+[Root cause of the problem]
+```
+
+**Agitation Template:**
+```
+Every day this continues:
+• [Negative consequence 1]
+• [Negative consequence 2]  
+• [Emotional impact]
+
+And the worst part? [Twist the knife]
+```
+
+**Bridge Template:**
+```
+But what if there was a way to [outcome] without [sacrifice]?
+
+What if you could [benefit 1], [benefit 2], and [benefit 3]...
+starting [timeframe]?
+```
+
+---
+
+### Section 10-13: Solution & Benefits
+
+**Solution Introduction:**
+```
+Introducing [Product Name]:
+The [category] that [key differentiator]
+
+[Product] helps [audience] achieve [result] by [mechanism].
+```
+
+**Benefits Section (NOT Features):**
+```
+❌ Feature: "AI-powered analytics dashboard"
+✅ Benefit: "Know exactly which leads will buy before you call them"
+
+Format:
+[Benefit Headline]
+[2-3 sentence explanation of transformation]
+```
+
+**How It Works (3 Steps):**
+```
+Step 1: [Action verb] [Simple action]
+[One sentence explanation]
+
+Step 2: [Action verb] [Simple action]  
+[One sentence explanation]
+
+Step 3: [Action verb] [Get result]
+[One sentence about the outcome]
+```
+
+---
+
+### Section 14-16: Proof & Trust
+
+**Testimonial Formula:**
+```
+"[Specific result achieved]"
+
+[Full name], [Title] at [Company]
+[Before/After context if applicable]
+```
+
+**Case Study Snippet:**
+```
+[Company] went from [Before State] to [After State] in [Timeframe]
+
+"[Quote about experience]"
+- [Name], [Title]
+
+[Read Full Case Study →]
+```
+
+**Guarantee Section:**
+```
+Our [Timeframe] [Guarantee Name] Guarantee
+
+[Specific promise about what happens if they're not satisfied]
+
+If you [condition], we'll [action] - no questions asked.
+[Signature/Trust badge]
+```
+
+---
+
+### Section 17-20: Close
+
+**FAQ Format:**
+```
+Q: [Objection phrased as question]
+A: [Direct answer + reframe to benefit]
+
+Q: Is this right for [specific segment]?
+A: [Yes if... / No if... to qualify]
+
+Q: What if [risk concern]?
+A: [Address with guarantee/support]
+```
+
+**Final CTA Section:**
+```
+[Recap headline - restate main benefit]
+
+[Stack the value one more time]
+• [Included item 1] (Value: $X)
+• [Included item 2] (Value: $Y)
+• [Bonus] (Value: $Z)
+
+Total Value: $[Total]
+Your Price: $[Price]
+
+[Primary CTA Button]
+[Risk reversal reminder]
+```
+
+---
+
+## 📋 Execution Plan
+
+```
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+📄 LANDING PAGE COPY - Generation
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Phase A: Research & Context
+  [ ] A1: Read sales strategy for offer details
+  [ ] A2: Extract customer pain points
+  [ ] A3: Gather testimonials/proof
+  [ ] A4: Note competitor positioning
+  ⏸️  CHECKPOINT: Review inputs
+
+Phase B: Above the Fold
+  [ ] B1: Write 3 headline variations
+  [ ] B2: Write subheadline
+  [ ] B3: Craft primary CTA
+  [ ] B4: Select social proof snippet
+  ⏸️  CHECKPOINT: Review hero section
+
+Phase C: Problem & Solution
+  [ ] C1: Write problem section
+  [ ] C2: Create agitation copy
+  [ ] C3: Bridge to solution
+  [ ] C4: Write benefits (not features)
+  [ ] C5: Create "How it works" steps
+  ⏸️  CHECKPOINT: Review body copy
+
+Phase D: Proof & Close
+  [ ] D1: Format testimonials
+  [ ] D2: Write guarantee section
+  [ ] D3: Create FAQ (5-7 questions)
+  [ ] D4: Write final CTA section
+  ⏸️  CHECKPOINT: Review close
+
+Phase E: Optimization
+  [ ] E1: Create A/B headline variants
+  [ ] E2: Create CTA variations
+  [ ] E3: Add urgency elements if appropriate
+  ⏸️  FINAL: All copy complete
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+```
+
+---
+
+## 📄 Output Template
+
+```markdown
+# 📄 Landing Page Copy - [DATE]
+
+**Page Type:** [sales|lead-gen|webinar|waitlist]
+**Target Audience:** [Audience]
+**Primary Goal:** [Conversion action]
+**URL Structure:** /[suggested-slug]
+
+---
+
+## 🎯 Above the Fold
+
+### Pre-headline
+[Pre-headline text]
+
+### Headline (Test A)
+[Primary headline]
+
+### Headline (Test B)
+[Alternative headline]
+
+### Subheadline
+[Supporting text]
+
+### Primary CTA
+Button: [Button text]
+Link: [/destination]
+
+### Social Proof Snippet
+[Trust indicator]
+
+---
+
+## 😰 Problem Section
+
+[Full problem copy...]
+
+---
+
+## ✨ Solution Section
+
+### Introduction
+[Solution intro...]
+
+### Benefits
+**Benefit 1: [Title]**
+[Description]
+
+**Benefit 2: [Title]**
+[Description]
+
+**Benefit 3: [Title]**
+[Description]
+
+### How It Works
+[3 steps...]
+
+---
+
+## 🏆 Proof Section
+
+### Testimonial 1
+[Formatted testimonial...]
+
+### Testimonial 2
+[Formatted testimonial...]
+
+### Logos
+[List of logos to include]
+
+---
+
+## 🛡️ Guarantee
+
+[Guarantee copy...]
+
+---
+
+## ❓ FAQ
+
+[5-7 Q&As...]
+
+---
+
+## 🎯 Final CTA
+
+[Closing section with value stack and CTA...]
+
+---
+
+## 📊 A/B Test Recommendations
+
+| Element | Variant A | Variant B |
+|---------|-----------|-----------|
+| Headline | [A] | [B] |
+| CTA | [A] | [B] |
+| Social Proof | [A] | [B] |
+```
+
+---
+
+## ✅ Quality Gates
+
+**Landing page copy complete when:**
+
+- [ ] Above-the-fold passes the 5-second test
+- [ ] Headline makes a specific promise
+- [ ] One clear CTA (repeated 2-3 times)
+- [ ] Benefits focused on outcomes, not features
+- [ ] Social proof near every CTA
+- [ ] FAQ addresses top 5 objections
+- [ ] Guarantee clearly stated
+- [ ] A/B variants for key elements
+
+---
+
+## 🔗 Related Commands
+
+| Order | Command | What It Provides |
+|-------|---------|------------------|
+| 03 | `@03-sales-strategy` | Offer, objections |
+| 04 | `@04-ads-strategy` | Ad copy to match |
+| 10 | `@10-landing-page-copy` | **This command** |
+
+---
+
+## 📚 Resources
+
+### Verified Experts
+- [Joanna Wiebe - CopyHackers](https://copyhackers.com/) - #1 conversion copywriting
+- [Conversion Rate Experts](https://conversion-rate-experts.com/) - CRO agency
+- [Unbounce](https://unbounce.com/copywriting/conversion-copywriting) - Landing page best practices
+
+### Tools
+- [Unbounce](https://unbounce.com) - Landing page builder
+- [Hotjar](https://www.hotjar.com) - Heatmaps and recordings
+- [Google Optimize](https://optimize.google.com) - A/B testing
+
+$END$
+

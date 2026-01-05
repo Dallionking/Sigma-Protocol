@@ -1,0 +1,1104 @@
+---
+version: "2.2.0"
+last_updated: "2025-12-17"
+changelog:
+  - "2.2.0: Added Step 1.5 (Offer Architecture) to cascade rules, TRANSITION-MAP.md naming support"
+  - "2.1.0: Expanded to general-purpose SSS command sync system with version tracking"
+  - "2.0.0: Initial release for Flow Tree/Design DNA enhancements"
+description: "Hybrid SSS updater: (1) Enhance OLD workflow with Flow Tree/Design DNA, (2) Sync ANY updated SSS commands to existing codebases via version tracking. Supports Step 1.5 (conditional)."
+allowed-tools:
+  # PRIMARY MCP Tools (Use First)
+  - mcp_Ref_ref_search_documentation
+  - mcp_Ref_ref_read_url
+  - mcp_exa_web_search_exa
+  - mcp_exa_get_code_context_exa
+  - mcp_exa_crawling_exa
+  
+  # SPECIALIZED MCP Tools
+  - mcp_supabase-mcp-server_list_tables
+  - mcp_supabase-mcp-server_execute_sql
+  - mcp_21st-devmagic_21st_magic_component_builder
+  
+  # BACKUP MCP Tools (Use only if primary fails)
+  - mcp_perplexity-ask_perplexity_ask
+  
+  # OTHER TOOLS
+  - read_file
+  - write
+  - list_dir
+  - glob_file_search
+  - grep
+  - run_terminal_cmd
+parameters:
+  # Enhancement Mode (Legacy)
+  - --from-step
+  - --cascade
+  # Sync Mode (NEW)
+  - --mode          # enhance, sync, auto (default: auto)
+  - --check-only    # Only report, don't execute
+  - --force         # Re-run even if versions match
+  - --commands      # Specific commands to sync (comma-separated)
+  # Shared
+  - --dry-run
+  - --verbose
+---
+
+# @retrofit-enhance — Hybrid SSS Enhancement & Command Sync System
+
+**Mission**
+A **dual-purpose command** that:
+
+1. **Enhancement Mode (Legacy):** For codebases that ran the OLD SSS workflow (Steps 0-10), enhances them with NEW frameworks (Flow Tree, Design DNA, IA Frameworks)
+
+2. **Sync Mode (NEW):** For ANY codebase with SSS commands already applied, detects when commands have been updated and re-runs them to propagate improvements
+
+**Valuation Context:** You are a **Senior Design Systems Architect** at a $500M company, ensuring all projects benefit from the latest SSS methodology improvements.
+
+---
+
+## 🎯 Purpose
+
+### Enhancement Mode (--mode=enhance)
+- ✅ Projects that ran Steps 1-10 with the OLD workflow
+- ✅ Projects missing the new Step 4 (Flow Tree & Screen Architecture)
+- ✅ Projects needing Design DNA and IA framework enhancements
+- ✅ Projects where Flow Tree reveals screens not covered by existing PRDs
+
+### Sync Mode (--mode=sync)
+- ✅ Any project with `.sss-manifest.json` tracking previous command runs
+- ✅ Detect when SSS commands have newer versions available
+- ✅ Re-run updated commands to get new features/improvements
+- ✅ Works with newly added commands not previously run
+
+**NOT for:**
+- ❌ Brand new projects (use regular steps)
+- ❌ Projects that never ran any SSS commands (use @retrofit-analyze → @retrofit-generate)
+
+---
+
+## 🔀 Mode Selection Logic
+
+```
+@retrofit-enhance --mode=auto (default)
+    │
+    ├─ Check: Does .sss-manifest.json exist?
+    │   │
+    │   ├─ YES: Run Sync Mode
+    │   │   └─ Compare manifest versions vs current command versions
+    │   │   └─ Identify commands needing updates
+    │   │   └─ Execute updates with HITL checkpoints
+    │   │
+    │   └─ NO: Continue to legacy check
+    │
+    └─ Check: Does target have OLD workflow (Steps 0-10 without Step 4)?
+        │
+        ├─ YES: Run Enhancement Mode (legacy behavior)
+        │   └─ Add Flow Tree, Design DNA, IA frameworks
+        │
+        └─ NO: Suggest @retrofit-analyze first
+```
+
+---
+
+## 📋 Command Usage
+
+### **Auto Mode (Recommended)**
+```bash
+@retrofit-enhance                     # Auto-detect: sync if manifest exists, enhance otherwise
+@retrofit-enhance --dry-run           # Show what would happen, don't execute
+```
+
+### **Sync Mode (Version Updates)**
+```bash
+@retrofit-enhance --mode=sync         # Check for updated commands, sync if needed
+@retrofit-enhance --mode=sync --check-only   # Only report updates, don't execute
+@retrofit-enhance --mode=sync --force        # Re-run commands even if versions match
+@retrofit-enhance --mode=sync --commands=step-3,step-4  # Only sync specific commands
+```
+
+### **Enhancement Mode (Legacy Workflow Upgrade)**
+```bash
+@retrofit-enhance --mode=enhance      # Full enhancement from Step 3 onwards
+@retrofit-enhance --mode=enhance --from-step=3   # Re-run Step 3 with enhancements
+@retrofit-enhance --mode=enhance --from-step=4   # Only add Flow Tree
+@retrofit-enhance --mode=enhance --from-step=5   # Only add Design DNA to wireframes
+```
+
+### **Cascade Control (Enhancement Mode)**
+```bash
+@retrofit-enhance --mode=enhance --cascade=full      # Full cascade: 3 → 4 → 5 → 10 → 11
+@retrofit-enhance --mode=enhance --cascade=partial   # Partial: Only 3 → 4 → 5
+@retrofit-enhance --mode=enhance --cascade=prd-only  # Only generate new PRDs for new screens
+```
+
+---
+
+## 🎭 Parameters
+
+### Mode Selection
+| Parameter | Values | Description | Default |
+|-----------|--------|-------------|---------|
+| `--mode` | `auto`, `sync`, `enhance` | Operation mode | `auto` |
+
+### Sync Mode Parameters
+| Parameter | Values | Description | Default |
+|-----------|--------|-------------|---------|
+| `--check-only` | boolean | Only report updates, don't execute | `false` |
+| `--force` | boolean | Re-run even if versions match | `false` |
+| `--commands` | comma-separated | Specific commands to sync | all |
+
+### Enhancement Mode Parameters
+| Parameter | Values | Description | Default |
+|-----------|--------|-------------|---------|
+| `--from-step` | `3`, `4`, `5` | Step to start enhancement from | `3` |
+| `--cascade` | `full`, `partial`, `prd-only` | How far to cascade updates | `full` |
+
+### Shared Parameters
+| Parameter | Values | Description | Default |
+|-----------|--------|-------------|---------|
+| `--dry-run` | boolean | Analyze only, don't modify | `false` |
+| `--verbose` | boolean | Show detailed progress | `false` |
+
+---
+
+## 🔄 Enhancement Workflow
+
+```
+@retrofit-enhance
+    │
+    ├─ Phase A: Detect Existing Work
+    │   ├─ Check /docs/ux/ (old Step 3)
+    │   ├─ Check /docs/wireframes/ (old Step 3.5, now Step 5)
+    │   ├─ Check /docs/flows/ (new Step 4 - likely missing)
+    │   ├─ Check /docs/prds/ (old Step 9, now Step 11)
+    │   └─ Check app/ or src/ for existing screens
+    │
+    ├─ Phase B: Gap Analysis
+    │   ├─ Flow Tree exists? (Step 4)
+    │   ├─ Design DNA selected? (Step 5 enhancement)
+    │   ├─ IA frameworks applied? (Step 4 enhancement)
+    │   ├─ Screen count vs PRD count match?
+    │   └─ Category-specific patterns applied?
+    │
+    ├─ Phase C: Enhancement Plan
+    │   ├─ Re-run Step 3 with enhanced frameworks
+    │   ├─ Run NEW Step 4 (Flow Tree) - CRITICAL
+    │   ├─ Re-run Step 5 with Design DNA
+    │   └─ Cascade: Update Step 10/11 if new screens found
+    │
+    └─ Phase D: Execute with HITL Checkpoints
+        ├─ Checkpoint 1: Approve gap analysis
+        ├─ Checkpoint 2: Approve Flow Tree (new screens)
+        ├─ Checkpoint 3: Approve PRD generation
+        └─ Checkpoint 4: Final verification
+```
+
+---
+
+## 🔍 Phase A: Detect Existing Work
+
+### A1: Scan Documentation Structure
+
+```typescript
+interface ExistingDocumentation {
+  // Old workflow artifacts
+  uxDesign: {
+    exists: boolean;
+    path: '/docs/ux/UX-DESIGN.md';
+    hasPersonas: boolean;
+    hasJourneys: boolean;
+    hasEmotionalMapping: boolean;
+  };
+  wireframes: {
+    exists: boolean;
+    path: '/docs/wireframes/';
+    screenCount: number;
+    hasDesignDNA: boolean;  // New enhancement
+  };
+  prds: {
+    exists: boolean;
+    path: '/docs/prds/';
+    prdCount: number;
+    features: string[];
+  };
+  
+  // New workflow artifacts (likely missing)
+  flowTree: {
+    exists: boolean;
+    path: '/docs/flows/FLOW-TREE.md';
+    screenInventory: '/docs/flows/SCREEN-INVENTORY.md';
+  };
+  
+  // Existing codebase screens
+  codebaseScreens: {
+    appRouter: string[];      // app/*/page.tsx
+    pagesRouter: string[];    // pages/*.tsx
+    components: string[];     // Identifiable screen components
+    totalCount: number;
+  };
+}
+```
+
+### A2: Detect Enhancement Gaps
+
+```typescript
+interface EnhancementGaps {
+  // Critical gaps
+  flowTreeMissing: boolean;        // /docs/flows/FLOW-TREE.md doesn't exist
+  screenInventoryMissing: boolean; // /docs/flows/SCREEN-INVENTORY.md doesn't exist
+  
+  // Enhancement gaps
+  designDNAMissing: boolean;       // No DNA archetype selected in wireframes
+  iaFrameworksMissing: boolean;    // No IA framework evidence in UX docs
+  expertPatternsMissing: boolean;  // No industry expert references
+  
+  // Cascade gaps
+  screenPRDMismatch: boolean;      // Flow tree screens > PRD count
+  newScreensFound: number;         // Screens in code not in docs
+  
+  // Category-specific gaps
+  fintechPatternsNeeded: boolean;  // App type suggests fintech
+  healthPatternsNeeded: boolean;   // App type suggests health/fitness
+  gamificationNeeded: boolean;     // App type suggests gamification
+}
+```
+
+### A3: Codebase Screen Detection
+
+**Scan existing codebase for screens:**
+
+```typescript
+async function detectCodebaseScreens(): Promise<ScreenInventory> {
+  const screens: Screen[] = [];
+  
+  // App Router (Next.js 13+)
+  const appPages = await glob('app/**/page.tsx');
+  for (const page of appPages) {
+    screens.push({
+      id: generateScreenId(page),
+      route: extractRoute(page),
+      source: 'app-router',
+      hasDocumentation: false,  // Will check against docs
+    });
+  }
+  
+  // Pages Router (Next.js legacy)
+  const pagesFiles = await glob('pages/**/*.tsx');
+  for (const page of pagesFiles) {
+    if (!page.includes('_app') && !page.includes('_document')) {
+      screens.push({
+        id: generateScreenId(page),
+        route: extractRoute(page),
+        source: 'pages-router',
+        hasDocumentation: false,
+      });
+    }
+  }
+  
+  // React Native screens
+  const rnScreens = await glob('src/screens/**/*.tsx');
+  for (const screen of rnScreens) {
+    screens.push({
+      id: generateScreenId(screen),
+      route: extractRoute(screen),
+      source: 'react-native',
+      hasDocumentation: false,
+    });
+  }
+  
+  return { screens, totalCount: screens.length };
+}
+```
+
+---
+
+## 📊 Phase B: Gap Analysis Report
+
+### B1: Present Analysis (HITL Checkpoint 1)
+
+```
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+🔍 RETROFIT ENHANCEMENT ANALYSIS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+## Existing Documentation Found
+
+| Artifact | Status | Location |
+|----------|--------|----------|
+| UX Design | ✅ Found | /docs/ux/UX-DESIGN.md |
+| Wireframes | ✅ Found | /docs/wireframes/ (12 screens) |
+| PRDs | ✅ Found | /docs/prds/ (5 PRDs) |
+| Flow Tree | ❌ MISSING | /docs/flows/ |
+| Screen Inventory | ❌ MISSING | /docs/flows/ |
+
+## Codebase Screen Analysis
+
+| Source | Count | Documented |
+|--------|-------|------------|
+| App Router | 18 | 12 (67%) |
+| Components | 6 | 0 (0%) |
+| **Total** | **24** | **12 (50%)** |
+
+## Enhancement Gaps Detected
+
+| Gap | Status | Impact |
+|-----|--------|--------|
+| Flow Tree Missing | 🔴 CRITICAL | No screen-level architecture |
+| Screen Inventory Missing | 🔴 CRITICAL | 12 undocumented screens |
+| Design DNA Missing | 🟡 HIGH | No archetype-based patterns |
+| IA Frameworks Missing | 🟡 HIGH | No information architecture |
+| Screen-PRD Mismatch | 🔴 CRITICAL | 12 screens need PRDs |
+
+## Recommended Enhancement Plan
+
+1. ✅ Re-run Step 3 (UX Design) with IA frameworks
+2. ✅ NEW Step 4 (Flow Tree) - Document 24 screens
+3. ✅ Re-run Step 5 (Wireframes) with Design DNA
+4. ✅ Update Step 10 (Features) - 12 new features
+5. ✅ Generate Step 11 PRDs - 12 new PRDs
+
+Estimated Time: ~2 hours
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Proceed with enhancement? (yes/no/modify)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+```
+
+---
+
+## 🔨 Phase C: Execute Enhancements
+
+### C1: Step 3 Enhancement (UX Design)
+
+**Enhance existing UX-DESIGN.md with:**
+
+1. **IA Frameworks** (if missing):
+   - Louis Rosenfeld & Peter Morville's Three Circles of IA
+   - Peter Morville's User Experience Honeycomb
+   - Dan Brown's 8 Principles of Information Architecture
+   - Abby Covert's 7-step Sensemaking Process
+
+2. **Emotional Design Framework** (if missing):
+   - Don Norman's 3 Levels of Design
+   - Aarron Walter's Hierarchy of User Needs
+
+3. **Expert Pattern References** (category-specific):
+   - Fintech: Cash App, Coinbase, Stripe patterns
+   - Health: Headspace, Ladder, Duolingo patterns
+   - B2B SaaS: Linear, Notion, Superhuman patterns
+
+4. **Animation Philosophy Reference** (when applicable):
+   - Select animation philosophy (Iron Man / Batman / Cal AI / Quittr / Linear)
+   - Reference `/commands/MOBILE_APP_DESIGN_LEARNINGS.md` for quality benchmarks
+   - Apply Anti-AI-Slop principles where they fit the product
+
+**Output:** Enhanced `/docs/ux/UX-DESIGN.md`
+
+### C2: Step 4 Creation (Flow Tree) - CRITICAL
+
+**Create comprehensive Flow Tree:**
+
+```markdown
+# Flow Tree & Screen Architecture
+
+Generated by @retrofit-enhance
+Source: Existing codebase analysis + documentation
+
+## Screen Inventory
+
+| Screen ID | Name | Route | Complexity | Priority | Has PRD |
+|-----------|------|-------|------------|----------|---------|
+| AUTH-LOGIN | Login | /login | Simple | P0 | ✅ F01 |
+| AUTH-SIGNUP | Signup | /signup | Medium | P0 | ✅ F01 |
+| MAIN-DASHBOARD | Dashboard | /dashboard | Complex | P0 | ❌ NEW |
+| MAIN-SETTINGS | Settings | /settings | Medium | P1 | ❌ NEW |
+| MAIN-PROFILE | Profile | /profile | Medium | P1 | ❌ NEW |
+...
+
+## Flow Diagrams
+
+### Authentication Flow
+```mermaid
+graph TD
+    A[Landing /] --> B{Authenticated?}
+    B -->|No| C[Login /login]
+    B -->|Yes| D[Dashboard /dashboard]
+    C --> E[Signup /signup]
+    C --> F[Forgot Password /forgot]
+    E --> G[Verify Email /verify]
+    G --> D
+```
+
+### Main App Flow
+[Generated from actual navigation patterns]
+
+## Screens Requiring New PRDs
+
+The following screens exist in code but have NO PRD coverage:
+
+| Screen | Route | Suggested PRD |
+|--------|-------|---------------|
+| Dashboard | /dashboard | F06-DASHBOARD |
+| Settings | /settings | F07-SETTINGS |
+| Profile | /profile | F08-PROFILE |
+...
+
+**Total New PRDs Needed: 12**
+```
+
+**Output:** `/docs/flows/FLOW-TREE.md`, `/docs/flows/SCREEN-INVENTORY.md`
+
+### C3: Step 5 Enhancement (Wireframes)
+
+**Enhance wireframes with Design DNA:**
+
+1. **Select Design DNA Archetype** (HITL):
+   - Professional/Craft (Linear, Notion)
+   - Gamified/Engaging (Duolingo)
+   - Wellbeing/Calming (Headspace)
+   - Aggressive/High-Energy (Ladder)
+   - Fintech/Trust (Cash App, Coinbase)
+   - Premium/Luxury
+   - Health/Fitness
+   - Recovery/Transformation
+
+2. **Apply Pattern References:**
+   - Micro-interactions from archetype
+   - Animation timing from archetype
+   - Color psychology from archetype
+
+3. **Add Landing Page Wireframe** (if missing):
+   - Magic UI template selection
+   - Section structure with placeholders
+
+4. **Animation Quality Reference** (consult when applicable):
+   - Review `/commands/MOBILE_APP_DESIGN_LEARNINGS.md` for animation patterns
+   - Animation Philosophy Spectrum selection (Iron Man / Batman / Cal AI / Quittr / Linear)
+   - Component library options: Motion Primitives, KokonutUI, Cult UI
+   - Apply quality benchmarks where they fit the app's needs — NOT as mandatory checklist
+
+> **Note:** Animation examples in MOBILE_APP_DESIGN_LEARNINGS.md represent a **preferred direction and quality level**, not requirements for every project. Evaluate each app's needs individually.
+
+**Output:** Enhanced `/docs/wireframes/*.md`
+
+### C3.5: Step 6 Enhancement (Design System - Motion & Animation)
+
+**Enhance existing DESIGN-SYSTEM.md Phase G (Motion & Animation) with:**
+
+1. **Animation Philosophy Alignment** (reference):
+   - Match motion style to the brand's Design DNA from Step 3
+   - Design DNA → Motion Character mapping table
+
+2. **Premium Animation Libraries** (reference):
+   - Motion Primitives installation and component selection
+   - When to use premium animation libraries
+
+3. **Spring Physics Presets** (copy-paste ready):
+   - Snappy, smooth, bouncy, gentle presets with code
+   - Framer Motion usage examples
+
+4. **Premium Animation Patterns** (reference examples):
+   - Border-trail, glow-effect, animated-number patterns
+   - Component → Motion Primitive mapping table
+
+5. **Animation Quality Signals** (reference checklist):
+   - "Alive" vs "Static" comparison table
+   - Quality check questions
+
+> **Reference:** `/commands/MOBILE_APP_DESIGN_LEARNINGS.md` for animation quality benchmarks
+
+**Output:** Enhanced `/docs/design/DESIGN-SYSTEM.md` (Phase G section)
+
+### C3.6: Step 7 Enhancement (Interface States - Motion)
+
+**Enhance existing STATE-SPEC.md Framework 3 (Motion Design Principles) with:**
+
+1. **Premium State Transitions** (reference):
+   - Emotion-Motion Mapping table for state changes
+   - Animation intensity by emotional context
+
+2. **Animation Libraries for States**:
+   - Motion Primitives for state-specific animations
+   - Framer Motion AnimatePresence patterns
+   - Code snippets for state transition wrappers
+
+3. **Spring Physics for State Changes** (copy-paste ready):
+   - contentReveal, errorShake, successBounce, overlayEntry presets
+   - State-specific spring configurations
+
+4. **"Alive" State Change Patterns** (reference examples):
+   - Static/Generic vs Alive/Premium comparison table
+   - Empty→Populated, Loading, Error, Success patterns
+
+5. **State Animation Quality Checklist** (reference):
+   - Does loading feel like content is "arriving"?
+   - Are success moments celebrated proportionally?
+   - Match animation to app personality guidance
+
+> **Reference:** `/commands/MOBILE_APP_DESIGN_LEARNINGS.md` for animation quality benchmarks
+
+**Output:** Enhanced `/docs/states/STATE-SPEC.md` (Framework 3 section)
+
+### C4: Cascade to Steps 10-11 (HITL Checkpoint 2)
+
+```
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+🔗 FLOW TREE CASCADE ANALYSIS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Flow Tree documented 24 screens.
+Existing PRDs cover 12 screens.
+
+## New Screens Requiring PRDs
+
+| Screen Group | Screens | Suggested PRD |
+|--------------|---------|---------------|
+| Dashboard Suite | 3 | F06-DASHBOARD |
+| Settings Suite | 4 | F07-SETTINGS |
+| Profile Suite | 2 | F08-PROFILE |
+| Admin Suite | 3 | F09-ADMIN |
+
+## PRD Generation Plan
+
+Will generate 4 new feature PRDs:
+- F06-DASHBOARD.md (~600 lines)
+- F07-SETTINGS.md (~500 lines)
+- F08-PROFILE.md (~400 lines)
+- F09-ADMIN.md (~700 lines)
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Generate new PRDs? (yes/no/select)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+```
+
+---
+
+## ✅ Phase D: Verification
+
+### D1: Final Verification (HITL Checkpoint 3)
+
+```
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+✅ RETROFIT ENHANCEMENT COMPLETE
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+## Summary
+
+| Step | Action | Status |
+|------|--------|--------|
+| Step 3 | Enhanced with IA frameworks | ✅ |
+| Step 4 | Created Flow Tree (24 screens) | ✅ |
+| Step 5 | Added Design DNA (Professional) | ✅ |
+| Step 10 | Updated Feature Breakdown | ✅ |
+| Step 11 | Generated 4 new PRDs | ✅ |
+
+## Files Modified/Created
+
+**Modified:**
+- /docs/ux/UX-DESIGN.md (added IA frameworks)
+- /docs/wireframes/WIREFRAME-SPEC.md (added Design DNA)
+
+**Created:**
+- /docs/flows/FLOW-TREE.md ✨ NEW
+- /docs/flows/SCREEN-INVENTORY.md ✨ NEW
+- /docs/prds/F06-DASHBOARD.md ✨ NEW
+- /docs/prds/F07-SETTINGS.md ✨ NEW
+- /docs/prds/F08-PROFILE.md ✨ NEW
+- /docs/prds/F09-ADMIN.md ✨ NEW
+
+## Screen Coverage
+
+Before: 12/24 screens documented (50%)
+After:  24/24 screens documented (100%)
+
+## Next Steps
+
+1. Run @step-verify --step=3-11 to validate all enhanced steps
+2. Review new PRDs for accuracy
+3. Run @dev-loop to implement new features
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+```
+
+---
+
+## 🔄 Phase E: Version Sync Detection (Sync Mode)
+
+### E1: Read SSS Manifest
+
+Check for `.sss-manifest.json` in target codebase:
+
+```typescript
+interface SSSManifest {
+  sss_version: string;           // e.g., "2.1.0"
+  initialized: string;           // ISO timestamp
+  last_sync: string;             // ISO timestamp
+  commands_run: {
+    [commandName: string]: {
+      version: string;           // Command version when run
+      ran_at: string;            // ISO timestamp
+      output_files: string[];    // Generated files
+    }
+  };
+  pending_updates: string[];     // Commands with updates available
+}
+```
+
+### E2: Compare Versions
+
+```typescript
+interface VersionComparison {
+  command: string;
+  manifest_version: string;      // Version in manifest
+  current_version: string;       // Current command version
+  needs_update: boolean;         // true if current > manifest
+  changelog_since: string[];     // Changes since manifest version
+}
+
+async function compareVersions(manifest: SSSManifest): Promise<VersionComparison[]> {
+  const comparisons: VersionComparison[] = [];
+  
+  // Check each command in manifest against current versions
+  for (const [cmd, info] of Object.entries(manifest.commands_run)) {
+    const currentVersion = await getCommandVersion(cmd);
+    comparisons.push({
+      command: cmd,
+      manifest_version: info.version,
+      current_version: currentVersion,
+      needs_update: semverGt(currentVersion, info.version),
+      changelog_since: await getChangelogSince(cmd, info.version),
+    });
+  }
+  
+  // Also check for NEW commands not in manifest
+  const allCommands = await getAllSSCommands();
+  for (const cmd of allCommands) {
+    if (!manifest.commands_run[cmd]) {
+      comparisons.push({
+        command: cmd,
+        manifest_version: 'not_run',
+        current_version: await getCommandVersion(cmd),
+        needs_update: true,
+        changelog_since: ['NEW: Command not previously run'],
+      });
+    }
+  }
+  
+  return comparisons;
+}
+```
+
+### E3: Present Sync Analysis (HITL Checkpoint)
+
+```
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+🔄 SSS COMMAND SYNC ANALYSIS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+## Manifest Found
+- Location: .sss-manifest.json
+- Last Sync: 2025-11-15T10:30:00Z (19 days ago)
+- Commands Tracked: 8
+
+## Commands Needing Updates
+
+| Command | Your Version | Current | Changes |
+|---------|--------------|---------|---------|
+| step-3-ux-design | 1.0.0 | 2.0.0 | +IA frameworks, +Design DNA |
+| step-4-flow-tree | not_run | 2.0.0 | NEW command available |
+| audit/verify-prd | 1.5.0 | 2.0.0 | +Wireframe validation |
+| generators/scaffold | 1.2.0 | 2.0.0 | +Wireframe references |
+
+## Commands Up-to-Date (4)
+✅ step-1-ideation (2.0.0)
+✅ step-2-architecture (2.0.0)
+✅ ops/status (2.0.0)
+✅ deploy/ship-check (2.0.0)
+
+## Recommended Actions
+
+| Priority | Command | Action | Impact |
+|----------|---------|--------|--------|
+| 🔴 HIGH | step-4-flow-tree | RUN (new) | Adds screen architecture |
+| 🟡 MED | step-3-ux-design | RE-RUN | Adds IA frameworks |
+| 🟢 LOW | audit/verify-prd | RE-RUN | Better validation |
+| 🟢 LOW | generators/scaffold | RE-RUN | Updated references |
+
+Estimated Time: ~45 minutes
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Proceed with sync? (yes/no/select)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+```
+
+---
+
+## 🔨 Phase F: Sync Execution
+
+### F1: Execute Updates in Dependency Order
+
+Commands are re-run based on dependency cascade rules:
+
+```typescript
+// See docs/mcp/SSS-VERSIONING.md for canonical cascade rules
+const CASCADE_RULES = {
+  'step-1': ['step-1.5', 'step-2', 'step-3', 'step-4', 'step-10', 'step-11'],
+  'step-1.5': ['step-2', 'step-9'],  // Offer Architecture affects Architecture + Landing Page
+  'step-2': ['step-8', 'step-11', 'step-12'],
+  'step-3': ['step-4', 'step-5', 'step-6', 'step-7', 'step-11'],
+  'step-4': ['step-5', 'step-8', 'step-10', 'step-11'],
+  'step-5': ['step-6', 'step-9', 'step-11'],
+  'step-8': ['step-11', 'step-12'],
+  'step-10': ['step-11'],
+  'step-11': ['step-12'],
+};
+
+async function executeSyncInOrder(updates: VersionComparison[]) {
+  // Sort by dependency order
+  const sorted = topologicalSort(updates, CASCADE_RULES);
+  
+  for (const update of sorted) {
+    console.log(`\n🔄 Syncing: ${update.command}`);
+    console.log(`   ${update.manifest_version} → ${update.current_version}`);
+    
+    // Re-run the command
+    await runCommand(update.command);
+    
+    // Update manifest
+    await updateManifest(update.command, update.current_version);
+    
+    // Validate output files exist
+    await validateOutputs(update.command);
+  }
+}
+```
+
+### F2: Update Manifest After Each Run
+
+```typescript
+async function updateManifest(command: string, version: string) {
+  const manifest = await readManifest();
+  
+  manifest.commands_run[command] = {
+    version: version,
+    ran_at: new Date().toISOString(),
+    output_files: await getCommandOutputs(command),
+  };
+  
+  manifest.last_sync = new Date().toISOString();
+  manifest.pending_updates = manifest.pending_updates.filter(c => c !== command);
+  
+  await writeManifest(manifest);
+}
+```
+
+### F3: Final Sync Report
+
+```
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+✅ SSS COMMAND SYNC COMPLETE
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+## Sync Summary
+
+| Command | Action | Status |
+|---------|--------|--------|
+| step-4-flow-tree | NEW | ✅ Created /docs/flows/FLOW-TREE.md |
+| step-3-ux-design | RE-RUN | ✅ Added IA frameworks |
+| audit/verify-prd | RE-RUN | ✅ Updated validation rules |
+| generators/scaffold | RE-RUN | ✅ Updated references |
+
+## Manifest Updated
+- Location: .sss-manifest.json
+- New Last Sync: 2025-12-04T15:30:00Z
+- Commands Tracked: 9 (+1 new)
+- All versions current: ✅
+
+## Files Modified
+
+**New Files:**
+- /docs/flows/FLOW-TREE.md ✨
+- /docs/flows/SCREEN-INVENTORY.md ✨
+
+**Updated Files:**
+- /docs/ux/UX-DESIGN.md (added IA frameworks)
+
+## Next Steps
+
+1. Review generated/updated documentation
+2. Run @step-verify to validate changes
+3. Commit changes to version control
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+```
+
+---
+
+## 🔀 Special Cases
+
+### Case 1: Flow Tree Already Exists
+
+If `/docs/flows/FLOW-TREE.md` exists:
+- Skip Step 4 creation
+- Check for Design DNA and IA framework gaps only
+- Still check for screen-PRD mismatches
+
+### Case 2: Partial Enhancements Needed
+
+User can select specific enhancements:
+```bash
+@retrofit-enhance --from-step=5  # Only add Design DNA to wireframes
+```
+
+### Case 3: PRD-Only Mode
+
+If user only wants new PRDs for undocumented screens:
+```bash
+@retrofit-enhance --cascade=prd-only
+```
+
+This will:
+1. Scan codebase for screens
+2. Compare against existing PRDs
+3. Generate PRDs ONLY for undocumented screens
+4. Skip Steps 3-5 enhancements
+
+---
+
+## 📊 Dependency Cascade Rules
+
+When a command is updated and re-run, downstream commands may need to be re-run to maintain documentation consistency.
+
+### Cascade Rule Matrix
+
+```typescript
+// See docs/mcp/SSS-VERSIONING.md for canonical cascade rules
+const CASCADE_RULES: Record<string, string[]> = {
+  // Core Documentation Steps
+  'step-0-environment-setup': [],  // Foundation - no cascades
+  'step-1-ideation': ['step-1.5', 'step-2', 'step-3', 'step-4', 'step-10', 'step-11'],
+  'step-1.5-offer-architecture': ['step-2', 'step-9'],  // Conditional - Offer Architecture
+  'step-2-architecture': ['step-8', 'step-11', 'step-12'],
+  'step-3-ux-design': ['step-4', 'step-5', 'step-6', 'step-7', 'step-11'],
+  'step-4-flow-tree': ['step-5', 'step-8', 'step-10', 'step-11'],
+  'step-5-wireframe-prototypes': ['step-6', 'step-9', 'step-11'],
+  'step-6-design-system': ['step-7', 'step-12'],
+  'step-7-interface-states': ['step-11', 'step-12'],
+  'step-8-technical-spec': ['step-11', 'step-12'],
+  'step-9-landing-page': [],  // Standalone (depends on 1.5 and 5)
+  'step-10-feature-breakdown': ['step-11'],
+  'step-11-prd-generation': ['step-12'],
+  'step-12-cursor-rules': [],  // Terminal step
+  
+  // Audit Commands (typically no cascade)
+  'audit/verify-prd': [],
+  'audit/analyze': [],
+  'audit/step-verify': [],
+  
+  // Generator Commands (may cascade to related docs)
+  'generators/new-feature': ['step-11'],
+  'generators/scaffold': [],
+};
+```
+
+### Visual Cascade Flow
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│               SSS DEPENDENCY CASCADE FLOW                    │
+├─────────────────────────────────────────────────────────────┤
+│                                                             │
+│  Step 1 (Ideation)                                          │
+│     ↓                                                       │
+│  Step 2 (Architecture) ─────────────────┐                   │
+│     │                                   │                   │
+│  Step 3 (UX Design)                     │                   │
+│     ↓     ↓     ↓                       │                   │
+│  Step 4  Step 5  Step 6                 │                   │
+│  (Flow)  (Wire)  (Design)               │                   │
+│     │       │       │                   │                   │
+│     │       │    Step 7 (States)        │                   │
+│     │       │       │                   │                   │
+│     ↓       ↓       ↓                   ↓                   │
+│  Step 10 ──────────────→ Step 8 (Tech Spec)                 │
+│  (Features)                    │                            │
+│     │                          │                            │
+│     ↓                          ↓                            │
+│  Step 11 (PRD Generation) ←────┘                            │
+│     │                                                       │
+│     ↓                                                       │
+│  Step 12 (Cursor Rules)                                     │
+│                                                             │
+└─────────────────────────────────────────────────────────────┘
+```
+
+### Cascade Behavior Options
+
+| Option | Behavior | Use When |
+|--------|----------|----------|
+| `--cascade=full` | Re-run all downstream commands | Major upstream changes |
+| `--cascade=immediate` | Re-run only direct dependents | Minor upstream changes |
+| `--cascade=none` | Re-run only selected command | Isolated fix |
+| `--cascade=ask` | Prompt for each cascade step | Uncertain impact |
+
+### Cascade Example
+
+```bash
+# User updates step-3 (UX Design)
+@retrofit-enhance --mode=sync --commands=step-3 --cascade=full
+
+# This will cascade to:
+# 1. step-4 (Flow Tree) - depends on UX personas
+# 2. step-5 (Wireframes) - depends on UX journeys  
+# 3. step-6 (Design System) - depends on UX guidelines
+# 4. step-7 (Interface States) - depends on Design System
+# 5. step-11 (PRD Generation) - depends on all above
+```
+
+### Intelligent Cascade Detection
+
+The system automatically detects what actually changed:
+
+```typescript
+interface CascadeAnalysis {
+  command: string;
+  changes: {
+    personas_modified: boolean;
+    journeys_modified: boolean;
+    screens_modified: boolean;
+    components_modified: boolean;
+  };
+  required_cascades: string[];
+  optional_cascades: string[];
+  skippable_cascades: string[];
+}
+
+// Example: If only personas changed in step-3
+// Required: step-4 (Flow Tree uses personas)
+// Optional: step-5 (Wireframes might reference personas)
+// Skippable: step-6 (Design System doesn't use personas directly)
+```
+
+---
+
+## 🔗 Related Commands
+
+| Command | When to Use |
+|---------|-------------|
+| `@retrofit-analyze` | First-time analysis of legacy codebase (no SSS) |
+| `@retrofit-generate` | Generate missing docs from scratch |
+| `@retrofit-enhance --mode=enhance` | Upgrade OLD workflow to NEW 13-step |
+| `@retrofit-enhance --mode=sync` | Sync updated commands to existing codebase |
+| `@step-verify --step=3-11` | Validate enhanced/synced steps |
+| `@step-4-flow-tree` | Manual Flow Tree creation |
+
+## 📚 Reference Documents
+
+| Document | Purpose |
+|----------|---------|
+| `/commands/MOBILE_APP_DESIGN_LEARNINGS.md` | Animation patterns, quality benchmarks, component library research — use as **direction reference**, not mandatory checklist |
+
+### Animation Quality Reference Integration
+
+The animation quality reference from `MOBILE_APP_DESIGN_LEARNINGS.md` is now integrated into:
+
+| Step | Section | What's Added |
+|------|---------|--------------|
+| **Step 3** (UX Design) | Animation Philosophy Spectrum | Motion style selection matching Design DNA |
+| **Step 4** (Flow Tree) | Animation Guidance by Screen Type | Screen-specific animation complexity ratings |
+| **Step 5** (Wireframes) | Animation Quality Benchmark | Premium component examples, spring physics presets |
+| **Step 6** (Design System) | Phase G: Motion & Animation | Animation libraries, quality signals checklist |
+| **Step 7** (Interface States) | Framework 3.5: Premium State Transitions | Emotion-motion mapping, state change patterns |
+
+> **Philosophy:** These are all **quality references** (not mandatory checklists). Match animation intensity to app personality and user context.
+
+### Retrofit Family Overview
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│                    RETROFIT FAMILY                          │
+├─────────────────────────────────────────────────────────────┤
+│                                                             │
+│  @retrofit-analyze     →  Legacy codebase, no SSS           │
+│         ↓                                                   │
+│  @retrofit-generate    →  Generate all missing SSS docs     │
+│         ↓                                                   │
+│  @retrofit-enhance     →  Two modes:                        │
+│    --mode=enhance      →  OLD workflow → NEW 13-step        │
+│    --mode=sync         →  Keep SSS commands up-to-date      │
+│                                                             │
+└─────────────────────────────────────────────────────────────┘
+```
+
+---
+
+## 📝 Example Sessions
+
+### Example 1: Sync Mode (Keeping Commands Updated)
+
+```bash
+# 1. User has project with .sss-manifest.json
+$ cat .sss-manifest.json
+# Shows commands run 3 weeks ago
+
+# 2. Check for updates (dry run)
+@retrofit-enhance --check-only
+
+# Output:
+# - step-3-ux-design: 1.0.0 → 2.0.0 (IA frameworks added)
+# - step-4-flow-tree: NOT RUN → 2.0.0 (new command)
+# - 2 commands have updates available
+
+# 3. Run sync
+@retrofit-enhance --mode=sync
+
+# 4. Approve at checkpoint
+# ... review changes ...
+# ... approve sync ...
+
+# 5. Manifest updated, all commands current!
+```
+
+### Example 2: Enhancement Mode (Legacy Upgrade)
+
+```bash
+# 1. User has existing project with old SSS docs (no manifest)
+$ ls docs/
+ux/  wireframes/  prds/  architecture/  technical/
+
+# 2. Run enhancement analysis
+@retrofit-enhance --mode=enhance --dry-run
+
+# Output:
+# - Flow Tree MISSING
+# - Design DNA MISSING  
+# - 12 screens without PRDs
+
+# 3. Run full enhancement
+@retrofit-enhance --mode=enhance
+
+# 4. Approve at each checkpoint
+# ... approve gap analysis ...
+# ... approve Flow Tree ...
+# ... approve new PRDs ...
+
+# 5. Verify results
+@step-verify --step=3-11 --verbose
+
+# 6. All enhanced! Manifest created for future syncs.
+```
+
+### Example 3: Selective Sync
+
+```bash
+# Only sync specific commands
+@retrofit-enhance --mode=sync --commands=step-3,step-4
+
+# Force re-run even if versions match
+@retrofit-enhance --mode=sync --force --commands=audit/verify-prd
+```
+
+---
+
+*Context improved by Giga AI - Hybrid SSS enhancement and command sync system ensuring all projects benefit from the latest methodology improvements with version tracking and intelligent cascade updates*
+

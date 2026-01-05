@@ -1,0 +1,236 @@
+# SSS Protocol Module Manifest
+# 
+# ARCHITECTURE NOTE:
+# The ORIGINAL command files (steps/, audit/, dev/, etc.) remain the source of truth.
+# They contain the full 800+ line methodology with all context, MCP configs, and HITL gates.
+# 
+# This manifest defines the structure. The CLI transforms originals to each platform:
+# - Cursor: Direct copy (already Cursor-formatted)
+# - Claude Code: Adds Claude Code frontmatter + preserves ALL content
+# - OpenCode: Adds OpenCode syntax + preserves ALL content
+#
+# NO content is lost. Each platform gets the full methodology.
+
+name: sss-protocol
+version: "1.0.0"
+description: "Sigma Startup Stack - 13-Step Product Development Methodology"
+author: "SSS Team"
+license: "MIT"
+repository: "https://github.com/your-org/sss-protocol"
+
+# Supported platforms
+platforms:
+  - cursor
+  - claude-code
+  - opencode
+
+# Module categories
+modules:
+  steps:
+    name: "SSS Steps"
+    description: "Core 13-step product development workflow"
+    required: true
+    commands:
+      - step-0-environment
+      - step-1-ideation
+      - step-1.5-offer-architect
+      - step-2-architecture
+      - step-3-ux-design
+      - step-4-flow-tree
+      - step-5-wireframes
+      - step-6-design-system
+      - step-7-interface-states
+      - step-8-technical-spec
+      - step-9-landing-page
+      - step-10-feature-breakdown
+      - step-11-prd-generation
+      - step-12-context-engine
+
+  audit:
+    name: "Audit Commands"
+    description: "Security, accessibility, and quality audits"
+    required: false
+    commands:
+      - accessibility-audit
+      - security-audit
+      - performance-check
+      - code-quality-report
+      - gap-analysis
+      - tech-debt-audit
+      - ui-healer
+      - verify-prd
+
+  dev:
+    name: "Dev Commands"
+    description: "Development workflow commands"
+    required: false
+    commands:
+      - implement-prd
+      - plan
+      - db-migrate
+
+  ops:
+    name: "Ops Commands"
+    description: "Operations and project management"
+    required: false
+    commands:
+      - pr-review
+      - sprint-plan
+      - status
+      - backlog-groom
+      - qa-plan
+      - qa-run
+
+  deploy:
+    name: "Deploy Commands"
+    description: "Deployment and shipping"
+    required: false
+    commands:
+      - ship-check
+      - ship-prod
+      - ship-stage
+      - client-handoff
+
+  generators:
+    name: "Generator Commands"
+    description: "Code and document generators"
+    required: false
+    commands:
+      - scaffold
+      - test-gen
+      - api-docs-gen
+      - new-feature
+      - new-project
+
+  marketing:
+    name: "Marketing Commands"
+    description: "Marketing and launch workflow"
+    required: false
+    commands:
+      - market-research
+      - customer-avatar
+      - brand-voice
+      - offer-architect
+      - sales-strategy
+      - launch-playbook
+
+# Agent personas (shared across platforms)
+agents:
+  - id: venture-studio-partner
+    name: "Venture Studio Partner"
+    description: "Product vision and market validation expert"
+    steps: [step-1-ideation, step-1.5-offer-architect]
+
+  - id: lead-architect
+    name: "Lead Architect"
+    description: "System design and technical architecture"
+    steps: [step-2-architecture, step-8-technical-spec]
+
+  - id: ux-director
+    name: "UX Director"
+    description: "User experience and interface design"
+    steps: [step-3-ux-design, step-5-wireframes, step-7-interface-states]
+
+  - id: product-owner
+    name: "Product Owner"
+    description: "Feature breakdown and PRD generation"
+    steps: [step-10-feature-breakdown, step-11-prd-generation]
+
+  - id: design-systems-architect
+    name: "Design Systems Architect"
+    description: "Design tokens and component systems"
+    steps: [step-6-design-system]
+
+  - id: flow-engineer
+    name: "Flow Engineer"
+    description: "Navigation and state flow design"
+    steps: [step-4-flow-tree]
+
+  - id: implementation-lead
+    name: "Implementation Lead"
+    description: "Code implementation and development"
+    steps: [implement-prd, scaffold]
+
+  - id: qa-engineer
+    name: "QA Engineer"
+    description: "Testing and quality assurance"
+    steps: [qa-plan, qa-run, verify-prd]
+
+  - id: frontend-engineer
+    name: "Frontend Engineer"
+    description: "Distinctive UI with exceptional design quality"
+    skills: [frontend-design]
+    steps: [step-9-landing-page, scaffold, implement-prd, ui-healer]
+
+# Reusable skills (Claude Code / OpenCode)
+skills:
+  - id: research
+    name: "Research Skill"
+    description: "MCP-orchestrated web research with source curation"
+    file: skills/research.md
+
+  - id: verification
+    name: "Verification Skill"
+    description: "Step completion verification with scoring"
+    file: skills/verification.md
+
+  - id: bdd-scenarios
+    name: "BDD Scenarios Skill"
+    description: "Given/When/Then scenario generation"
+    file: skills/bdd-scenarios.md
+
+  - id: hormozi-framework
+    name: "Hormozi Framework Skill"
+    description: "Value equation and offer architecture"
+    file: skills/hormozi-framework.md
+
+  - id: output-generation
+    name: "Output Generation Skill"
+    description: "Consistent document output formatting"
+    file: skills/output-generation.md
+
+  - id: frontend-design
+    name: "Frontend Design Skill"
+    description: "Distinctive UI creation avoiding AI slop aesthetics"
+    file: skills/frontend-design.md
+
+# Custom tools (OpenCode only)
+tools:
+  - id: verify_step
+    name: "Verify Step"
+    description: "Verify SSS step completion against schema"
+    file: tools/verify-step.ts
+
+  - id: prd_score
+    name: "PRD Score"
+    description: "Calculate PRD quality score"
+    file: tools/prd-score.ts
+
+  - id: step_status
+    name: "Step Status"
+    description: "Check which steps are complete"
+    file: tools/step-status.ts
+
+# Platform-specific configuration hints
+platform_config:
+  cursor:
+    output_dir: ".cursor/commands"
+    rules_file: ".cursorrules"
+    rules_dir: ".cursor/rules"
+
+  claude-code:
+    output_dir: ".claude"
+    agents_dir: ".claude/agents"
+    skills_dir: ".claude/skills"
+    hooks_dir: ".claude/hooks"
+    commands_dir: ".claude/commands"
+    orchestrator: "CLAUDE.md"
+
+  opencode:
+    output_dir: ".opencode"
+    commands_dir: ".opencode/command"
+    agents_dir: ".opencode/agent"
+    tools_dir: ".opencode/tools"
+    orchestrator: "AGENTS.md"
+    config_file: "opencode.json"
+

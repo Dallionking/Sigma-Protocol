@@ -1,0 +1,954 @@
+---
+version: "4.1.0"
+last_updated: "2025-12-30"
+changelog:
+  - "4.1.0: Added OpenCode dual-generation (opencode.jsonc + .opencode/{agent,command,skill})"
+  - "4.0.0: Added Agentic Layer Tools - generates .sss/tools/ with typecheck, lint, test, build, format scripts for Grade 4 closed loops"
+  - "3.0.0: Added Epistemic Reasoning Rules - generates reasoning.mdc with anti-sycophancy and epistemic caution rules"
+  - "2.1.0: Added Boilerplate Pattern Rules section - generates boilerplate-patterns.mdc for extension enforcement"
+  - "2.0.0: Renumbered from Step 10 to Step 12 in 13-step workflow"
+  - "1.0.0: Initial release as Step 10"
+description: "Step 12: Context Engineering & Rule Synthesis - Generates the Master Context Router and Domain-Specific Rules"
+allowed-tools:
+  # PRIMARY TOOLS
+  - read_file
+  - write
+  - list_dir
+  - run_terminal_cmd
+  - grep
+parameters:
+  - --force
+---
+
+# /step-12-cursor-rules — Context Engine & Rule Synthesizer
+
+**Mission**  
+Generate a sophisticated **Context Router** (`.cursorrules`) and a suite of **Domain-Specific Rules** (`.mdc` files).
+**Context:** You are the **Chief Context Engineer**. You don't just dump text; you architect *how* the AI behaves by creating a modular, intelligent rule system.
+
+---
+
+## OpenCode Dual-Generation (NEW — If OpenCode detected)
+
+If OpenCode is detected, **also** generate OpenCode-native artifacts in addition to Cursor outputs.
+
+### Detection
+
+Treat OpenCode as “in use” if **any** of these are true:
+
+- `opencode.json` or `opencode.jsonc` exists in repo root
+- `.opencode/` directory exists
+- User explicitly asks for “OpenCode support”
+
+### Outputs (when detected)
+
+#### 1) `opencode.jsonc` (project root)
+
+Generate (or update) `opencode.jsonc` with:
+
+- `$schema`: `https://opencode.ai/config.json`
+- `default_agent`: `sigma`
+- `model`: `anthropic/claude-opus-4-5`
+- `small_model`: `anthropic/claude-haiku-4-5`
+- `plugin`: include **pinned** `@sss/opencode@<version>`
+- `instructions`: include `AGENTS.md` and `.cursorrules` (if present)
+- `mcp`: mirror the MCP servers you already emit for Cursor (when applicable)
+
+#### 2) `.opencode/agent/` (project-specific agents)
+
+Create `.opencode/agent/` and generate these agent files (minimum):
+
+- `sigma.md` (mode: `primary`) — orchestrator
+- `sss-executor.md` (mode: `subagent`) — implementation
+- `sss-planner.md` (mode: `subagent`) — planning (ideally tool-restricted)
+- `sss-explorer.md` (mode: `subagent`) — exploration
+- `sss-sisyphus.md` (mode: `subagent`) — verification loops
+- `sss-copywriter.md` (mode: `subagent`) — marketing copy
+
+**Important (OpenCode rule):** The agent **name** is derived from the filename. Do **not** include `name:` in frontmatter.
+
+Frontmatter keys that OpenCode recognizes (see OpenCode docs):
+- `description` (required)
+- `mode` (optional: `primary` / `subagent` / `all`)
+- `model` (optional)
+- `tools` / `permission` (optional)
+
+#### 3) `.opencode/command/` (complete SSS command coverage)
+
+Generate one OpenCode command per SSS command.
+
+**Source discovery order (best-first):**
+1. `.cursor/commands/**` (if SSS commands are installed in the project)
+2. This repo’s local command library (if present)
+
+**Command file format (OpenCode):**
+- Path: `.opencode/command/<command>.md`
+- Frontmatter keys: `description` (required), optional `agent`, `model`, `subtask`
+- Body: the full prompt template
+
+**Model routing (deterministic table — do not ad‑hoc):**
+- `marketing/*` → `opencode/kimi-k2`
+- `audit/*` → `anthropic/claude-opus-4-5`
+- `dev/plan` + `ops/sprint-plan` + `ops/backlog-groom` + `ops/qa-plan` → `openai/gpt-5.2-xhigh`
+- `dev/implement-prd` + `generators/*` + `deploy/*` → `anthropic/claude-opus-4-5`
+- `ops/status` + `ops/daily-standup` + `ops/lint-commands` → `opencode/minimax-m2.1-free`
+- `ops/docs-update` + `generators/api-docs-gen` → `google/gemini-3-flash-preview`
+
+**Tool name translation note (Cursor → OpenCode):**
+- `read_file` → `read`
+- `list_dir` → `list`
+- `glob_file_search` → `glob`
+- `grep` → `grep`
+- `run_terminal_cmd` → `bash`
+- `todo_write` → `todowrite`
+- `apply_patch` → `patch`
+
+If a command references tools that OpenCode doesn’t have (e.g. `codebase_search`), approximate using `grep`/`glob`/`bash` or LSP (if enabled).
+
+#### 4) `.opencode/skill/` (SSS skills)
+
+If you generate Claude skills in `.claude/skills/`, also mirror each skill into:
+
+```
+.opencode/skill/<skill-name>/SKILL.md
+```
+
+**OpenCode skill rules:**
+- `SKILL.md` must be uppercase
+- Frontmatter must include `name` + `description`
+- Skill name must match directory name and satisfy: `^[a-z0-9]+(-[a-z0-9]+)*$`
+
+---
+
+## BOILERPLATE PATTERN RULES (NEW - If Using SSS Boilerplate)
+
+**If your project uses an SSS boilerplate, generate `boilerplate-patterns.mdc` to enforce extension rules.**
+
+### Detection
+
+```bash
+# Check for boilerplate
+cat .sss/boilerplate.json 2>/dev/null
+```
+
+### If Boilerplate Detected
+
+**Generate this additional rule file:**
+
+#### `boilerplate-patterns.mdc`
+
+```markdown
+---
+description: Enforces SSS boilerplate extension rules and ownership boundaries
+globs:
+  - src/**/*.ts
+  - src/**/*.tsx
+  - app/**/*.ts
+  - app/**/*.tsx
+alwaysApply: true
+---
+
+# Boilerplate Extension Rules
+
+## Foundation
+
+This project extends the `{{template}}` boilerplate (v{{version}}).
+
+## Ownership Boundaries
+
+### Boilerplate Owns (DO NOT MODIFY)
+
+| Area | Files | Notes |
+|------|-------|-------|
+| Auth Infrastructure | `lib/supabase/*`, `components/auth/*` | Use hooks, don't modify |
+| Payment Infrastructure | `lib/stripe/*`, `components/payments/*` | Use hooks, don't modify |
+| Base UI Components | `components/ui/*` | shadcn managed |
+| SSS Commands | `.cursor/commands/*` | Methodology source |
+| Credits System | `hooks/use-credits.ts`, `components/credits/*` | Use hooks, don't modify |
+
+### Project Owns (EXTEND HERE)
+
+| Area | Location | Pattern |
+|------|----------|---------|
+| Custom Components | `components/[project]/*` | Create new components here |
+| Custom Routes | `app/(routes)/*` or `app/[project]/*` | Add routes here |
+| Custom API | `app/api/[project]/*` | Add endpoints here |
+| Custom Hooks | `hooks/use-[feature].ts` | Compose boilerplate hooks |
+| Database Extensions | New tables with FK to users | Don't modify core tables |
+
+## Extension Patterns
+
+### Correct: Wrapper Component
+
+```tsx
+// components/project/branded-button.tsx
+import { Button } from "@/components/ui/button";
+
+export function BrandedButton({ children, ...props }) {
+  return <Button className="bg-brand-primary" {...props}>{children}</Button>;
+}
+```
+
+### Correct: Hook Composition
+
+```tsx
+// hooks/use-feature-credits.ts
+import { useCredits } from "@/hooks/use-credits";
+
+export function useFeatureCredits() {
+  const credits = useCredits();
+  return {
+    ...credits,
+    hasEnoughForFeature: credits.hasEnough(10),
+  };
+}
+```
+
+### Incorrect: Modifying Boilerplate
+
+```tsx
+// ❌ DON'T DO THIS
+// Directly editing components/ui/button.tsx
+// Modifying lib/supabase/client.ts
+// Changing hooks/use-auth.ts
+```
+
+## API References
+
+When implementing features, use these stable APIs:
+
+- `useAuth()` - Authentication state and methods
+- `useCredits()` - Credit balance and consumption
+- `useSubscription()` - Subscription state
+- `<CreditsGate required={n}>` - Credit-protected content
+
+## Quality Gates
+
+Before committing code, verify:
+
+- [ ] No modifications to `components/ui/*`
+- [ ] No modifications to `lib/supabase/*`
+- [ ] No modifications to `hooks/use-auth.ts`
+- [ ] New components in `components/[project]/`
+- [ ] New routes in appropriate location
+```
+
+### Add to Phase 1 Domain Scanning
+
+Add this detection rule:
+
+```markdown
+| Domain | Trigger | Rule to Generate |
+| **Boilerplate** | `.sss/boilerplate.json` exists | `boilerplate-patterns.mdc` |
+```
+
+### Add to Phase 2 Rule Generation
+
+Add to section 2.2 Domain Rules:
+
+```markdown
+*   **`boilerplate-patterns.mdc`**: (If boilerplate detected) Enforces extension rules, ownership boundaries, and stable API usage.
+```
+
+### Add to Phase 3 Context Router
+
+Include in `.cursorrules`:
+
+```markdown
+# 🏗️ Boilerplate Patterns (If Using SSS Boilerplate)
+# Activates for all code files in boilerplate projects.
+# @import .cursor/rules/boilerplate-patterns.mdc
+```
+
+**HITL checkpoint →** Confirm boilerplate rule generation.
+**Prompt:** "Will generate `boilerplate-patterns.mdc`. Reply `confirm` to continue."
+
+---
+
+## AGENTIC LAYER TOOLS (NEW - Always Generated)
+
+**Generate `.sss/tools/` directory with project-local verification scripts for the AI to use during implementation.**
+
+These scripts allow the AI agent to verify its own work autonomously, enabling Grade 4 "Closed Loop" agentic behavior (Build → Test → Fix → Repeat).
+
+### Detection (Add to Phase 1)
+
+Scan the project to determine:
+
+```bash
+# 1. Package manager detection
+if [ -f "pnpm-lock.yaml" ]; then PM="pnpm"
+elif [ -f "yarn.lock" ]; then PM="yarn"
+elif [ -f "bun.lockb" ]; then PM="bun"
+else PM="npm"; fi
+
+# 2. Check for TypeScript
+[ -f "tsconfig.json" ] && HAS_TS=true
+
+# 3. Check for linting
+ls eslint.config.* .eslintrc.* 2>/dev/null && HAS_LINT=true
+
+# 4. Check for testing
+ls vitest.config.* jest.config.* playwright.config.* 2>/dev/null && HAS_TEST=true
+
+# 5. Check for formatting
+grep -q "prettier" package.json && HAS_FORMAT=true
+```
+
+### Directory Structure
+
+```
+.sss/
+├── tools/
+│   ├── typecheck.sh      # TypeScript compilation
+│   ├── lint.sh           # Linting
+│   ├── test.sh           # Test suite
+│   ├── build.sh          # Production build
+│   └── format-check.sh   # Format verification
+└── memory/
+    └── active_task.md    # Current task state (generated at runtime)
+```
+
+### Generate These Scripts
+
+#### `.sss/tools/typecheck.sh` (If TypeScript Detected)
+
+```bash
+#!/bin/bash
+# Auto-generated by @step-12-cursor-rules
+# Purpose: Run TypeScript type checking and output machine-readable results
+# Usage: .sss/tools/typecheck.sh
+
+set -e
+
+# Detect package manager
+if [ -f "pnpm-lock.yaml" ]; then PM="pnpm"
+elif [ -f "yarn.lock" ]; then PM="yarn"
+elif [ -f "bun.lockb" ]; then PM="bun"
+else PM="npm"; fi
+
+echo "🔍 Running TypeScript type check..."
+
+# Run type check
+if $PM run typecheck 2>&1; then
+  echo "---SSS-RESULT---"
+  echo '{"tool":"typecheck","status":"pass","exit_code":0}'
+  exit 0
+else
+  EXIT_CODE=$?
+  echo "---SSS-RESULT---"
+  echo "{\"tool\":\"typecheck\",\"status\":\"fail\",\"exit_code\":$EXIT_CODE}"
+  exit $EXIT_CODE
+fi
+```
+
+#### `.sss/tools/lint.sh` (If ESLint Detected)
+
+```bash
+#!/bin/bash
+# Auto-generated by @step-12-cursor-rules
+# Purpose: Run linting and output machine-readable results
+# Usage: .sss/tools/lint.sh [--fix]
+
+set -e
+
+# Detect package manager
+if [ -f "pnpm-lock.yaml" ]; then PM="pnpm"
+elif [ -f "yarn.lock" ]; then PM="yarn"
+elif [ -f "bun.lockb" ]; then PM="bun"
+else PM="npm"; fi
+
+FIX_FLAG=""
+if [ "$1" = "--fix" ]; then
+  FIX_FLAG="-- --fix"
+fi
+
+echo "🔍 Running linter..."
+
+# Run lint
+if $PM run lint $FIX_FLAG 2>&1; then
+  echo "---SSS-RESULT---"
+  echo '{"tool":"lint","status":"pass","exit_code":0}'
+  exit 0
+else
+  EXIT_CODE=$?
+  echo "---SSS-RESULT---"
+  echo "{\"tool\":\"lint\",\"status\":\"fail\",\"exit_code\":$EXIT_CODE}"
+  exit $EXIT_CODE
+fi
+```
+
+#### `.sss/tools/test.sh` (If Test Framework Detected)
+
+```bash
+#!/bin/bash
+# Auto-generated by @step-12-cursor-rules
+# Purpose: Run test suite and output machine-readable results
+# Usage: .sss/tools/test.sh [filter]
+
+set -e
+
+# Detect package manager
+if [ -f "pnpm-lock.yaml" ]; then PM="pnpm"
+elif [ -f "yarn.lock" ]; then PM="yarn"
+elif [ -f "bun.lockb" ]; then PM="bun"
+else PM="npm"; fi
+
+FILTER=""
+if [ -n "$1" ]; then
+  FILTER="-- $1"
+fi
+
+echo "🧪 Running tests..."
+
+# Run tests
+if $PM run test $FILTER 2>&1; then
+  echo "---SSS-RESULT---"
+  echo '{"tool":"test","status":"pass","exit_code":0}'
+  exit 0
+else
+  EXIT_CODE=$?
+  echo "---SSS-RESULT---"
+  echo "{\"tool\":\"test\",\"status\":\"fail\",\"exit_code\":$EXIT_CODE}"
+  exit $EXIT_CODE
+fi
+```
+
+#### `.sss/tools/build.sh` (Always Generated)
+
+```bash
+#!/bin/bash
+# Auto-generated by @step-12-cursor-rules
+# Purpose: Run production build and output machine-readable results
+# Usage: .sss/tools/build.sh
+
+set -e
+
+# Detect package manager
+if [ -f "pnpm-lock.yaml" ]; then PM="pnpm"
+elif [ -f "yarn.lock" ]; then PM="yarn"
+elif [ -f "bun.lockb" ]; then PM="bun"
+else PM="npm"; fi
+
+echo "🏗️ Running production build..."
+
+# Run build
+if $PM run build 2>&1; then
+  echo "---SSS-RESULT---"
+  echo '{"tool":"build","status":"pass","exit_code":0}'
+  exit 0
+else
+  EXIT_CODE=$?
+  echo "---SSS-RESULT---"
+  echo "{\"tool\":\"build\",\"status\":\"fail\",\"exit_code\":$EXIT_CODE}"
+  exit $EXIT_CODE
+fi
+```
+
+#### `.sss/tools/format-check.sh` (If Prettier Detected)
+
+```bash
+#!/bin/bash
+# Auto-generated by @step-12-cursor-rules
+# Purpose: Check formatting and output machine-readable results
+# Usage: .sss/tools/format-check.sh [--fix]
+
+set -e
+
+# Detect package manager
+if [ -f "pnpm-lock.yaml" ]; then PM="pnpm"
+elif [ -f "yarn.lock" ]; then PM="yarn"
+elif [ -f "bun.lockb" ]; then PM="bun"
+else PM="npm"; fi
+
+if [ "$1" = "--fix" ]; then
+  echo "✨ Fixing formatting..."
+  CMD="format"
+else
+  echo "🔍 Checking formatting..."
+  CMD="format:check"
+fi
+
+# Run format check
+if $PM run $CMD 2>&1; then
+  echo "---SSS-RESULT---"
+  echo '{"tool":"format","status":"pass","exit_code":0}'
+  exit 0
+else
+  EXIT_CODE=$?
+  echo "---SSS-RESULT---"
+  echo "{\"tool\":\"format\",\"status\":\"fail\",\"exit_code\":$EXIT_CODE}"
+  exit $EXIT_CODE
+fi
+```
+
+### Add to Phase 1 Domain Scanning
+
+Add this detection rule:
+
+```markdown
+| Domain | Trigger | Rule/Action |
+| **Agentic Tools** | Any project (always) | Generate `.sss/tools/` directory |
+```
+
+### Add to Phase 2 Rule Generation
+
+After generating rules, also generate the agentic tools:
+
+```bash
+# Create .sss directories
+mkdir -p .sss/tools
+mkdir -p .sss/memory
+
+# Generate tools based on detection
+if [ -f "tsconfig.json" ]; then
+  # Write typecheck.sh (template above)
+  chmod +x .sss/tools/typecheck.sh
+fi
+
+if ls eslint.config.* .eslintrc.* 2>/dev/null; then
+  # Write lint.sh (template above)
+  chmod +x .sss/tools/lint.sh
+fi
+
+if ls vitest.config.* jest.config.* playwright.config.* 2>/dev/null; then
+  # Write test.sh (template above)
+  chmod +x .sss/tools/test.sh
+fi
+
+# Always generate build.sh
+# Write build.sh (template above)
+chmod +x .sss/tools/build.sh
+
+if grep -q "prettier" package.json 2>/dev/null; then
+  # Write format-check.sh (template above)
+  chmod +x .sss/tools/format-check.sh
+fi
+```
+
+### Add to Phase 3 Context Router
+
+Include in `.cursorrules`:
+
+```markdown
+# 🛠️ Agentic Tools (Grade 3/4 Skills)
+# Project-local verification scripts for self-correcting loops.
+# Run these to verify your work: .sss/tools/typecheck.sh, .sss/tools/lint.sh, etc.
+# See .sss/tools/ for available scripts.
+```
+
+**HITL checkpoint →** Confirm agentic tools generation.
+**Prompt:** "Will generate `.sss/tools/` directory with verification scripts. Reply `confirm` to continue."
+
+---
+
+## EPISTEMIC REASONING RULES (NEW - Always Generated)
+
+**Generate `reasoning.mdc` to enforce epistemic caution and anti-sycophancy rules.**
+
+This rule file ensures the AI:
+- Requires evidence for external claims (uses Ref/Exa MCPs)
+- Admits uncertainty rather than hallucinating
+- Pushes back on flawed assumptions
+- Considers failure modes before proceeding
+
+### Detection
+
+Always generate for all projects (no detection needed).
+
+### Generate this rule file:
+
+#### `reasoning.mdc`
+
+```markdown
+---
+description: Enforces epistemic caution, evidence requirements, and anti-sycophancy
+globs:
+  - "**/*"
+alwaysApply: true
+---
+
+# Epistemic Reasoning Rules
+
+## Core Principle
+
+**Default to uncertainty over false confidence.**
+
+When you don't know something:
+- Say "I don't know" or "I'm not certain"
+- Never fabricate facts, APIs, or behaviors
+- Cite sources for external claims
+
+## Evidence Requirements
+
+### External Claims Need Citations
+
+Any claim about external libraries, APIs, or services MUST be verified:
+
+| Claim Type | Required Action |
+|------------|-----------------|
+| API behavior | Use `mcp_Ref_ref_search_documentation` |
+| Library features | Use `mcp_Ref_ref_search_documentation` |
+| Code patterns | Use `mcp_exa_get_code_context_exa` |
+| Best practices | Use `mcp_exa_web_search_exa` |
+
+**Example - WRONG:**
+```
+"Supabase RLS automatically denies access by default."
+```
+
+**Example - CORRECT:**
+```
+"According to Supabase documentation [ref], RLS policies 
+default to denying access when no policies are defined."
+```
+
+### When MCPs Are Unavailable
+
+If MCP tools fail or are not configured:
+1. State that verification was not possible
+2. Mark claims as "UNVERIFIED"
+3. Recommend manual verification
+
+## Anti-Sycophancy Rules
+
+### Push Back on Flawed Assumptions
+
+If the user's request contains:
+- Incorrect technical assumptions
+- Anti-patterns or bad practices
+- Security vulnerabilities
+- Performance issues
+
+**DO NOT** just agree and implement.
+
+**INSTEAD:**
+1. Politely point out the issue
+2. Explain why it's problematic
+3. Suggest a better approach
+4. Ask for confirmation before proceeding
+
+**Example:**
+```
+User: "Store the API key in localStorage"
+
+Bad Response: "Sure! Here's how to store in localStorage..."
+
+Good Response: "I'd recommend against storing API keys in 
+localStorage as they're accessible to any JavaScript on 
+the page. Instead, consider:
+1. Environment variables (server-side)
+2. Secure HTTP-only cookies
+3. Backend proxy for API calls
+
+Would you like me to implement one of these alternatives?"
+```
+
+### Don't Over-Confirm Understanding
+
+Avoid phrases like:
+- "Great question!"
+- "Excellent idea!"
+- "That's a perfect approach!"
+
+Instead, be direct:
+- "Here's how to implement that..."
+- "I'll help you with that. First..."
+- "That approach has trade-offs. Consider..."
+
+## Red-Team Thinking
+
+### Consider Failure Modes
+
+Before implementing significant features, briefly consider:
+
+1. **Security**: How could this be exploited?
+2. **Performance**: What could cause slowdowns?
+3. **Data integrity**: What could corrupt data?
+4. **Edge cases**: What inputs could break this?
+
+Document concerns in comments or raise them before coding.
+
+### Question Requirements
+
+If requirements seem incomplete:
+- Ask clarifying questions
+- Point out undefined edge cases
+- Request explicit handling for error states
+
+## Confidence Levels
+
+Use these markers when appropriate:
+
+| Marker | Meaning |
+|--------|---------|
+| ✅ VERIFIED | Confirmed via documentation or code |
+| ⚠️ UNCERTAIN | Reasonable assumption, not verified |
+| ❓ UNKNOWN | Need to research or ask user |
+| 🚫 UNVERIFIED | MCP unavailable, manual check needed |
+
+## Quality Gates
+
+Before submitting significant code:
+
+- [ ] All external API claims have citations
+- [ ] Potential security issues are flagged
+- [ ] Edge cases are documented or handled
+- [ ] Assumptions are stated explicitly
+```
+
+### Add to Phase 2 Rule Generation
+
+Add to section 2.1 Core Rules:
+
+```markdown
+*   **`reasoning.mdc`**: (Always generated) Enforces epistemic caution, evidence requirements, and anti-sycophancy.
+```
+
+### Add to Phase 3 Context Router
+
+Include in `.cursorrules`:
+
+```markdown
+# 🧠 Epistemic Reasoning (Anti-Hallucination)
+# Always active - ensures evidence-based responses.
+# @import .cursor/rules/reasoning.mdc
+```
+
+**HITL checkpoint →** Confirm reasoning rule generation.
+**Prompt:** "Will generate `reasoning.mdc` for epistemic caution. Reply `confirm` to continue."
+
+---
+
+## Preflight
+1) **Analyze Project**: 
+   - Read `docs/stack-profile.json` (tech stack)
+   - Read `docs/implementation/FEATURE-BREAKDOWN.md` (Step 10 outputs)
+   - Read `docs/specs/MASTER_PRD.md` (vision & value prop)
+2) **Scan Step 11 PRD Outputs**:
+   - Read `docs/prds/.prd-status.json` (PRD registry)
+   - Scan `docs/prds/F[N]-*.md` for domain-specific patterns
+   - Extract: Appetites, BDD Scenarios, Rabbit Holes, Quality Gates
+3) **Scan for Domains**: Check for specific patterns (Payment code? AI code? Mobile code? Wireframe prototypes?).
+4) **Create Rules Dir**: `mkdir -p .cursor/rules`.
+
+---
+
+## Phase 1: Domain Scanning (The "Context Sensors")
+
+Detect which "Expert Personas" this project needs based on evidence.
+
+**Scan Locations:**
+- **Code files:** `app/**/*.ts`, `app/**/*.tsx`, `components/**/*.tsx`, `actions/**/*.ts`, `lib/**/*.ts`
+- **Config files:** `package.json`, `drizzle.config.ts`, `tailwind.config.ts`
+- **Docs:** `docs/specs/MASTER_PRD.md`, `docs/design/DESIGN-SYSTEM.md`, `docs/prds/*.md`
+- **PRD artifacts:** `docs/prds/F*.md` (scan for BDD/Shape Up patterns)
+- **Step 10 outputs:** `docs/implementation/BETTING-TABLE.md`, `docs/implementation/RABBIT-HOLES.md`
+
+| Domain | Trigger (If code/docs contains...) | Rule to Generate |
+| :--- | :--- | :--- |
+| **Subscription** | `stripe`, `lemon`, `whop`, `credits` in code/package.json | `credit-subscription-model.mdc` |
+| **AI/Voice** | `openai`, `livekit`, `assemblyai` in code/package.json | `voice-intake-flow.mdc` |
+| **Database** | `supabase`, `drizzle`, `convex` in code/config | `data-models-relationships.mdc` |
+| **Marketing** | `app/(marketing)`, `landing-page` directories exist | `marketing-personas.mdc` |
+| **Design** | `tailwind`, `shadcn`, `framer` in package.json | `design-system.mdc` |
+| **Wireframes** | `/wireframes/` or `/wireframes-mobile/` directory exists | `wireframe-visual-design.mdc` |
+| **PRD/BDD** | `Given/When/Then`, `Appetite:`, `INVEST Score` in `docs/prds/*.md` | `prd-generation-algorithm.mdc` |
+| **Shape Up** | `Betting Table`, `Rabbit Holes` in `docs/implementation/*.md` | `shape-up-workflow.mdc` |
+| **Animation Quality** | `Animation Performance Budget`, `60fps` in `docs/design/DESIGN-SYSTEM.md` | `animation-quality.mdc` |
+| **State Transitions** | `State Transition Performance`, `State Transition Quality` in `docs/states/*.md` | `state-transition-quality.mdc` |
+| **Bulletproof Gates** | `TRACEABILITY-MATRIX.md`, `ZERO-OMISSION-CERTIFICATE.md` in `docs/flows/` | `prd-traceability.mdc` |
+
+---
+
+## Phase 2: Modular Rule Generation (The "Expert Modules")
+
+For each detected domain, generate the `.mdc` file using the **Golden Templates** (if they don't exist).
+
+### 2.1 Core Rules (Always Generated)
+*   **`project-context.mdc`**: Extracts Project Name, Vision, and Value Prop from `MASTER_PRD.md`.
+*   **`tech-stack.mdc`**: Hardcodes the specific versions from `stack-profile.json`.
+*   **`coding-standards.mdc`**: Enforces TS Strict, Naming Conventions, Testing.
+*   **`project-governance.mdc`**: Enforces the Step 1-12 Workflow (no skipping steps).
+
+### 2.2 Domain Rules (Conditional)
+*   **`design-system.mdc`**: Reads `docs/design/DESIGN-SYSTEM.md` to enforce colors/tokens.
+*   **`credit-subscription-model.mdc`**: (If detected) Enforces credit logic and locking.
+*   **`marketing-personas.mdc`**: (If detected) Enforces Hormozi copy principles.
+*   **`wireframe-visual-design.mdc`**: (If wireframe prototypes exist) Enforces component refinement from wireframe foundation code.
+
+### 2.3 Animation & State Quality Rules (From Step 6/7 Outputs)
+*   **`animation-quality.mdc`**: (If animation framework detected) Enforces 60fps target, GPU-accelerated properties only (`transform`, `opacity`), `prefers-reduced-motion` support, animation performance budgets (<100ms first animation, <300ms complex).
+*   **`state-transition-quality.mdc`**: (If state framework detected) Enforces state transition performance (Empty→Loading 150ms, Loading→Populated 300ms), prohibited properties during transitions (`width`, `height`, `margin`), accessibility requirements.
+*   **`prd-traceability.mdc`**: (If bulletproof artifacts exist) Enforces PRD feature-to-screen verification, zero omission validation, screen count matching between Step 4 and Step 5.
+
+### 2.4 PRD-Derived Rules (From Step 11 Outputs)
+*   **`prd-generation-algorithm.mdc`**: (If BDD patterns detected) Enforces Given/When/Then acceptance criteria format.
+*   **`shape-up-workflow.mdc`**: (If Shape Up artifacts exist) Enforces Appetite limits, Betting Table structure, Rabbit Hole documentation.
+
+---
+
+## Phase 3: The Master Context Router (.cursorrules)
+
+Generate the root `.cursorrules` file. This file acts as a **Router**, dynamically importing the specific `.mdc` files based on what the user is working on.
+
+**Template for .cursorrules:**
+
+```markdown
+# === SSS Context Router ===
+# The "Context Engineering Dream" System
+# Auto-loads modular rules based on user intent to reduce context noise.
+
+# 🎯 Global Context (Always Active)
+# Loads critical project directives, philosophy, and core implementation rules.
+# @import .cursor/rules/project-context.mdc
+
+# 🏗️ Technical Stack & Security (Code/Arch)
+# Activates when discussing code, architecture, database, API, or security.
+# @import .cursor/rules/tech-stack.mdc
+
+# 🎨 Design System & UI (Frontend)
+# Activates when discussing UI, components, styling, Tailwind, or UX.
+# @import .cursor/rules/design-system.mdc
+
+# 🚨 Governance & Workflow (Process)
+# Activates when discussing files, organization, testing, or process.
+# @import .cursor/rules/project-governance.mdc
+
+# 🧠 Research & MCPs (Intelligence)
+# Activates when needing external knowledge, docs, or best practices.
+# @import .cursor/rules/research-guidelines.mdc
+
+# 🔗 Workflow Guide (Steps 1-12)
+# Activates when referencing steps, PRDs, Shape Up, BDD, or the development loop.
+# @import .cursor/rules/workflow-guide.mdc
+
+---
+
+## 🔧 Quick Reference: MCP Priority
+**Strategy:** Ref (docs) → Exa (code) | Context7 → Perplexity (backup)
+
+1.  **Ref (`mcp_Ref`):** Official docs/API refs.
+2.  **Exa (`exa`):** Code examples/real-world usage.
+3.  **Context7 (`mcp_context7`):** Backup docs.
+4.  **Perplexity (`mcp_perplexity-ask`):** Backup research.
+5.  **Supabase (`mcp_supabase-mcp-server`):** DB/Auth specifics.
+6.  **21st.dev (`mcp_21st-devmagic`):** UI components.
+
+**See `.cursor/rules/research-guidelines.mdc` for details.**
+
+---
+
+## 🚀 "Unicorn" Valuation Context ($1B Standard)
+You are a **Founding Technical Partner** at a **$1B Unicorn Scale-Up**.
+- **Code:** Must be rigorous, scalable, typed, and tested.
+- **UX:** Must be "pixel-perfect", <120s time-to-value, and delightful.
+- **Ops:** "Zero drift" documentation, "surgical" repo hygiene.
+- **Mindset:** Hormozi Value Equation (Max Value = [Dream Outcome x Likelihood] / [Time x Effort]).
+
+---
+
+## 🔧 Development Mode (Agentic Layer)
+
+When running @dev-loop or @implement-prd, operate in **Grade 4 Agentic Mode**:
+
+### 1. Read State
+Check `.sss/memory/active_task.md` for current progress before starting.
+
+### 2. Use Tools
+Run scripts in `.sss/tools/` to verify your work:
+- `typecheck.sh` - TypeScript compilation
+- `lint.sh` - Linting
+- `test.sh` - Test suite
+- `build.sh` - Production build
+
+### 3. Self-Correct
+If verification fails, run `@gap-analysis` before asking for human help.
+The loop is: **Build → Test → Fix → Repeat** until green.
+
+### 4. Update State
+Write to `.sss/memory/active_task.md` after each phase to enable resume support.
+
+### Available Agentic Tools
+See `.sss/tools/` for project-specific verification scripts.
+See `.sss/memory/` for session state and continuity.
+
+---
+
+**Note:** This file is a *Router*. Refer to the specific `.mdc` files for detailed rules.
+```
+
+---
+
+## Phase 4: Execution Logic
+
+1.  **Scan**: Identify active domains.
+2.  **Generate Modules**: Write the `.mdc` files to `.cursor/rules/`.
+3.  **Generate Router**: Write the `.cursorrules` to root.
+4.  **Verify**: Check that file paths in `@import` match actual files.
+
+---
+
+## Final Review
+
+**Prompt**:
+> "Context Engine initialized.
+> ✅ Generated [X] Domain Rules.
+> ✅ Generated Master Context Router.
+>
+> Your AI is now context-aware. It will auto-load Design rules when doing CSS, and Auth rules when doing Backend.
+> Reply `approve step 12` to confirm."
+
+---
+
+<verification>
+## Step 12 Verification Schema
+
+### Required Files (20 points)
+
+| File | Path | Min Size | Points |
+|------|------|----------|--------|
+| Context Router | /.cursorrules | 200B | 6 |
+| Rules Directory | /.cursor/rules/ | exists | 4 |
+| Project Context | /.cursor/rules/project-context.mdc | 200B | 4 |
+| Tech Stack | /.cursor/rules/tech-stack.mdc | 200B | 3 |
+| Design System Rules | /.cursor/rules/design-system.mdc | 200B | 3 |
+
+### Required Sections (30 points)
+
+| Document | Section | Points |
+|----------|---------|--------|
+| .cursorrules | Global Context | 5 |
+| .cursorrules | Technical Stack | 5 |
+| .cursorrules | Design System | 5 |
+| project-context.mdc | Project Name | 5 |
+| project-context.mdc | Core Philosophy | 5 |
+| tech-stack.mdc | Framework | 5 |
+
+### Content Quality (30 points)
+
+| Check | Description | Points |
+|-------|-------------|--------|
+| has_pattern:.cursorrules:@import\|import | Context routing configured | 8 |
+| file_count:/.cursor/rules/:3 | At least 3 rule files generated | 8 |
+| has_pattern:project-context.mdc:valuation\|unicorn\|billion | Valuation context present | 5 |
+| has_pattern:tech-stack.mdc:Next\|React\|Supabase | Tech stack referenced | 5 |
+| has_pattern:design-system.mdc:color\|token\|component | Design tokens referenced | 4 |
+
+### Checkpoints (10 points)
+
+| Checkpoint | Evidence | Points |
+|------------|----------|--------|
+| Router Generated | .cursorrules file exists | 5 |
+| Rules Generated | At least 3 .mdc files exist | 5 |
+
+### Success Criteria (10 points)
+
+| Criterion | Check | Points |
+|-----------|-------|--------|
+| Context Aware | Router references relevant rules | 4 |
+| Domain Detection | Conditional rules based on detected domains | 3 |
+| PRD Integration | Rules reference Step 11 PRD patterns | 3 |
+
+</verification>
+

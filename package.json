@@ -1,0 +1,61 @@
+{
+  "$schema": "https://json.schemastore.org/package.json",
+  "name": "sss-protocol",
+  "version": "1.0.0-alpha.1",
+  "description": "Sigma Startup Stack - Platform-agnostic 13-step product development methodology for AI-assisted development",
+  "keywords": [
+    "ai",
+    "development",
+    "methodology",
+    "product-development",
+    "cursor",
+    "claude-code",
+    "opencode",
+    "agents",
+    "prd",
+    "startup"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/dallionking/sss-protocol.git"
+  },
+  "license": "MIT",
+  "author": "SSS Team",
+  "type": "module",
+  "main": "tools/sss-cli.js",
+  "bin": {
+    "sss": "tools/sss-cli.js",
+    "sss-protocol": "tools/sss-cli.js"
+  },
+  "scripts": {
+    "install:local": "node tools/sss-cli.js install",
+    "build:cursor": "node tools/sss-cli.js build --platform cursor",
+    "build:claude-code": "node tools/sss-cli.js build --platform claude-code",
+    "build:opencode": "node tools/sss-cli.js build --platform opencode",
+    "build:all": "node tools/sss-cli.js build --platform all",
+    "test": "node --test test/*.test.js",
+    "lint": "eslint tools/ src/",
+    "format": "prettier --write \"**/*.{js,json,yaml,md}\""
+  },
+  "dependencies": {
+    "boxen": "^7.1.1",
+    "chalk": "^5.3.0",
+    "commander": "^12.1.0",
+    "figlet": "^1.7.0",
+    "fs-extra": "^11.2.0",
+    "inquirer": "^9.2.23",
+    "js-yaml": "^4.1.0",
+    "ora": "^8.0.1"
+  },
+  "devDependencies": {
+    "eslint": "^9.0.0",
+    "prettier": "^3.3.0"
+  },
+  "engines": {
+    "node": ">=20.0.0"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}
+

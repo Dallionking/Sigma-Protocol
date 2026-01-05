@@ -1,0 +1,1996 @@
+---
+version: "2.4.0"
+last_updated: "2026-01-01"
+changelog:
+  - "2.4.0: Added SwiftUI component templates (View, ViewModel, Row, Form/Sheet) in Section 8"
+  - "2.3.2: Updated default page wrapper to App/Wide layout (no container mx-auto) to prevent narrow centered dashboards"
+  - "2.3.1: Made UI Profile presence a blocking preflight requirement for Step 11 PRD generation"
+  - "2.3.0: Added UI Profile import (UI-PROFILE.md + ui-profile.json) and profile-aware UI compliance gates in Section 8"
+  - "2.2.0: Added Boilerplate Stable API References section - PRDs reference stable APIs instead of re-specifying"
+  - "2.1.0: Updated to handle numbered PRD folder structure from Step 5 (01-auth/, 02-onboarding/), added platform awareness (Next.js/TanStack/Expo)"
+  - "2.0.0: Renumbered from Step 9 to Step 11 in 13-step workflow"
+  - "1.0.0: Initial release as Step 9"
+description: "Step 11: PRD Generation - Create Implementation-Ready PRDs using PR/FAQ, BDD, and Shape Up methodologies"
+allowed-tools:
+  # PRIMARY MCP Tools (Use First)
+  - mcp_Ref_ref_search_documentation
+  - mcp_Ref_ref_read_url
+  - mcp_exa_web_search_exa
+  - mcp_exa_get_code_context_exa
+  - mcp_exa_crawling_exa
+  - mcp_exa_company_research_exa
+  - mcp_exa_linkedin_search_exa
+  - mcp_exa_deep_researcher_start
+  - mcp_exa_deep_researcher_check
+  
+  # ALWAYS ACTIVE (Specialized)
+  - mcp_supabase-mcp-server_search_docs
+  - mcp_21st-devmagic_21st_magic_component_builder
+  - mcp_21st-devmagic_21st_magic_component_inspiration
+  - mcp_21st-devmagic_logo_search
+  - mcp_sequential-thinking_sequentialthinking
+  
+  # BACKUP MCP Tools (Use only if primary fails)
+  - mcp_context7_resolve-library-id
+  - mcp_context7_get-library-docs
+  - mcp_perplexity-ask_perplexity_ask
+  
+  # OTHER TOOLS
+  - web_search
+  - read_file
+  - write
+  - list_dir
+  - run_terminal_cmd
+parameters:
+  - --feature-id
+  - --batch
+---
+
+# /step-11-prd-generation — Implementation-Ready PRD Creation (CPO + Lead Architect)
+
+**Mission**  
+Generate comprehensive, implementation-ready PRDs (600-1000 lines) that consume Step 8's Shaped Projects and produce executable specifications developers can build from directly.
+
+**Context:** You are the **Chief Product Officer** and **Lead Architect**. You enforce a **"Deep Spec"** methodology where PRDs are technical blueprints validated against multiple quality frameworks.
+
+**Core Philosophy:**
+1. **Unified Document:** Single PRD contains frontend + backend + database + testing in one cohesive document.
+2. **No Hand-Waving:** Every statement must be actionable with actual code.
+3. **Code-First:** Include TypeScript interfaces, SQL DDL, Zod schemas, React component signatures.
+4. **MCP-Driven Research:** Use MCPs to validate syntax and find real-world patterns.
+5. **Auto-Verification:** Every PRD must pass `@verify-prd` with score 8+/10.
+
+---
+
+## BOILERPLATE STABLE API REFERENCES (NEW - If Using SSS Boilerplate)
+
+**If your project uses an SSS boilerplate, PRDs should reference stable APIs rather than re-specifying foundation components.**
+
+### Detection
+
+```bash
+# Check for boilerplate
+cat .sss/boilerplate.json 2>/dev/null
+```
+
+### If Boilerplate Detected
+
+**Reference these stable APIs in PRDs (do not re-spec):**
+
+#### Auth API (Stable since v1.0.0)
+
+```typescript
+// hooks/use-auth.ts - UseAuthReturn interface
+interface UseAuthReturn {
+  user: User | null;
+  session: Session | null;
+  isLoading: boolean;
+  signIn: (email: string, password: string) => Promise<{ error: Error | null }>;
+  signUp: (email: string, password: string) => Promise<{ error: Error | null }>;
+  signOut: () => Promise<{ error: Error | null }>;
+  resetPassword: (email: string) => Promise<{ error: Error | null }>;
+  signInWithOAuth: (provider: "google" | "github") => Promise<{ error: Error | null }>;
+}
+```
+
+#### Credits API (Stable since v1.0.0)
+
+```typescript
+// hooks/use-credits.ts - UseCreditsReturn interface
+interface UseCreditsReturn {
+  remaining: number;
+  total: number;
+  isLoading: boolean;
+  error: Error | null;
+  refresh: () => Promise<void>;
+  consume: (amount: number, description?: string) => Promise<boolean>;
+  hasEnough: (amount: number) => boolean;
+}
+```
+
+#### Subscription API (Stable since v1.0.0)
+
+```typescript
+// hooks/use-subscription.ts - UseSubscriptionReturn interface
+interface UseSubscriptionReturn {
+  subscription: Subscription | null;
+  plan: "free" | "starter" | "pro" | "enterprise";
+  isPaid: boolean;
+  isTrialing: boolean;
+  isLoading: boolean;
+  error: Error | null;
+  refresh: () => Promise<void>;
+  openBillingPortal: () => Promise<void>;
+  checkout: (priceId: string) => Promise<void>;
+}
+```
+
+#### Pre-Built Components
+
+```tsx
+// Reference in PRDs instead of re-specifying:
+import { CreditsBadge } from "@/components/credits/credits-badge";
+import { CreditsGate } from "@/components/credits/credits-gate";
+import { Button } from "@/components/ui/button";
+```
+
+### PRD Template Section for Boilerplate Projects
+
+Include this section at the top of every PRD:
+
+```markdown
+## Boilerplate Integration
+
+### Foundation Used
+This PRD extends the `nextjs-saas` boilerplate (v1.0.0).
+
+### Stable APIs Referenced
+
+| API | Hook/Component | Usage |
+|-----|----------------|-------|
+| Auth | `useAuth()` | User context, sign out |
+| Credits | `useCredits()` | Check balance, consume on action |
+| Gate | `<CreditsGate required={10}>` | Wrap feature with credit check |
+
+### New Components Required
+
+| Component | Location | Purpose |
+|-----------|----------|---------|
+| [Name] | `components/[project]/` | [Purpose] |
+
+### Database Extensions
+
+| Table | FK | Purpose |
+|-------|-----|---------|
+| [table] | users.id | [Purpose] |
+```
+
+### PRD Writing Rules for Boilerplate Projects
+
+**✅ DO:**
+- Reference stable hooks by interface name
+- Use `<CreditsGate>` for credit-protected features
+- Specify new tables with FK to boilerplate tables
+- Put new components in `components/[project]/`
+
+**❌ DON'T:**
+- Re-spec auth flows (use `useAuth()`)
+- Re-spec credit logic (use `useCredits()`)
+- Re-spec billing (use `useSubscription()`)
+- Modify boilerplate components
+
+**HITL checkpoint →** Confirm boilerplate API approach.
+**Prompt:** "PRDs will reference boilerplate stable APIs. Reply `confirm` to continue, or `full spec` to specify everything."
+
+---
+
+## PRD GENERATION FRAMEWORKS (MANDATORY APPLICATION)
+
+### The Master Practitioners — Voices You Must Channel
+
+**Apply these frameworks to every PRD. Reference them in validation gates.**
+
+---
+
+### Framework 1: Amazon PR/FAQ (Colin Bryar & Bill Carr)
+**Core Philosophy:** *"Start with the customer and work backwards. Write the press release before building the product."*
+
+**PR/FAQ Structure:**
+```
+PRESS RELEASE (Customer-Facing)
+├─ Headline: [One-sentence announcement]
+├─ Subheading: [Who is the customer? What benefit?]
+├─ Problem Paragraph: [Pain point described vividly]
+├─ Solution Paragraph: [How this solves it]
+├─ Quote from Leadership: [Why we built this]
+├─ Quote from Customer: [Why they love it]
+├─ Call to Action: [How to get started]
+└─ Closing: [Next steps]
+
+FAQ (Internal & External)
+├─ Customer FAQ: [How do I...? What if...?]
+├─ Internal FAQ: [Technical questions, risks, dependencies]
+└─ Stakeholder FAQ: [Business questions, metrics, timeline]
+```
+
+**Application Checklist:**
+- [ ] Is the Press Release written BEFORE technical details?
+- [ ] Does it articulate clear customer benefit?
+- [ ] Would a customer be excited reading this?
+- [ ] Are FAQs comprehensive (customer + internal)?
+
+---
+
+### Framework 2: BDD Acceptance Criteria (Dan North)
+**Core Philosophy:** *"Acceptance criteria should be executable specifications."*
+
+**Given/When/Then Format:**
+```gherkin
+Feature: [Feature Name]
+  As a [role]
+  I want [capability]
+  So that [benefit]
+
+  Scenario: [Happy Path - Descriptive Name]
+    Given [precondition/context]
+    And [additional context]
+    When [action/trigger]
+    Then [expected outcome]
+    And [additional verifiable outcome]
+
+  Scenario: [Edge Case - Descriptive Name]
+    Given [edge case context]
+    When [action]
+    Then [expected behavior]
+
+  Scenario: [Error Case - Descriptive Name]
+    Given [error condition]
+    When [action]
+    Then [error handling behavior]
+    And [user feedback]
+```
+
+**Application Checklist:**
+- [ ] Does every user story have Given/When/Then scenarios?
+- [ ] Are Happy Path, Edge Cases, AND Error Cases covered?
+- [ ] Can scenarios be directly converted to automated tests?
+- [ ] Are outcomes specific and measurable (not vague)?
+
+---
+
+### Framework 3: Teresa Torres — Outcome Mapping
+**Core Philosophy:** *"Every feature must trace to a desired outcome."*
+
+**Opportunity Solution Tree:**
+```
+        [Desired Outcome] (from Step-1 PRD)
+              ↓
+    ┌─────────┼─────────┐
+    ↓         ↓         ↓
+[Opportunity][Opportunity][Opportunity]
+ (User Need)  (Pain Point) (Desire)
+    ↓              ↓           ↓
+[Solution]    [Solution]  [Solution]
+ (Feature)    (Feature)   (Feature)
+    ↓              ↓           ↓
+[Experiment]  [Experiment] [Experiment]
+ (Hypothesis)  (Test)      (Validation)
+```
+
+**Application Checklist:**
+- [ ] Does feature link to a desired outcome from Step-1?
+- [ ] Is the opportunity (user need/pain) documented?
+- [ ] Is there a testable hypothesis?
+- [ ] Can we articulate WHY this feature matters?
+
+---
+
+### Framework 4: Shape Up Integration (Ryan Singer)
+**Core Philosophy:** *"Consume shaped work with clear boundaries and identified risks."*
+
+**Step 10 → Step 11 Mapping:**
+```
+FROM STEP 10 (Betting Table)    →    TO STEP 11 (PRD Section)
+├─ Shaped Project ID           →    Section 0: Metadata
+├─ Appetite (Small/Big Batch)  →    Effort Budget
+├─ Priority (P0/P1/P2/P3)      →    Priority Classification
+├─ Phase (0/1/2/3)             →    Release Phase
+├─ Kano Type                   →    Feature Classification
+├─ INVEST Score                →    Quality Validation
+├─ Outcome Link                →    Section 2: Problem Space
+├─ Boundaries (IN/OUT)         →    Section 3: Scope Definition
+├─ Rabbit Holes                →    Technical Risks section
+├─ Impact Chain                →    Section 2: Impact Chain
+└─ Mini-PR/FAQ                 →    Section 1: Press Release
+```
+
+**Application Checklist:**
+- [ ] Is all Step 10 metadata imported into Section 0?
+- [ ] Are Boundaries (IN/OUT) explicit in Section 3?
+- [ ] Are Rabbit Holes documented with mitigations?
+- [ ] Does Appetite define the effort budget?
+
+---
+
+### Framework 5: Lean UX Hypothesis (Jeff Gothelf)
+**Core Philosophy:** *"Every feature is a hypothesis to be validated."*
+
+**Hypothesis Format:**
+```
+We believe that [building this feature/capability]
+For [these users/personas]
+Will achieve [this outcome/behavior change]
+We will know we're successful when [measurable signal/metric]
+```
+
+**Experiment Definition:**
+```
+├─ Hypothesis: [Statement above]
+├─ Test Method: [How we'll validate]
+├─ Success Metric: [Specific threshold]
+├─ Minimum Viable Test: [Smallest experiment]
+└─ Learning: [What we'll learn regardless of outcome]
+```
+
+**Application:** Add hypothesis to Section 2 for features with uncertainty.
+
+---
+
+### Framework 6: Gojko Adzic — Impact Mapping
+**Core Philosophy:** *"Features should trace back to business goals through actors and impacts."*
+
+**Impact Chain:**
+```
+Goal (WHY) → Actor (WHO) → Impact (HOW) → Deliverable (WHAT)
+
+Example:
+"Increase conversions by 30%"
+  └─ "Solo Founders"
+      └─ "Reduce perceived complexity"
+          └─ "1-Click Onboarding" feature
+```
+
+**Application:** Every PRD Section 2 must include a complete Impact Chain.
+
+---
+
+### Framework 7: Marty Cagan — Empowered Product Teams
+**Core Philosophy:** *"PRDs should enable teams, not constrain them."*
+
+**Key Principles:**
+- Specify WHAT (outcomes, constraints) not HOW (implementation)
+- Define the problem clearly, let teams discover solutions
+- Include "guardrails" not "rails"
+- Focus on customer value, not feature lists
+
+**Application Checklist:**
+- [ ] Does PRD define outcomes without dictating implementation?
+- [ ] Are acceptance criteria testable without being prescriptive?
+- [ ] Is there room for team creativity within constraints?
+- [ ] Are success metrics customer-focused?
+
+---
+
+## ANTI-PATTERNS TO AVOID (MANDATORY REVIEW)
+
+**Before finalizing ANY PRD, check for these failures:**
+
+### Anti-Pattern 1: Vague Requirements
+❌ **Bad:** "The system should be fast"
+✅ **Good:** "Page load < 2s on 3G; API response < 200ms P95"
+
+### Anti-Pattern 2: Missing Edge Cases
+❌ **Bad:** Only happy path documented
+✅ **Good:** Given/When/Then for happy path, edge cases, AND error cases
+
+### Anti-Pattern 3: No Stakeholder Alignment
+❌ **Bad:** PRD written in isolation
+✅ **Good:** PR/FAQ reviewed by stakeholders before detailed spec
+
+### Anti-Pattern 4: Over-Specification (Dictating HOW)
+❌ **Bad:** "Use a HashMap with O(1) lookup"
+✅ **Good:** "Lookup must complete in < 10ms"
+
+### Anti-Pattern 5: Missing Boundaries
+❌ **Bad:** Scope creep during implementation
+✅ **Good:** Explicit IN SCOPE and OUT OF SCOPE (No-Gos)
+
+### Anti-Pattern 6: No Success Metrics
+❌ **Bad:** "Users should be satisfied"
+✅ **Good:** "NPS > 50; Task completion rate > 85%"
+
+### Anti-Pattern 7: Disconnected from Outcomes
+❌ **Bad:** Feature built because "competitor has it"
+✅ **Good:** Feature linked to business outcome via Impact Chain
+
+### Anti-Pattern 8: No Hypothesis
+❌ **Bad:** "We think users will like this"
+✅ **Good:** "We believe X will achieve Y; we'll know when Z"
+
+### Anti-Pattern 9: Missing Rabbit Holes
+❌ **Bad:** Risks discovered during implementation
+✅ **Good:** Rabbit holes identified in Step 10, mitigations in PRD
+
+### Anti-Pattern 10: Untestable Criteria
+❌ **Bad:** "Should be user-friendly"
+✅ **Good:** Given/When/Then with specific observable outcomes
+
+---
+
+## Preflight (auto)
+
+1) **Get date**: `date +"%Y-%m-%d"`.
+2) **Verify MCP availability** (Ref, Exa, Supabase, 21st.dev).
+3) **Create folders (idempotent)**:
+   - `/docs/prds/`
+   - `/docs/wireframes/`
+4) **Load Context from Previous Steps**:
+   - Read `docs/specs/MASTER_PRD.md` (Step 1: Product vision, outcomes)
+   - Read `docs/architecture/ARCHITECTURE.md` (Step 2: System design)
+   - Read `docs/ux/UX-DESIGN.md` (Step 3: User flows)
+   - **Read `docs/design/UI-PROFILE.md` (Step 3: UI Profile source of truth)**
+   - **Read `docs/design/ui-profile.json` (Step 3: machine-readable UI Profile)**
+   - Read `docs/design/DESIGN-SYSTEM.md` (Step 6: UI tokens)
+   - Read `docs/states/STATE-SPEC.md` (Step 7: State patterns)
+   - Read `docs/technical/TECHNICAL-SPEC.md` (Step 8: Tech stack)
+
+   **UI Profile rule (blocking):**
+   - If UI Profile files are missing, **STOP** and run Step 3 (UI Profile Selection) before generating any Step 11 PRDs.
+   - **CRITICAL - Step 10 Outputs:**
+     - Read `docs/implementation/FEATURE-BREAKDOWN.md` (Features)
+     - Read `docs/implementation/BETTING-TABLE.md` (Priorities, Appetites)
+     - Read `docs/implementation/OUTCOME-MAP.md` (Outcome links)
+     - Read `docs/implementation/RABBIT-HOLES.md` (Risks)
+     - Read `docs/implementation/INVEST-SCORECARD.md` (Validation)
+     - Read `docs/implementation/STORY-MAP.md` (User journey)
+     - Read `docs/implementation/PRD-ROADMAP.md` (Build order)
+  - **Step 5 Wireframe Outputs (if completed):**
+    - Reference `/src/` (web) or Expo project (mobile) (Runnable prototype with foundation code)
+    - Read `/docs/wireframes/screenshots/[screen-name]-*.png` (Visual references)
+    - Read `/docs/wireframes/PROTOTYPE-SUMMARY.md` (Design decisions, component inventory)
+    - **Read `/docs/prds/flows/[NN]-[flow-name]/FLOW-[ID].md`** (Per-flow PRDs with screen specs) ⭐
+    - **Read `/docs/prds/flows/[NN]-[flow-name]/[NN]-[screen-name].md`** (Individual screen PRDs) ⭐
+    - **Read `/docs/prds/flows/WIREFRAME-TRACKER.md`** (Screen completion tracking) ⭐
+    - **Read `/docs/flows/TRACEABILITY-MATRIX.md`** (PRD feature-to-screen mapping) ⭐
+    - **Verify `/docs/flows/ZERO-OMISSION-CERTIFICATE.md`** (100% coverage proof) ⭐
+    
+    **Step 5 PRD Folder Structure (Numbered by Implementation Order):**
+    ```
+    docs/prds/flows/
+    ├── 01-auth/                        # First flow to implement
+    │   ├── FLOW-AUTH.md                # Flow overview PRD
+    │   ├── 01-welcome-screen.md        # Screen 1 (implementation order)
+    │   ├── 02-login-screen.md          # Screen 2
+    │   └── 03-signup-screen.md         # Screen 3
+    ├── 02-onboarding/                  # Second flow
+    │   ├── FLOW-ONBOARD.md
+    │   └── 01-profile-setup.md
+    └── ...
+    ```
+    **Numbering = Implementation Order.** Lower numbers = build first.
+   
+   - **⚠️ CRITICAL: Before generating PRDs:**
+    Verify Zero Omission Certificate shows Step-4 Screens = Step-5 Wireframes.
+    Verify TRACEABILITY-MATRIX.md shows "Features WITHOUT Screens = 0".
+    If coverage < 100%, go back to Step 4/5 and complete missing screens/wireframes FIRST.
+   - Read `/db/schema.ts` (if exists)
+
+---
+
+## MCP Research Phase (Before Writing)
+
+**For EVERY PRD, you MUST:**
+
+1. **Use Sequential Thinking MCP** to plan the PRD structure (10-15 thinking steps)
+2. **Use Exa MCP** to find similar implementations:
+   - `get_code_context_exa` with query: "[Feature] implementation examples [Tech Stack]"
+3. **Use Supabase MCP** (if database/backend):
+   - `search_docs` for RLS policy patterns, auth flows, realtime subscriptions
+4. **Use 21st.dev MCP** (if UI feature):
+   - `21st_magic_component_inspiration` to find component patterns
+5. **Use Ref MCP** (if needed for specific APIs):
+   - `ref_search_documentation` for official docs
+
+**Document all MCP findings** in Section 14: MCP Research Notes.
+
+---
+
+## PRD TEMPLATE (MANDATORY - 15 Sections: 0-14)
+
+**File:** `docs/prds/F[N]-[FEATURE-NAME].md`
+
+**Target Length:** 600-1000 lines minimum
+
+```markdown
+# PRD: [Feature Name]
+
+**Product:** [Product Name from Step 1]  
+**Feature:** [Feature Name]  
+**Date:** [Current Date]  
+**Version:** 1.0  
+**Status:** To Implement  
+**Owner:** [Owner Name]  
+
+---
+
+## SECTION 0: SHAPE UP METADATA (From Step 10)
+
+| Field | Value | Source |
+|-------|-------|--------|
+| **Shaped Project ID** | F[N] | Betting Table |
+| **Appetite** | [Small Batch 1-2wk / Big Batch 4-6wk] | Step 10 Shaping |
+| **Priority** | [P0/P1/P2/P3] | Betting Table |
+| **Phase** | [0/1/2/3] | Betting Table |
+| **Kano Type** | [Must-Have/Performance/Delighter] | Betting Table |
+| **INVEST Score** | [I:✅ N:✅ V:✅ E:✅ S:✅ T:✅] | INVEST Scorecard |
+| **Outcome Link** | [Linked outcome from Step-1] | Outcome Map |
+| **Dependencies** | [List from Dependency Graph] | Feature Dependencies |
+
+### Quality Gate Status (From Step 10)
+- [ ] INVEST Validation: Passed
+- [ ] Vertical Slice: Confirmed (DB + API + UI)
+- [ ] Boundaries Defined: IN/OUT scope clear
+- [ ] Rabbit Holes: Identified and documented
+
+---
+
+## SECTION 1: PRESS RELEASE (Amazon PR/FAQ)
+
+### Headline
+[One-sentence announcement that would excite customers]
+
+### Subheading
+[Who is the customer and what is the key benefit?]
+
+### Problem Paragraph
+[Describe the pain point vividly. Include:]
+- Current manual process (time/cost)
+- Inconsistencies or errors
+- Business impact (lost revenue, poor UX)
+- Quantified pain: "[X] minutes per [task]" or "[Y]% failure rate"
+
+### Solution Paragraph
+[Describe how this feature solves the problem:]
+- High-level approach (not implementation details)
+- Key capability that addresses the pain
+- Value delivered (time saved, accuracy improved)
+
+### Quote from Leadership
+> "[Why we built this - vision and commitment]"
+> — [Name, Title]
+
+### Quote from Customer
+> "[What a delighted customer would say after using this]"
+> — [Persona Name, Role]
+
+### Getting Started
+[Single first action a user takes to experience value]
+
+### FAQ
+
+**Customer FAQ:**
+- Q: How do I [primary action]?
+  A: [Answer]
+- Q: What happens if [edge case]?
+  A: [Answer]
+- Q: Can I [common request]?
+  A: [Answer]
+
+**Internal FAQ:**
+- Q: What are the technical dependencies?
+  A: [Answer]
+- Q: What's the estimated effort?
+  A: [Appetite from Section 0]
+- Q: What are the risks?
+  A: [Summary of Rabbit Holes]
+
+---
+
+## SECTION 2: PROBLEM SPACE (Teresa Torres + Gojko Adzic)
+
+### Desired Outcome
+[From Step-1 PRD - what business outcome does this achieve?]
+- **Metric:** [Specific measurable outcome]
+- **Target:** [Quantified goal]
+- **Timeline:** [When we expect to see impact]
+
+### Opportunity
+[What user need/pain does this address?]
+- **User Segment:** [Who experiences this pain?]
+- **Pain Point:** [Specific problem]
+- **Current Workaround:** [How they solve it today]
+- **Frequency:** [How often they experience this]
+
+### Impact Chain (Gojko Adzic)
+```
+Goal: [Business goal from Step-1 PRD]
+  └─ Actor: [Who benefits - specific persona]
+      └─ Impact: [How their behavior changes]
+          └─ Deliverable: [This feature]
+```
+
+### Hypothesis (Lean UX)
+```
+We believe that [building this feature]
+For [these users - be specific]
+Will achieve [this outcome - measurable]
+We will know we're successful when [specific signal/metric threshold]
+```
+
+### Validation Approach
+- **Minimum Viable Test:** [Smallest experiment to validate]
+- **Success Threshold:** [What number/outcome = success]
+- **Failure Response:** [What we do if hypothesis is wrong]
+
+---
+
+## SECTION 3: SOLUTION SPACE (Ryan Singer Boundaries)
+
+### Boundaries - IN SCOPE
+[Specific functionality included in this PRD:]
+- ✅ [Functionality 1 - be specific]
+- ✅ [Functionality 2 - be specific]
+- ✅ [Screen/UI 1]
+- ✅ [API endpoint 1]
+- ✅ [Database table/change 1]
+
+### Boundaries - OUT OF SCOPE (No-Gos)
+[Explicitly excluded from this PRD:]
+- ❌ [Functionality NOT included] → Deferred to [F[X] or "future"]
+- ❌ [Edge case NOT handled] → Reason: [Why]
+- ❌ [Integration NOT included] → Deferred to [Phase X]
+
+### Rabbit Holes (From Step 10)
+| Risk ID | Risk Description | Impact | Probability | Mitigation Strategy |
+|---------|-----------------|--------|-------------|---------------------|
+| RH-1 | [Risk from Step 8] | High/Med/Low | High/Med/Low | [Specific mitigation] |
+| RH-2 | [Risk from Step 8] | High/Med/Low | High/Med/Low | [Specific mitigation] |
+
+### Technical Constraints
+- [Constraint 1 from Step 8 Technical Spec]
+- [Constraint 2 - performance requirement]
+- [Constraint 3 - security requirement]
+
+---
+
+## SECTION 4: USER STORIES (BDD Format)
+
+### Epic: [Epic Name]
+
+#### Story 4.1: [Story Title]
+**Priority:** P[0/1/2] | **Estimate:** [Within Appetite]
+
+```gherkin
+Feature: [Feature Name]
+  As a [role - specific persona]
+  I want [capability - specific action]
+  So that [benefit - measurable outcome]
+
+  Background:
+    Given [common precondition for all scenarios]
+    And [additional common context]
+
+  @happy-path
+  Scenario: Successfully [action] with valid inputs
+    Given [user context - logged in, on page, etc.]
+    And [data context - existing records, state]
+    When [user action - click, submit, etc.]
+    Then [system response - what happens]
+    And [user feedback - toast, redirect, etc.]
+    And [data change - database state]
+
+  @edge-case
+  Scenario: [Action] with [edge condition]
+    Given [edge case context]
+    And [specific data state]
+    When [user action]
+    Then [expected behavior for edge case]
+    And [user feedback]
+
+  @error-handling
+  Scenario: [Action] fails due to [error condition]
+    Given [error precondition]
+    When [user action]
+    Then [error handling behavior]
+    And [user sees error message "[specific message]"]
+    And [system state remains unchanged]
+
+  @validation
+  Scenario: [Action] with invalid [field]
+    Given [context]
+    When [user enters invalid data]
+    Then [validation error displayed]
+    And [field is highlighted]
+    And [form is not submitted]
+```
+
+#### Story 4.2: [Story Title]
+[Repeat BDD format for each story - minimum 3 stories per feature]
+
+---
+
+## SECTION 5: FUNCTIONAL REQUIREMENTS
+
+### 5.1 [Core Feature Area]
+
+**Input:**
+- `fieldName` (type: `string`) - [Description, constraints]
+- `fieldName2` (type: `number`) - [Description, min/max]
+
+**Processing Logic:**
+
+```typescript
+// Algorithm pseudocode or actual implementation
+function processFeature(input: InputType): OutputType {
+  // Step 1: Validate input
+  if (!isValid(input)) {
+    throw new ValidationError("Specific error message");
+  }
+  
+  // Step 2: Transform data
+  const transformed = transform(input);
+  
+  // Step 3: Apply business rules
+  if (condition) {
+    return resultA;
+  } else {
+    return resultB;
+  }
+}
+```
+
+**Logic Table:**
+| Input Condition | Business Rule | Output | Notes |
+|-----------------|---------------|--------|-------|
+| X > 10 | Apply discount | Y | [Explanation] |
+| X <= 10 | Standard price | Z | [Explanation] |
+| X is null | Use default | W | [Fallback behavior] |
+
+**Output:**
+- `resultField` (type: `ResultType`) - [Description]
+
+### 5.2 [Secondary Feature Area]
+[Repeat pattern for each functional area]
+
+---
+
+## SECTION 6: DATABASE SCHEMA
+
+### New Tables
+
+```typescript
+// db/schema/[feature]-schema.ts
+import { pgTable, uuid, text, timestamp, jsonb, integer, varchar, boolean } from 'drizzle-orm/pg-core';
+import { relations } from 'drizzle-orm';
+
+export const tableName = pgTable('table_name', {
+  id: uuid('id').defaultRandom().primaryKey(),
+  userId: uuid('user_id').notNull().references(() => users.id, { onDelete: 'cascade' }),
+  // Feature-specific fields
+  fieldName: text('field_name').notNull(),
+  status: varchar('status', { length: 50 }).notNull().default('pending'),
+  metadata: jsonb('metadata').$type<MetadataType>(),
+  // Timestamps
+  createdAt: timestamp('created_at', { withTimezone: true }).defaultNow().notNull(),
+  updatedAt: timestamp('updated_at', { withTimezone: true }).defaultNow().notNull(),
+});
+
+// Relations
+export const tableNameRelations = relations(tableName, ({ one, many }) => ({
+  user: one(users, {
+    fields: [tableName.userId],
+    references: [users.id],
+  }),
+}));
+
+// Type exports
+export type TableName = typeof tableName.$inferSelect;
+export type NewTableName = typeof tableName.$inferInsert;
+```
+
+### SQL Migration
+
+```sql
+-- Migration: XXXX_add_[feature].sql
+
+-- Create table
+CREATE TABLE table_name (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  field_name TEXT NOT NULL,
+  status VARCHAR(50) NOT NULL DEFAULT 'pending',
+  metadata JSONB,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW() NOT NULL,
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW() NOT NULL
+);
+
+-- Indexes (from Step 8 performance analysis)
+CREATE INDEX idx_table_name_user_id ON table_name(user_id);
+CREATE INDEX idx_table_name_status ON table_name(status);
+CREATE INDEX idx_table_name_created_at ON table_name(created_at DESC);
+
+-- RLS Policies
+ALTER TABLE table_name ENABLE ROW LEVEL SECURITY;
+
+-- Policy: Users can view their own records
+CREATE POLICY "Users can view own records"
+  ON table_name FOR SELECT
+  USING (user_id = auth.uid());
+
+-- Policy: Users can insert their own records
+CREATE POLICY "Users can insert own records"
+  ON table_name FOR INSERT
+  WITH CHECK (user_id = auth.uid());
+
+-- Policy: Users can update their own records
+CREATE POLICY "Users can update own records"
+  ON table_name FOR UPDATE
+  USING (user_id = auth.uid());
+
+-- Policy: Users can delete their own records
+CREATE POLICY "Users can delete own records"
+  ON table_name FOR DELETE
+  USING (user_id = auth.uid());
+
+-- Policy: Admins can view all records
+CREATE POLICY "Admins can view all records"
+  ON table_name FOR SELECT
+  USING (
+    EXISTS (
+      SELECT 1 FROM admin_roles
+      WHERE admin_roles.user_id = auth.uid()
+      AND admin_roles.role IN ('admin', 'super_admin')
+    )
+  );
+```
+
+---
+
+## SECTION 7: SERVER ACTIONS / API ROUTES
+
+### Queries (Getters)
+
+#### `get[Entity]ById`
+
+```typescript
+// actions/[feature]/get-[entity]-by-id.ts
+"use server"
+
+import { db } from "@/db/db"
+import { tableName } from "@/db/schema"
+import { eq, and } from "drizzle-orm"
+import { z } from "zod"
+import { auth } from "@/lib/supabase/auth"
+
+const inputSchema = z.object({
+  id: z.string().uuid("Invalid ID format"),
+})
+
+export type Get[Entity]Result = {
+  success: true;
+  data: TableName;
+} | {
+  success: false;
+  error: string;
+}
+
+export async function get[Entity]ById(id: string): Promise<Get[Entity]Result> {
+  try {
+    // Validate input
+    const validated = inputSchema.parse({ id })
+    
+    // Auth check
+    const { user } = await auth()
+    if (!user) {
+      return { success: false, error: "Unauthorized" }
+    }
+    
+    // Query with ownership check
+    const result = await db.query.tableName.findFirst({
+      where: and(
+        eq(tableName.id, validated.id),
+        eq(tableName.userId, user.id)
+      ),
+      with: {
+        // Include relations as needed
+      },
+    })
+    
+    if (!result) {
+      return { success: false, error: "Not found" }
+    }
+    
+    return { success: true, data: result }
+  } catch (error) {
+    if (error instanceof z.ZodError) {
+      return { success: false, error: error.errors[0].message }
+    }
+    return { success: false, error: "Failed to fetch data" }
+  }
+}
+```
+
+### Mutations (Actions)
+
+#### `create[Entity]`
+
+```typescript
+// actions/[feature]/create-[entity].ts
+"use server"
+
+import { z } from "zod"
+import { revalidatePath } from "next/cache"
+import { db } from "@/db/db"
+import { tableName } from "@/db/schema"
+import { auth } from "@/lib/supabase/auth"
+
+const createSchema = z.object({
+  fieldName: z.string().min(1, "Field is required").max(255),
+  // Add all fields with validation
+})
+
+export type Create[Entity]Input = z.infer<typeof createSchema>
+
+export type Create[Entity]Result = {
+  success: true;
+  data: { id: string };
+} | {
+  success: false;
+  error: string;
+  fieldErrors?: Record<string, string[]>;
+}
+
+export async function create[Entity](input: Create[Entity]Input): Promise<Create[Entity]Result> {
+  try {
+    // Validate input
+    const validated = createSchema.parse(input)
+    
+    // Auth check
+    const { user } = await auth()
+    if (!user) {
+      return { success: false, error: "Unauthorized" }
+    }
+    
+    // Create record
+    const [created] = await db.insert(tableName).values({
+      ...validated,
+      userId: user.id,
+    }).returning({ id: tableName.id })
+    
+    // Revalidate affected paths
+    revalidatePath('/path/to/list')
+    
+    return { success: true, data: { id: created.id } }
+  } catch (error) {
+    if (error instanceof z.ZodError) {
+      const fieldErrors: Record<string, string[]> = {}
+      error.errors.forEach((err) => {
+        const path = err.path.join('.')
+        if (!fieldErrors[path]) fieldErrors[path] = []
+        fieldErrors[path].push(err.message)
+      })
+      return { success: false, error: "Validation failed", fieldErrors }
+    }
+    return { success: false, error: "Failed to create" }
+  }
+}
+```
+
+#### `update[Entity]`
+
+```typescript
+// actions/[feature]/update-[entity].ts
+"use server"
+
+import { z } from "zod"
+import { revalidatePath } from "next/cache"
+import { db } from "@/db/db"
+import { tableName } from "@/db/schema"
+import { eq, and } from "drizzle-orm"
+import { auth } from "@/lib/supabase/auth"
+
+const updateSchema = z.object({
+  id: z.string().uuid(),
+  fieldName: z.string().min(1).max(255).optional(),
+  // Partial update fields
+})
+
+export type Update[Entity]Input = z.infer<typeof updateSchema>
+
+export async function update[Entity](input: Update[Entity]Input): Promise<{ success: boolean; error?: string }> {
+  try {
+    const validated = updateSchema.parse(input)
+    const { id, ...updateData } = validated
+    
+    const { user } = await auth()
+    if (!user) {
+      return { success: false, error: "Unauthorized" }
+    }
+    
+    // Verify ownership
+    const existing = await db.query.tableName.findFirst({
+      where: and(
+        eq(tableName.id, id),
+        eq(tableName.userId, user.id)
+      ),
+    })
+    
+    if (!existing) {
+      return { success: false, error: "Not found or access denied" }
+    }
+    
+    // Update
+    await db.update(tableName)
+      .set({
+        ...updateData,
+        updatedAt: new Date(),
+      })
+      .where(eq(tableName.id, id))
+    
+    revalidatePath('/path/to/detail')
+    revalidatePath('/path/to/list')
+    
+    return { success: true }
+  } catch (error) {
+    return { success: false, error: "Failed to update" }
+  }
+}
+```
+
+#### `delete[Entity]`
+
+```typescript
+// actions/[feature]/delete-[entity].ts
+"use server"
+
+import { z } from "zod"
+import { revalidatePath } from "next/cache"
+import { db } from "@/db/db"
+import { tableName } from "@/db/schema"
+import { eq, and } from "drizzle-orm"
+import { auth } from "@/lib/supabase/auth"
+
+export async function delete[Entity](id: string): Promise<{ success: boolean; error?: string }> {
+  try {
+    const validated = z.string().uuid().parse(id)
+    
+    const { user } = await auth()
+    if (!user) {
+      return { success: false, error: "Unauthorized" }
+    }
+    
+    // Soft delete or hard delete with ownership check
+    const result = await db.delete(tableName)
+      .where(and(
+        eq(tableName.id, validated),
+        eq(tableName.userId, user.id)
+      ))
+      .returning({ id: tableName.id })
+    
+    if (result.length === 0) {
+      return { success: false, error: "Not found or access denied" }
+    }
+    
+    revalidatePath('/path/to/list')
+    
+    return { success: true }
+  } catch (error) {
+    return { success: false, error: "Failed to delete" }
+  }
+}
+```
+
+---
+
+## SECTION 8: UI COMPONENTS
+
+### Wireframe-Based Components (If Step 3.5 Completed)
+
+**Goal:** Refine wireframe foundation code into production-ready React components using shadcn/ui and the design system.
+
+**Reference Files:**
+- **Wireframe Prototype:** `/wireframes/` (web) or `/wireframes-mobile/` (mobile)
+- **Wireframe Screenshots:** `/docs/wireframes/screenshots/[screen-name]-*.png`
+- **Prototype Summary:** `/docs/wireframes/PROTOTYPE-SUMMARY.md`
+- **Screen PRDs:** `/docs/wireframes/screen-prds/[screen-name].md`
+
+**UI Profile (Required):**
+- `/docs/design/UI-PROFILE.md`
+- `/docs/design/ui-profile.json`
+
+> **Rule:** UI Profile constrains **tokens, motion, and effects**. The design system extends the foundation, but UI Profile determines the “personality” (Cool Professional vs Satin Dark, etc.).
+
+---
+
+#### Refinement Strategy
+
+**Phase 1: Analyze Wireframe Components**
+1. Review wireframe components at `/wireframes/src/components/`
+2. Identify component hierarchy (atoms → molecules → organisms)
+3. Note interactive elements and states already implemented
+4. Reference wireframe screenshots for visual validation
+
+**Phase 2: Refine for Production**
+1. **Review Existing Components:**
+   - Wireframe `Button.tsx` → Refine with full Props interface
+   - Wireframe `Input.tsx` → Add validation states, accessibility
+   - Wireframe `Card.tsx` → Add variants, ensure consistency
+   - [Continue for all components]
+
+2. **Formalize Styles from Wireframes:**
+   - Colors: Document Tailwind classes as design system tokens
+   - Typography: Map font sizes to design system scale
+   - Spacing: Document spacing patterns as tokens
+   - Borders: Document border-radius values
+
+3. **Enhance Component Specifications:**
+   - Add full TypeScript Props interfaces
+   - Document all component variants
+   - Add missing states (loading, error, success)
+   - Ensure accessibility compliance
+
+**Phase 3: Migrate to Production**
+1. Option A: Migrate components from `/wireframes/` to main app
+2. Option B: Extend wireframes project into production app
+3. Add comprehensive tests
+4. Verify against wireframe screenshots for visual consistency
+
+---
+
+#### Example: Refining Wireframe Button
+
+**Wireframe Component (existing foundation code):**
+```typescript
+// /wireframes/src/components/ui/Button.tsx
+export function Button({ children, variant = 'primary' }) {
+  return (
+    <button className="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors">
+      {children}
+    </button>
+  )
+}
+```
+
+**Production Refinement:**
+```typescript
+// Production component with full TypeScript
+import { forwardRef } from 'react'
+import { cn } from '@/lib/utils'
+
+interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
+  variant?: 'default' | 'secondary' | 'ghost' | 'destructive'
+  size?: 'sm' | 'md' | 'lg'
+  loading?: boolean
+}
+
+export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
+  ({ className, variant = 'default', size = 'md', loading, children, ...props }, ref) => {
+    return (
+      <button
+        ref={ref}
+        className={cn(buttonVariants({ variant, size }), className)}
+        disabled={loading || props.disabled}
+        {...props}
+      >
+        {loading ? <Spinner /> : children}
+      </button>
+    )
+  }
+)
+```
+
+**Design System Token Mapping:**
+- `bg-blue-600` → `primary-600` token
+- `px-6 py-3` → `space-6` and `space-3` tokens
+- `rounded-lg` → `radius-lg` token (8px)
+- `hover:bg-blue-700` → `primary-700` token
+
+---
+
+#### Component Refinement Checklist
+
+**For EACH component from Wireframes:**
+
+**Atoms (Buttons, Inputs, Labels, Icons):**
+- [ ] Review wireframe component structure
+- [ ] Add full TypeScript Props interface
+- [ ] Formalize styles as design system tokens
+- [ ] Define all component variants
+- [ ] Add states: default, hover, active, disabled, loading
+- [ ] Test against wireframe screenshot
+- [ ] Validate accessibility (WCAG AA)
+- [ ] Add unit tests
+
+**Molecules (Form Fields, Cards, CTA Blocks):**
+- [ ] Identify component composition (which atoms)
+- [ ] Review wireframe component structure
+- [ ] Add TypeScript Props interface
+- [ ] Implement component logic refinements
+- [ ] Add state management (if needed)
+- [ ] Test against wireframe screenshot
+- [ ] Validate responsive behavior
+- [ ] Add integration tests
+
+**Organisms (Complex Components):**
+- [ ] Break down into molecules and atoms
+- [ ] Review wireframe component structure
+- [ ] Add comprehensive TypeScript interfaces
+- [ ] Implement state management (Zustand, React Query)
+- [ ] Add business logic
+- [ ] Implement all states (empty, loading, populated, error, success)
+- [ ] Test against ALL wireframe screenshots (default + states)
+- [ ] Validate responsive behavior (mobile, tablet, desktop)
+- [ ] Validate accessibility (keyboard nav, screen readers)
+
+---
+
+#### Design Token Reference
+
+**From `/docs/wireframes/PROTOTYPE-SUMMARY.md`:**
+
+**Color Mapping:**
+| Wireframe Class | Design System Token | Hex Value |
+|-----------------|---------------------|-----------|
+| `bg-blue-600` | `primary-600` | `#[HEX]` |
+| `text-gray-900` | `neutral-900` | `#[HEX]` |
+| [From PROTOTYPE-SUMMARY.md] | [Token] | [Hex] |
+
+**Typography Mapping:**
+| Wireframe Class | Design System Token | CSS |
+|-----------------|---------------------|-----|
+| `text-4xl font-bold` | `display-large` | `48px / 1.2 / 700` |
+| `text-lg` | `body-large` | `18px / 1.6 / 400` |
+| [From PROTOTYPE-SUMMARY.md] | [Token] | [CSS] |
+
+**Spacing Mapping:**
+| Wireframe Class | Design System Token | Value |
+|-----------------|---------------------|-------|
+| `p-6` | `space-6` | `24px` |
+| `gap-4` | `space-4` | `16px` |
+| [From PROTOTYPE-SUMMARY.md] | [Token] | [Value] |
+
+---
+
+#### Wireframe Quality Gates
+
+Before marking component refinement complete:
+- [ ] **Visual Match:** Production component matches wireframe screenshot (90%+ similarity)
+- [ ] **Responsive:** Works on mobile (375px), tablet (768px), desktop (1280px+)
+- [ ] **States:** All states implemented (default, hover, active, disabled, loading, error, success)
+- [ ] **Accessibility:** WCAG AA compliant (color contrast, keyboard nav, ARIA labels)
+- [ ] **Performance:** No layout shifts, fast render (<100ms)
+- [ ] **Type-Safe:** Full TypeScript coverage, no `any` types
+- [ ] **Design System:** Uses design system tokens (no hardcoded values)
+- [ ] **UI Profile Compliance:** Matches `/docs/design/UI-PROFILE.md` guardrails (accent limits, motion damping, gradients/shadows limits) and cool-layer allow-list
+- [ ] **Tested:** Unit tests for logic, visual regression tests for UI
+
+---
+
+### SwiftUI Component Templates (iOS Native Apps)
+
+**If platform is SwiftUI, use these templates instead of React:**
+
+#### SwiftUI View Template
+
+```swift
+// Views/[Feature]/[Feature]View.swift
+import SwiftUI
+
+struct [Feature]View: View {
+    @StateObject private var viewModel = [Feature]ViewModel()
+    
+    var body: some View {
+        NavigationStack {
+            content
+                .navigationTitle("[Feature Title]")
+                .toolbar { toolbarContent }
+                .task { await viewModel.load() }
+        }
+    }
+    
+    @ViewBuilder
+    private var content: some View {
+        switch viewModel.state {
+        case .loading:
+            ProgressView()
+        case .loaded(let items):
+            List(items) { item in
+                [Item]Row(item: item)
+            }
+        case .empty:
+            ContentUnavailableView(
+                "No [Items]",
+                systemImage: "tray",
+                description: Text("Add your first [item] to get started.")
+            )
+        case .error(let error):
+            ContentUnavailableView(
+                "Error",
+                systemImage: "exclamationmark.triangle",
+                description: Text(error.localizedDescription)
+            )
+        }
+    }
+    
+    @ToolbarContentBuilder
+    private var toolbarContent: some ToolbarContent {
+        ToolbarItem(placement: .primaryAction) {
+            Button {
+                viewModel.showCreateSheet = true
+            } label: {
+                Label("Add", systemImage: "plus")
+            }
+        }
+    }
+}
+```
+
+#### SwiftUI ViewModel Template
+
+```swift
+// ViewModels/[Feature]ViewModel.swift
+import SwiftUI
+
+enum ViewState<T> {
+    case loading
+    case loaded(T)
+    case empty
+    case error(Error)
+}
+
+@MainActor
+class [Feature]ViewModel: ObservableObject {
+    @Published private(set) var state: ViewState<[[Item]]> = .loading
+    @Published var showCreateSheet = false
+    @Published var errorMessage: String?
+    
+    private let service: [Feature]ServiceProtocol
+    
+    init(service: [Feature]ServiceProtocol = [Feature]Service()) {
+        self.service = service
+    }
+    
+    func load() async {
+        state = .loading
+        do {
+            let items = try await service.fetchItems()
+            state = items.isEmpty ? .empty : .loaded(items)
+        } catch {
+            state = .error(error)
+        }
+    }
+    
+    func create(_ input: Create[Item]Input) async {
+        do {
+            try await service.createItem(input)
+            await load() // Refresh list
+            showCreateSheet = false
+        } catch {
+            errorMessage = error.localizedDescription
+        }
+    }
+}
+```
+
+#### SwiftUI Row Component Template
+
+```swift
+// Views/[Feature]/[Item]Row.swift
+import SwiftUI
+
+struct [Item]Row: View {
+    let item: [Item]
+    
+    var body: some View {
+        HStack(spacing: DesignTokens.Spacing.md) {
+            // Leading content
+            Image(systemName: "star.fill")
+                .foregroundStyle(DesignTokens.Colors.brandPrimary)
+                .font(.title3)
+            
+            // Main content
+            VStack(alignment: .leading, spacing: DesignTokens.Spacing.xxs) {
+                Text(item.title)
+                    .font(DesignTokens.Typography.h5)
+                    .foregroundStyle(DesignTokens.Colors.textPrimary)
+                
+                Text(item.subtitle)
+                    .font(DesignTokens.Typography.bodySmall)
+                    .foregroundStyle(DesignTokens.Colors.textSecondary)
+            }
+            
+            Spacer()
+            
+            // Trailing content
+            Image(systemName: "chevron.right")
+                .foregroundStyle(DesignTokens.Colors.textTertiary)
+                .font(.caption)
+        }
+        .padding(.vertical, DesignTokens.Spacing.xs)
+        .accessibilityElement(children: .combine)
+        .accessibilityLabel("\(item.title), \(item.subtitle)")
+    }
+}
+```
+
+#### SwiftUI Form/Create Sheet Template
+
+```swift
+// Views/[Feature]/Create[Item]Sheet.swift
+import SwiftUI
+
+struct Create[Item]Sheet: View {
+    @Environment(\.dismiss) private var dismiss
+    @ObservedObject var viewModel: [Feature]ViewModel
+    
+    @State private var title = ""
+    @State private var description = ""
+    @State private var isSubmitting = false
+    
+    var body: some View {
+        NavigationStack {
+            Form {
+                Section("Details") {
+                    TextField("Title", text: $title)
+                    TextField("Description", text: $description, axis: .vertical)
+                        .lineLimit(3...6)
+                }
+            }
+            .navigationTitle("New [Item]")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .cancellationAction) {
+                    Button("Cancel") { dismiss() }
+                }
+                ToolbarItem(placement: .confirmationAction) {
+                    Button("Save") {
+                        Task { await submit() }
+                    }
+                    .disabled(title.isEmpty || isSubmitting)
+                }
+            }
+        }
+    }
+    
+    private func submit() async {
+        isSubmitting = true
+        defer { isSubmitting = false }
+        
+        await viewModel.create(Create[Item]Input(
+            title: title,
+            description: description
+        ))
+    }
+}
+```
+
+**Reference:** `/docs/swiftui/SWIFTUI-BEST-PRACTICES.md` for architecture patterns
+
+---
+
+### Page Structure (React/Next.js)
+
+**Route:** `app/[route]/page.tsx`
+
+```typescript
+// app/[route]/page.tsx
+import { Suspense } from 'react'
+import { redirect } from 'next/navigation'
+import { auth } from '@/lib/supabase/auth'
+import { get[Entity]List } from '@/actions/[feature]/get-[entity]-list'
+import { [Feature]List } from './_components/[feature]-list'
+import { [Feature]ListSkeleton } from './_components/[feature]-list-skeleton'
+
+interface PageProps {
+  params: { id?: string }
+  searchParams: { [key: string]: string | undefined }
+}
+
+export default async function [Feature]Page({ params, searchParams }: PageProps) {
+  const { user } = await auth()
+  if (!user) redirect('/auth/sign-in')
+  
+  return (
+    <div className="w-full max-w-screen-2xl mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
+      <header className="flex items-center justify-between">
+        <h1 className="text-2xl font-bold">[Feature Title]</h1>
+        {/* Action buttons */}
+      </header>
+      
+      <Suspense fallback={<[Feature]ListSkeleton />}>
+        <[Feature]ListWrapper userId={user.id} searchParams={searchParams} />
+      </Suspense>
+    </div>
+  )
+}
+
+async function [Feature]ListWrapper({ 
+  userId, 
+  searchParams 
+}: { 
+  userId: string
+  searchParams: Record<string, string | undefined>
+}) {
+  const result = await get[Entity]List({ userId, ...searchParams })
+  
+  if (!result.success) {
+    return <div className="text-destructive">{result.error}</div>
+  }
+  
+  return <[Feature]List items={result.data} />
+}
+```
+
+### Core Components
+
+#### [ComponentName]
+
+**File:** `components/[feature]/[component-name].tsx`
+
+```typescript
+"use client"
+
+import { useState } from 'react'
+import { useRouter } from 'next/navigation'
+import { Card, CardHeader, CardTitle, CardContent, CardFooter } from '@/components/ui/card'
+import { Button } from '@/components/ui/button'
+import { useToast } from '@/components/ui/use-toast'
+import { Loader2 } from 'lucide-react'
+
+interface [Component]Props {
+  item: ItemType
+  onUpdate?: (item: ItemType) => void
+  onDelete?: (id: string) => void
+}
+
+export function [ComponentName]({ item, onUpdate, onDelete }: [Component]Props) {
+  const [isLoading, setIsLoading] = useState(false)
+  const [isDeleting, setIsDeleting] = useState(false)
+  const router = useRouter()
+  const { toast } = useToast()
+  
+  const handleAction = async () => {
+    setIsLoading(true)
+    try {
+      // Perform action
+      toast({ title: "Success", description: "Action completed" })
+      router.refresh()
+    } catch (error) {
+      toast({ 
+        title: "Error", 
+        description: "Action failed", 
+        variant: "destructive" 
+      })
+    } finally {
+      setIsLoading(false)
+    }
+  }
+  
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle>{item.title}</CardTitle>
+      </CardHeader>
+      <CardContent>
+        {/* Content */}
+      </CardContent>
+      <CardFooter className="flex justify-end gap-2">
+        <Button 
+          variant="outline" 
+          onClick={handleAction}
+          disabled={isLoading}
+        >
+          {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+          Action
+        </Button>
+      </CardFooter>
+    </Card>
+  )
+}
+```
+
+### Component State Specifications
+
+| State | Visual | Behavior |
+|-------|--------|----------|
+| **Default** | Normal appearance | Interactive |
+| **Loading** | Spinner, disabled | Non-interactive |
+| **Success** | Green toast | Refresh data |
+| **Error** | Red toast, form preserved | Allow retry |
+| **Empty** | Empty state illustration | Show CTA |
+
+---
+
+## SECTION 9: NON-FUNCTIONAL REQUIREMENTS
+
+### Performance
+| Metric | Target | Measurement |
+|--------|--------|-------------|
+| Page Load (LCP) | < 2.5s | Lighthouse CI |
+| API Response (P95) | < 200ms | Server logs |
+| First Input Delay | < 100ms | Web Vitals |
+| Bundle Size | < 200KB (initial) | Bundle analyzer |
+
+### Security
+- [ ] Authentication required for all mutations
+- [ ] Authorization checked (user owns resource)
+- [ ] Input validation (Zod schemas)
+- [ ] SQL injection prevented (parameterized queries via ORM)
+- [ ] XSS prevented (React default escaping)
+- [ ] RLS policies enforce data isolation
+
+### Accessibility
+- [ ] WCAG 2.1 AA compliance
+- [ ] Keyboard navigation for all interactions
+- [ ] Screen reader compatible (ARIA labels)
+- [ ] Color contrast ratio ≥ 4.5:1
+- [ ] Focus indicators visible
+
+---
+
+## SECTION 10: TESTING STRATEGY
+
+### Unit Tests (Given/When/Then)
+
+```typescript
+// __tests__/[feature].test.ts
+import { describe, it, expect, beforeEach } from 'vitest'
+import { create[Entity] } from '@/actions/[feature]/create-[entity]'
+
+describe('[Feature] - Create', () => {
+  // Given/When/Then format
+  describe('Given valid input', () => {
+    describe('When creating a new [entity]', () => {
+      it('Then should return success with ID', async () => {
+        const input = { fieldName: 'Test Value' }
+        const result = await create[Entity](input)
+        
+        expect(result.success).toBe(true)
+        expect(result.data?.id).toBeDefined()
+      })
+    })
+  })
+  
+  describe('Given invalid input', () => {
+    describe('When field is empty', () => {
+      it('Then should return validation error', async () => {
+        const input = { fieldName: '' }
+        const result = await create[Entity](input)
+        
+        expect(result.success).toBe(false)
+        expect(result.error).toContain('required')
+      })
+    })
+  })
+  
+  describe('Given unauthorized user', () => {
+    describe('When creating without auth', () => {
+      it('Then should return unauthorized error', async () => {
+        // Mock no auth
+        const result = await create[Entity]({ fieldName: 'Test' })
+        
+        expect(result.success).toBe(false)
+        expect(result.error).toBe('Unauthorized')
+      })
+    })
+  })
+})
+```
+
+### E2E Tests (Playwright)
+
+```typescript
+// e2e/[feature].spec.ts
+import { test, expect } from '@playwright/test'
+
+test.describe('[Feature] E2E', () => {
+  test.beforeEach(async ({ page }) => {
+    // Login
+    await page.goto('/auth/sign-in')
+    await page.fill('[name="email"]', 'test@example.com')
+    await page.fill('[name="password"]', 'password')
+    await page.click('button[type="submit"]')
+    await page.waitForURL('/dashboard')
+  })
+  
+  test('should create new [entity]', async ({ page }) => {
+    // Given: User is on the feature page
+    await page.goto('/[feature]')
+    
+    // When: User clicks create and fills form
+    await page.click('[data-testid="create-button"]')
+    await page.fill('[name="fieldName"]', 'Test Entity')
+    await page.click('[data-testid="submit-button"]')
+    
+    // Then: New entity appears in list
+    await expect(page.locator('[data-testid="entity-item"]')).toContainText('Test Entity')
+    await expect(page.locator('[data-testid="success-toast"]')).toBeVisible()
+  })
+  
+  test('should show validation error for empty field', async ({ page }) => {
+    await page.goto('/[feature]/new')
+    await page.click('[data-testid="submit-button"]')
+    
+    await expect(page.locator('[data-testid="field-error"]')).toContainText('required')
+  })
+})
+```
+
+### Test Coverage Targets
+| Area | Target | Critical Paths |
+|------|--------|----------------|
+| Unit Tests | 80%+ | Business logic, validation |
+| Integration | 60%+ | API endpoints, DB queries |
+| E2E | Key flows | Create, Read, Update, Delete |
+
+---
+
+## SECTION 11: ROLLOUT PLAN
+
+### Phase 1: Foundation (Days 1-3)
+- [ ] Database migration applied
+- [ ] Schema types generated
+- [ ] Server actions implemented
+- [ ] Unit tests passing (80%+)
+
+### Phase 2: UI Implementation (Days 4-7)
+- [ ] Page components built
+- [ ] Loading/error states implemented
+- [ ] Form validation working
+- [ ] Integration tests passing
+
+### Phase 3: Polish & Testing (Days 8-10)
+- [ ] E2E tests passing
+- [ ] Accessibility audit passed
+- [ ] Performance benchmarks met
+- [ ] Error tracking configured
+
+### Phase 4: Deploy (Days 11-12)
+- [ ] Staging deployment
+- [ ] QA sign-off
+- [ ] Production deployment
+- [ ] Monitoring dashboards configured
+
+---
+
+## SECTION 12: SUCCESS CRITERIA (Measurable)
+
+| Metric | Current Baseline | Target | Measurement Method | Timeline |
+|--------|------------------|--------|-------------------|----------|
+| [Primary Metric] | [Baseline] | [Target] | [How to measure] | [When] |
+| [Secondary Metric] | [Baseline] | [Target] | [How to measure] | [When] |
+| Task Completion Rate | N/A | > 90% | Analytics events | Week 2 |
+| Error Rate | N/A | < 1% | Sentry tracking | Week 1 |
+| User Satisfaction | N/A | NPS > 40 | In-app survey | Week 4 |
+
+### Hypothesis Validation
+| Hypothesis | Success Signal | Measurement | Decision |
+|------------|----------------|-------------|----------|
+| [From Section 2] | [What we expect to see] | [How we measure] | [Pivot/Persevere threshold] |
+
+---
+
+## SECTION 13: OPEN QUESTIONS & ASSUMPTIONS
+
+### Open Questions
+| ID | Question | Owner | Due Date | Impact if Unresolved |
+|----|----------|-------|----------|---------------------|
+| Q1 | [Question needing stakeholder input] | [Name] | [Date] | [Impact] |
+| Q2 | [Technical question] | [Name] | [Date] | [Impact] |
+
+### Assumptions
+| ID | Assumption | Risk if Wrong | Validation Plan |
+|----|------------|---------------|-----------------|
+| A1 | [Assumption made] | [What happens if wrong] | [How we'll validate] |
+| A2 | [Assumption made] | [What happens if wrong] | [How we'll validate] |
+
+---
+
+## SECTION 14: REFERENCES & MCP RESEARCH
+
+### Step References
+- **Step 1 (Master PRD):** `docs/specs/MASTER_PRD.md` - [Specific section referenced]
+- **Step 2 (Architecture):** `docs/architecture/ARCHITECTURE.md` - [Specific section]
+- **Step 3 (UX Design):** `docs/ux/UX-DESIGN.md` - [Specific user flow]
+- **Step 4 (Flow Tree):** 
+  - `docs/flows/FLOW-TREE.md` - [Specific screen flow]
+  - `docs/flows/SCREEN-INVENTORY.md` - [Screen specifications]
+  - `docs/flows/TRACEABILITY-MATRIX.md` ⭐ - [PRD feature-to-screen mapping]
+- **Step 5 (Wireframes):** 
+  - `docs/prds/flows/FLOW-*.md` - [Per-flow PRDs with screen specs]
+  - `docs/prds/flows/WIREFRAME-TRACKER.md` ⭐ - [Screen completion tracking]
+  - `docs/flows/ZERO-OMISSION-CERTIFICATE.md` ⭐ - [100% coverage proof]
+  - `docs/wireframes/PROTOTYPE-SUMMARY.md` - [Design decisions, component inventory]
+- **Step 6 (Design System):** `docs/design/DESIGN-SYSTEM.md` - [Specific tokens]
+- **Step 7 (Interface States):** `docs/states/STATE-SPEC.md` - [Specific states]
+- **Step 8 (Technical Spec):** `docs/technical/TECHNICAL-SPEC.md` - [Specific tech]
+- **Step 10 (Feature Breakdown):** `docs/implementation/FEATURE-BREAKDOWN.md` - Feature F[N]
+- **Step 10 (Betting Table):** `docs/implementation/BETTING-TABLE.md` - Row [N]
+- **Step 10 (Rabbit Holes):** `docs/implementation/RABBIT-HOLES.md` - [Specific risks]
+
+### MCP Research Notes
+
+#### Exa Research
+- **Query:** "[Feature] implementation examples [Tech Stack]"
+- **Key Findings:** [Summarize patterns found]
+- **Code Examples:** [Link to relevant examples]
+
+#### Supabase MCP Research
+- **Query:** "[Database pattern] RLS policies"
+- **Key Findings:** [Summarize patterns]
+- **Applied Patterns:** [Which patterns used in this PRD]
+
+#### RevenueCat MCP Research (Mobile)
+- **Query:** "Offerings configuration" or "Subscription status"
+- **Key Findings:** [Summarize findings]
+- **Applied Patterns:** [Entitlement structure]
+
+#### App Store Connect MCP Research (Mobile)
+- **Query:** "App metadata" or "TestFlight groups"
+- **Key Findings:** [Summarize findings]
+- **Applied Patterns:** [Release requirements]
+
+#### 21st.dev Research
+- **Query:** "[Component type]"
+- **Components Found:** [List components]
+- **Selected:** [Which components integrated]
+
+### Related PRDs
+- [F[X] - Dependency PRD Name](./F[X]-[NAME].md)
+- [F[Y] - Related PRD Name](./F[Y]-[NAME].md)
+
+---
+
+**Document Owner:** [Owner Name]  
+**Last Updated:** [Date]  
+**Estimated Effort:** [Appetite from Section 0]  
+**Dependencies:** [List from Section 0]
+```
+
+---
+
+## QUALITY GATES (Must Pass Before Implementation)
+
+### Gate 1: Completeness Gate
+- [ ] All 14 sections have concrete content (no TBDs)
+- [ ] Section 0 metadata imported from Step 10 Betting Table
+- [ ] Press Release (Section 1) written and compelling
+- [ ] Outcome linkage documented (Section 2)
+
+### Gate 2: BDD Testability Gate
+- [ ] All user stories have Given/When/Then scenarios
+- [ ] Happy path, edge cases, AND error cases covered
+- [ ] Scenarios can be converted to automated tests
+- [ ] Outcomes are specific and measurable
+
+### Gate 3: Technical Feasibility Gate
+- [ ] Database schema includes actual SQL/Drizzle code
+- [ ] Server actions have full implementations with Zod
+- [ ] UI components have Props interfaces
+- [ ] Dependencies from Betting Table are satisfied
+
+### Gate 4: Scope Clarity Gate
+- [ ] IN SCOPE is explicit (not assumed)
+- [ ] OUT OF SCOPE is explicit (No-Gos documented)
+- [ ] Rabbit Holes from Step 10 documented with mitigations
+- [ ] Appetite defines effort budget
+
+### Gate 5: Outcome Validation Gate
+- [ ] Links to business outcome from Step-1 PRD
+- [ ] Hypothesis is testable (Lean UX format)
+- [ ] Success metrics are measurable with specific targets
+- [ ] Impact Chain is complete
+
+### Gate 6: Anti-Pattern Gate
+- [ ] No vague requirements (all specific and measurable)
+- [ ] No missing edge cases (BDD covers all scenarios)
+- [ ] No over-specification (WHAT not HOW)
+- [ ] No disconnected features (all linked to outcomes)
+
+---
+
+## Auto-Verification Step
+
+**After PRD generation, automatically run:**
+
+```bash
+@verify-prd --feature=[Feature Name]
+```
+
+**Expected Score:** 8+/10
+
+**If score < 8:**
+1. Read verification feedback
+2. Identify weak sections
+3. Regenerate those sections with more detail
+4. Re-run verification
+5. Repeat until score ≥ 8
+
+---
+
+## Final Review Prompt
+
+**Prompt to user (blocking):**  
+> "PRD generated at `docs/prds/F[N]-[FEATURE-NAME].md`.
+> 
+> **Quality Gates Passed:**
+> - [ ] Completeness Gate: All 14 sections complete
+> - [ ] BDD Testability Gate: Given/When/Then for all stories
+> - [ ] Technical Feasibility Gate: Code implementations included
+> - [ ] Scope Clarity Gate: Boundaries clear, Rabbit Holes documented
+> - [ ] Outcome Validation Gate: Hypothesis testable, metrics defined
+> - [ ] Anti-Pattern Gate: No common PRD failures
+> 
+> **Verification Score:** [X]/10
+> 
+> Reply `approve step 11` to finalize, or `revise: [section]` to improve."
+
+---
+
+## Terminology Reference
+
+| Old Term | New Term | Source |
+|----------|----------|--------|
+| Priority | **Betting Confidence** | Ryan Singer |
+| Complexity (S/M/L) | **Appetite** | Ryan Singer |
+| User Story | **BDD Scenario** | Dan North |
+| Acceptance Criteria | **Executable Specification** | Gojko Adzic |
+| Requirements | **Shaped Work** | Ryan Singer |
+| Feature PRD | **Product Pitch** | Basecamp |
+| Executive Summary | **Press Release** | Amazon |
+| Risk | **Rabbit Hole** | Ryan Singer |
+| Success Metric | **Hypothesis Validation Signal** | Lean UX |
+
+---
+
+<verification>
+## Step 11 Verification Schema
+
+### Required Files (20 points)
+
+| File | Path | Min Size | Points |
+|------|------|----------|--------|
+| PRD Status | /docs/prds/.prd-status.json | 50B | 5 |
+| PRD Directory | /docs/prds/ | exists | 3 |
+| At Least 1 PRD | /docs/prds/F*-*.md | 5KB | 8 |
+| PRD Template | /docs/prds/PRD-TEMPLATE.md | 2KB | 4 |
+
+### Required Sections (30 points)
+
+| Document | Section | Points |
+|----------|---------|--------|
+| F*-*.md | ## Press Release | 4 |
+| F*-*.md | ## Problem Statement | 4 |
+| F*-*.md | ## Solution | 4 |
+| F*-*.md | ## User Stories | 5 |
+| F*-*.md | ## Technical Specification | 5 |
+| F*-*.md | ## Acceptance Criteria | 5 |
+| F*-*.md | ## Rabbit Holes | 3 |
+
+### Content Quality (30 points)
+
+| Check | Description | Points |
+|-------|-------------|--------|
+| has_pattern:F*-*.md:Given.*When.*Then | BDD acceptance criteria | 8 |
+| has_pattern:F*-*.md:interface\|type.*= | TypeScript interfaces present | 6 |
+| has_pattern:F*-*.md:Appetite.*Small\|Big | Appetite defined per Shape Up | 5 |
+| word_count:F*-*.md:1500 | PRD has substantial content (1500+ words) | 5 |
+| json_valid:.prd-status.json | Valid PRD status tracking | 3 |
+| has_table:F*-*.md | Feature tables present | 3 |
+
+### Checkpoints (10 points)
+
+| Checkpoint | Evidence | Points |
+|------------|----------|--------|
+| PRD Verified | verify-prd score >= 8/10 | 5 |
+| Status Tracked | .prd-status.json updated | 5 |
+
+### Success Criteria (10 points)
+
+| Criterion | Check | Points |
+|-----------|-------|--------|
+| Implementation Ready | No TBDs, all sections complete | 4 |
+| Testable | BDD scenarios are executable | 3 |
+| Scoped | Boundaries and rabbit holes documented | 3 |
+
+</verification>

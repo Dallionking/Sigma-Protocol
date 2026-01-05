@@ -1,0 +1,319 @@
+# SSS Protocol Boilerplate Sync Workflow
+# 
+# This workflow:
+# 1. Builds platform-specific outputs (Cursor, Claude Code, OpenCode)
+# 2. Syncs SSS commands from the commands repo to all boilerplate repos
+#
+# Triggered when command files are modified on the main branch.
+#
+# Requirements:
+# - BOILERPLATE_DEPLOY_KEY secret with write access to target repos
+# - Or GITHUB_TOKEN with appropriate permissions
+
+name: Sync Boilerplates
+
+# ⚠️ AUTO-SYNC DISABLED until boilerplates are ready
+# To re-enable: uncomment the 'push' trigger below and configure BOILERPLATE_DEPLOY_KEY
+# For now, use manual dispatch only (Actions → Sync Boilerplates → Run workflow)
+
+on:
+  # DISABLED: Push trigger disabled until boilerplate repos are configured
+  # push:
+  #   branches: [main]
+  #   paths:
+  #     - 'audit/**'
+  #     - 'deploy/**'
+  #     - 'dev/**'
+  #     - 'generators/**'
+  #     - 'marketing/**'
+  #     - 'ops/**'
+  #     - 'steps/**'
+  #     - 'schemas/**'
+  #     - 'Magic UI/**'
+  #     - 'boilerplates/**'
+  #     - 'src/**'
+  #     - 'tools/**'
+  #     - 'package.json'
+  
+  # Manual trigger only - use this until boilerplates are ready
+  workflow_dispatch:
+    inputs:
+      target:
+        description: 'Target boilerplate (all, nextjs-saas, expo-mobile, etc.)'
+        required: false
+        default: 'all'
+      platforms:
+        description: 'Platforms to build (all, cursor, claude-code, opencode)'
+        required: false
+        default: 'all'
+
+env:
+  # Organization or user that owns the boilerplate repos
+  GITHUB_ORG: your-org
+  
+  # List of command folders to sync (Cursor format - source of truth)
+  COMMAND_FOLDERS: |
+    audit
+    deploy
+    dev
+    generators
+    marketing
+    ops
+    steps
+    schemas
+    Magic UI
+
+jobs:
+  # Build all platform outputs before syncing
+  build-platform-outputs:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+      
+      - name: Install dependencies
+        run: npm ci
+      
+      - name: Build all platform outputs
+        run: |
+          echo "Building platform-specific outputs..."
+          
+          # Create dist directory for built outputs
+          mkdir -p dist/cursor dist/claude-code dist/opencode
+          
+          # Build for each platform
+          node tools/sss-cli.js build --platform cursor --target dist/cursor
+          node tools/sss-cli.js build --platform claude-code --target dist/claude-code
+          node tools/sss-cli.js build --platform opencode --target dist/opencode
+          
+          echo "Build complete!"
+          echo ""
+          echo "=== Cursor output ==="
+          ls -la dist/cursor/.cursor/commands/ 2>/dev/null | head -10 || echo "No cursor output"
+          echo ""
+          echo "=== Claude Code output ==="
+          ls -la dist/claude-code/.claude/ 2>/dev/null | head -10 || echo "No claude-code output"
+          echo ""
+          echo "=== OpenCode output ==="
+          ls -la dist/opencode/.opencode/ 2>/dev/null | head -10 || echo "No opencode output"
+      
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: platform-outputs
+          path: dist/
+          retention-days: 1
+
+  detect-changes:
+    runs-on: ubuntu-latest
+    outputs:
+      commands_changed: ${{ steps.changes.outputs.commands }}
+      boilerplates_changed: ${{ steps.changes.outputs.boilerplates }}
+      changed_boilerplates: ${{ steps.detect.outputs.changed }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Detect what changed
+        id: changes
+        run: |
+          # Check if command folders changed
+          if git diff --name-only HEAD~1 HEAD | grep -qE '^(audit|deploy|dev|generators|marketing|ops|steps|schemas|Magic UI|src|tools)/'; then
+            echo "commands=true" >> $GITHUB_OUTPUT
+          else
+            echo "commands=false" >> $GITHUB_OUTPUT
+          fi
+          
+          # Check if boilerplate folders changed
+          if git diff --name-only HEAD~1 HEAD | grep -qE '^boilerplates/'; then
+            echo "boilerplates=true" >> $GITHUB_OUTPUT
+          else
+            echo "boilerplates=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Detect which boilerplates changed
+        id: detect
+        run: |
+          CHANGED=""
+          for dir in boilerplates/*/; do
+            name=$(basename "$dir")
+            if git diff --name-only HEAD~1 HEAD | grep -q "^boilerplates/$name/"; then
+              CHANGED="$CHANGED $name"
+            fi
+          done
+          echo "changed=$CHANGED" >> $GITHUB_OUTPUT
+
+  sync-nextjs-saas:
+    needs: [build-platform-outputs, detect-changes]
+    if: |
+      needs.detect-changes.outputs.commands_changed == 'true' ||
+      contains(needs.detect-changes.outputs.changed_boilerplates, 'nextjs-saas') ||
+      github.event.inputs.target == 'all' ||
+      github.event.inputs.target == 'nextjs-saas'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Download platform outputs
+        uses: actions/download-artifact@v4
+        with:
+          name: platform-outputs
+          path: dist/
+
+      - name: Sync to sss-nextjs-starter
+        uses: ./.github/actions/sync-boilerplate
+        with:
+          source_folder: boilerplates/nextjs-saas
+          target_repo: ${{ env.GITHUB_ORG }}/sss-nextjs-starter
+          deploy_key: ${{ secrets.BOILERPLATE_DEPLOY_KEY }}
+          # Include multi-platform outputs
+          include_cursor: 'true'
+          include_claude_code: 'true'
+          include_opencode: 'true'
+          platform_outputs_path: dist/
+
+  sync-expo-mobile:
+    needs: [build-platform-outputs, detect-changes]
+    if: |
+      needs.detect-changes.outputs.commands_changed == 'true' ||
+      contains(needs.detect-changes.outputs.changed_boilerplates, 'expo-mobile') ||
+      github.event.inputs.target == 'all' ||
+      github.event.inputs.target == 'expo-mobile'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Download platform outputs
+        uses: actions/download-artifact@v4
+        with:
+          name: platform-outputs
+          path: dist/
+
+      - name: Sync to sss-expo-starter
+        uses: ./.github/actions/sync-boilerplate
+        with:
+          source_folder: boilerplates/expo-mobile
+          target_repo: ${{ env.GITHUB_ORG }}/sss-expo-starter
+          deploy_key: ${{ secrets.BOILERPLATE_DEPLOY_KEY }}
+          include_cursor: 'true'
+          include_claude_code: 'true'
+          include_opencode: 'true'
+          platform_outputs_path: dist/
+
+  sync-nextjs-ai:
+    needs: [build-platform-outputs, detect-changes]
+    if: |
+      needs.detect-changes.outputs.commands_changed == 'true' ||
+      contains(needs.detect-changes.outputs.changed_boilerplates, 'nextjs-ai') ||
+      github.event.inputs.target == 'all' ||
+      github.event.inputs.target == 'nextjs-ai'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Download platform outputs
+        uses: actions/download-artifact@v4
+        with:
+          name: platform-outputs
+          path: dist/
+
+      - name: Sync to sss-nextjs-ai
+        uses: ./.github/actions/sync-boilerplate
+        with:
+          source_folder: boilerplates/nextjs-ai
+          target_repo: ${{ env.GITHUB_ORG }}/sss-nextjs-ai
+          deploy_key: ${{ secrets.BOILERPLATE_DEPLOY_KEY }}
+          include_cursor: 'true'
+          include_claude_code: 'true'
+          include_opencode: 'true'
+          platform_outputs_path: dist/
+
+  sync-nextjs-portable:
+    needs: [build-platform-outputs, detect-changes]
+    if: |
+      needs.detect-changes.outputs.commands_changed == 'true' ||
+      contains(needs.detect-changes.outputs.changed_boilerplates, 'nextjs-portable') ||
+      github.event.inputs.target == 'all' ||
+      github.event.inputs.target == 'nextjs-portable'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Download platform outputs
+        uses: actions/download-artifact@v4
+        with:
+          name: platform-outputs
+          path: dist/
+
+      - name: Sync to sss-nextjs-portable
+        uses: ./.github/actions/sync-boilerplate
+        with:
+          source_folder: boilerplates/nextjs-portable
+          target_repo: ${{ env.GITHUB_ORG }}/sss-nextjs-portable
+          deploy_key: ${{ secrets.BOILERPLATE_DEPLOY_KEY }}
+          include_cursor: 'true'
+          include_claude_code: 'true'
+          include_opencode: 'true'
+          platform_outputs_path: dist/
+
+  sync-tanstack-saas:
+    needs: [build-platform-outputs, detect-changes]
+    if: |
+      needs.detect-changes.outputs.commands_changed == 'true' ||
+      contains(needs.detect-changes.outputs.changed_boilerplates, 'tanstack-saas') ||
+      github.event.inputs.target == 'all' ||
+      github.event.inputs.target == 'tanstack-saas'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Download platform outputs
+        uses: actions/download-artifact@v4
+        with:
+          name: platform-outputs
+          path: dist/
+
+      - name: Sync to sss-tanstack-starter
+        uses: ./.github/actions/sync-boilerplate
+        with:
+          source_folder: boilerplates/tanstack-saas
+          target_repo: ${{ env.GITHUB_ORG }}/sss-tanstack-starter
+          deploy_key: ${{ secrets.BOILERPLATE_DEPLOY_KEY }}
+          include_cursor: 'true'
+          include_claude_code: 'true'
+          include_opencode: 'true'
+          platform_outputs_path: dist/
+
+  notify:
+    needs: [build-platform-outputs, sync-nextjs-saas, sync-expo-mobile, sync-nextjs-ai, sync-nextjs-portable, sync-tanstack-saas]
+    if: always()
+    runs-on: ubuntu-latest
+    steps:
+      - name: Summary
+        run: |
+          echo "## SSS Protocol Sync Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### Platform Build" >> $GITHUB_STEP_SUMMARY
+          echo "| Platform | Status |" >> $GITHUB_STEP_SUMMARY
+          echo "|----------|--------|" >> $GITHUB_STEP_SUMMARY
+          echo "| Build All | ${{ needs.build-platform-outputs.result }} |" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### Boilerplate Sync" >> $GITHUB_STEP_SUMMARY
+          echo "| Boilerplate | Status |" >> $GITHUB_STEP_SUMMARY
+          echo "|-------------|--------|" >> $GITHUB_STEP_SUMMARY
+          echo "| nextjs-saas | ${{ needs.sync-nextjs-saas.result }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| expo-mobile | ${{ needs.sync-expo-mobile.result }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| nextjs-ai | ${{ needs.sync-nextjs-ai.result }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| nextjs-portable | ${{ needs.sync-nextjs-portable.result }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| tanstack-saas | ${{ needs.sync-tanstack-saas.result }} |" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### Platforms Included" >> $GITHUB_STEP_SUMMARY
+          echo "- ✅ Cursor (.cursor/commands/)" >> $GITHUB_STEP_SUMMARY
+          echo "- ✅ Claude Code (.claude/ + CLAUDE.md)" >> $GITHUB_STEP_SUMMARY
+          echo "- ✅ OpenCode (.opencode/ + AGENTS.md)" >> $GITHUB_STEP_SUMMARY

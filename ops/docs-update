@@ -1,0 +1,951 @@
+---
+version: "3.0.0"
+last_updated: "2025-12-24"
+changelog:
+  - "3.0.0: Added freshness checking, AI-powered summaries, enhanced changelog generation, documentation quality metrics, cross-platform compatibility, and trend tracking"
+  - "2.0.0: Updated for 13-step workflow"
+  - "1.0.0: Initial release"
+description: "Automated documentation generation with freshness checking, quality metrics, and AI-powered summaries following Docs-as-Code principles"
+allowed-tools:
+  # PRIMARY MCP Tools (Use First)
+  - mcp_Ref_ref_search_documentation
+  - mcp_Ref_ref_read_url
+  - mcp_exa_web_search_exa
+  - mcp_exa_get_code_context_exa
+  - mcp_exa_crawling_exa
+  - mcp_exa_company_research_exa
+  - mcp_exa_linkedin_search_exa
+  - mcp_exa_deep_researcher_start
+  - mcp_exa_deep_researcher_check
+  
+  # ALWAYS ACTIVE (Specialized)
+  - mcp_supabase-mcp-server_list_tables
+  - mcp_supabase-mcp-server_generate_typescript_types
+  
+  # BACKUP MCP Tools (Use only if primary fails)
+  - mcp_context7_resolve-library-id
+  - mcp_context7_get-library-docs
+  - mcp_perplexity-ask_perplexity_ask
+  
+  # OTHER TOOLS
+  - read_file
+  - write
+  - list_dir
+  - glob_file_search
+  - grep
+  - run_terminal_cmd
+parameters:
+  - --scope
+  - --format
+  - --output
+  - --watch
+  - --freshness
+  - --quality
+  - --changelog
+---
+
+# @docs-update ($1B Valuation Standard)
+
+**Automated documentation generation with freshness checking and quality metrics**
+
+## 🎯 Mission
+
+**Valuation Context:** You are a **Principal Documentation Engineer** at a **$1B Unicorn** with expertise in developer experience. You treat documentation like code - versioned, tested, automated, and continuously deployed. Your documentation is **investor-grade** and **developer-first**.
+
+Generate and synchronize project documentation across README, API references, database schemas, architecture diagrams, and command references with freshness validation and quality scoring.
+
+**Business Impact:**
+- **Developer onboarding time** reduced by 50% with good documentation
+- **47% of developers** cite poor documentation as a major frustration
+- **Documentation drift** leads to bugs, support tickets, and lost productivity
+
+---
+
+## 🆕 v3.0.0 Enhancements
+
+### Freshness Checking
+- **Staleness Detection**: Identifies docs that haven't been updated with related code changes
+- **Code-Doc Correlation**: Maps code files to documentation sections
+- **Auto-Flagging**: Marks outdated sections for review
+- **Freshness Score**: Calculates overall documentation freshness
+
+### AI-Powered Summaries
+- **Executive Summaries**: Auto-generated project overviews
+- **Changelog Summaries**: Human-readable changelog from git commits
+- **Section Summaries**: TL;DR for complex documentation sections
+- **Release Notes**: Auto-generated release notes
+
+### Enhanced Changelog Generation
+- **Git Analysis**: Parse commit history for changes
+- **Semantic Grouping**: Group changes by type (feat, fix, docs, etc.)
+- **Breaking Changes**: Highlight breaking changes prominently
+- **Contributor Attribution**: Credit contributors automatically
+
+### Documentation Quality Metrics
+- **Completeness Score**: Coverage of key documentation areas
+- **Readability Analysis**: Flesch-Kincaid readability scores
+- **Link Validation**: Check for broken internal/external links
+- **Code Example Testing**: Verify code examples are valid
+
+---
+
+## 🌐 Cross-Platform Compatibility
+
+### Platform Detection
+
+```typescript
+interface PlatformContext {
+  platform: 'cursor' | 'claude-code' | 'open-code' | 'unknown';
+  mcpAvailable: boolean;
+  tools: {
+    available: string[];
+    fallbacks: Record<string, string>;
+  };
+}
+
+async function detectPlatform(): Promise<PlatformContext> {
+  const cursorMCP = await checkMCPAvailability([
+    'mcp_supabase-mcp-server_list_tables',
+    'mcp_exa_web_search_exa',
+    'mcp_Ref_ref_search_documentation',
+  ]);
+  
+  if (cursorMCP.allAvailable) {
+    return { platform: 'cursor', mcpAvailable: true, tools: { available: cursorMCP.tools, fallbacks: {} } };
+  }
+  
+  const claudeMCP = await checkMCPAvailability(['web_search', 'read_file']);
+  if (claudeMCP.hasWebSearch) {
+    return {
+      platform: 'claude-code',
+      mcpAvailable: false,
+      tools: {
+        available: claudeMCP.tools,
+        fallbacks: {
+          'mcp_supabase-mcp-server_list_tables': 'grep_schema_files',
+          'mcp_exa_web_search_exa': 'web_search',
+        },
+      },
+    };
+  }
+  
+  return {
+    platform: 'open-code',
+    mcpAvailable: false,
+    tools: {
+      available: ['read_file', 'write', 'grep', 'run_terminal_cmd'],
+      fallbacks: {
+        'mcp_supabase-mcp-server_list_tables': 'grep_schema_files',
+        'mcp_exa_web_search_exa': 'curl_web_search',
+      },
+    },
+  };
+}
+```
+
+### Tool Priority
+
+```
+1. PRIMARY: MCP tools (mcp_exa_*, mcp_Ref_*, mcp_supabase-*)
+2. BACKUP: Built-in tools (web_search, grep, read_file)
+3. FALLBACK: CLI tools (curl, jq, git log)
+```
+
+---
+
+## 📚 Frameworks & Expert Citations
+
+### Documentation Frameworks Applied
+
+1. **Docs-as-Code** (Anne Gentle)
+   - Version control for documentation
+   - Continuous integration/deployment
+   - Code review process for docs
+   - Automated testing and validation
+
+2. **Diátaxis Framework** (Daniele Procida)
+   - **Tutorials**: Learning-oriented
+   - **How-to Guides**: Problem-oriented
+   - **Explanation**: Understanding-oriented
+   - **Reference**: Information-oriented
+
+3. **The Documentation System** (Divio)
+   - Four types of documentation
+   - Clear separation of concerns
+   - Audience-specific content
+
+### Expert Principles Applied
+
+- **Tom Johnson** (I'd Rather Be Writing): "Good documentation requires understanding your audience"
+- **Sarah Drasner**: "Documentation is a love letter to your future self"
+- **Kelsey Hightower**: "If it's not documented, it doesn't exist"
+
+---
+
+## 📋 Command Usage
+
+```bash
+@docs-update
+@docs-update --scope=readme
+@docs-update --scope=api
+@docs-update --scope=schema
+@docs-update --scope=architecture
+@docs-update --scope=commands
+@docs-update --scope=all
+@docs-update --format=markdown
+@docs-update --watch                     # Watch for changes
+@docs-update --freshness                 # Check documentation freshness (v3.0.0)
+@docs-update --quality                   # Generate quality report (v3.0.0)
+@docs-update --changelog                 # Generate changelog from git (v3.0.0)
+```
+
+### Parameters
+
+| Parameter | Description | Default |
+|-----------|-------------|---------|
+| `--scope` | What to update: `readme`, `api`, `schema`, `architecture`, `commands`, `all` | `all` |
+| `--format` | Output format: `markdown`, `mdx` | `markdown` |
+| `--output` | Custom output directory | `docs/` |
+| `--watch` | Watch for file changes and auto-update | `false` |
+| `--freshness` | Check and report documentation freshness (v3.0.0) | `false` |
+| `--quality` | Generate quality metrics report (v3.0.0) | `false` |
+| `--changelog` | Generate changelog from git commits (v3.0.0) | `false` |
+
+---
+
+## 📁 File Management (CRITICAL)
+
+**File Strategy**: `replace-smart` - Update existing docs, preserve custom sections
+
+**Outputs**:
+- `README.md` - Project overview
+- `docs/API-REFERENCE.md` - API documentation
+- `docs/SCHEMA.md` - Database schema documentation
+- `docs/ARCHITECTURE.md` - Architecture overview
+- `.cursor/commands/README.md` - Command reference
+
+**Quality Report**: `/docs/.docs-quality.json` (v3.0.0)
+
+**Manifest**: `updateManifest('@docs-update', filePath, 'replace-smart')`
+
+---
+
+## 🔍 Freshness Checking (v3.0.0)
+
+### Staleness Detection
+
+```typescript
+interface FreshnessReport {
+  overallScore: number; // 0-100
+  staleDocuments: StaleDocument[];
+  freshDocuments: string[];
+  recommendations: string[];
+  lastFullUpdate: string;
+}
+
+interface StaleDocument {
+  path: string;
+  lastUpdated: string;
+  relatedCodeChanges: {
+    file: string;
+    lastChanged: string;
+    commits: string[];
+  }[];
+  staleDays: number;
+  priority: 'high' | 'medium' | 'low';
+}
+
+async function checkFreshness(): Promise<FreshnessReport> {
+  console.log('🔍 Checking documentation freshness...');
+  
+  // Get all documentation files
+  const docFiles = await glob('**/*.md', { ignore: ['node_modules/**'] });
+  
+  // Get all code files
+  const codeFiles = await glob('**/*.{ts,tsx,js,jsx}', { ignore: ['node_modules/**', '.next/**'] });
+  
+  const staleDocuments: StaleDocument[] = [];
+  const freshDocuments: string[] = [];
+  
+  // Build code-to-doc mapping
+  const codeToDocs = buildCodeToDocsMapping();
+  
+  for (const docFile of docFiles) {
+    const docLastModified = await getLastModified(docFile);
+    const relatedCode = codeToDocs[docFile] || [];
+    
+    let isStale = false;
+    const codeChanges = [];
+    
+    for (const codeFile of relatedCode) {
+      const codeLastModified = await getLastModified(codeFile);
+      
+      if (codeLastModified > docLastModified) {
+        isStale = true;
+        const commits = await getCommitsSince(codeFile, docLastModified);
+        codeChanges.push({
+          file: codeFile,
+          lastChanged: codeLastModified,
+          commits,
+        });
+      }
+    }
+    
+    if (isStale) {
+      const staleDays = daysDiff(docLastModified, new Date());
+      staleDocuments.push({
+        path: docFile,
+        lastUpdated: docLastModified,
+        relatedCodeChanges: codeChanges,
+        staleDays,
+        priority: staleDays > 30 ? 'high' : staleDays > 14 ? 'medium' : 'low',
+      });
+    } else {
+      freshDocuments.push(docFile);
+    }
+  }
+  
+  // Calculate overall score
+  const totalDocs = docFiles.length;
+  const freshCount = freshDocuments.length;
+  const overallScore = Math.round((freshCount / totalDocs) * 100);
+  
+  return {
+    overallScore,
+    staleDocuments,
+    freshDocuments,
+    recommendations: generateFreshnessRecommendations(staleDocuments),
+    lastFullUpdate: new Date().toISOString(),
+  };
+}
+
+function buildCodeToDocsMapping(): Record<string, string[]> {
+  return {
+    'docs/API-REFERENCE.md': ['app/api/**/*.ts', 'actions/**/*.ts'],
+    'docs/SCHEMA.md': ['db/schema/**/*.ts'],
+    'docs/ARCHITECTURE.md': ['lib/**/*.ts', 'app/**/layout.tsx'],
+    'README.md': ['package.json', 'next.config.js'],
+  };
+}
+```
+
+### Freshness Report
+
+```typescript
+function generateFreshnessReport(freshness: FreshnessReport): string {
+  return `
+## 📅 Documentation Freshness Report
+
+**Generated:** ${new Date().toISOString()}
+**Overall Freshness:** ${freshness.overallScore}% ${freshness.overallScore >= 80 ? '✅' : freshness.overallScore >= 60 ? '⚠️' : '❌'}
+
+### Summary
+| Metric | Value |
+|--------|-------|
+| Total Documents | ${freshness.staleDocuments.length + freshness.freshDocuments.length} |
+| Fresh Documents | ${freshness.freshDocuments.length} |
+| Stale Documents | ${freshness.staleDocuments.length} |
+| Freshness Score | ${freshness.overallScore}% |
+
+### Stale Documents (${freshness.staleDocuments.length})
+
+${freshness.staleDocuments.length > 0 ? freshness.staleDocuments.map(doc => `
+#### ${doc.path} (${doc.priority} priority)
+- Last Updated: ${doc.lastUpdated} (${doc.staleDays} days ago)
+- Related Code Changes:
+${doc.relatedCodeChanges.map(c => `  - ${c.file} (changed ${c.lastChanged})`).join('\n')}
+`).join('\n') : 'All documents are fresh! 🎉'}
+
+### Recommendations
+${freshness.recommendations.map((r, i) => `${i + 1}. ${r}`).join('\n')}
+`;
+}
+```
+
+---
+
+## 🤖 AI-Powered Summaries (v3.0.0)
+
+### Executive Summary Generation
+
+```typescript
+interface AISummary {
+  executiveSummary: string;
+  keyFeatures: string[];
+  technicalHighlights: string[];
+  quickStart: string;
+}
+
+async function generateAISummary(
+  projectContext: ProjectContext
+): Promise<AISummary> {
+  // Analyze project structure
+  const packageJson = JSON.parse(await readFile('package.json'));
+  const readme = await readFile('README.md').catch(() => '');
+  const architecture = await readFile('docs/ARCHITECTURE.md').catch(() => '');
+  
+  // Use AI to generate summary (platform-aware)
+  const platform = await detectPlatform();
+  
+  let summary: AISummary;
+  
+  if (platform.mcpAvailable) {
+    // Use MCP for AI-powered summary
+    const context = `
+Project: ${packageJson.name}
+Description: ${packageJson.description}
+Dependencies: ${Object.keys(packageJson.dependencies || {}).join(', ')}
+Structure: ${await getProjectStructure()}
+`;
+    
+    const aiResult = await mcp_perplexity_ask([{
+      role: 'user',
+      content: `Generate a concise executive summary for this project:\n${context}`
+    }]);
+    
+    summary = parseAISummary(aiResult);
+  } else {
+    // Fallback: Template-based summary
+    summary = generateTemplateSummary(projectContext);
+  }
+  
+  return summary;
+}
+
+function generateExecutiveSummarySection(summary: AISummary): string {
+  return `
+## 📋 Executive Summary
+
+${summary.executiveSummary}
+
+### Key Features
+${summary.keyFeatures.map(f => `- ${f}`).join('\n')}
+
+### Technical Highlights
+${summary.technicalHighlights.map(t => `- ${t}`).join('\n')}
+
+### Quick Start
+\`\`\`bash
+${summary.quickStart}
+\`\`\`
+`;
+}
+```
+
+---
+
+## 📝 Enhanced Changelog Generation (v3.0.0)
+
+### Git-Based Changelog
+
+```typescript
+interface ChangelogEntry {
+  version: string;
+  date: string;
+  changes: {
+    type: 'feat' | 'fix' | 'docs' | 'refactor' | 'perf' | 'test' | 'chore' | 'breaking';
+    scope?: string;
+    message: string;
+    commit: string;
+    author: string;
+  }[];
+}
+
+async function generateChangelog(
+  options: { since?: string; until?: string } = {}
+): Promise<ChangelogEntry[]> {
+  console.log('📝 Generating changelog from git history...');
+  
+  // Get git log
+  const gitLogCmd = `git log --pretty=format:"%H|%an|%ad|%s" --date=short ${options.since ? `--since="${options.since}"` : ''} ${options.until ? `--until="${options.until}"` : ''}`;
+  
+  const gitLog = await runCommand(gitLogCmd);
+  const commits = gitLog.split('\n').filter(Boolean);
+  
+  const changes: ChangelogEntry['changes'] = [];
+  
+  for (const commit of commits) {
+    const [hash, author, date, message] = commit.split('|');
+    
+    // Parse conventional commit format
+    const conventionalMatch = message.match(/^(\w+)(?:\(([^)]+)\))?: (.+)$/);
+    
+    if (conventionalMatch) {
+      const [, type, scope, msg] = conventionalMatch;
+      changes.push({
+        type: type as any,
+        scope,
+        message: msg,
+        commit: hash.slice(0, 7),
+        author,
+      });
+    } else {
+      // Non-conventional commit
+      changes.push({
+        type: 'chore',
+        message,
+        commit: hash.slice(0, 7),
+        author,
+      });
+    }
+  }
+  
+  // Group by version (based on tags or time periods)
+  const versions = await groupByVersion(changes);
+  
+  return versions;
+}
+
+function formatChangelog(entries: ChangelogEntry[]): string {
+  let changelog = `# Changelog
+
+All notable changes to this project will be documented in this file.
+
+The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
+and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+
+`;
+
+  for (const entry of entries) {
+    changelog += `## [${entry.version}] - ${entry.date}\n\n`;
+    
+    // Group by type
+    const types = {
+      breaking: '### ⚠️ BREAKING CHANGES',
+      feat: '### ✨ Features',
+      fix: '### 🐛 Bug Fixes',
+      perf: '### ⚡ Performance',
+      docs: '### 📚 Documentation',
+      refactor: '### ♻️ Refactoring',
+      test: '### 🧪 Tests',
+      chore: '### 🔧 Maintenance',
+    };
+    
+    for (const [type, header] of Object.entries(types)) {
+      const typeChanges = entry.changes.filter(c => c.type === type);
+      if (typeChanges.length > 0) {
+        changelog += `${header}\n\n`;
+        for (const change of typeChanges) {
+          const scope = change.scope ? `**${change.scope}:** ` : '';
+          changelog += `- ${scope}${change.message} ([${change.commit}](commit/${change.commit})) - @${change.author}\n`;
+        }
+        changelog += '\n';
+      }
+    }
+  }
+  
+  return changelog;
+}
+```
+
+---
+
+## 📊 Documentation Quality Metrics (v3.0.0)
+
+### Quality Scoring
+
+```typescript
+interface QualityReport {
+  overallScore: number; // 0-100
+  categories: {
+    completeness: CategoryScore;
+    readability: CategoryScore;
+    accuracy: CategoryScore;
+    organization: CategoryScore;
+    examples: CategoryScore;
+  };
+  issues: QualityIssue[];
+  recommendations: string[];
+}
+
+interface CategoryScore {
+  score: number;
+  details: string;
+  issues: string[];
+}
+
+interface QualityIssue {
+  file: string;
+  type: 'broken-link' | 'missing-section' | 'outdated-example' | 'low-readability' | 'missing-alt';
+  severity: 'high' | 'medium' | 'low';
+  message: string;
+  line?: number;
+}
+
+async function analyzeQuality(): Promise<QualityReport> {
+  console.log('📊 Analyzing documentation quality...');
+  
+  const issues: QualityIssue[] = [];
+  const categories = {
+    completeness: await analyzeCompleteness(),
+    readability: await analyzeReadability(),
+    accuracy: await analyzeAccuracy(),
+    organization: await analyzeOrganization(),
+    examples: await analyzeExamples(),
+  };
+  
+  // Calculate overall score
+  const weights = {
+    completeness: 0.25,
+    readability: 0.20,
+    accuracy: 0.25,
+    organization: 0.15,
+    examples: 0.15,
+  };
+  
+  const overallScore = Object.entries(categories).reduce((sum, [key, cat]) => {
+    return sum + cat.score * weights[key];
+  }, 0);
+  
+  return {
+    overallScore: Math.round(overallScore),
+    categories,
+    issues: collectAllIssues(categories),
+    recommendations: generateQualityRecommendations(categories),
+  };
+}
+```
+
+### Completeness Analysis
+
+```typescript
+async function analyzeCompleteness(): Promise<CategoryScore> {
+  const requiredDocs = [
+    { file: 'README.md', weight: 1.0 },
+    { file: 'docs/API-REFERENCE.md', weight: 0.8 },
+    { file: 'docs/ARCHITECTURE.md', weight: 0.7 },
+    { file: 'docs/SCHEMA.md', weight: 0.6 },
+    { file: 'CONTRIBUTING.md', weight: 0.5 },
+    { file: 'LICENSE', weight: 0.4 },
+  ];
+  
+  const requiredSections = {
+    'README.md': ['Installation', 'Usage', 'Configuration'],
+    'docs/API-REFERENCE.md': ['Overview', 'Endpoints', 'Authentication'],
+  };
+  
+  let score = 0;
+  let maxScore = 0;
+  const issues: string[] = [];
+  
+  for (const doc of requiredDocs) {
+    maxScore += doc.weight * 100;
+    
+    try {
+      const content = await readFile(doc.file);
+      score += doc.weight * 50; // File exists
+      
+      // Check sections
+      const sections = requiredSections[doc.file] || [];
+      for (const section of sections) {
+        if (content.includes(`## ${section}`) || content.includes(`# ${section}`)) {
+          score += (doc.weight * 50) / sections.length;
+        } else {
+          issues.push(`Missing section "${section}" in ${doc.file}`);
+        }
+      }
+    } catch {
+      issues.push(`Missing required file: ${doc.file}`);
+    }
+  }
+  
+  return {
+    score: Math.round((score / maxScore) * 100),
+    details: `${requiredDocs.length - issues.filter(i => i.includes('Missing required')).length}/${requiredDocs.length} required docs present`,
+    issues,
+  };
+}
+```
+
+### Readability Analysis
+
+```typescript
+async function analyzeReadability(): Promise<CategoryScore> {
+  const docFiles = await glob('**/*.md', { ignore: ['node_modules/**'] });
+  
+  let totalScore = 0;
+  const issues: string[] = [];
+  
+  for (const file of docFiles) {
+    const content = await readFile(file);
+    
+    // Calculate Flesch-Kincaid readability
+    const fkScore = calculateFleschKincaid(content);
+    
+    if (fkScore < 30) {
+      issues.push(`${file}: Very difficult to read (FK: ${fkScore})`);
+    } else if (fkScore < 50) {
+      issues.push(`${file}: Difficult to read (FK: ${fkScore})`);
+    }
+    
+    totalScore += Math.min(100, fkScore);
+  }
+  
+  const avgScore = totalScore / docFiles.length;
+  
+  return {
+    score: Math.round(avgScore),
+    details: `Average Flesch-Kincaid score: ${avgScore.toFixed(1)}`,
+    issues,
+  };
+}
+
+function calculateFleschKincaid(text: string): number {
+  const sentences = text.split(/[.!?]+/).filter(Boolean).length;
+  const words = text.split(/\s+/).filter(Boolean).length;
+  const syllables = countSyllables(text);
+  
+  if (sentences === 0 || words === 0) return 0;
+  
+  return 206.835 - 1.015 * (words / sentences) - 84.6 * (syllables / words);
+}
+```
+
+### Link Validation
+
+```typescript
+async function validateLinks(): Promise<QualityIssue[]> {
+  const issues: QualityIssue[] = [];
+  const docFiles = await glob('**/*.md', { ignore: ['node_modules/**'] });
+  
+  for (const file of docFiles) {
+    const content = await readFile(file);
+    
+    // Find all links
+    const internalLinks = content.match(/\[.*?\]\(((?!http)[^)]+)\)/g) || [];
+    const externalLinks = content.match(/\[.*?\]\((https?:\/\/[^)]+)\)/g) || [];
+    
+    // Check internal links
+    for (const link of internalLinks) {
+      const path = link.match(/\]\(([^)]+)\)/)?.[1];
+      if (path && !await exists(path)) {
+        issues.push({
+          file,
+          type: 'broken-link',
+          severity: 'high',
+          message: `Broken internal link: ${path}`,
+        });
+      }
+    }
+    
+    // Check external links (optional, can be slow)
+    // for (const link of externalLinks) { ... }
+  }
+  
+  return issues;
+}
+```
+
+---
+
+## 📈 Trend Tracking (v3.0.0)
+
+### Documentation Metrics History
+
+```typescript
+interface DocsMetrics {
+  timestamp: string;
+  freshnessScore: number;
+  qualityScore: number;
+  completenessScore: number;
+  totalDocs: number;
+  staleDocs: number;
+  issues: number;
+}
+
+async function trackMetrics(
+  freshness: FreshnessReport,
+  quality: QualityReport
+): Promise<void> {
+  const metricsPath = '/docs/.docs-metrics.json';
+  
+  let history: DocsMetrics[] = [];
+  try {
+    history = JSON.parse(await readFile(metricsPath));
+  } catch {
+    history = [];
+  }
+  
+  const current: DocsMetrics = {
+    timestamp: new Date().toISOString(),
+    freshnessScore: freshness.overallScore,
+    qualityScore: quality.overallScore,
+    completenessScore: quality.categories.completeness.score,
+    totalDocs: freshness.staleDocuments.length + freshness.freshDocuments.length,
+    staleDocs: freshness.staleDocuments.length,
+    issues: quality.issues.length,
+  };
+  
+  history.push(current);
+  
+  // Keep last 30 entries
+  if (history.length > 30) {
+    history = history.slice(-30);
+  }
+  
+  await writeFile(metricsPath, JSON.stringify(history, null, 2));
+  
+  // Calculate trends
+  if (history.length >= 2) {
+    const prev = history[history.length - 2];
+    const freshnessTrend = current.freshnessScore - prev.freshnessScore;
+    const qualityTrend = current.qualityScore - prev.qualityScore;
+    
+    console.log(`
+📈 Documentation Trends
+━━━━━━━━━━━━━━━━━━━━━━━
+Freshness: ${current.freshnessScore}% (${freshnessTrend >= 0 ? '+' : ''}${freshnessTrend}%)
+Quality: ${current.qualityScore}% (${qualityTrend >= 0 ? '+' : ''}${qualityTrend}%)
+Stale Docs: ${current.staleDocs} (was ${prev.staleDocs})
+Issues: ${current.issues} (was ${prev.issues})
+━━━━━━━━━━━━━━━━━━━━━━━
+`);
+  }
+}
+```
+
+### Integration with @status
+
+```typescript
+async function reportToStatus(
+  freshness: FreshnessReport,
+  quality: QualityReport
+): Promise<void> {
+  const statusData = {
+    command: '@docs-update',
+    lastRun: new Date().toISOString(),
+    result: quality.overallScore >= 80 ? 'success' : 'needs-attention',
+    metrics: {
+      freshnessScore: freshness.overallScore,
+      qualityScore: quality.overallScore,
+      staleDocs: freshness.staleDocuments.length,
+      issues: quality.issues.length,
+    },
+  };
+  
+  const statusPath = '/docs/.command-status.json';
+  let commandStatus = {};
+  try {
+    commandStatus = JSON.parse(await readFile(statusPath));
+  } catch {
+    commandStatus = {};
+  }
+  
+  commandStatus['@docs-update'] = statusData;
+  await writeFile(statusPath, JSON.stringify(commandStatus, null, 2));
+}
+```
+
+---
+
+## 📊 Quality Report Output (v3.0.0)
+
+```markdown
+# Documentation Quality Report
+
+**Generated:** 2025-12-24 14:30:22
+**Platform:** ${platform.platform}
+
+---
+
+## 📊 Overall Quality Score: 78/100 (Good)
+
+### Category Breakdown
+
+| Category | Score | Status |
+|----------|-------|--------|
+| Completeness | 85% | ✅ |
+| Readability | 72% | ⚠️ |
+| Accuracy | 80% | ✅ |
+| Organization | 75% | ⚠️ |
+| Examples | 70% | ⚠️ |
+
+---
+
+## 📅 Freshness Report
+
+| Metric | Value |
+|--------|-------|
+| Freshness Score | 65% |
+| Fresh Documents | 12 |
+| Stale Documents | 5 |
+
+### Stale Documents
+1. **docs/API-REFERENCE.md** (High Priority)
+   - Last Updated: 30 days ago
+   - Related Code Changes: app/api/* (15 commits)
+   
+2. **docs/SCHEMA.md** (Medium Priority)
+   - Last Updated: 14 days ago
+   - Related Code Changes: db/schema/* (3 commits)
+
+---
+
+## 🔗 Link Validation
+
+| Type | Count | Status |
+|------|-------|--------|
+| Internal Links | 45 | 2 broken |
+| External Links | 12 | All valid |
+
+### Broken Links
+1. `docs/API-REFERENCE.md`: Link to `./old-file.md` - file not found
+2. `README.md`: Link to `docs/SETUP.md` - file not found
+
+---
+
+## 📝 Readability Analysis
+
+| Document | Flesch-Kincaid | Grade Level |
+|----------|----------------|-------------|
+| README.md | 62 | 8th Grade ✅ |
+| docs/API-REFERENCE.md | 45 | College ⚠️ |
+| docs/ARCHITECTURE.md | 38 | Graduate ⚠️ |
+
+---
+
+## 🎯 Actionable Tasks
+
+### Immediate
+- [ ] Fix 2 broken links
+- [ ] Update API-REFERENCE.md (30 days stale)
+- [ ] Improve readability of ARCHITECTURE.md
+
+### This Week
+- [ ] Update SCHEMA.md with recent changes
+- [ ] Add missing "Configuration" section to README
+- [ ] Add code examples to API documentation
+
+---
+
+## 🔗 Integration Status
+
+| Command | Last Run | Score |
+|---------|----------|-------|
+| @docs-update | Now | 78% |
+| @analyze | Dec 22 | 87% |
+
+Run \`@status\` for unified dashboard.
+```
+
+---
+
+## 🔗 Related Commands
+
+- `@api-docs-gen` - Detailed API documentation with OpenAPI
+- `@scaffold` - Generate new components with docs
+- `@implement-prd` - Implementation with inline docs
+- `@client-handoff` - Full client documentation package
+- `@status` - Unified project status
+
+---
+
+## 📚 Resources
+
+- [Diátaxis Framework](https://diataxis.fr/)
+- [Docs as Code](https://www.writethedocs.org/guide/docs-as-code/)
+- [Markdown Guide](https://www.markdownguide.org/)
+
+---
+
+$END$

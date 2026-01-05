@@ -1,0 +1,769 @@
+---
+version: "2.1.0"
+last_updated: "2025-12-17"
+changelog:
+  - "2.1.0: Added Step 1.5 (Offer Architecture) support, fixed step file paths, added back-compat for legacy filenames"
+  - "2.0.0: Updated for 13-step workflow (Steps 0-12)"
+  - "1.0.0: Initial release for 10-step workflow"
+description: "Deep gap analysis for workflow steps (0-12, including conditional 1.5) with 100-point scoring and iterative fix loop"
+allowed-tools:
+  - read_file
+  - write
+  - list_dir
+  - glob_file_search
+  - grep
+  - run_terminal_cmd
+parameters:
+  - --step
+  - --fix
+  - --verbose
+---
+
+# @step-verify — Deep Gap Analysis & Iterative Completion
+
+**Purpose:** Perform comprehensive verification of SSS workflow steps (0-12, including conditional Step 1.5) with a 100-point scoring system. Identifies gaps and can automatically fix them until 100% completion.
+
+**Core Philosophy:** Every step must be production-ready before proceeding. No gaps, no shortcuts.
+
+---
+
+## Command Usage
+
+### Basic Verification
+```bash
+@step-verify --step=1              # Verify Step 1 only
+@step-verify --step=1.5            # Verify Step 1.5 (Offer Architecture)
+@step-verify --step=0-12           # Verify all steps (includes 1.5 if monetized)
+@step-verify --step=1,1.5,3,5      # Verify specific steps
+```
+
+### Auto-Fix Mode
+```bash
+@step-verify --step=1 --fix        # Verify and fix gaps (max 5 iterations)
+@step-verify --step=1-5 --fix      # Verify and fix range (includes 1.5)
+```
+
+### Verbose Output
+```bash
+@step-verify --step=1 --verbose    # Show detailed checks
+```
+
+---
+
+## Parameters
+
+| Parameter | Values | Description | Required |
+|-----------|--------|-------------|----------|
+| `--step` | 0-12 (including 1.5), range (1-5), or list (1,1.5,3,5) | Step(s) to verify | Yes |
+| `--fix` | boolean | Enable iterative fix loop | No |
+| `--verbose` | boolean | Show detailed check results | No |
+
+**Note:** Step 1.5 (Offer Architecture) is conditional—required only when monetization is detected. See Canonical Step Registry in `docs/mcp/SSS-VERSIONING.md`.
+
+---
+
+## 100-Point Scoring System
+
+Each step is scored on 5 dimensions totaling 100 points:
+
+| Category | Points | Description |
+|----------|--------|-------------|
+| **File Existence** | 20 | Required output files exist and meet minimum size |
+| **Section Completeness** | 30 | Required sections present in documents |
+| **Content Quality** | 30 | Content meets quality standards (not empty, has substance) |
+| **Checkpoints** | 10 | HITL checkpoints were completed |
+| **Success Criteria** | 10 | Step-specific success criteria met |
+| **TOTAL** | **100** | |
+
+### Score Thresholds
+
+| Score | Grade | Status | Action |
+|-------|-------|--------|--------|
+| 100 | A+ | ✅ COMPLETE | Ready for next step |
+| 90-99 | A | ✅ PASSING | Minor improvements optional |
+| 80-89 | B+ | ⚠️ ACCEPTABLE | Should fix before proceeding |
+| 70-79 | B | ⚠️ NEEDS WORK | Fix gaps before proceeding |
+| 60-69 | C | ❌ INCOMPLETE | Major gaps must be fixed |
+| <60 | F | ❌ FAILING | Re-run the step |
+
+---
+
+<goal>
+You are the **Step Verification Engine** — a rigorous quality auditor that ensures every SSS workflow step is 100% complete before the project proceeds.
+
+## Core Execution Flow
+
+### Phase 1: Parse Parameters
+
+```typescript
+const params = parseParams(command);
+// params.step: number | number[] | {from: number, to: number}
+// params.fix: boolean
+// params.verbose: boolean
+
+// Canonical step order (see docs/mcp/SSS-VERSIONING.md for authoritative reference)
+const CANONICAL_STEP_ORDER = [0, 1, 1.5, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
+
+// Parse step parameter (supports decimals like 1.5)
+function parseStepParam(stepParam: string): number[] {
+  if (stepParam.includes('-') && !stepParam.includes(',')) {
+    // Range: "1-5" -> [1, 1.5, 2, 3, 4, 5] (includes any canonical steps in range)
+    const [from, to] = stepParam.split('-').map(Number);
+    return CANONICAL_STEP_ORDER.filter(s => s >= from && s <= to);
+  } else if (stepParam.includes(',')) {
+    // List: "1,1.5,3,5" -> [1, 1.5, 3, 5]
+    return stepParam.split(',').map(s => parseFloat(s.trim()));
+  } else {
+    // Single: "1" -> [1] or "1.5" -> [1.5]
+    return [parseFloat(stepParam)];
+  }
+}
+```
+
+### Phase 2: Load Verification Schema
+
+For each step, read the corresponding step command file and extract the `<verification>` block:
+
+```typescript
+// Step files map - paths relative to SSS commands repository root
+// NOTE: In target repos, these would be in .cursor/commands/steps/ but
+// we read from the source steps/ directory for schema definitions
+const stepFiles = {
+  0: 'steps/step-0-environment-setup',
+  1: 'steps/step-1-ideation',
+  1.5: 'steps/step-1.5-offer-architecture',    // Conditional: Offer Architecture (monetization)
+  2: 'steps/step-2-architecture',
+  3: 'steps/step-3-ux-design',
+  4: 'steps/step-4-flow-tree',                 // Flow Tree & Screen Architecture + Bulletproof Gates
+  5: 'steps/step-5-wireframe-prototypes',      // Wireframe Prototypes + WIREFRAME-TRACKER.md
+  6: 'steps/step-6-design-system',             // Design System
+  7: 'steps/step-7-interface-states',          // Interface States
+  8: 'steps/step-8-technical-spec',            // Technical Spec
+  9: 'steps/step-9-landing-page',              // Landing Page (optional)
+  10: 'steps/step-10-feature-breakdown',       // Feature Breakdown
+  11: 'steps/step-11-prd-generation',          // PRD Generation
+  12: 'steps/step-12-cursor-rules',            // Cursor Rules
+};
+
+// Legacy file aliases for back-compatibility
+const FILE_ALIASES = {
+  'docs/flows/TRANSITION-MAP.md': ['docs/flows/STATE-TRANSITIONS.md'],
+};
+
+async function loadVerificationSchema(stepNum: number): Promise<Schema> {
+  const filePath = stepFiles[stepNum];
+  if (!filePath) {
+    throw new Error(`Unknown step: ${stepNum}`);
+  }
+  
+  const content = await readFile(filePath);
+  
+  // Extract <verification>...</verification> block
+  const match = content.match(/<verification>([\s\S]*?)<\/verification>/);
+  if (!match) {
+    throw new Error(`No verification schema found in ${filePath}`);
+  }
+  
+  return parseSchema(match[1]);
+}
+
+// Check if file exists (with legacy alias support)
+async function fileExistsWithAlias(path: string): Promise<boolean> {
+  if (await fileExists(path)) return true;
+  
+  // Check aliases
+  const aliases = FILE_ALIASES[path];
+  if (aliases) {
+    for (const alias of aliases) {
+      if (await fileExists(alias)) return true;
+    }
+  }
+  return false;
+}
+```
+
+### Phase 3: Execute Verification
+
+For each step, run all verification checks:
+
+```typescript
+async function verifyStep(stepNum: number, verbose: boolean): Promise<VerificationResult> {
+  const schema = await loadVerificationSchema(stepNum);
+  const result: VerificationResult = {
+    step: stepNum,
+    score: 0,
+    maxScore: 100,
+    categories: {},
+    gaps: [],
+    timestamp: new Date().toISOString(),
+  };
+  
+  // Category 1: File Existence (20 points)
+  result.categories.fileExistence = await checkFileExistence(schema.requiredFiles);
+  
+  // Category 2: Section Completeness (30 points)
+  result.categories.sectionCompleteness = await checkSectionCompleteness(schema.requiredSections);
+  
+  // Category 3: Content Quality (30 points)
+  result.categories.contentQuality = await checkContentQuality(schema.contentChecks);
+  
+  // Category 4: Checkpoints (10 points)
+  result.categories.checkpoints = await checkCheckpoints(schema.checkpoints);
+  
+  // Category 5: Success Criteria (10 points)
+  result.categories.successCriteria = await checkSuccessCriteria(schema.successCriteria);
+  
+  // Calculate total score
+  result.score = Object.values(result.categories).reduce(
+    (sum, cat) => sum + cat.earned, 0
+  );
+  
+  // Collect gaps
+  for (const category of Object.values(result.categories)) {
+    result.gaps.push(...category.gaps);
+  }
+  
+  return result;
+}
+```
+
+### Phase 4: File Existence Check (20 points)
+
+```typescript
+async function checkFileExistence(requiredFiles: FileRequirement[]): Promise<CategoryResult> {
+  const result: CategoryResult = {
+    name: 'File Existence',
+    maxPoints: 20,
+    earned: 0,
+    checks: [],
+    gaps: [],
+  };
+  
+  for (const file of requiredFiles) {
+    // Use alias-aware existence check for back-compatibility
+    const exists = await fileExistsWithAlias(file.path);
+    const actualPath = exists ? await resolveActualPath(file.path) : file.path;
+    const size = exists ? await getFileSize(actualPath) : 0;
+    const meetsMinSize = size >= file.minSize;
+    
+    if (exists && meetsMinSize) {
+      result.earned += file.points;
+      result.checks.push({
+        name: file.name,
+        path: file.path,
+        status: 'PASS',
+        points: file.points,
+      });
+    } else {
+      result.gaps.push({
+        category: 'File Existence',
+        issue: exists 
+          ? `File ${file.path} exists but is too small (${size} < ${file.minSize})`
+          : `Missing file: ${file.path}`,
+        fix: `Create or expand ${file.path}`,
+        points: file.points,
+        autoFixable: true,
+        fixAction: { type: 'create_file', path: file.path, template: file.template },
+      });
+      result.checks.push({
+        name: file.name,
+        path: file.path,
+        status: 'FAIL',
+        points: 0,
+        reason: exists ? 'Too small' : 'Missing',
+      });
+    }
+  }
+  
+  return result;
+}
+```
+
+### Phase 5: Section Completeness Check (30 points)
+
+```typescript
+async function checkSectionCompleteness(requiredSections: SectionRequirement[]): Promise<CategoryResult> {
+  const result: CategoryResult = {
+    name: 'Section Completeness',
+    maxPoints: 30,
+    earned: 0,
+    checks: [],
+    gaps: [],
+  };
+  
+  for (const section of requiredSections) {
+    const content = await readFile(section.document);
+    const hasSection = content.includes(section.heading);
+    
+    if (hasSection) {
+      result.earned += section.points;
+      result.checks.push({
+        name: `${section.document} → ${section.heading}`,
+        status: 'PASS',
+        points: section.points,
+      });
+    } else {
+      result.gaps.push({
+        category: 'Section Completeness',
+        issue: `Missing section "${section.heading}" in ${section.document}`,
+        fix: `Add section ${section.heading} to ${section.document}`,
+        points: section.points,
+        autoFixable: true,
+        fixAction: { type: 'add_section', document: section.document, heading: section.heading },
+      });
+      result.checks.push({
+        name: `${section.document} → ${section.heading}`,
+        status: 'FAIL',
+        points: 0,
+      });
+    }
+  }
+  
+  return result;
+}
+```
+
+### Phase 6: Content Quality Check (30 points)
+
+```typescript
+async function checkContentQuality(contentChecks: ContentCheck[]): Promise<CategoryResult> {
+  const result: CategoryResult = {
+    name: 'Content Quality',
+    maxPoints: 30,
+    earned: 0,
+    checks: [],
+    gaps: [],
+  };
+  
+  for (const check of contentChecks) {
+    let passed = false;
+    
+    switch (check.type) {
+      case 'min_word_count':
+        const wordCount = await getWordCount(check.file);
+        passed = wordCount >= check.threshold;
+        break;
+      case 'has_tables':
+        const content = await readFile(check.file);
+        passed = content.includes('|') && content.includes('---|');
+        break;
+      case 'has_mermaid':
+        const fileContent = await readFile(check.file);
+        passed = fileContent.includes('```mermaid');
+        break;
+      case 'has_code_blocks':
+        const codeContent = await readFile(check.file);
+        passed = (codeContent.match(/```/g) || []).length >= 2;
+        break;
+      case 'json_valid':
+        try {
+          JSON.parse(await readFile(check.file));
+          passed = true;
+        } catch { passed = false; }
+        break;
+      case 'has_pattern':
+        const patternContent = await readFile(check.file);
+        passed = new RegExp(check.pattern).test(patternContent);
+        break;
+    }
+    
+    if (passed) {
+      result.earned += check.points;
+      result.checks.push({ name: check.name, status: 'PASS', points: check.points });
+    } else {
+      result.gaps.push({
+        category: 'Content Quality',
+        issue: check.description,
+        fix: check.fixHint,
+        points: check.points,
+        autoFixable: check.autoFixable || false,
+      });
+      result.checks.push({ name: check.name, status: 'FAIL', points: 0 });
+    }
+  }
+  
+  return result;
+}
+```
+
+### Phase 7: Checkpoint Verification (10 points)
+
+```typescript
+async function checkCheckpoints(checkpoints: Checkpoint[]): Promise<CategoryResult> {
+  const result: CategoryResult = {
+    name: 'Checkpoints',
+    maxPoints: 10,
+    earned: 0,
+    checks: [],
+    gaps: [],
+  };
+  
+  for (const checkpoint of checkpoints) {
+    // Check for evidence of checkpoint completion
+    // This could be a comment in the file, a status in .prd-status.json, etc.
+    const evidence = await findCheckpointEvidence(checkpoint);
+    
+    if (evidence.found) {
+      result.earned += checkpoint.points;
+      result.checks.push({
+        name: checkpoint.name,
+        status: 'PASS',
+        points: checkpoint.points,
+        evidence: evidence.location,
+      });
+    } else {
+      result.gaps.push({
+        category: 'Checkpoints',
+        issue: `Checkpoint "${checkpoint.name}" not evidenced`,
+        fix: checkpoint.evidenceHint,
+        points: checkpoint.points,
+        autoFixable: false, // Checkpoints typically need human action
+      });
+      result.checks.push({ name: checkpoint.name, status: 'FAIL', points: 0 });
+    }
+  }
+  
+  return result;
+}
+```
+
+### Phase 8: Success Criteria Check (10 points)
+
+```typescript
+async function checkSuccessCriteria(criteria: SuccessCriterion[]): Promise<CategoryResult> {
+  const result: CategoryResult = {
+    name: 'Success Criteria',
+    maxPoints: 10,
+    earned: 0,
+    checks: [],
+    gaps: [],
+  };
+  
+  for (const criterion of criteria) {
+    const passed = await evaluateCriterion(criterion);
+    
+    if (passed) {
+      result.earned += criterion.points;
+      result.checks.push({ name: criterion.name, status: 'PASS', points: criterion.points });
+    } else {
+      result.gaps.push({
+        category: 'Success Criteria',
+        issue: `Criterion "${criterion.name}" not met`,
+        fix: criterion.fixHint,
+        points: criterion.points,
+        autoFixable: criterion.autoFixable || false,
+      });
+      result.checks.push({ name: criterion.name, status: 'FAIL', points: 0 });
+    }
+  }
+  
+  return result;
+}
+```
+
+---
+
+## Iterative Fix Loop (--fix mode)
+
+When `--fix` is enabled, run up to 5 iterations to achieve 100%:
+
+```typescript
+async function iterativeFix(stepNum: number): Promise<FinalResult> {
+  const MAX_ITERATIONS = 5;
+  let iteration = 0;
+  let result: VerificationResult;
+  
+  console.log(`\n🔄 Starting iterative fix for Step ${stepNum}...\n`);
+  
+  while (iteration < MAX_ITERATIONS) {
+    iteration++;
+    console.log(`━━━ Iteration ${iteration}/${MAX_ITERATIONS} ━━━\n`);
+    
+    // Run verification
+    result = await verifyStep(stepNum, false);
+    console.log(`Score: ${result.score}/100`);
+    
+    if (result.score === 100) {
+      console.log(`\n✅ Step ${stepNum} is 100% complete!`);
+      return { success: true, iterations: iteration, finalScore: 100 };
+    }
+    
+    // Get auto-fixable gaps
+    const autoFixableGaps = result.gaps.filter(g => g.autoFixable);
+    
+    if (autoFixableGaps.length === 0) {
+      console.log(`\n⚠️ Remaining gaps require manual intervention:`);
+      for (const gap of result.gaps) {
+        console.log(`  - ${gap.issue}`);
+        console.log(`    Fix: ${gap.fix}`);
+      }
+      return { 
+        success: false, 
+        iterations: iteration, 
+        finalScore: result.score,
+        manualGaps: result.gaps,
+      };
+    }
+    
+    // Apply auto-fixes
+    console.log(`\n🔧 Applying ${autoFixableGaps.length} auto-fixes...`);
+    for (const gap of autoFixableGaps) {
+      await applyFix(gap.fixAction);
+      console.log(`  ✓ Fixed: ${gap.issue}`);
+    }
+    
+    console.log('');
+  }
+  
+  console.log(`\n⚠️ Max iterations (${MAX_ITERATIONS}) reached. Final score: ${result.score}/100`);
+  return { success: false, iterations: MAX_ITERATIONS, finalScore: result.score };
+}
+```
+
+---
+
+## Output Format
+
+### Summary Report
+
+```
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+📊 STEP VERIFICATION REPORT
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Step: 1 - Ideation
+Date: 2025-11-27
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+📁 FILE EXISTENCE                                  18/20 pts
+  ✅ MASTER_PRD.md (/docs/specs/)                    5/5
+  ✅ stack-profile.json (/docs/)                     5/5
+  ✅ market-analysis.md (/docs/research/)            5/5
+  ❌ .prd-status.json (/docs/prds/)                  0/5
+     └─ Missing file
+
+📑 SECTION COMPLETENESS                            24/30 pts
+  ✅ Executive Summary                               6/6
+  ✅ Problem Statement                               6/6
+  ✅ Target Audience                                 6/6
+  ❌ Business Model & Monetization                   0/6
+     └─ Section missing from MASTER_PRD.md
+  ✅ Success Metrics & KPIs                          6/6
+
+📝 CONTENT QUALITY                                 27/30 pts
+  ✅ PRD has 1500+ words                             10/10
+  ✅ Competitor table present                        5/5
+  ✅ User personas defined                           5/5
+  ❌ Pricing tiers table missing                     0/5
+     └─ Add pricing tier table
+  ✅ Value equation applied                          5/5
+
+✓ CHECKPOINTS                                      10/10 pts
+  ✅ Research checkpoint approved                    5/5
+  ✅ Final PRD approved                              5/5
+
+🎯 SUCCESS CRITERIA                                 8/10 pts
+  ✅ Problem validated with research                 5/5
+  ❌ Business model defined                          0/5
+     └─ Add business model section
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+TOTAL SCORE: 87/100 (B+)
+STATUS: ⚠️ ACCEPTABLE - Should fix before proceeding
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+🔧 GAPS TO FIX (4 items, 13 points)
+
+1. [File] Create /docs/prds/.prd-status.json (5 pts)
+   Auto-fixable: Yes
+
+2. [Section] Add "## Business Model & Monetization" to MASTER_PRD.md (6 pts)
+   Auto-fixable: Yes
+
+3. [Quality] Add pricing tiers table (5 pts)
+   Auto-fixable: No - requires business input
+
+4. [Criteria] Define business model (5 pts)
+   Auto-fixable: No - depends on #2
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+💡 RECOMMENDATIONS
+
+To achieve 100%:
+1. Run: @step-verify --step=1 --fix (auto-fixes 2 gaps)
+2. Manually add Business Model section with pricing tiers
+3. Re-run verification
+
+Or run the step again:
+  @step-1-ideation (will add missing sections interactively)
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+```
+
+### Multi-Step Report
+
+When verifying multiple steps:
+
+```
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+📊 MULTI-STEP VERIFICATION REPORT
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+| Step | Name | Score | Status |
+|------|------|-------|--------|
+| 0 | Environment Setup | 100/100 | ✅ COMPLETE |
+| 1 | Ideation | 87/100 | ⚠️ ACCEPTABLE |
+| 1.5 | Offer Architecture | N/A | ⏭️ SKIPPED (Not monetized) |
+| 2 | Architecture | 100/100 | ✅ COMPLETE |
+| 3 | UX Design | 72/100 | ⚠️ NEEDS WORK |
+| 4 | Flow Tree | 65/100 | ❌ INCOMPLETE |
+| 5 | Wireframe Prototypes | 0/100 | ❌ NOT STARTED |
+| 6 | Design System | 0/100 | ❌ NOT STARTED |
+| 7 | Interface States | 0/100 | ❌ NOT STARTED |
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+AGGREGATE: 424/800 (53.0%)  [excluding skipped steps]
+
+BLOCKING STEPS: 4, 5, 6, 7 (must fix before proceeding)
+
+BULLETPROOF GATES:
+  Step 4: ❌ TRACEABILITY-MATRIX.md missing
+  Step 4: ❌ ZERO-OMISSION-CERTIFICATE.md missing
+  Step 5: ❌ WIREFRAME-TRACKER.md missing
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+💡 RECOMMENDED ACTIONS
+
+1. @step-verify --step=1 --fix (auto-fix 2 gaps)
+2. @step-3-ux-design (re-run with missing sections)
+3. @step-4-flow-tree (complete with bulletproof gates)
+4. @step-5-wireframe-prototypes (run step - not started)
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+```
+
+---
+
+## Execution Instructions
+
+### Step 1: Parse Command
+
+1. Extract `--step` parameter and parse into list of step numbers (supports decimals like 1.5)
+2. Check for `--fix` flag
+3. Check for `--verbose` flag
+4. For ranges like `0-12`, include all canonical steps including 1.5
+
+### Step 2: For Each Step
+
+1. Read the step command file from `steps/` directory (source of truth for schemas)
+2. Extract the `<verification>` block
+3. Parse the verification schema (tables for files, sections, quality, checkpoints, criteria)
+4. Run all checks and calculate scores (use alias-aware file checks for back-compat)
+5. Collect gaps with fix recommendations
+
+**Step 1.5 Handling:** If Step 1.5 is in the verify list, first check if monetization is detected (see `docs/mcp/SSS-VERSIONING.md` for detection rules). If not monetized, skip Step 1.5 with status "Skipped (Not monetized)".
+
+### Step 3: Generate Report
+
+1. Show per-category breakdown
+2. Show total score and grade
+3. List all gaps with fix recommendations
+4. If `--fix` enabled, run iterative fix loop
+
+### Step 4: Fix Loop (if --fix)
+
+1. For each auto-fixable gap:
+   - Create missing files with templates
+   - Add missing sections with scaffolds
+   - Apply content fixes where possible
+2. Re-verify after fixes
+3. Repeat until 100% or max 5 iterations
+4. Report final status
+
+---
+
+## Quality Gates
+
+Before marking verification complete:
+
+- ✅ All step command files have `<verification>` blocks
+- ✅ Schema is parseable (valid markdown tables)
+- ✅ All file paths are valid
+- ✅ Score calculation is accurate
+- ✅ Gaps have actionable fix recommendations
+- ✅ Auto-fixable gaps can be automatically resolved
+
+---
+
+## Integration with Workflow
+
+**Before @dev-loop:**
+```bash
+@step-verify --step=1-9 --fix    # Ensure all planning steps complete (includes 1.5 if monetized)
+@dev-loop --from=F01             # Then start implementation
+```
+
+**After completing a step:**
+```bash
+@step-1-ideation                 # Run the step
+@step-verify --step=1            # Verify completion
+```
+
+**After Step 1 (monetized projects):**
+```bash
+@step-1.5-offer-architecture     # Run offer architecture step
+@step-verify --step=1.5          # Verify completion
+```
+
+**Quick health check:**
+```bash
+@step-verify --step=0-12         # See overall status (includes 1.5 if monetized)
+```
+
+**Bulletproof gate check:**
+```bash
+@step-verify --step=4,5          # Verify Flow Tree and Wireframe gates
+```
+
+---
+
+## Related Commands
+
+| Command | Purpose |
+|---------|---------|
+| `@validate-methodology` | High-level methodology compliance (file existence) |
+| `@step-verify` | Deep gap analysis with scoring (this command) |
+| `@status` | Quick workflow progress overview |
+| `@analyze` | Codebase health analysis |
+
+**Difference from @validate-methodology:**
+- `@validate-methodology` checks if files exist (boolean)
+- `@step-verify` scores quality and completeness (0-100 points)
+- `@step-verify --fix` can auto-fill gaps
+
+</goal>
+
+---
+
+## Appendix: Schema Parsing
+
+The `<verification>` block in each step file contains markdown tables that define the verification criteria. Parse these tables to extract:
+
+1. **Required Files table** → FileRequirement[]
+2. **Required Sections table** → SectionRequirement[]
+3. **Content Quality table** → ContentCheck[]
+4. **Checkpoints table** → Checkpoint[]
+5. **Success Criteria table** → SuccessCriterion[]
+
+Each table row becomes a check item with associated points.
+
+
+
+
+

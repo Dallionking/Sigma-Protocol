@@ -1,0 +1,214 @@
+{
+  "$schema": "../../schemas/module-catalog.schema.json",
+  "version": "1.0.0",
+  "description": "Canonical module definitions for SSS boilerplates",
+  "modules": [
+    {
+      "id": "marketing",
+      "name": "Marketing Pages",
+      "description": "Public-facing marketing website pages",
+      "platform": "web",
+      "required": false,
+      "category": "marketing",
+      "routes": ["/", "/pricing", "/blog", "/docs", "/contact", "/terms", "/privacy"],
+      "features": ["Landing page", "Pricing table", "Blog shell", "Docs shell", "Contact form", "Legal pages"],
+      "dependsOn": [],
+      "envVars": [],
+      "defaultIncluded": true
+    },
+    {
+      "id": "auth",
+      "name": "Authentication",
+      "description": "User authentication flows (login, signup, password reset)",
+      "platform": "both",
+      "required": true,
+      "category": "core",
+      "routes": ["/login", "/signup", "/forgot-password", "/auth/callback", "/verify-email"],
+      "features": ["Email/password auth", "OAuth providers", "Magic links", "Password reset", "Email verification"],
+      "dependsOn": [],
+      "envVars": ["NEXT_PUBLIC_SUPABASE_URL", "NEXT_PUBLIC_SUPABASE_ANON_KEY"],
+      "defaultIncluded": true
+    },
+    {
+      "id": "dashboard",
+      "name": "Dashboard Shell",
+      "description": "Core application dashboard and navigation",
+      "platform": "both",
+      "required": true,
+      "category": "core",
+      "routes": ["/app", "/app/overview"],
+      "features": ["Dashboard layout", "Sidebar navigation", "Header", "Breadcrumbs"],
+      "dependsOn": ["auth"],
+      "envVars": [],
+      "defaultIncluded": true
+    },
+    {
+      "id": "settings",
+      "name": "Settings",
+      "description": "User and application settings",
+      "platform": "both",
+      "required": true,
+      "category": "core",
+      "routes": ["/app/settings", "/app/settings/profile", "/app/settings/account", "/app/settings/notifications"],
+      "features": ["Profile settings", "Account settings", "Notification preferences", "Theme toggle"],
+      "dependsOn": ["auth", "dashboard"],
+      "envVars": [],
+      "defaultIncluded": true
+    },
+    {
+      "id": "billing",
+      "name": "Billing & Subscriptions",
+      "description": "Stripe-powered billing and subscription management",
+      "platform": "web",
+      "required": false,
+      "category": "monetization",
+      "routes": ["/app/billing", "/app/billing/plans", "/app/billing/invoices"],
+      "features": ["Plan display", "Subscription management", "Payment methods", "Invoices", "Usage tracking"],
+      "dependsOn": ["auth", "dashboard"],
+      "envVars": ["STRIPE_SECRET_KEY", "STRIPE_WEBHOOK_SECRET", "NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY"],
+      "defaultIncluded": true
+    },
+    {
+      "id": "admin",
+      "name": "Admin Panel",
+      "description": "Role-gated admin dashboard for system management",
+      "platform": "web",
+      "required": false,
+      "category": "admin",
+      "routes": ["/app/admin", "/app/admin/users", "/app/admin/settings"],
+      "features": ["User management", "System settings", "Analytics dashboard", "Audit logs"],
+      "dependsOn": ["auth", "dashboard"],
+      "envVars": [],
+      "defaultIncluded": true
+    },
+    {
+      "id": "aiChat",
+      "name": "AI Chat",
+      "description": "AI-powered chat interface with message history",
+      "platform": "both",
+      "required": false,
+      "category": "feature",
+      "routes": ["/app/chat", "/app/chat/[conversationId]"],
+      "features": ["Chat UI", "Message history", "Streaming responses", "Conversation management"],
+      "dependsOn": ["auth", "dashboard"],
+      "envVars": ["OPENAI_API_KEY"],
+      "defaultIncluded": false
+    },
+    {
+      "id": "crudExample",
+      "name": "CRUD Example",
+      "description": "Example CRUD module demonstrating data patterns",
+      "platform": "both",
+      "required": false,
+      "category": "example",
+      "routes": ["/app/items", "/app/items/new", "/app/items/[id]", "/app/items/[id]/edit"],
+      "features": ["List view", "Detail view", "Create form", "Edit form", "Delete confirmation"],
+      "dependsOn": ["auth", "dashboard"],
+      "envVars": [],
+      "defaultIncluded": false
+    },
+    {
+      "id": "onboarding",
+      "name": "Onboarding",
+      "description": "First-run user onboarding experience",
+      "platform": "both",
+      "required": false,
+      "category": "core",
+      "routes": ["/onboarding", "/onboarding/welcome", "/onboarding/setup"],
+      "features": ["Welcome screens", "Setup wizard", "Profile completion", "Feature tour"],
+      "dependsOn": ["auth"],
+      "envVars": [],
+      "defaultIncluded": true
+    },
+    {
+      "id": "notifications",
+      "name": "Notifications",
+      "description": "In-app notification system",
+      "platform": "both",
+      "required": false,
+      "category": "feature",
+      "routes": ["/app/notifications"],
+      "features": ["Notification list", "Read/unread status", "Notification preferences"],
+      "dependsOn": ["auth", "dashboard"],
+      "envVars": [],
+      "defaultIncluded": false
+    },
+    {
+      "id": "errorStates",
+      "name": "Error States",
+      "description": "Error and empty state screens",
+      "platform": "both",
+      "required": true,
+      "category": "core",
+      "routes": ["/404", "/500", "/error", "/maintenance"],
+      "features": ["404 page", "500 page", "Generic error", "Maintenance mode", "Empty states"],
+      "dependsOn": [],
+      "envVars": [],
+      "defaultIncluded": true
+    },
+    {
+      "id": "mobileOnboarding",
+      "name": "Mobile Onboarding",
+      "description": "Mobile-specific onboarding with permissions",
+      "platform": "mobile",
+      "required": false,
+      "category": "mobile",
+      "routes": [],
+      "features": ["Value propositions", "Permission requests", "Push notification opt-in"],
+      "dependsOn": [],
+      "envVars": [],
+      "defaultIncluded": true
+    },
+    {
+      "id": "purchases",
+      "name": "In-App Purchases",
+      "description": "RevenueCat-powered mobile purchases",
+      "platform": "mobile",
+      "required": false,
+      "category": "monetization",
+      "routes": [],
+      "features": ["Subscription plans", "Purchase flow", "Restore purchases", "Paywall"],
+      "dependsOn": ["auth"],
+      "envVars": ["REVENUECAT_API_KEY"],
+      "defaultIncluded": true
+    }
+  ],
+  "categories": {
+    "core": {
+      "name": "Core",
+      "description": "Essential modules for app functionality",
+      "order": 1
+    },
+    "marketing": {
+      "name": "Marketing",
+      "description": "Public-facing marketing content",
+      "order": 2
+    },
+    "monetization": {
+      "name": "Monetization",
+      "description": "Payment and subscription features",
+      "order": 3
+    },
+    "admin": {
+      "name": "Administration",
+      "description": "Admin and system management",
+      "order": 4
+    },
+    "feature": {
+      "name": "Features",
+      "description": "Optional feature modules",
+      "order": 5
+    },
+    "example": {
+      "name": "Examples",
+      "description": "Example/demo modules for learning",
+      "order": 6
+    },
+    "mobile": {
+      "name": "Mobile-Specific",
+      "description": "Modules for mobile platforms only",
+      "order": 7
+    }
+  }
+}
+

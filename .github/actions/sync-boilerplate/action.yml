@@ -1,0 +1,220 @@
+name: 'Sync Boilerplate'
+description: 'Syncs a boilerplate folder + multi-platform SSS commands to a target repository'
+
+inputs:
+  source_folder:
+    description: 'Path to boilerplate source folder (e.g., boilerplates/nextjs-saas)'
+    required: true
+  target_repo:
+    description: 'Target repository (e.g., your-org/sss-nextjs-starter)'
+    required: true
+  deploy_key:
+    description: 'SSH deploy key with write access to target repo'
+    required: true
+  branch:
+    description: 'Target branch'
+    required: false
+    default: 'main'
+  # Multi-platform support
+  include_cursor:
+    description: 'Include Cursor commands (.cursor/commands/)'
+    required: false
+    default: 'true'
+  include_claude_code:
+    description: 'Include Claude Code agents (.claude/ + CLAUDE.md)'
+    required: false
+    default: 'true'
+  include_opencode:
+    description: 'Include OpenCode agents (.opencode/ + AGENTS.md)'
+    required: false
+    default: 'true'
+  platform_outputs_path:
+    description: 'Path to pre-built platform outputs (from build step)'
+    required: false
+    default: 'dist/'
+
+runs:
+  using: 'composite'
+  steps:
+    - name: Setup SSH
+      shell: bash
+      run: |
+        mkdir -p ~/.ssh
+        echo "${{ inputs.deploy_key }}" > ~/.ssh/deploy_key
+        chmod 600 ~/.ssh/deploy_key
+        ssh-keyscan github.com >> ~/.ssh/known_hosts
+
+    - name: Clone target repository
+      shell: bash
+      run: |
+        GIT_SSH_COMMAND="ssh -i ~/.ssh/deploy_key" \
+        git clone git@github.com:${{ inputs.target_repo }}.git /tmp/target
+
+    - name: Sync boilerplate app code
+      shell: bash
+      run: |
+        # Remove old content (except .git and platform config dirs)
+        cd /tmp/target
+        find . -mindepth 1 -maxdepth 1 \
+          ! -name '.git' \
+          ! -name '.cursor' \
+          ! -name '.claude' \
+          ! -name '.opencode' \
+          ! -name 'CLAUDE.md' \
+          ! -name 'AGENTS.md' \
+          -exec rm -rf {} +
+        
+        # Copy new boilerplate content
+        cp -r ${{ github.workspace }}/${{ inputs.source_folder }}/. /tmp/target/
+
+    - name: Sync shared schemas
+      shell: bash
+      run: |
+        # Copy shared JSON schemas into the boilerplate root
+        if [ -d "${{ github.workspace }}/schemas" ]; then
+          rm -rf "/tmp/target/schemas"
+          cp -r "${{ github.workspace }}/schemas" "/tmp/target/"
+        fi
+
+    - name: Sync Cursor commands
+      if: inputs.include_cursor == 'true'
+      shell: bash
+      run: |
+        echo "📦 Syncing Cursor commands..."
+        
+        # Use pre-built outputs if available
+        if [ -d "${{ inputs.platform_outputs_path }}/cursor/.cursor/commands" ]; then
+          rm -rf "/tmp/target/.cursor/commands"
+          mkdir -p "/tmp/target/.cursor"
+          cp -r "${{ inputs.platform_outputs_path }}/cursor/.cursor/commands" "/tmp/target/.cursor/"
+          echo "   Using pre-built Cursor outputs"
+        else
+          # Fallback: copy raw command folders
+          mkdir -p /tmp/target/.cursor/commands
+          
+          FOLDERS="audit deploy dev generators marketing ops steps"
+          
+          for folder in $FOLDERS; do
+            if [ -d "${{ github.workspace }}/$folder" ]; then
+              rm -rf "/tmp/target/.cursor/commands/$folder"
+              cp -r "${{ github.workspace }}/$folder" "/tmp/target/.cursor/commands/"
+            fi
+          done
+          
+          # Handle "Magic UI" folder (has space in name)
+          if [ -d "${{ github.workspace }}/Magic UI" ]; then
+            rm -rf "/tmp/target/.cursor/commands/Magic UI"
+            cp -r "${{ github.workspace }}/Magic UI" "/tmp/target/.cursor/commands/"
+          fi
+          echo "   Using raw command folders"
+        fi
+        
+        # Remove documentation files that shouldn't appear as runnable commands
+        echo "   Cleaning up documentation files..."
+        find /tmp/target/.cursor/commands -name "README.md" -type f -delete 2>/dev/null || true
+        find /tmp/target/.cursor/commands -name "*.md" -path "*README*" -type f -delete 2>/dev/null || true
+        
+        echo "✅ Cursor commands synced (READMEs excluded)"
+
+    - name: Sync Claude Code configuration
+      if: inputs.include_claude_code == 'true'
+      shell: bash
+      run: |
+        echo "📦 Syncing Claude Code configuration..."
+        
+        # Use pre-built outputs
+        if [ -d "${{ inputs.platform_outputs_path }}/claude-code/.claude" ]; then
+          rm -rf "/tmp/target/.claude"
+          cp -r "${{ inputs.platform_outputs_path }}/claude-code/.claude" "/tmp/target/"
+          echo "   Copied .claude/ directory"
+        fi
+        
+        # Copy CLAUDE.md orchestrator
+        if [ -f "${{ inputs.platform_outputs_path }}/claude-code/CLAUDE.md" ]; then
+          cp "${{ inputs.platform_outputs_path }}/claude-code/CLAUDE.md" "/tmp/target/"
+          echo "   Copied CLAUDE.md"
+        fi
+        
+        echo "✅ Claude Code configuration synced"
+
+    - name: Sync OpenCode configuration
+      if: inputs.include_opencode == 'true'
+      shell: bash
+      run: |
+        echo "📦 Syncing OpenCode configuration..."
+        
+        # Use pre-built outputs
+        if [ -d "${{ inputs.platform_outputs_path }}/opencode/.opencode" ]; then
+          rm -rf "/tmp/target/.opencode"
+          cp -r "${{ inputs.platform_outputs_path }}/opencode/.opencode" "/tmp/target/"
+          echo "   Copied .opencode/ directory"
+        fi
+        
+        # Copy AGENTS.md orchestrator
+        if [ -f "${{ inputs.platform_outputs_path }}/opencode/AGENTS.md" ]; then
+          cp "${{ inputs.platform_outputs_path }}/opencode/AGENTS.md" "/tmp/target/"
+          echo "   Copied AGENTS.md"
+        fi
+        
+        # Copy opencode.json config
+        if [ -f "${{ inputs.platform_outputs_path }}/opencode/opencode.json" ]; then
+          cp "${{ inputs.platform_outputs_path }}/opencode/opencode.json" "/tmp/target/"
+          echo "   Copied opencode.json"
+        fi
+        
+        echo "✅ OpenCode configuration synced"
+
+    - name: Commit and push
+      shell: bash
+      run: |
+        cd /tmp/target
+        git config user.name "SSS Protocol Sync Bot"
+        git config user.email "bot@sss-protocol.dev"
+        
+        git add -A
+        
+        # Check if there are changes
+        if git diff --staged --quiet; then
+          echo "No changes to commit"
+          exit 0
+        fi
+        
+        # Build platform list
+        PLATFORMS=""
+        if [ "${{ inputs.include_cursor }}" == "true" ]; then
+          PLATFORMS="$PLATFORMS Cursor"
+        fi
+        if [ "${{ inputs.include_claude_code }}" == "true" ]; then
+          PLATFORMS="$PLATFORMS Claude-Code"
+        fi
+        if [ "${{ inputs.include_opencode }}" == "true" ]; then
+          PLATFORMS="$PLATFORMS OpenCode"
+        fi
+        
+        # Create commit message
+        COMMIT_MSG="chore: sync SSS Protocol from commands repo
+
+Source commit: ${{ github.sha }}
+Triggered by: ${{ github.event_name }}
+
+Synced:
+- Boilerplate code from ${{ inputs.source_folder }}
+- Shared schemas (schemas/)
+- SSS Protocol commands for:$PLATFORMS
+
+Platform outputs:
+- .cursor/commands/ (Cursor @commands)
+- .claude/ + CLAUDE.md (Claude Code agents)
+- .opencode/ + AGENTS.md (OpenCode agents)"
+        
+        git commit -m "$COMMIT_MSG"
+        
+        GIT_SSH_COMMAND="ssh -i ~/.ssh/deploy_key" \
+        git push origin ${{ inputs.branch }}
+
+    - name: Cleanup
+      shell: bash
+      if: always()
+      run: |
+        rm -f ~/.ssh/deploy_key
+        rm -rf /tmp/target

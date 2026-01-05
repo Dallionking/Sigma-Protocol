@@ -1,0 +1,324 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://sss.dev/schemas/ui-profile.schema.json",
+  "title": "SSS UI Profile",
+  "description": "Machine-readable UI profile for consistent visual output across Steps 3/4/5/6/11 and automation (implement-prd, ui-healer).",
+  "type": "object",
+  "required": ["$schema", "id", "name", "version", "preset", "dials", "tokens", "effects", "motion", "rules"],
+  "additionalProperties": false,
+  "properties": {
+    "$schema": {
+      "type": "string",
+      "description": "Schema reference (typically ../../schemas/ui-profile.schema.json)"
+    },
+    "id": {
+      "type": "string",
+      "pattern": "^[a-z0-9-]+$",
+      "description": "Profile identifier (kebab-case)"
+    },
+    "name": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Human-readable profile name"
+    },
+    "version": {
+      "type": "string",
+      "pattern": "^\\d+\\.\\d+\\.\\d+$",
+      "description": "Profile version (semver)"
+    },
+    "preset": {
+      "type": "string",
+      "enum": ["cool-professional", "satin-dark-soft-depth", "playful-gamified", "custom"],
+      "description": "Selected preset (custom indicates user-defined dials/tokens)"
+    },
+    "description": {
+      "type": "string",
+      "description": "Optional narrative description of the intended aesthetic"
+    },
+    "references": {
+      "type": "array",
+      "description": "Optional reference links (Figma, websites, repos) used to derive the profile",
+      "items": {
+        "type": "object",
+        "required": ["type", "value"],
+        "additionalProperties": false,
+        "properties": {
+          "type": { "type": "string", "enum": ["figma", "website", "repo", "screenshot", "notes"] },
+          "value": { "type": "string" }
+        }
+      }
+    },
+    "dials": {
+      "type": "object",
+      "description": "High-level knobs used to tune UI without changing the entire profile",
+      "required": ["radius", "density", "accentIntensity", "motionIntensity", "coolLayer"],
+      "additionalProperties": false,
+      "properties": {
+        "radius": { "type": "string", "enum": ["sharp", "soft", "round"] },
+        "density": { "type": "string", "enum": ["compact", "comfortable", "spacious"] },
+        "accentIntensity": { "type": "string", "enum": ["muted", "moderate", "vibrant"] },
+        "motionIntensity": { "type": "string", "enum": ["subtle", "moderate", "expressive"] },
+        "coolLayer": { "type": "string", "enum": ["on", "off"] }
+      }
+    },
+    "layout": {
+      "type": "object",
+      "description": "Optional layout constraints for app shells (content max widths, padding/gutters, sidebar widths, grid defaults).",
+      "additionalProperties": false,
+      "properties": {
+        "contentMaxWidthPx": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Max width for wide app pages (dashboards, tables). Example: 1536 (Tailwind 2xl)."
+        },
+        "contentMaxWidthNarrowPx": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Max width for narrow content pages (forms, settings). Example: 896 (Tailwind max-w-4xl)."
+        },
+        "pagePaddingPx": {
+          "type": "object",
+          "description": "Responsive horizontal padding for page content wrapper.",
+          "additionalProperties": false,
+          "properties": {
+            "base": { "type": "integer", "minimum": 0, "description": "Default padding (mobile). Example: 16." },
+            "sm": { "type": "integer", "minimum": 0, "description": "Small breakpoint padding. Example: 24." },
+            "lg": { "type": "integer", "minimum": 0, "description": "Large breakpoint padding. Example: 32." }
+          }
+        },
+        "sidebarWidthPx": {
+          "type": "object",
+          "description": "Expanded/collapsed sidebar widths to preserve main content area.",
+          "additionalProperties": false,
+          "properties": {
+            "expanded": { "type": "integer", "minimum": 0, "description": "Expanded sidebar width. Example: 280." },
+            "collapsed": { "type": "integer", "minimum": 0, "description": "Collapsed sidebar width. Example: 64." }
+          }
+        },
+        "grid": {
+          "type": "object",
+          "description": "Default grid configuration for dashboard layouts.",
+          "additionalProperties": false,
+          "properties": {
+            "columns": { "type": "integer", "minimum": 1, "description": "Grid columns (commonly 12)." },
+            "gutterPx": {
+              "type": "object",
+              "description": "Responsive grid gutter sizes.",
+              "additionalProperties": false,
+              "properties": {
+                "sm": { "type": "integer", "minimum": 0, "description": "Small gutter. Example: 16." },
+                "md": { "type": "integer", "minimum": 0, "description": "Medium gutter. Example: 24." },
+                "lg": { "type": "integer", "minimum": 0, "description": "Large gutter. Example: 32." }
+              }
+            }
+          }
+        }
+      }
+    },
+    "tokens": {
+      "type": "object",
+      "description": "Design tokens for surfaces, borders, typography, etc.",
+      "required": ["surfaces", "text", "borders", "radii", "shadows"],
+      "additionalProperties": false,
+      "properties": {
+        "surfaces": {
+          "type": "object",
+          "required": ["base", "raised", "elevated"],
+          "additionalProperties": false,
+          "properties": {
+            "base": { "type": "string", "description": "Base background surface (e.g., hsl(...))" },
+            "raised": { "type": "string", "description": "Raised surface for cards/panels" },
+            "elevated": { "type": "string", "description": "Elevated surface for modals/popovers" },
+            "specularHighlight": { "type": "string", "description": "Specular highlight color/opacity (satin profiles)" }
+          }
+        },
+        "text": {
+          "type": "object",
+          "required": ["primary", "secondary"],
+          "additionalProperties": false,
+          "properties": {
+            "primary": { "type": "string" },
+            "secondary": { "type": "string" },
+            "muted": { "type": "string" }
+          }
+        },
+        "borders": {
+          "type": "object",
+          "required": ["subtle", "hover"],
+          "additionalProperties": false,
+          "properties": {
+            "subtle": { "type": "string", "description": "Hairline/divider border" },
+            "hover": { "type": "string", "description": "Hover/active border" },
+            "focus": { "type": "string", "description": "Focus ring/border" }
+          }
+        },
+        "accents": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "primary": { "type": "string", "description": "Primary accent (muted for pro profiles)" },
+            "secondary": { "type": "string" },
+            "semantic": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "success": { "type": "string" },
+                "warning": { "type": "string" },
+                "error": { "type": "string" },
+                "info": { "type": "string" }
+              }
+            }
+          }
+        },
+        "radii": {
+          "type": "object",
+          "required": ["sm", "md", "lg", "xl"],
+          "additionalProperties": false,
+          "properties": {
+            "sm": { "type": "number" },
+            "md": { "type": "number" },
+            "lg": { "type": "number" },
+            "xl": { "type": "number" }
+          }
+        },
+        "shadows": {
+          "type": "object",
+          "required": ["sm", "md", "lg"],
+          "additionalProperties": false,
+          "properties": {
+            "sm": { "type": "string" },
+            "md": { "type": "string" },
+            "lg": { "type": "string" }
+          }
+        }
+      }
+    },
+    "effects": {
+      "type": "object",
+      "description": "Optional effects layer (cool-professional micro-interactions)",
+      "required": ["hoverDepth", "borderBeam", "focusTrail"],
+      "additionalProperties": false,
+      "properties": {
+        "hoverDepth": {
+          "type": "object",
+          "required": ["enabled"],
+          "additionalProperties": false,
+          "properties": {
+            "enabled": { "type": "boolean" },
+            "translateY": { "type": "number" },
+            "shadow": { "type": "string" },
+            "durationMs": { "type": "integer", "minimum": 0 }
+          }
+        },
+        "borderBeam": {
+          "type": "object",
+          "required": ["enabled"],
+          "additionalProperties": false,
+          "properties": {
+            "enabled": { "type": "boolean" },
+            "implementation": {
+              "type": "string",
+              "enum": ["motion-primitives-border-trail", "css-only"],
+              "description": "Preferred implementation choice"
+            }
+          }
+        },
+        "focusTrail": {
+          "type": "object",
+          "required": ["enabled"],
+          "additionalProperties": false,
+          "properties": {
+            "enabled": { "type": "boolean" },
+            "ringSizePx": { "type": "integer", "minimum": 0 },
+            "durationMs": { "type": "integer", "minimum": 0 }
+          }
+        }
+      }
+    },
+    "motion": {
+      "type": "object",
+      "description": "Motion/animation defaults for this profile",
+      "required": ["durationsMs", "springs"],
+      "additionalProperties": false,
+      "properties": {
+        "durationsMs": {
+          "type": "object",
+          "required": ["fast", "normal", "slow"],
+          "additionalProperties": false,
+          "properties": {
+            "fast": { "type": "integer", "minimum": 0 },
+            "normal": { "type": "integer", "minimum": 0 },
+            "slow": { "type": "integer", "minimum": 0 }
+          }
+        },
+        "springs": {
+          "type": "object",
+          "required": ["snappy", "smooth", "gentle"],
+          "additionalProperties": false,
+          "properties": {
+            "snappy": {
+              "type": "object",
+              "required": ["stiffness", "damping"],
+              "additionalProperties": false,
+              "properties": {
+                "stiffness": { "type": "integer", "minimum": 0 },
+                "damping": { "type": "integer", "minimum": 0 }
+              }
+            },
+            "smooth": {
+              "type": "object",
+              "required": ["stiffness", "damping"],
+              "additionalProperties": false,
+              "properties": {
+                "stiffness": { "type": "integer", "minimum": 0 },
+                "damping": { "type": "integer", "minimum": 0 }
+              }
+            },
+            "gentle": {
+              "type": "object",
+              "required": ["stiffness", "damping"],
+              "additionalProperties": false,
+              "properties": {
+                "stiffness": { "type": "integer", "minimum": 0 },
+                "damping": { "type": "integer", "minimum": 0 }
+              }
+            }
+          }
+        },
+        "reducedMotion": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "respectPrefersReducedMotion": { "type": "boolean" },
+            "fallback": { "type": "string", "enum": ["instant", "fade-only"] }
+          }
+        }
+      }
+    },
+    "rules": {
+      "type": "object",
+      "description": "Quantified constraints to prevent \"toy\" aesthetics in professional profiles",
+      "required": ["maxAccentColorsPerScreen", "maxSemanticSaturationPercent", "minSpringDamping", "maxGradientsPerCard", "maxBouncePerInteraction"],
+      "additionalProperties": false,
+      "properties": {
+        "maxAccentColorsPerScreen": { "type": "integer", "minimum": 0 },
+        "maxSemanticSaturationPercent": { "type": "integer", "minimum": 0, "maximum": 100 },
+        "minSpringDamping": { "type": "integer", "minimum": 0 },
+        "maxGradientsPerCard": { "type": "integer", "minimum": 0 },
+        "maxBouncePerInteraction": { "type": "integer", "minimum": 0 }
+      }
+    },
+    "bannedPatterns": {
+      "type": "array",
+      "description": "List of banned visual patterns for this profile",
+      "items": { "type": "string" }
+    },
+    "banned_patterns": {
+      "type": "array",
+      "description": "Deprecated alias of bannedPatterns (prefer bannedPatterns).",
+      "items": { "type": "string" }
+    }
+  }
+}
+
+

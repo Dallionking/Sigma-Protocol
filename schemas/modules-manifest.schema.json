@@ -1,0 +1,117 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://sss.dev/schemas/modules-manifest.schema.json",
+  "title": "SSS Modules Manifest",
+  "description": "Per-boilerplate manifest defining module implementations",
+  "type": "object",
+  "required": ["template", "platform", "framework", "modules"],
+  "properties": {
+    "$schema": {
+      "type": "string"
+    },
+    "template": {
+      "type": "string",
+      "description": "Template identifier (e.g., nextjs-saas)"
+    },
+    "platform": {
+      "type": "string",
+      "enum": ["web", "mobile"],
+      "description": "Target platform"
+    },
+    "framework": {
+      "type": "string",
+      "description": "Framework used (nextjs, tanstack-start, expo)"
+    },
+    "backend": {
+      "type": "string",
+      "description": "Backend provider if applicable (convex, supabase)"
+    },
+    "database": {
+      "type": "string",
+      "description": "Database ORM if applicable (drizzle, prisma)"
+    },
+    "auth": {
+      "type": "string",
+      "description": "Auth provider if applicable (better-auth, supabase)"
+    },
+    "modules": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "required": ["enabled", "files", "navItems", "envVars"],
+        "properties": {
+          "enabled": {
+            "type": "boolean",
+            "description": "Whether this module is enabled by default"
+          },
+          "files": {
+            "type": "array",
+            "items": { "type": "string" },
+            "description": "Files/directories belonging to this module"
+          },
+          "navItems": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": ["label", "location"],
+              "properties": {
+                "label": { "type": "string" },
+                "href": { "type": "string" },
+                "icon": { "type": "string" },
+                "location": {
+                  "type": "string",
+                  "enum": ["header", "header-right", "sidebar", "tabs", "footer"]
+                },
+                "roleRequired": { "type": "string" }
+              }
+            },
+            "description": "Navigation items this module adds"
+          },
+          "envVars": {
+            "type": "array",
+            "items": { "type": "string" },
+            "description": "Environment variables this module requires"
+          }
+        }
+      }
+    },
+    "sidebarConfig": {
+      "type": "object",
+      "properties": {
+        "location": {
+          "type": "string",
+          "enum": ["left", "right"]
+        },
+        "collapsible": { "type": "boolean" },
+        "sections": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "title": { "type": ["string", "null"] },
+              "items": {
+                "type": "array",
+                "items": { "type": "string" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "tabsConfig": {
+      "type": "object",
+      "properties": {
+        "maxTabs": { "type": "integer" },
+        "defaultTabs": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "optionalTabs": {
+          "type": "array",
+          "items": { "type": "string" }
+        }
+      }
+    }
+  }
+}
+
