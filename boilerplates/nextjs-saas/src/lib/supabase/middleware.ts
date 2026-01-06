@@ -3,10 +3,10 @@ import { NextResponse, type NextRequest } from "next/server";
 
 /**
  * Supabase Middleware Client
- * 
+ *
  * Refreshes the user's session on every request.
  * Required for proper auth state management.
- * 
+ *
  * @stable since 1.0.0
  */
 export async function updateSession(request: NextRequest) {
@@ -22,19 +22,25 @@ export async function updateSession(request: NextRequest) {
         getAll() {
           return request.cookies.getAll();
         },
-        setAll(cookiesToSet) {
+        setAll(
+          cookiesToSet: {
+            name: string;
+            value: string;
+            options?: Record<string, unknown>;
+          }[],
+        ) {
           cookiesToSet.forEach(({ name, value }) =>
-            request.cookies.set(name, value)
+            request.cookies.set(name, value),
           );
           supabaseResponse = NextResponse.next({
             request,
           });
           cookiesToSet.forEach(({ name, value, options }) =>
-            supabaseResponse.cookies.set(name, value, options)
+            supabaseResponse.cookies.set(name, value, options),
           );
         },
       },
-    }
+    },
   );
 
   // Refreshing the auth token
@@ -45,7 +51,7 @@ export async function updateSession(request: NextRequest) {
   // Protected routes - redirect to login if not authenticated
   const protectedPaths = ["/dashboard", "/settings", "/billing"];
   const isProtectedPath = protectedPaths.some((path) =>
-    request.nextUrl.pathname.startsWith(path)
+    request.nextUrl.pathname.startsWith(path),
   );
 
   if (isProtectedPath && !user) {
@@ -58,7 +64,7 @@ export async function updateSession(request: NextRequest) {
   // Auth routes - redirect to dashboard if authenticated
   const authPaths = ["/login", "/signup"];
   const isAuthPath = authPaths.some((path) =>
-    request.nextUrl.pathname.startsWith(path)
+    request.nextUrl.pathname.startsWith(path),
   );
 
   if (isAuthPath && user) {
@@ -69,4 +75,3 @@ export async function updateSession(request: NextRequest) {
 
   return supabaseResponse;
 }
-

@@ -1,0 +1,82 @@
+---
+description: Use when applying brand guidelines, design system tokens, creating branded documents, or ensuring brand consistency
+globs: ["**/brand.json", "**/DESIGN-SYSTEM.md", "**/design-tokens.*"]
+alwaysApply: false
+---
+
+# Applying Brand Guidelines Skill
+
+Apply consistent corporate branding and styling to all generated documents.
+
+## Brand Configuration Structure
+
+```json
+{
+  "brand": {
+    "name": "Company Name",
+    "tagline": "Your tagline here",
+    "colors": {
+      "primary": "#3B82F6",
+      "secondary": "#10B981",
+      "accent": "#F59E0B",
+      "neutral": { "50": "#F8FAFC", "900": "#0F172A" }
+    },
+    "typography": {
+      "fontFamily": { "display": "Inter", "body": "Inter", "mono": "JetBrains Mono" },
+      "fontSize": { "xs": "0.75rem", "base": "1rem", "4xl": "2.25rem" }
+    },
+    "voice": {
+      "tone": ["Professional", "Approachable", "Innovative"],
+      "doNot": ["Use jargon", "Be condescending", "Overpromise"]
+    }
+  }
+}
+```
+
+## CSS Variables Generation
+
+```css
+:root {
+  --color-primary: #3b82f6;
+  --color-secondary: #10b981;
+  --font-display: "Inter", sans-serif;
+  --space-4: 1rem;
+  --radius-md: 0.375rem;
+}
+```
+
+## Tailwind Config Integration
+
+```javascript
+module.exports = {
+  theme: {
+    extend: {
+      colors: {
+        primary: { DEFAULT: "#3B82F6", 50: "#EFF6FF" },
+        secondary: { DEFAULT: "#10B981" },
+      },
+      fontFamily: {
+        display: ["Inter", "sans-serif"],
+      },
+    },
+  },
+};
+```
+
+## Consistency Checklist
+
+### Visual
+- [ ] Colors match brand palette
+- [ ] Typography uses brand fonts
+- [ ] Spacing follows brand scale
+- [ ] Logo usage follows guidelines
+
+### Voice
+- [ ] Tone matches brand personality
+- [ ] No forbidden phrases used
+- [ ] Messaging aligns with brand values
+
+### Technical
+- [ ] CSS variables used throughout
+- [ ] Components use design tokens
+- [ ] Accessibility maintained

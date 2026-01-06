@@ -1,0 +1,108 @@
+---
+description: Use when creating OpenCode plugins that hook into file, tool, permission, session, or TUI events
+globs: ["**/.opencode/plugin/**/*", "**/plugin.js", "**/plugin.ts"]
+alwaysApply: false
+---
+
+# OpenCode Plugins Skill
+
+Create OpenCode plugins that hook into 25+ events across the AI assistant lifecycle.
+
+## Plugin Structure
+
+```
+# Global plugins (all projects)
+~/.config/opencode/plugin/my-plugin.js
+
+# Project plugins (current project only)
+project/.opencode/plugin/my-plugin.js
+```
+
+## Basic Template
+
+```javascript
+export const MyPlugin = async (context) => {
+  // context: { project, client, $, directory, worktree }
+  
+  return {
+    event: async ({ event }) => {
+      switch (event.type) {
+        case "file.edited":
+          // Handle file edits
+          break;
+        case "tool.execute.before":
+          // Pre-process tool execution
+          break;
+        case "tool.execute.after":
+          // Post-process tool execution
+          break;
+      }
+    },
+  };
+};
+```
+
+## Key Events
+
+### File Events
+| Event | Data |
+|-------|------|
+| `file.edited` | `{ path, content, timestamp }` |
+| `file.watcher.updated` | `{ path, type }` |
+
+### Tool Events
+| Event | Data |
+|-------|------|
+| `tool.execute.before` | `{ tool, args, user }` |
+| `tool.execute.after` | `{ tool, duration, success, output }` |
+
+### Permission Events
+| Event | Data |
+|-------|------|
+| `permission.replied` | `{ action, target, decision }` |
+
+### Session Events
+| Event | Data |
+|-------|------|
+| `session.created` | `{ sessionId }` |
+| `session.idle` | `{ sessionId, duration }` |
+
+## Common Patterns
+
+### Environment File Protection
+```javascript
+export const EnvProtectionPlugin = async ({ project }) => {
+  const sensitivePatterns = [/\.env$/, /credentials\.json$/];
+  
+  return {
+    event: async ({ event }) => {
+      if (event.type === "file.edited") {
+        if (sensitivePatterns.some(p => p.test(event.data.path))) {
+          console.warn(`Warning: Sensitive file edited: ${event.data.path}`);
+        }
+      }
+    },
+  };
+};
+```
+
+### Auto-Format on Save
+```javascript
+export const AutoFormatPlugin = async ({ $ }) => {
+  return {
+    event: async ({ event }) => {
+      if (event.type === "file.edited" && /\.(js|ts|tsx)$/.test(event.data.path)) {
+        await $`prettier --write ${event.data.path}`;
+      }
+    },
+  };
+};
+```
+
+## Best Practices
+
+- Use `async` handlers (don't block)
+- Wrap in try/catch (don't crash)
+- Defer heavy work to background
+- Don't log sensitive data
+- One plugin per concern

@@ -1,7 +1,8 @@
 ---
-version: "4.0.0"
-last_updated: "2025-12-29"
+version: "4.1.0"
+last_updated: "2026-01-05"
 changelog:
+  - "4.1.0: Added --swarm flag for multi-terminal parallel implementation (integrates with @prd-orchestrate swarm structure)"
   - "4.0.0: Added Active Task Memory (.sss/memory/active_task.md) for multi-session continuity and agentic resume support"
   - "3.0.0: Added cross-platform scaffolding, component intelligence, incremental implementation, real-time design token validation, trend tracking, and actionable task lists"
   - "2.3.1: Added app-shell layout guardrails (ban container mx-auto for interior pages; prefer ui-profile.json layout defaults) to prevent narrow centered dashboards"
@@ -10,7 +11,7 @@ changelog:
   - "2.1.0: Added Phase 0.25 Bulletproof Gate Verification (checks TRACEABILITY-MATRIX.md, ZERO-OMISSION-CERTIFICATE.md)"
   - "2.0.0: Updated for 13-step workflow, wireframe prototype references"
   - "1.0.0: Initial release"
-description: "Automatically implement a PRD from Step 11 - intelligently scaffolds, generates code, applies design system, creates tests with cross-platform support"
+description: "Automatically implement a PRD from Step 11 - intelligently scaffolds, generates code, applies design system, creates tests with cross-platform and swarm support"
 allowed-tools:
   # PRIMARY MCP Tools (Use First)
   - mcp_Ref_ref_search_documentation
@@ -45,6 +46,7 @@ allowed-tools:
   - run_terminal_cmd
 parameters:
   - --prd-id
+  - --swarm
   - --dry-run
   - --skip-tests
   - --resume
@@ -225,6 +227,10 @@ async function executeWithFallback(
 # Implement entire flow at once
 @implement-prd --prd-id=01-auth
 
+# Implement all PRDs in a swarm (v4.1.0 - Multi-Terminal)
+@implement-prd --swarm=1        # Implement all PRDs in swarm-1
+@implement-prd --swarm=2        # Implement all PRDs in swarm-2
+
 # Legacy support (frontend/backend paths still work)
 @implement-prd --prd-id=frontend/01-feature
 @implement-prd --prd-id=backend/01-feature
@@ -240,17 +246,23 @@ async function executeWithFallback(
 
 # Force specific platform mode (v3.0.0)
 @implement-prd --prd-id=01-auth --platform=claude-code
+
+# Swarm with options
+@implement-prd --swarm=1 --skip-tests --resume
 ```
 
 ### Parameters
 
 | Parameter | Description | Default |
 |-----------|-------------|---------|
-| `--prd-id` | PRD ID - supports multiple formats (see below) | Required |
+| `--prd-id` | PRD ID - supports multiple formats (see below) | Required* |
+| `--swarm` | Swarm number (1-N) - implement all PRDs in a swarm sequentially (v4.1.0) | Optional* |
 | `--dry-run` | Preview plan without creating files | `false` |
 | `--skip-tests` | Skip test generation (not recommended) | `false` |
 | `--resume` | Resume from last checkpoint (v3.0.0) | `false` |
 | `--platform` | Force platform mode: `cursor`, `claude-code`, `open-code` (v3.0.0) | Auto-detect |
+
+*Either `--prd-id` or `--swarm` is required. Use `--swarm` for multi-terminal parallel work.
 
 ### PRD Path Formats (Step 5 Numbered Structure)
 
@@ -259,6 +271,83 @@ async function executeWithFallback(
 | `flow/screen` | `01-auth/01-welcome-screen` | `/docs/prds/flows/01-auth/01-welcome-screen.md` |
 | `flow` (all screens) | `01-auth` | All `.md` files in `/docs/prds/flows/01-auth/` |
 | `legacy` | `frontend/01-feature` | `/docs/prds/frontend/01-feature.md` |
+| `swarm` (v4.1.0) | `--swarm=1` | All PRDs in `/docs/prds/swarm-1/` |
+
+### Swarm-Based Implementation (v4.1.0)
+
+When using `--swarm`, the command:
+1. Reads the swarm's `_SWARM-README.md` for execution order
+2. Implements PRDs in the correct dependency order
+3. Updates `.prd-status.json` after each PRD
+4. Provides progress tracking for the terminal
+
+```typescript
+async function implementSwarm(swarmId: number): Promise<void> {
+  const swarmDir = `docs/prds/swarm-${swarmId}/`;
+  const readmePath = `${swarmDir}_SWARM-README.md`;
+  
+  // Read execution order from swarm README
+  const readme = await readFile(readmePath);
+  const executionOrder = parseExecutionOrder(readme);
+  
+  console.log(`
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+🐝 SWARM ${swarmId} IMPLEMENTATION
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+PRDs to implement: ${executionOrder.length}
+Execution order: ${executionOrder.join(' → ')}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+`);
+  
+  // Implement each PRD in order
+  for (let i = 0; i < executionOrder.length; i++) {
+    const prdId = executionOrder[i];
+    const prdPath = `${swarmDir}${prdId}.md`;
+    
+    console.log(`\n[${i + 1}/${executionOrder.length}] Implementing ${prdId}...`);
+    
+    // Check if already implemented
+    const status = await getPRDStatus(prdId);
+    if (status === 'implemented' || status === 'verified') {
+      console.log(`  ⏭️ Already implemented, skipping`);
+      continue;
+    }
+    
+    // Implement the PRD
+    await implementPRD(prdPath);
+    
+    // Update status
+    await updatePRDStatus(prdId, 'implemented', swarmId);
+    
+    console.log(`  ✅ ${prdId} implemented`);
+  }
+  
+  console.log(`
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+✅ SWARM ${swarmId} COMPLETE
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+PRDs implemented: ${executionOrder.length}
+
+Next steps:
+  - Run @verify-prd --swarm=${swarmId} to validate
+  - Check @status --prds for overall progress
+  - If other swarms remain, continue in other terminals
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+`);
+}
+
+function parseExecutionOrder(readme: string): string[] {
+  // Parse the execution order table from _SWARM-README.md
+  const tableMatch = readme.match(/\| # \| PRD ID \|[\s\S]*?\n([\s\S]*?)\n---/);
+  if (!tableMatch) return [];
+  
+  const rows = tableMatch[1].split('\n').filter(r => r.startsWith('|'));
+  return rows.map(row => {
+    const match = row.match(/\|\s*\d+\s*\|\s*(\w+)\s*\|/);
+    return match ? match[1] : '';
+  }).filter(Boolean);
+}
+```
 
 ---
 
@@ -991,13 +1080,16 @@ ${nextTasks.map(t => `- [ ] ${t}`).join('\n')}
 # 2. Start dev server and test manually
 npm run dev
 
-# 3. Run comprehensive verification
+# 3. Run post-implementation gap analysis
+@gap-analysis --spec=${prdId} --emit-confidence=true
+
+# 4. Run comprehensive verification
 @verify-prd --prd-id=${prdId}
 
-# 4. Check project status
+# 5. Check project status
 @status
 
-# 5. If verification passes, commit
+# 6. If verification passes, commit
 git add -A
 git commit -m "feat: implement ${prdId} - ${featureName}"
 \`\`\`
@@ -1068,12 +1160,40 @@ git commit -m "feat: implement ${prdId} - ${featureName}"
 
 **Before @implement-prd:**
 - `@step-11-prd-generation` - Creates the PRD
+- `@prd-orchestrate` - Organizes PRDs into swarms for parallel work (optional)
 - Dependencies verified as complete
 
 **After @implement-prd:**
 - `@verify-prd` - Comprehensive verification
+- `@gap-analysis` - Post-implementation gap analysis with auto-fix
 - `@status` - Check overall project health
 - `@tech-debt-audit` - Ensure no debt introduced
+
+### Integration with @prd-orchestrate (v4.1.0)
+
+When PRDs are organized into swarms, you can run multiple terminals in parallel:
+
+```bash
+# Terminal 1
+@implement-prd --swarm=1
+
+# Terminal 2
+@implement-prd --swarm=2
+
+# Terminal 3
+@implement-prd --swarm=3
+
+# Terminal 4
+@implement-prd --swarm=4
+```
+
+Each terminal works through its swarm independently. The `.prd-status.json` file is updated atomically to prevent conflicts.
+
+**Check swarm status:**
+```bash
+@prd-orchestrate --status
+@status --prds
+```
 
 ---
 

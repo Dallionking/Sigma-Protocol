@@ -1069,7 +1069,167 @@ Add to `~/.cursor/mcp.json`:
 
 ---
 
-## Phase D — Final Validation & Report
+## Phase D — Foundation Skills Installation
+
+**Goal:** Install SSS Foundation Skills for the selected platform(s).
+
+### 1. Platform Selection
+
+**Ask the user:**
+> "Which AI development platform(s) will you use for this project?
+> 
+> - **Cursor** — `.cursor/rules/*.mdc` (keyword/glob auto-triggers)
+> - **Claude Code** — `.claude/skills/*` (SKILL.md format)
+> - **OpenCode** — `.opencode/skill/*` (SKILL.md format)
+> 
+> Reply with your selection (e.g., `cursor`, `claude`, `opencode`, or `all`)"
+
+**Save selection to `.sss/config.json`:**
+```json
+{
+  "version": "1.0.0",
+  "platforms": {
+    "cursor": true,
+    "claude_code": false,
+    "opencode": false
+  },
+  "skills_installed": true,
+  "installed_at": "2025-01-05T12:00:00Z"
+}
+```
+
+### 2. Install Foundation Skills
+
+**Foundation Skills provide universal capabilities for the SSS workflow:**
+
+| Category | Skills | Used In |
+|----------|--------|---------|
+| **SSS Core** | research, verification, bdd-scenarios, hormozi-frameworks, output-generation, frontend-design | Steps 1-13 |
+| **Design & Dev** | ux-designer, architecture-patterns, api-design-principles, web-artifacts-builder | Steps 2-9 |
+| **Quality** | brainstorming, systematic-debugging, quality-gates, senior-qa, senior-architect | All steps |
+| **Productivity** | prompt-engineering-patterns, xlsx, pptx, applying-brand-guidelines, remembering-conversations | As needed |
+| **Platform Tools** | skill-creator, agent-development (Claude), opencode-agent-generator, creating-opencode-plugins (OpenCode) | Meta/tooling |
+
+**Installation by Platform:**
+
+#### Cursor Installation
+```bash
+# Copy SSS foundation rules to project
+mkdir -p .cursor/rules
+
+# The SSS CLI installs these automatically:
+# - sss-frontend-design.mdc
+# - sss-brainstorming.mdc
+# - sss-systematic-debugging.mdc
+# - sss-architecture-patterns.mdc
+# - sss-api-design.mdc
+# - sss-quality-gates.mdc
+# - sss-ux-designer.mdc
+# - sss-research.mdc
+# - sss-senior-architect.mdc
+# - sss-senior-qa.mdc
+# - sss-prompt-engineering.mdc
+# + additional skills...
+
+npx sss-protocol install-skills --platform cursor
+```
+
+#### Claude Code Installation
+```bash
+# Copy SSS foundation skills to project
+mkdir -p .claude/skills
+
+# The SSS CLI installs these automatically:
+npx sss-protocol install-skills --platform claude-code
+```
+
+#### OpenCode Installation
+```bash
+# Copy SSS foundation skills to project
+mkdir -p .opencode/skill
+
+# The SSS CLI installs these automatically:
+npx sss-protocol install-skills --platform opencode
+```
+
+### 3. Verify Skills Installation
+
+**Check skills are installed:**
+
+```bash
+# Cursor
+ls -la .cursor/rules/sss-*.mdc
+
+# Claude Code
+ls -la .claude/skills/*/SKILL.md
+
+# OpenCode
+ls -la .opencode/skill/*/SKILL.md
+```
+
+**Expected output:** Multiple skill files for your selected platform.
+
+### 4. Foundation Skills Reference
+
+**Full list of 24 Foundation Skills:**
+
+| Skill | Description | Auto-Triggers |
+|-------|-------------|---------------|
+| `research` | MCP-orchestrated web research | research, find, market, competitor |
+| `verification` | Step quality scoring | verify, validate, check |
+| `bdd-scenarios` | Given/When/Then generation | test, scenario, behavior |
+| `hormozi-frameworks` | Value equation analysis | value, offer, pricing |
+| `output-generation` | Consistent doc formatting | generate, output, document |
+| `frontend-design` | Anti-slop UI aesthetics | tsx, jsx, css, component, ui |
+| `ux-designer` | Wireframes, accessibility | wireframe, flow, wcag, ux |
+| `architecture-patterns` | Clean Architecture, DDD | architecture, domain, layer |
+| `api-design-principles` | REST/GraphQL patterns | api, endpoint, rest, graphql |
+| `brainstorming` | Pre-implementation exploration | brainstorm, ideate, explore |
+| `systematic-debugging` | Root cause analysis | bug, error, fail, debug |
+| `quality-gates` | CI/CD, testing, hooks | test, ci, hook, quality |
+| `senior-qa` | Test strategies | qa, coverage, e2e |
+| `senior-architect` | System design decisions | design, scalability, decision |
+| `prompt-engineering-patterns` | LLM optimization | prompt, llm, ai |
+| `xlsx` | Spreadsheet manipulation | spreadsheet, excel, csv |
+| `pptx` | Presentation generation | presentation, slides, pptx |
+| `applying-brand-guidelines` | Brand consistency | brand, style, theme |
+| `web-artifacts-builder` | Complex multi-component UIs | dashboard, app, complex |
+| `remembering-conversations` | Context recall | recall, previous, remember |
+| `skill-creator` | Create Claude Code skills | create skill, new skill |
+| `agent-development` | Create Claude Code agents | create agent, new agent |
+| `opencode-agent-generator` | Create OpenCode agents | opencode agent |
+| `creating-opencode-plugins` | Create OpenCode plugins | opencode plugin |
+
+**Note:** Step 13 (Skillpack Generator) creates **project-specific skill overlays** that build on these foundation skills with your project's design system, patterns, and conventions.
+
+---
+
+**HITL checkpoint →** Confirm skills installation.
+
+**Prompt:**
+> "## 🎯 Foundation Skills Installation
+> 
+> I've installed the SSS Foundation Skills for your selected platform(s).
+> 
+> ### Installed:
+> - [X] 24 Foundation Skills
+> - [X] Platform: [Cursor/Claude Code/OpenCode]
+> - [X] Auto-trigger configuration
+> 
+> ### Skills Categories:
+> - SSS Core (6 skills)
+> - Design & Development (4 skills)
+> - Quality & Process (5 skills)
+> - Productivity (5 skills)
+> - Platform Tools (4 skills)
+> 
+> These skills will auto-activate during Steps 1-13 based on context.
+> 
+> Reply `continue` to proceed to final validation."
+
+---
+
+## Phase E — Final Validation & Report
 
 **Goal:** Verify everything is working and create environment documentation.
 

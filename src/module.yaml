@@ -1,9 +1,9 @@
 # SSS Protocol Module Manifest
-# 
+#
 # ARCHITECTURE NOTE:
 # The ORIGINAL command files (steps/, audit/, dev/, etc.) remain the source of truth.
 # They contain the full 800+ line methodology with all context, MCP configs, and HITL gates.
-# 
+#
 # This manifest defines the structure. The CLI transforms originals to each platform:
 # - Cursor: Direct copy (already Cursor-formatted)
 # - Claude Code: Adds Claude Code frontmatter + preserves ALL content
@@ -12,7 +12,7 @@
 # NO content is lost. Each platform gets the full methodology.
 
 name: sss-protocol
-version: "1.0.0"
+version: "1.1.0"
 description: "Sigma Startup Stack - 13-Step Product Development Methodology"
 author: "SSS Team"
 license: "MIT"
@@ -37,7 +37,7 @@ modules:
       - step-2-architecture
       - step-3-ux-design
       - step-4-flow-tree
-      - step-5-wireframes
+      - step-5-wireframe-prototypes
       - step-6-design-system
       - step-7-interface-states
       - step-8-technical-spec
@@ -129,7 +129,8 @@ agents:
   - id: ux-director
     name: "UX Director"
     description: "User experience and interface design"
-    steps: [step-3-ux-design, step-5-wireframes, step-7-interface-states]
+    steps:
+      [step-3-ux-design, step-5-wireframe-prototypes, step-7-interface-states]
 
   - id: product-owner
     name: "Product Owner"
@@ -162,37 +163,217 @@ agents:
     skills: [frontend-design]
     steps: [step-9-landing-page, scaffold, implement-prd, ui-healer]
 
-# Reusable skills (Claude Code / OpenCode)
-skills:
-  - id: research
-    name: "Research Skill"
-    description: "MCP-orchestrated web research with source curation"
-    file: skills/research.md
+# =============================================================================
+# FOUNDATION SKILLS
+# =============================================================================
+# These skills are installed at Step 0 and available for all subsequent steps.
+# They provide universal capabilities that enhance the SSS workflow.
+#
+# Step 13 (Skillpack Generator) creates PROJECT-SPECIFIC skill overlays
+# that build on these foundation skills with the project's design system,
+# patterns, and conventions.
+# =============================================================================
 
-  - id: verification
-    name: "Verification Skill"
-    description: "Step completion verification with scoring"
-    file: skills/verification.md
+foundation_skills:
+  # ---------------------------------------------------------------------------
+  # SSS CORE (6 skills) - Power the 13-step methodology
+  # ---------------------------------------------------------------------------
+  core:
+    - id: research
+      name: "Research Skill"
+      description: "MCP-orchestrated web research with source curation"
+      file: foundation-skills/research.md
+      triggers: [research, search, find, investigate, market, competitor]
+      steps:
+        [
+          step-1-ideation,
+          step-2-architecture,
+          step-3-ux-design,
+          step-8-technical-spec,
+        ]
 
-  - id: bdd-scenarios
-    name: "BDD Scenarios Skill"
-    description: "Given/When/Then scenario generation"
-    file: skills/bdd-scenarios.md
+    - id: verification
+      name: "Verification Skill"
+      description: "Step completion verification with scoring"
+      file: foundation-skills/verification.md
+      triggers: [verify, validate, check, score]
+      steps: [all]
 
-  - id: hormozi-framework
-    name: "Hormozi Framework Skill"
-    description: "Value equation and offer architecture"
-    file: skills/hormozi-framework.md
+    - id: bdd-scenarios
+      name: "BDD Scenarios Skill"
+      description: "Given/When/Then scenario generation"
+      file: foundation-skills/bdd-scenarios.md
+      triggers: [bdd, scenario, given, when, then, behavior]
+      steps: [step-10-feature-breakdown, step-11-prd-generation]
 
-  - id: output-generation
-    name: "Output Generation Skill"
-    description: "Consistent document output formatting"
-    file: skills/output-generation.md
+    - id: hormozi-frameworks
+      name: "Hormozi Framework Skill"
+      description: "Value equation and offer architecture"
+      file: foundation-skills/hormozi-frameworks.md
+      triggers: [value, offer, pricing, hormozi, equation]
+      steps: [step-1-ideation, step-1.5-offer-architect]
 
-  - id: frontend-design
-    name: "Frontend Design Skill"
-    description: "Distinctive UI creation avoiding AI slop aesthetics"
-    file: skills/frontend-design.md
+    - id: output-generation
+      name: "Output Generation Skill"
+      description: "Consistent document output formatting"
+      file: foundation-skills/output-generation.md
+      triggers: [generate, output, document, format]
+      steps: [all]
+
+    - id: frontend-design
+      name: "Frontend Design Skill"
+      description: "Distinctive UI creation avoiding AI slop aesthetics"
+      file: foundation-skills/frontend-design.md
+      triggers: [ui, component, tailwind, shadcn, layout, typography, motion]
+      steps:
+        [
+          step-5-wireframe-prototypes,
+          step-6-design-system,
+          step-9-landing-page,
+          implement-prd,
+        ]
+
+  # ---------------------------------------------------------------------------
+  # DESIGN & DEVELOPMENT (4 skills)
+  # ---------------------------------------------------------------------------
+  design_dev:
+    - id: ux-designer
+      name: "UX Designer Skill"
+      description: "Wireframes, user flows, accessibility (WCAG)"
+      file: foundation-skills/ux-designer.md
+      triggers: [ux, wireframe, user flow, accessibility, wcag, mobile-first]
+      steps: [step-3-ux-design, step-4-flow-tree, step-5-wireframe-prototypes]
+
+    - id: architecture-patterns
+      name: "Architecture Patterns Skill"
+      description: "Clean Architecture, Hexagonal, DDD patterns"
+      file: foundation-skills/architecture-patterns.md
+      triggers: [architecture, structure, pattern, domain, service, layer]
+      steps: [step-2-architecture, step-8-technical-spec]
+
+    - id: api-design-principles
+      name: "API Design Principles Skill"
+      description: "REST and GraphQL API design best practices"
+      file: foundation-skills/api-design-principles.md
+      triggers: [api, endpoint, rest, graphql, route, schema]
+      steps: [step-2-architecture, step-8-technical-spec, implement-prd]
+
+    - id: web-artifacts-builder
+      name: "Web Artifacts Builder Skill"
+      description: "Complex multi-component UIs with React, Tailwind, shadcn/ui"
+      file: foundation-skills/web-artifacts-builder.md
+      triggers: [dashboard, complex ui, multi-component, artifact]
+      steps: [step-9-landing-page, implement-prd]
+
+  # ---------------------------------------------------------------------------
+  # QUALITY & PROCESS (5 skills)
+  # ---------------------------------------------------------------------------
+  quality:
+    - id: brainstorming
+      name: "Brainstorming Skill"
+      description: "Pre-implementation exploration of intent, requirements, design"
+      file: foundation-skills/brainstorming.md
+      triggers: [brainstorm, ideate, explore, think through, design]
+      steps: [step-1-ideation, step-3-ux-design, step-10-feature-breakdown]
+
+    - id: systematic-debugging
+      name: "Systematic Debugging Skill"
+      description: "Structured approach to identify root causes before fixing"
+      file: foundation-skills/systematic-debugging.md
+      triggers: [bug, error, fail, debug, broken, issue, crash]
+      steps: [implement-prd, ui-healer, dev-loop]
+
+    - id: quality-gates
+      name: "Quality Gates Skill"
+      description: "Git hooks, testing, CI/CD with Lefthook, Vitest, GitHub Actions"
+      file: foundation-skills/quality-gates.md
+      triggers: [test, ci, cd, hook, lint, coverage, pipeline]
+      steps: [step-0-environment, implement-prd, ship-check]
+
+    - id: senior-qa
+      name: "Senior QA Skill"
+      description: "Test strategies, automation, coverage analysis"
+      file: foundation-skills/senior-qa.md
+      triggers: [qa, coverage, e2e, unit, integration, automation]
+      steps: [qa-plan, qa-run, verify-prd, test-gen]
+
+    - id: senior-architect
+      name: "Senior Architect Skill"
+      description: "System design, tech stack decisions, scalability"
+      file: foundation-skills/senior-architect.md
+      triggers: [system design, tech stack, scalability, decision, tradeoff]
+      steps: [step-2-architecture, step-8-technical-spec]
+
+  # ---------------------------------------------------------------------------
+  # PRODUCTIVITY (5 skills)
+  # ---------------------------------------------------------------------------
+  productivity:
+    - id: prompt-engineering-patterns
+      name: "Prompt Engineering Patterns Skill"
+      description: "LLM prompt optimization for production"
+      file: foundation-skills/prompt-engineering-patterns.md
+      triggers: [prompt, llm, ai, gpt, claude, few-shot, chain of thought]
+      steps: [agent-development, ai-features]
+
+    - id: xlsx
+      name: "XLSX Skill"
+      description: "Spreadsheet creation, editing, analysis"
+      file: foundation-skills/xlsx.md
+      triggers: [spreadsheet, excel, csv, xlsx, data analysis]
+      steps: [data-export, reporting]
+
+    - id: pptx
+      name: "PPTX Skill"
+      description: "Presentation creation and editing"
+      file: foundation-skills/pptx.md
+      triggers: [presentation, slides, pptx, pitch deck]
+      steps: [client-handoff, pitch-deck]
+
+    - id: applying-brand-guidelines
+      name: "Applying Brand Guidelines Skill"
+      description: "Consistent branding across all outputs"
+      file: foundation-skills/applying-brand-guidelines.md
+      triggers: [brand, style, theme, guidelines, corporate]
+      steps: [step-6-design-system, marketing]
+
+    - id: remembering-conversations
+      name: "Remembering Conversations Skill"
+      description: "Search previous conversations for context"
+      file: foundation-skills/remembering-conversations.md
+      triggers: [recall, previous, remember, context, history]
+      steps: [all]
+
+  # ---------------------------------------------------------------------------
+  # PLATFORM TOOLS (4 skills) - Platform-specific
+  # ---------------------------------------------------------------------------
+  platform_tools:
+    - id: skill-creator
+      name: "Skill Creator Skill"
+      description: "Create Claude Code skills"
+      file: foundation-skills/skill-creator.md
+      platform: claude-code
+      triggers: [create skill, new skill, skill development]
+
+    - id: agent-development
+      name: "Agent Development Skill"
+      description: "Create Claude Code agents"
+      file: foundation-skills/agent-development.md
+      platform: claude-code
+      triggers: [create agent, agent design, subagent]
+
+    - id: opencode-agent-generator
+      name: "OpenCode Agent Generator Skill"
+      description: "Create OpenCode agents"
+      file: foundation-skills/opencode-agent-generator.md
+      platform: opencode
+      triggers: [opencode agent, create agent, swarm agent]
+
+    - id: creating-opencode-plugins
+      name: "Creating OpenCode Plugins Skill"
+      description: "Create OpenCode plugins with event hooks"
+      file: foundation-skills/creating-opencode-plugins.md
+      platform: opencode
+      triggers: [opencode plugin, event hook, plugin development]
 
 # Custom tools (OpenCode only)
 tools:
@@ -217,6 +398,9 @@ platform_config:
     output_dir: ".cursor/commands"
     rules_file: ".cursorrules"
     rules_dir: ".cursor/rules"
+    skills_dir: ".cursor/rules" # Skills become .mdc rules in Cursor
+    skill_prefix: "sss-"
+    skill_extension: ".mdc"
 
   claude-code:
     output_dir: ".claude"
@@ -225,12 +409,14 @@ platform_config:
     hooks_dir: ".claude/hooks"
     commands_dir: ".claude/commands"
     orchestrator: "CLAUDE.md"
+    skill_format: "directory" # skill-name/SKILL.md
 
   opencode:
     output_dir: ".opencode"
     commands_dir: ".opencode/command"
     agents_dir: ".opencode/agent"
+    skills_dir: ".opencode/skill"
     tools_dir: ".opencode/tools"
     orchestrator: "AGENTS.md"
     config_file: "opencode.json"
-
+    skill_format: "directory" # skill-name/SKILL.md

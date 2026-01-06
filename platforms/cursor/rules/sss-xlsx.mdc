@@ -1,0 +1,66 @@
+---
+description: Use when working with spreadsheets (.xlsx, .xlsm, .csv, .tsv), creating Excel files, data analysis, or financial modeling
+globs: ["**/*.xlsx", "**/*.xlsm", "**/*.csv", "**/*.tsv"]
+alwaysApply: false
+---
+
+# XLSX Skill
+
+Comprehensive spreadsheet creation, editing, and analysis with support for formulas, formatting, data analysis, and visualization.
+
+## Spreadsheet Creation (SheetJS)
+
+```javascript
+import * as XLSX from "xlsx";
+
+// Create workbook
+const wb = XLSX.utils.book_new();
+const data = [
+  ["Name", "Department", "Salary"],
+  ["John Doe", "Engineering", 95000],
+  ["Jane Smith", "Marketing", 85000],
+];
+const ws = XLSX.utils.aoa_to_sheet(data);
+XLSX.utils.book_append_sheet(wb, ws, "Employees");
+XLSX.writeFile(wb, "employees.xlsx");
+```
+
+## With Formulas
+
+```javascript
+const data = [
+  ["Product", "Qty", "Price", "Total"],
+  ["Widget A", 10, 25.99, { f: "B2*C2" }],
+  ["Widget B", 5, 49.99, { f: "B3*C3" }],
+  ["", "", "Grand Total:", { f: "SUM(D2:D3)" }],
+];
+```
+
+## Common Formulas
+
+| Formula | Purpose | Example |
+|---------|---------|---------|
+| `SUM(range)` | Sum values | `=SUM(A1:A10)` |
+| `AVERAGE(range)` | Average | `=AVERAGE(B1:B10)` |
+| `VLOOKUP` | Vertical lookup | `=VLOOKUP(A1,Sheet2!A:B,2,FALSE)` |
+| `IF` | Conditional | `=IF(A1>100,"High","Low")` |
+| `SUMIF` | Conditional sum | `=SUMIF(A:A,"Sales",B:B)` |
+
+## CSV Processing
+
+```javascript
+// Read CSV
+const wb = XLSX.read(csvData, { type: "string" });
+const data = XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]]);
+
+// Write CSV
+const csvOutput = XLSX.utils.sheet_to_csv(ws);
+```
+
+## Best Practices
+
+- Use streaming for large files (>100MB)
+- Batch writes instead of cell-by-cell
+- Validate data before writing
+- Preserve formulas when editing
+- Handle dates consistently

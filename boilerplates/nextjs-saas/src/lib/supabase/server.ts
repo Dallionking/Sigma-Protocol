@@ -3,10 +3,10 @@ import { cookies } from "next/headers";
 
 /**
  * Supabase Server Client
- * 
+ *
  * Use this client in Server Components, Server Actions, and Route Handlers.
  * Automatically handles cookie-based session management.
- * 
+ *
  * @stable since 1.0.0
  */
 export async function createClient() {
@@ -20,10 +20,16 @@ export async function createClient() {
         getAll() {
           return cookieStore.getAll();
         },
-        setAll(cookiesToSet) {
+        setAll(
+          cookiesToSet: {
+            name: string;
+            value: string;
+            options?: Record<string, unknown>;
+          }[],
+        ) {
           try {
             cookiesToSet.forEach(({ name, value, options }) =>
-              cookieStore.set(name, value, options)
+              cookieStore.set(name, value, options),
             );
           } catch {
             // The `setAll` method was called from a Server Component.
@@ -32,16 +38,16 @@ export async function createClient() {
           }
         },
       },
-    }
+    },
   );
 }
 
 /**
  * Supabase Admin Client
- * 
+ *
  * Use this client for admin operations that bypass RLS.
  * Only use in trusted server-side code (webhooks, background jobs).
- * 
+ *
  * @stable since 1.0.0
  */
 export async function createAdminClient() {
@@ -55,17 +61,22 @@ export async function createAdminClient() {
         getAll() {
           return cookieStore.getAll();
         },
-        setAll(cookiesToSet) {
+        setAll(
+          cookiesToSet: {
+            name: string;
+            value: string;
+            options?: Record<string, unknown>;
+          }[],
+        ) {
           try {
             cookiesToSet.forEach(({ name, value, options }) =>
-              cookieStore.set(name, value, options)
+              cookieStore.set(name, value, options),
             );
           } catch {
             // Ignore in Server Components
           }
         },
       },
-    }
+    },
   );
 }
-

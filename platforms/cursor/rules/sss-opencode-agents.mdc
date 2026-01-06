@@ -1,0 +1,102 @@
+---
+description: Use when creating OpenCode agents for .opencode/agent/ folder or setting up agent swarms
+globs: ["**/.opencode/agent/**/*"]
+alwaysApply: false
+---
+
+# OpenCode Agent Generator Skill
+
+Create OpenCode agents in `.opencode/agent/` for use with OpenCode serve.
+
+## Agent File Structure
+
+```
+project/
+└── .opencode/
+    └── agent/
+        ├── primary-agent.md
+        ├── specialist-one.md
+        └── specialist-two.md
+```
+
+**Important:** Agent names come from filenames, not frontmatter.
+
+## Agent Template
+
+```markdown
+---
+description: Brief description of agent's purpose
+mode: primary # or subagent
+tools:
+  read: true
+  grep: true
+  bash: true
+  edit: true
+  write: true
+permissions:
+  edit: ask
+  write: ask
+  bash:
+    "git*": allow
+    "*": ask
+---
+
+# Agent Role and Purpose
+
+You are a [ROLE] specializing in [DOMAIN].
+
+## Core Responsibilities
+- Responsibility 1
+- Responsibility 2
+
+## Workflow
+
+### Phase 1: [Name]
+1. Action 1
+2. Action 2
+
+## Swarm Communication Protocol
+
+When communicating with other agents:
+1. **Introduction**: State identity and context
+2. **Purpose**: Why you're contacting them
+3. **Request**: What you need
+4. **Expected Response**: Format needed
+```
+
+## Permission Levels
+
+```yaml
+permissions:
+  read: allow    # No confirmation
+  write: ask     # Ask before writing
+  edit: ask      # Ask before editing
+  bash:
+    "git *": allow
+    "npm test": allow
+    "rm *": deny
+    "*": ask
+```
+
+## Swarm Pattern
+
+```
+┌─────────────────────────────────────┐
+│       Primary Orchestrator          │
+│  - Receives user requests           │
+│  - Breaks down tasks                │
+│  - Delegates to specialists         │
+└───────────────┬─────────────────────┘
+                │
+    ┌───────────┼───────────┐
+    ▼           ▼           ▼
+┌─────────┐ ┌─────────┐ ┌─────────┐
+│Analyzer │ │Implement│ │ Tester  │
+└─────────┘ └─────────┘ └─────────┘
+```
+
+## Best Practices
+
+- **Focused Responsibility**: Single, clear purpose
+- **Minimal Permissions**: Only what's necessary
+- **Clear Communication**: Explicit protocols

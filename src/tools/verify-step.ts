@@ -38,7 +38,7 @@ const STEP_FILES: Record<number, string> = {
   2: "step-2-architecture",
   3: "step-3-ux-design",
   4: "step-4-flow-tree",
-  5: "step-5-wireframes",
+  5: "step-5-wireframe-prototypes",
   6: "step-6-design-system",
   7: "step-7-interface-states",
   8: "step-8-technical-spec",

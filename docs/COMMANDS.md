@@ -11,14 +11,14 @@ Complete index of all SSS Protocol commands, organized by category.
 
 | Category | Commands | Purpose |
 |----------|----------|---------|
-| **Steps** | 14 | Core 13-step workflow |
+| **Steps** | 15 | Core 13-step workflow + optional steps |
 | **Audit** | 14 | Quality assurance |
 | **Dev** | 3 | Development workflow |
-| **Ops** | 22 | Operations & management |
+| **Ops** | 23 | Operations & management |
 | **Deploy** | 4 | Shipping & handoff |
 | **Generators** | 15 | Code & doc generation |
 | **Marketing** | 17 | GTM workflow |
-| **Total** | **89** | |
+| **Total** | **91** | |
 
 ---
 
@@ -56,6 +56,7 @@ The core 13-step product development methodology.
 | `step-9-landing-page` | Landing page design | LANDING-PAGE-COPY.md |
 | `step-10-feature-breakdown` | Feature breakdown | FEATURE-BREAKDOWN.md |
 | `step-11-prd-generation` | PRD generation | /docs/prds/*.md |
+| `step-11.5-prd-swarm` | PRD swarm orchestration (optional) | /docs/prds/swarm-*/, SWARM-PLAN.md |
 | `step-12-context-engine` | Context engine setup | .cursorrules |
 | `step-13-skillpack-generator` | Platform configuration | Skills/rules |
 
@@ -105,6 +106,7 @@ Operations and project management.
 | Command | Description |
 |---------|-------------|
 | `backlog-groom` | Create/update product backlog |
+| `prd-orchestrate` | PRD swarm orchestration for parallel dev |
 | `sprint-plan` | Plan and commit sprint |
 | `daily-standup` | Daily standup with git awareness |
 | `job-status` | Query PRD/sprint status |

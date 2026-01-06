@@ -1,0 +1,111 @@
+---
+description: Use when referencing previous discussions, recalling project decisions, maintaining context continuity, or searching conversation history
+globs: ["**/docs/decisions/**/*", "**/ADR-*.md", "**/context/**/*"]
+alwaysApply: false
+---
+
+# Remembering Conversations Skill
+
+Search previous AI conversations for facts, patterns, decisions, and context.
+
+## Decision Archaeology
+
+When recalling why a decision was made:
+
+```markdown
+## Decision Recall Request
+
+**Decision Area:** [Architecture/Design/Technical/Business]
+**Keywords:** [relevant terms]
+
+**Questions:**
+- What was decided?
+- Why was it decided this way?
+- What alternatives were considered?
+```
+
+## Pattern Recognition
+
+```markdown
+## Pattern Search
+
+**Looking For:**
+- Naming conventions
+- Code structure patterns
+- API design patterns
+- Error handling approaches
+
+**Search Terms:**
+- "[pattern name]"
+- "we decided to"
+- "convention is"
+```
+
+## Decision Log Format
+
+```markdown
+# Decision Log
+
+## 2025-01-05: Authentication Strategy
+
+**Decision:** Use NextAuth.js with database sessions
+
+**Context:**
+- Need multiple OAuth providers
+- Require server-side session validation
+
+**Alternatives Considered:**
+1. Auth0 - Rejected (cost)
+2. Clerk - Rejected (vendor lock-in)
+3. Custom JWT - Rejected (security complexity)
+
+**Decided By:** Technical Lead
+```
+
+## Architecture Decision Records (ADRs)
+
+```markdown
+# ADR-001: Authentication Strategy
+
+## Status
+Accepted
+
+## Context
+[Requirements and constraints]
+
+## Decision
+[The decision made]
+
+## Consequences
+### Positive
+- [Benefits]
+
+### Negative
+- [Trade-offs]
+```
+
+## Context Checkpoint Format
+
+```markdown
+# Context Checkpoint: 2025-01-05
+
+## Current State
+- [What's done]
+
+## In Progress
+- [What's being worked on]
+
+## Blockers
+- [What's blocked]
+
+## Next Steps
+1. [Action item]
+```
+
+## Best Practices
+
+- Document decisions as they're made
+- Summarize key points at natural breakpoints
+- Create checkpoints before long pauses
+- Tag decisions with categories
+- Verify recalled information before acting on it

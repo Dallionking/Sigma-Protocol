@@ -9,7 +9,7 @@
 
 ### New Project (Full)
 ```
-@step-0 → @step-1 → [@step-1.5 if monetized] → @step-2 → @step-3 → @step-4 → @step-5 → @step-6 → @step-7 → @step-8 → @step-9 → @step-10 → @step-11 → @step-12
+@step-0 → @step-1 → [@step-1.5 if monetized] → @step-2 → @step-3 → @step-4 → @step-5 → @step-6 → @step-7 → @step-8 → @step-9 → @step-10 → @step-11 → [@step-11.5 if parallel] → @step-12
 ```
 
 ### New Project (Minimal)
@@ -17,7 +17,9 @@
 @step-0 → @step-1 → [@step-1.5 if monetized] → @step-2 → @step-3 → @step-4 → @step-6 → @step-8 → @step-10 → @step-11 → @step-12
 ```
 
-**Note:** Step 1.5 (Offer Architecture) is conditional - required only for monetized projects.
+**Notes:** 
+- Step 1.5 (Offer Architecture) is conditional - required only for monetized projects.
+- Step 11.5 (PRD Swarm) is optional - for parallel multi-terminal implementation (5+ PRDs).
 
 ### Existing Project (Retrofit)
 ```
@@ -47,6 +49,7 @@
 | **Landing page** | `@step-9-landing-page` | Conversion copywriting |
 | **Break down features** | `@step-10-feature-breakdown` | Feature roadmap |
 | **Generate PRDs** | `@step-11-prd-generation` | Executable PRDs |
+| **Swarm PRDs** | `@step-11.5-prd-swarm` | Parallel implementation groups |
 | **AI context** | `@step-12-context-engine` | .cursorrules generation |
 
 ---
@@ -84,6 +87,7 @@
 | Task | Command | Description |
 |------|---------|-------------|
 | **Check status** | `@status` | Workflow progress |
+| **Orchestrate PRDs** | `@prd-orchestrate` | Swarm PRDs for parallel dev |
 | **Retrofit existing** | `@retrofit-analyze` | Analyze for SSS adoption |
 | **Generate SSS docs** | `@retrofit-generate` | Create missing docs |
 | **Clean repo** | `@cleanup-repo` | Content-aware cleanup + worktree detection |
@@ -119,6 +123,19 @@
 @retrofit-generate --step=11            # Generate PRDs
 @retrofit-enhance          # Enhance existing docs with new frameworks ✨ NEW
 @status                    # Check progress
+```
+
+### Parallel Implementation (Swarms)
+```bash
+@step-11.5-prd-swarm       # Analyze & group PRDs into swarms
+# OR
+@prd-orchestrate --terminals=4  # Standalone swarm orchestration
+
+# Then in 4 separate terminals:
+Terminal 1: @implement-prd --swarm=1
+Terminal 2: @implement-prd --swarm=2
+Terminal 3: @implement-prd --swarm=3
+Terminal 4: @implement-prd --swarm=4
 ```
 
 ### Pre-Deployment
@@ -168,6 +185,9 @@
 | Landing Page | `docs/landing-page/LANDING-PAGE.md` |
 | Feature Breakdown | `docs/implementation/FEATURE-BREAKDOWN.md` |
 | PRDs | `docs/prds/F[N]-[NAME].md` |
+| **Swarm Plan** | `docs/prds/SWARM-PLAN.md` *(Step 11.5)* |
+| **Swarm Folders** | `docs/prds/swarm-[N]/` *(Step 11.5)* |
+| **PRD Status** | `docs/prds/.prd-status.json` *(Step 11.5)* |
 | Cursor Rules | `.cursorrules` |
 | **SSS Manifest** | `.sss-manifest.json` *(Version tracking)* |
 | **Agentic Tools** | `.sss/tools/` *(Grade 3 - typecheck, lint, test, build)* |
@@ -184,6 +204,8 @@
 | "Fix step X gaps" | `@step-verify --step=X --fix` |
 | "Is this PRD good?" | `@verify-prd F[N]` |
 | "Did we miss anything in the implementation?" | `@gap-analysis` |
+| "How do I run multiple terminals?" | `@prd-orchestrate` |
+| "What swarm am I working on?" | `@prd-orchestrate --status` |
 | "Can I deploy?" | `@ship-check` |
 | "What's broken?" | `@analyze` |
 | "Fix the UI" | `@ui-healer [route]` |

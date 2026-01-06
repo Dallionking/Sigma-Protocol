@@ -1,0 +1,85 @@
+---
+description: "SSS Architecture Patterns - Clean Architecture, Hexagonal, DDD patterns for scalable, maintainable systems."
+globs: ["**/src/**/*", "**/lib/**/*", "**/domain/**/*", "**/services/**/*", "**/repositories/**/*"]
+keywords: ["architecture", "structure", "pattern", "domain", "service", "repository", "layer", "module", "design", "scalable"]
+---
+
+# SSS Architecture Patterns Skill
+
+Implement proven backend architecture patterns for scalable, maintainable systems.
+
+## Clean Architecture
+
+Dependencies point inward. Inner layers know nothing about outer layers.
+
+```
+src/
+├── domain/           # Core business logic (no dependencies)
+│   ├── entities/
+│   ├── value-objects/
+│   └── repositories/ # Interfaces only
+├── application/      # Use cases (depends only on domain)
+│   ├── use-cases/
+│   └── dto/
+├── infrastructure/   # External concerns
+│   ├── persistence/
+│   └── external/
+└── presentation/     # Delivery mechanism
+    ├── http/
+    └── cli/
+```
+
+## Domain-Driven Design (DDD)
+
+| Concept | Purpose | Example |
+|---------|---------|---------|
+| **Entity** | Has identity, mutable | User, Order |
+| **Value Object** | No identity, immutable | Email, Money |
+| **Aggregate** | Consistency boundary | Order + OrderItems |
+| **Repository** | Collection abstraction | UserRepository |
+| **Domain Event** | Something happened | OrderPlaced |
+
+**Aggregate Rules:**
+1. Each aggregate has a root entity
+2. External objects only reference the root
+3. All changes go through the root
+4. Invariants enforced within aggregate
+
+## Pattern Selection
+
+| Scenario | Pattern |
+|----------|---------|
+| Simple CRUD | Layered/MVC |
+| Complex domain | DDD + Clean |
+| Many integrations | Hexagonal |
+| Microservices | DDD + Events |
+
+## Anti-Patterns
+
+### Anemic Domain Model
+```typescript
+// BAD: Logic outside entity
+class UserService {
+  changeEmail(user: User, email: string) { }
+}
+
+// GOOD: Logic inside entity
+class User {
+  changeEmail(email: Email): void { }
+}
+```
+
+### God Service
+```typescript
+// BAD: One service doing everything
+class OrderService {
+  createOrder() { }
+  processPayment() { }
+  sendEmail() { }
+}
+
+// GOOD: Focused services
+class CreateOrderUseCase { }
+class PaymentService { }
+class NotificationService { }
+```

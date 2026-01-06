@@ -1,0 +1,72 @@
+---
+description: Use when creating presentations, slide decks, pitch decks, or working with PowerPoint files (.pptx)
+globs: ["**/*.pptx", "**/*.ppt"]
+alwaysApply: false
+---
+
+# PPTX Skill
+
+Presentation creation, editing, and analysis for PowerPoint files.
+
+## Creating Presentations (PptxGenJS)
+
+```javascript
+import PptxGenJS from "pptxgenjs";
+
+const pptx = new PptxGenJS();
+pptx.author = "SSS Protocol";
+pptx.title = "Project Overview";
+
+// Title slide
+const titleSlide = pptx.addSlide();
+titleSlide.addText("Project Kickoff", {
+  x: 0.5, y: 2.5, w: "90%",
+  fontSize: 44, bold: true, color: "0F172A", align: "center",
+});
+
+// Content slide
+const contentSlide = pptx.addSlide();
+contentSlide.addText("Agenda", {
+  x: 0.5, y: 1.0, fontSize: 32, bold: true,
+});
+contentSlide.addText([
+  { text: "1. Project Overview", options: { bullet: true } },
+  { text: "2. Timeline & Milestones", options: { bullet: true } },
+  { text: "3. Next Steps", options: { bullet: true } },
+], { x: 0.5, y: 2.0, w: "90%", fontSize: 18, lineSpacing: 28 });
+```
+
+## Adding Charts
+
+```javascript
+slide.addChart(pptx.ChartType.bar, [
+  { name: "Revenue", labels: ["Q1", "Q2", "Q3"], values: [1200, 1500, 1800] },
+  { name: "Costs", labels: ["Q1", "Q2", "Q3"], values: [800, 900, 1000] },
+], { x: 0.5, y: 1.8, w: 9, h: 4.5, showLegend: true });
+```
+
+## Adding Tables
+
+```javascript
+slide.addTable([
+  [{ text: "Feature", options: { bold: true, fill: { color: "0F172A" }, color: "FFFFFF" } },
+   { text: "Basic", options: { bold: true, fill: { color: "0F172A" }, color: "FFFFFF" } },
+   { text: "Pro", options: { bold: true, fill: { color: "0F172A" }, color: "FFFFFF" } }],
+  ["Users", "5", "Unlimited"],
+  ["Storage", "10 GB", "1 TB"],
+], { x: 0.5, y: 1.8, w: 9 });
+```
+
+## Speaker Notes
+
+```javascript
+slide.addNotes("Key talking points:\n- Emphasize growth rate\n- Mention new clients");
+```
+
+## Design Best Practices
+
+- Use consistent fonts (2-3 max)
+- Limit colors to brand palette
+- One main idea per slide
+- 6x6 rule: Max 6 bullets, 6 words each
+- Minimum 24pt font for body text

@@ -9,9 +9,10 @@
 
 The SSS (Sigma Software Solutions) workflow is a **comprehensive, 14-step process (Steps 0-12 plus conditional Step 1.5)** that takes you from initial idea to production-ready code with complete documentation. Think of it as building a house - you don't start with the roof, you follow a specific order.
 
-**Workflow Order:** `0 → 1 → 1.5 (conditional) → 2 → 3 → 4 → 5 → 6 → 7 → 8 → 9 → 10 → 11 → 12`
+**Workflow Order:** `0 → 1 → 1.5 (conditional) → 2 → 3 → 4 → 5 → 6 → 7 → 8 → 9 → 10 → 11 → 11.5 (optional) → 12`
 
 **Key Principles:**
+
 - **Sequential:** Steps must be done in order (no skipping)
 - **Cumulative:** Each step builds on previous steps
 - **Conditional Steps:** Step 1.5 is required only for monetized projects
@@ -26,6 +27,56 @@ See `docs/mcp/SSS-VERSIONING.md` for the canonical step registry.
 
 ---
 
+## 🎯 Foundation Skills System (v4.1)
+
+SSS includes a **two-tier skill system** that provides AI capabilities at different levels:
+
+### Tier 1: Foundation Skills (Step 0)
+
+**24 universal skills** installed at Step 0 that provide domain-agnostic capabilities:
+
+| Category               | Skills                                                                                        | Purpose                      |
+| ---------------------- | --------------------------------------------------------------------------------------------- | ---------------------------- |
+| **SSS Core** (6)       | research, verification, bdd-scenarios, hormozi-frameworks, output-generation, frontend-design | Power the 13-step workflow   |
+| **Design & Dev** (4)   | ux-designer, architecture-patterns, api-design-principles, web-artifacts-builder              | Architecture and UI patterns |
+| **Quality** (5)        | brainstorming, systematic-debugging, quality-gates, senior-qa, senior-architect               | Testing and code quality     |
+| **Productivity** (5)   | prompt-engineering-patterns, xlsx, pptx, applying-brand-guidelines, remembering-conversations | Documents and productivity   |
+| **Platform Tools** (4) | skill-creator, agent-development, opencode-agent-generator, creating-opencode-plugins         | Create custom skills/agents  |
+
+### Tier 2: Project Overlays (Step 13)
+
+**Project-specific skills** generated at Step 13 that inject your project context:
+
+- `frontend-aesthetics` — Your design tokens, component patterns, Tailwind config
+- `backend-engineering` — Your API conventions, auth patterns, error shapes
+- `database-modeling` — Your schema patterns, RLS policies, migrations
+
+### Platform Installation
+
+| Platform        | Foundation Skills            | Project Overlays                               |
+| --------------- | ---------------------------- | ---------------------------------------------- |
+| **Cursor**      | `.cursor/rules/sss-*.mdc`    | `.cursor/rules/frontend-aesthetics.mdc`        |
+| **Claude Code** | `.claude/skills/*/SKILL.md`  | `.claude/skills/frontend-aesthetics/SKILL.md`  |
+| **OpenCode**    | `.opencode/skill/*/SKILL.md` | `.opencode/skill/frontend-aesthetics/SKILL.md` |
+
+### How They Work Together
+
+```
+┌─────────────────────────────────────────────────────────┐
+│           PROJECT-SPECIFIC OVERLAYS (Step 13)          │
+│  Injects: Your PRD, design system, stack, conventions  │
+├─────────────────────────────────────────────────────────┤
+│           FOUNDATION SKILLS (Step 0)                   │
+│  Provides: Universal best practices, patterns, tools   │
+└─────────────────────────────────────────────────────────┘
+```
+
+Foundation skills provide the **base capabilities**. Project overlays add **your specific context**. Combined, the AI gets expert-level knowledge of YOUR codebase.
+
+See [FOUNDATION-SKILLS.md](./FOUNDATION-SKILLS.md) for the complete skill reference.
+
+---
+
 ## 🤖 Agentic Layer (v4.0)
 
 SSS now includes a **Grade 4 Agentic Layer** that enables AI agents to operate, maintain, and self-correct implementations autonomously.
@@ -34,10 +85,10 @@ SSS now includes a **Grade 4 Agentic Layer** that enables AI agents to operate, 
 
 Based on the "Building Agentic Layers" methodology, SSS separates:
 
-| Layer | Location | Purpose |
-|-------|----------|---------|
-| **Application Layer** | `app/`, `components/`, `lib/` | The actual product code |
-| **Agentic Layer** | `.sss/` | AI agent tools, memory, and state |
+| Layer                 | Location                      | Purpose                           |
+| --------------------- | ----------------------------- | --------------------------------- |
+| **Application Layer** | `app/`, `components/`, `lib/` | The actual product code           |
+| **Agentic Layer**     | `.sss/`                       | AI agent tools, memory, and state |
 
 ### Agentic Layer Structure
 
@@ -56,12 +107,12 @@ Based on the "Building Agentic Layers" methodology, SSS separates:
 
 ### Agentic Maturity Grades
 
-| Grade | Feature | SSS Implementation |
-|-------|---------|-------------------|
-| **Grade 1** | Prime Prompt + Memory | `.cursorrules` + `.sss-manifest.json` |
-| **Grade 2** | Specialized Agents | `@implement-prd`, `@verify-prd`, `@gap-analysis` |
-| **Grade 3** | Custom Tools | `.sss/tools/` scripts (generated by Step 12) |
-| **Grade 4** | Closed Loops | `@dev-loop` with auto-fix via `@gap-analysis` |
+| Grade       | Feature               | SSS Implementation                               |
+| ----------- | --------------------- | ------------------------------------------------ |
+| **Grade 1** | Prime Prompt + Memory | `.cursorrules` + `.sss-manifest.json`            |
+| **Grade 2** | Specialized Agents    | `@implement-prd`, `@verify-prd`, `@gap-analysis` |
+| **Grade 3** | Custom Tools          | `.sss/tools/` scripts (generated by Step 12)     |
+| **Grade 4** | Closed Loops          | `@dev-loop` with auto-fix via `@gap-analysis`    |
 
 ### Self-Correcting Implementation Loop
 
@@ -108,18 +159,22 @@ For multi-session continuity, SSS maintains `.sss/memory/active_task.md`:
 # Active Task
 
 ## PRD
+
 F03-dashboard
 
 ## Phase
+
 implementing
 
 ## Completed Steps
+
 - [x] Database schema
 - [x] Server actions
 - [ ] UI components
 - [ ] Tests
 
 ## Last Updated
+
 2025-12-29T10:30:00Z
 ```
 
@@ -134,13 +189,13 @@ This enables the AI to resume work after context window resets.
 
 ### Commands with Agentic Integration
 
-| Command | Agentic Feature |
-|---------|-----------------|
-| `@step-12-context-engine` | Generates `.sss/tools/` scripts |
-| `@implement-prd` | Writes to `.sss/memory/active_task.md` |
-| `@verify-prd` | Uses `.sss/tools/` for verification |
-| `@dev-loop` | Auto-fix loop + active task memory |
-| `@gap-analysis` | Called by dev-loop for self-correction |
+| Command                   | Agentic Feature                        |
+| ------------------------- | -------------------------------------- |
+| `@step-12-context-engine` | Generates `.sss/tools/` scripts        |
+| `@implement-prd`          | Writes to `.sss/memory/active_task.md` |
+| `@verify-prd`             | Uses `.sss/tools/` for verification    |
+| `@dev-loop`               | Auto-fix loop + active task memory     |
+| `@gap-analysis`           | Called by dev-loop for self-correction |
 
 ---
 
@@ -170,23 +225,23 @@ Before proceeding to the next step (or starting `@dev-loop`), you should verify 
 
 Each step is scored across 5 dimensions:
 
-| Category | Points | What It Checks |
-|----------|--------|----------------|
-| **File Existence** | 20 | Required output files exist and meet minimum size |
-| **Section Completeness** | 30 | Required sections present in documents |
-| **Content Quality** | 30 | Content meets quality standards (tables, diagrams, code) |
-| **Checkpoints** | 10 | HITL checkpoints were completed |
-| **Success Criteria** | 10 | Step-specific success criteria met |
+| Category                 | Points | What It Checks                                           |
+| ------------------------ | ------ | -------------------------------------------------------- |
+| **File Existence**       | 20     | Required output files exist and meet minimum size        |
+| **Section Completeness** | 30     | Required sections present in documents                   |
+| **Content Quality**      | 30     | Content meets quality standards (tables, diagrams, code) |
+| **Checkpoints**          | 10     | HITL checkpoints were completed                          |
+| **Success Criteria**     | 10     | Step-specific success criteria met                       |
 
 ### Score Thresholds
 
-| Score | Grade | Status | Action |
-|-------|-------|--------|--------|
-| 100/100 | A+ | ✅ COMPLETE | Ready for next step |
-| 90-99 | A | ✅ PASSING | Minor improvements optional |
-| 80-89 | B+ | ⚠️ ACCEPTABLE | Should fix before proceeding |
-| 70-79 | B | ⚠️ NEEDS WORK | Fix gaps before proceeding |
-| <70 | C/F | ❌ INCOMPLETE | Re-run the step or use --fix |
+| Score   | Grade | Status        | Action                       |
+| ------- | ----- | ------------- | ---------------------------- |
+| 100/100 | A+    | ✅ COMPLETE   | Ready for next step          |
+| 90-99   | A     | ✅ PASSING    | Minor improvements optional  |
+| 80-89   | B+    | ⚠️ ACCEPTABLE | Should fix before proceeding |
+| 70-79   | B     | ⚠️ NEEDS WORK | Fix gaps before proceeding   |
+| <70     | C/F   | ❌ INCOMPLETE | Re-run the step or use --fix |
 
 ### Iterative Fix Loop (--fix mode)
 
@@ -201,6 +256,7 @@ When you run `@step-verify --step=1 --fix`:
 ### Verification Schema
 
 Each step command file contains a `<verification>` block that defines:
+
 - Required files with paths and minimum sizes
 - Required sections in documents
 - Content quality checks (patterns, tables, diagrams)
@@ -209,13 +265,13 @@ Each step command file contains a `<verification>` block that defines:
 
 ### When to Use @step-verify
 
-| Situation | Command |
-|-----------|---------|
-| Before starting next step | `@step-verify --step=N` |
-| Before running @dev-loop | `@step-verify --step=1-11 --fix` |
-| After completing a step | `@step-verify --step=N --verbose` |
-| Diagnosing missing outputs | `@step-verify --step=N` |
-| Quick health check | `@step-verify --step=0-12` |
+| Situation                  | Command                           |
+| -------------------------- | --------------------------------- |
+| Before starting next step  | `@step-verify --step=N`           |
+| Before running @dev-loop   | `@step-verify --step=1-11 --fix`  |
+| After completing a step    | `@step-verify --step=N --verbose` |
+| Diagnosing missing outputs | `@step-verify --step=N`           |
+| Quick health check         | `@step-verify --step=0-12`        |
 
 ### Integration with @validate-methodology
 
@@ -228,40 +284,75 @@ Use `@step-verify` for detailed gap analysis and `@validate-methodology` for qui
 
 ## 📋 Step Overview (0-12 + Conditional 1.5)
 
-| Step | Name | Purpose | Key Output |
-|------|------|---------|------------|
-| **0** | Environment Setup | Prepare workspace, tools, MCP config | `docs/ops/ENVIRONMENT-SETUP.md`, folder structure |
-| **1** | Ideation | Capture vision, market research, Master PRD | `docs/specs/MASTER_PRD.md`, `docs/stack-profile.json` |
-| **1.5** | Offer Architecture | *(Conditional - monetized projects)* Hormozi framework pricing | `docs/specs/OFFER_ARCHITECTURE.md`, `docs/specs/pricing-config.json` |
-| **2** | Architecture | System design, tech stack, ADRs | `docs/architecture/ARCHITECTURE.md` |
-| **3** | UX Design | User journeys, flows, emotional design | `docs/ux/UX-DESIGN.md` |
-| **4** | Flow Tree & Screen Architecture | **Mobbin-style comprehensive screen mapping** | `docs/flows/FLOW-TREE.md`, `SCREEN-INVENTORY.md`, `TRANSITION-MAP.md` + **Bulletproof Gates** |
-| **5** | Wireframe Prototypes | *(Optional)* Runnable in-cursor prototypes | `/wireframes/`, `docs/wireframes/PROTOTYPE-SUMMARY.md` + **WIREFRAME-TRACKER.md** |
-| **6** | Design System | Design tokens, component specs | `docs/design/DESIGN-SYSTEM.md` |
-| **7** | Interface States | All states (empty/loading/error/success) | `docs/states/STATE-SPEC.md` |
-| **8** | Technical Specification | Complete dev blueprint, API, DB schema | `docs/technical/TECHNICAL-SPEC.md` |
-| **9** | Landing Page | *(Optional)* Marketing/sales page | `docs/landing-page/LANDING-PAGE.md` |
-| **10** | Feature Breakdown | Shape Up shaping, story mapping, betting | `docs/implementation/FEATURE-BREAKDOWN.md` |
-| **11** | PRD Generation | Feature PRDs with BDD scenarios | `docs/prds/F*.md` |
-| **12** | Cursor Rules | Context engineering, .cursorrules | `.cursorrules`, `.cursor/rules/*.mdc` |
+| Step     | Name                            | Purpose                                                        | Key Output                                                                                    |
+| -------- | ------------------------------- | -------------------------------------------------------------- | --------------------------------------------------------------------------------------------- |
+| **0**    | Environment Setup               | Prepare workspace, tools, MCP config                           | `docs/ops/ENVIRONMENT-SETUP.md`, folder structure                                             |
+| **1**    | Ideation                        | Capture vision, market research, Master PRD                    | `docs/specs/MASTER_PRD.md`, `docs/stack-profile.json`                                         |
+| **1.5**  | Offer Architecture              | _(Conditional - monetized projects)_ Hormozi framework pricing | `docs/specs/OFFER_ARCHITECTURE.md`, `docs/specs/pricing-config.json`                          |
+| **2**    | Architecture                    | System design, tech stack, ADRs                                | `docs/architecture/ARCHITECTURE.md`                                                           |
+| **3**    | UX Design                       | User journeys, flows, emotional design                         | `docs/ux/UX-DESIGN.md`                                                                        |
+| **4**    | Flow Tree & Screen Architecture | **Mobbin-style comprehensive screen mapping**                  | `docs/flows/FLOW-TREE.md`, `SCREEN-INVENTORY.md`, `TRANSITION-MAP.md` + **Bulletproof Gates** |
+| **5**    | Wireframe Prototypes            | _(Optional)_ Runnable in-cursor prototypes                     | `/wireframes/`, `docs/wireframes/PROTOTYPE-SUMMARY.md` + **WIREFRAME-TRACKER.md**             |
+| **6**    | Design System                   | Design tokens, component specs                                 | `docs/design/DESIGN-SYSTEM.md`                                                                |
+| **7**    | Interface States                | All states (empty/loading/error/success)                       | `docs/states/STATE-SPEC.md`                                                                   |
+| **8**    | Technical Specification         | Complete dev blueprint, API, DB schema                         | `docs/technical/TECHNICAL-SPEC.md`                                                            |
+| **9**    | Landing Page                    | _(Optional)_ Marketing/sales page                              | `docs/landing-page/LANDING-PAGE.md`                                                           |
+| **10**   | Feature Breakdown               | Shape Up shaping, story mapping, betting                       | `docs/implementation/FEATURE-BREAKDOWN.md`                                                    |
+| **11**   | PRD Generation                  | Feature PRDs with BDD scenarios                                | `docs/prds/F*.md`                                                                             |
+| **11.5** | PRD Swarm                       | _(Optional)_ Parallel implementation orchestration             | `docs/prds/swarm-*/`, `SWARM-PLAN.md`                                                         |
+| **12**   | Cursor Rules                    | Context engineering, .cursorrules                              | `.cursorrules`, `.cursor/rules/*.mdc`                                                         |
 
 ### Bulletproof Gate Files (Steps 4 & 5)
 
 These artifacts ensure 100% screen coverage:
 
-| File | Step | Purpose |
-|------|------|---------|
-| `docs/flows/TRACEABILITY-MATRIX.md` | 4 | PRD feature-to-screen mapping |
-| `docs/flows/ZERO-OMISSION-CERTIFICATE.md` | 4/5 | Mathematical proof no screens missed |
-| `docs/prds/flows/WIREFRAME-TRACKER.md` | 5 | Wireframe completion tracker |
+| File                                      | Step | Purpose                              |
+| ----------------------------------------- | ---- | ------------------------------------ |
+| `docs/flows/TRACEABILITY-MATRIX.md`       | 4    | PRD feature-to-screen mapping        |
+| `docs/flows/ZERO-OMISSION-CERTIFICATE.md` | 4/5  | Mathematical proof no screens missed |
+| `docs/prds/flows/WIREFRAME-TRACKER.md`    | 5    | Wireframe completion tracker         |
 
 ### Step 1.5 Conditional Rules
 
 Step 1.5 is **required when monetization is detected**:
+
 - `docs/specs/pricing-config.json` exists
 - `docs/specs/OFFER_ARCHITECTURE.md` exists
 - `MASTER_PRD.md` mentions payment/billing/subscription
 - `stack-profile.json` has billing provider config (stripe, paddle, etc.)
+
+### Step 11.5 Optional Rules
+
+Step 11.5 (PRD Swarm Orchestration) is **suggested when**:
+
+- `docs/prds/` contains 5+ PRD files
+- User has access to multiple terminal instances (Cursor, Claude Code, OpenCode)
+- Project complexity warrants parallel development
+
+**What Step 11.5 Does:**
+
+1. Scans all PRDs and extracts dependency information
+2. Builds a dependency graph (DAG)
+3. Detects circular dependencies (fails if found)
+4. Groups PRDs into independent "swarms"
+5. Creates `docs/prds/swarm-N/` folders
+6. Generates execution order per swarm
+7. Creates `SWARM-PLAN.md` for multi-terminal coordination
+
+**Swarm Workflow:**
+
+```
+Terminal 1: @implement-prd --swarm=1  (works on swarm-1 PRDs)
+Terminal 2: @implement-prd --swarm=2  (works on swarm-2 PRDs)
+Terminal 3: @implement-prd --swarm=3  (works on swarm-3 PRDs)
+Terminal 4: @implement-prd --swarm=4  (works on swarm-4 PRDs)
+```
+
+**Skip Step 11.5 If:**
+
+- Fewer than 5 PRDs (sequential is fine)
+- All PRDs have linear dependencies (can't parallelize)
+- Single developer working sequentially
 
 ### New in Step 4: Flow Tree & Screen Architecture
 
@@ -273,6 +364,7 @@ Step 1.5 is **required when monetization is detected**:
 - ✅ **Transition map** - How screens connect and flow to each other
 
 **Example Output:**
+
 ```
 📱 App Flow Tree
 ├── 🔐 Authentication (8 screens)

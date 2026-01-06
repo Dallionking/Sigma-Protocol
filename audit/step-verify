@@ -1,11 +1,12 @@
 ---
-version: "2.1.0"
-last_updated: "2025-12-17"
+version: "2.2.0"
+last_updated: "2026-01-05"
 changelog:
+  - "2.2.0: Added Step 11.5 (PRD Swarm) support for multi-terminal parallel implementation verification"
   - "2.1.0: Added Step 1.5 (Offer Architecture) support, fixed step file paths, added back-compat for legacy filenames"
   - "2.0.0: Updated for 13-step workflow (Steps 0-12)"
   - "1.0.0: Initial release for 10-step workflow"
-description: "Deep gap analysis for workflow steps (0-12, including conditional 1.5) with 100-point scoring and iterative fix loop"
+description: "Deep gap analysis for workflow steps (0-12, including conditional 1.5 and 11.5) with 100-point scoring and iterative fix loop"
 allowed-tools:
   - read_file
   - write
@@ -21,7 +22,7 @@ parameters:
 
 # @step-verify — Deep Gap Analysis & Iterative Completion
 
-**Purpose:** Perform comprehensive verification of SSS workflow steps (0-12, including conditional Step 1.5) with a 100-point scoring system. Identifies gaps and can automatically fix them until 100% completion.
+**Purpose:** Perform comprehensive verification of SSS workflow steps (0-12, including conditional Steps 1.5 and 11.5) with a 100-point scoring system. Identifies gaps and can automatically fix them until 100% completion.
 
 **Core Philosophy:** Every step must be production-ready before proceeding. No gaps, no shortcuts.
 
@@ -33,7 +34,8 @@ parameters:
 ```bash
 @step-verify --step=1              # Verify Step 1 only
 @step-verify --step=1.5            # Verify Step 1.5 (Offer Architecture)
-@step-verify --step=0-12           # Verify all steps (includes 1.5 if monetized)
+@step-verify --step=11.5           # Verify Step 11.5 (PRD Swarm)
+@step-verify --step=0-12           # Verify all steps (includes 1.5, 11.5 if applicable)
 @step-verify --step=1,1.5,3,5      # Verify specific steps
 ```
 
@@ -54,11 +56,15 @@ parameters:
 
 | Parameter | Values | Description | Required |
 |-----------|--------|-------------|----------|
-| `--step` | 0-12 (including 1.5), range (1-5), or list (1,1.5,3,5) | Step(s) to verify | Yes |
+| `--step` | 0-12 (including 1.5, 11.5), range (1-5), or list (1,1.5,3,5) | Step(s) to verify | Yes |
 | `--fix` | boolean | Enable iterative fix loop | No |
 | `--verbose` | boolean | Show detailed check results | No |
 
-**Note:** Step 1.5 (Offer Architecture) is conditional—required only when monetization is detected. See Canonical Step Registry in `docs/mcp/SSS-VERSIONING.md`.
+**Note:** Conditional steps:
+- **Step 1.5** (Offer Architecture) — Required only when monetization is detected
+- **Step 11.5** (PRD Swarm) — Required only when 5+ PRDs exist
+
+See Canonical Step Registry in `docs/mcp/SSS-VERSIONING.md`.
 
 ---
 
@@ -102,7 +108,7 @@ const params = parseParams(command);
 // params.verbose: boolean
 
 // Canonical step order (see docs/mcp/SSS-VERSIONING.md for authoritative reference)
-const CANONICAL_STEP_ORDER = [0, 1, 1.5, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
+const CANONICAL_STEP_ORDER = [0, 1, 1.5, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 11.5, 12];
 
 // Parse step parameter (supports decimals like 1.5)
 function parseStepParam(stepParam: string): number[] {
@@ -142,7 +148,8 @@ const stepFiles = {
   9: 'steps/step-9-landing-page',              // Landing Page (optional)
   10: 'steps/step-10-feature-breakdown',       // Feature Breakdown
   11: 'steps/step-11-prd-generation',          // PRD Generation
-  12: 'steps/step-12-context-engine',            // Cursor Rules
+  11.5: 'steps/step-11.5-prd-swarm',           // Conditional: PRD Swarm (5+ PRDs)
+  12: 'steps/step-12-context-engine',          // Cursor Rules
 };
 
 // Legacy file aliases for back-compatibility
@@ -624,6 +631,10 @@ When verifying multiple steps:
 | 5 | Wireframe Prototypes | 0/100 | ❌ NOT STARTED |
 | 6 | Design System | 0/100 | ❌ NOT STARTED |
 | 7 | Interface States | 0/100 | ❌ NOT STARTED |
+| ... | ... | ... | ... |
+| 11 | PRD Generation | 100/100 | ✅ COMPLETE |
+| 11.5 | PRD Swarm | 85/100 | ⚠️ ACCEPTABLE |
+| 12 | Cursor Rules | 100/100 | ✅ COMPLETE |
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
@@ -667,7 +678,9 @@ BULLETPROOF GATES:
 4. Run all checks and calculate scores (use alias-aware file checks for back-compat)
 5. Collect gaps with fix recommendations
 
-**Step 1.5 Handling:** If Step 1.5 is in the verify list, first check if monetization is detected (see `docs/mcp/SSS-VERSIONING.md` for detection rules). If not monetized, skip Step 1.5 with status "Skipped (Not monetized)".
+**Conditional Step Handling:**
+- **Step 1.5:** If in verify list, first check if monetization is detected (see `docs/mcp/SSS-VERSIONING.md` for detection rules). If not monetized, skip with status "Skipped (Not monetized)".
+- **Step 11.5:** If in verify list, first check if 5+ PRDs exist in `docs/prds/`. If fewer than 5 PRDs, skip with status "Skipped (< 5 PRDs)".
 
 ### Step 3: Generate Report
 
@@ -719,6 +732,12 @@ Before marking verification complete:
 ```bash
 @step-1.5-offer-architecture     # Run offer architecture step
 @step-verify --step=1.5          # Verify completion
+```
+
+**After Step 11 (5+ PRDs):**
+```bash
+@step-11.5-prd-swarm             # Run PRD swarm orchestration
+@step-verify --step=11.5         # Verify swarm structure
 ```
 
 **Quick health check:**
