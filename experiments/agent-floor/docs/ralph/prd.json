@@ -27,7 +27,7 @@
   },
   "meta": {
     "totalStories": 52,
-    "passedStories": 6
+    "passedStories": 7
   },
   "stories": [
     {
@@ -706,7 +706,7 @@
       "title": "Create MessageBus class",
       "description": "Message routing system for agent-to-agent communication with @mention parsing.",
       "priority": 1,
-      "passes": false,
+      "passes": true,
       "source": {
         "prdPath": "docs/MASTER_PRD.md",
         "prdId": "PRD-010"
@@ -742,7 +742,12 @@
       "agentInstructions": "Use architecture-patterns skill. Spawn lead-architect subagent. Create at src/server/agents/MessageBus.ts.",
       "files": [
         "src/server/agents/MessageBus.ts"
-      ]
+      ],
+      "lastAttempt": {
+        "timestamp": "2026-01-22T12:29:37Z",
+        "engine": "claude",
+        "success": true
+      }
     },
     {
       "id": "PRD010-002",
