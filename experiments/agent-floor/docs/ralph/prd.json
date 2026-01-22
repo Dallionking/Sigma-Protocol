@@ -27,7 +27,7 @@
   },
   "meta": {
     "totalStories": 52,
-    "passedStories": 8
+    "passedStories": 9
   },
   "stories": [
     {
@@ -845,7 +845,7 @@
       "title": "Create Claude Code CLI adapter",
       "description": "LLM provider adapter that spawns Claude Code CLI (uses Max subscription).",
       "priority": 1,
-      "passes": false,
+      "passes": true,
       "source": {
         "prdPath": "docs/MASTER_PRD.md",
         "prdId": "PRD-012"
@@ -888,7 +888,12 @@
       "agentInstructions": "Use agentic-coding skill. Create at src/server/providers/claude-code.ts. Use child_process.spawn.",
       "files": [
         "src/server/providers/claude-code.ts"
-      ]
+      ],
+      "lastAttempt": {
+        "timestamp": "2026-01-22T12:37:15Z",
+        "engine": "claude",
+        "success": true
+      }
     },
     {
       "id": "PRD013-001",
