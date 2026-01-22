@@ -27,7 +27,7 @@
   },
   "meta": {
     "totalStories": 52,
-    "passedStories": 36
+    "passedStories": 37
   },
   "stories": [
     {
@@ -406,7 +406,7 @@
       "title": "Add message reactions",
       "description": "Allow reactions on chat messages (thumbs up, eyes, checkmark).",
       "priority": 3,
-      "passes": false,
+      "passes": true,
       "source": {
         "prdPath": "docs/MASTER_PRD.md",
         "prdId": "PRD-005"
@@ -437,7 +437,12 @@
       "agentInstructions": "Use frontend-design skill. Create component at src/components/chat/MessageReactions.tsx.",
       "files": [
         "src/components/chat/MessageReactions.tsx"
-      ]
+      ],
+      "lastAttempt": {
+        "timestamp": "2026-01-22T15:51:09Z",
+        "engine": "claude",
+        "success": true
+      }
     },
     {
       "id": "PRD006-001",
