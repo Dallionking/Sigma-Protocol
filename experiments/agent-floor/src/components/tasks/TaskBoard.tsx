@@ -15,6 +15,7 @@ import { Plus, MoreVertical, User, Clock, AlertCircle, GripVertical } from "luci
 import { useFloorStore } from "@/lib/store/floor-store";
 import { formatDistanceToNow } from "date-fns";
 import { cn } from "@/lib/utils/cn";
+import TaskDetailModal from "./TaskDetailModal";
 
 type TaskStatus = "todo" | "in-progress" | "review" | "done" | "blocked";
 
@@ -39,6 +40,7 @@ const statusColumns: { id: TaskStatus; label: string; color: string }[] = [
 export default function TaskBoard() {
   const { tasks, agents, createTask, updateTask, assignTask } = useFloorStore();
   const [showCreateForm, setShowCreateForm] = useState(false);
+  const [selectedTask, setSelectedTask] = useState<Task | null>(null);
   const [newTask, setNewTask] = useState({
     title: "",
     description: "",
@@ -169,11 +171,34 @@ export default function TaskBoard() {
                 tasks={columnTasks}
                 agents={agents}
                 onAssign={assignTask}
+                onTaskClick={(task) => setSelectedTask(task)}
               />
             );
           })}
         </div>
       </DragDropContext>
+
+      {/* Task Detail Modal */}
+      {selectedTask && (
+        <TaskDetailModal
+          task={selectedTask}
+          agents={agents}
+          onClose={() => setSelectedTask(null)}
+          onUpdate={(taskId, updates) => {
+            updateTask(taskId, updates);
+            // Update selectedTask state to reflect changes
+            setSelectedTask((prev) =>
+              prev ? { ...prev, ...updates, updatedAt: Date.now() } : null
+            );
+          }}
+          onAssign={(taskId, agentId) => {
+            assignTask(taskId, agentId);
+            setSelectedTask((prev) =>
+              prev ? { ...prev, assignee: agentId, updatedAt: Date.now() } : null
+            );
+          }}
+        />
+      )}
     </div>
   );
 }
@@ -183,9 +208,10 @@ interface TaskColumnProps {
   tasks: Task[];
   agents: { id: string; name: string }[];
   onAssign: (taskId: string, agentId: string) => void;
+  onTaskClick: (task: Task) => void;
 }
 
-function TaskColumn({ column, tasks, agents, onAssign }: TaskColumnProps) {
+function TaskColumn({ column, tasks, agents, onAssign, onTaskClick }: TaskColumnProps) {
   return (
     <div className="mb-4">
       <div className="flex items-center gap-2 mb-2">
@@ -221,6 +247,7 @@ function TaskColumn({ column, tasks, agents, onAssign }: TaskColumnProps) {
                 index={index}
                 agents={agents}
                 onAssign={(agentId) => onAssign(task.id, agentId)}
+                onTaskClick={() => onTaskClick(task)}
               />
             ))}
 
@@ -237,9 +264,10 @@ interface DraggableTaskCardProps {
   index: number;
   agents: { id: string; name: string }[];
   onAssign: (agentId: string) => void;
+  onTaskClick: () => void;
 }
 
-function DraggableTaskCard({ task, index, agents, onAssign }: DraggableTaskCardProps) {
+function DraggableTaskCard({ task, index, agents, onAssign, onTaskClick }: DraggableTaskCardProps) {
   return (
     <Draggable draggableId={task.id} index={index}>
       {(provided: DraggableProvided, snapshot: DraggableStateSnapshot) => (
@@ -255,6 +283,7 @@ function DraggableTaskCard({ task, index, agents, onAssign }: DraggableTaskCardP
             task={task}
             agents={agents}
             onAssign={onAssign}
+            onTaskClick={onTaskClick}
             dragHandleProps={provided.dragHandleProps}
             isDragging={snapshot.isDragging}
           />
@@ -268,6 +297,7 @@ interface TaskCardProps {
   task: Task;
   agents: { id: string; name: string }[];
   onAssign: (agentId: string) => void;
+  onTaskClick: () => void;
   dragHandleProps?: DraggableProvided["dragHandleProps"];
   isDragging?: boolean;
 }
@@ -276,6 +306,7 @@ function TaskCard({
   task,
   agents,
   onAssign,
+  onTaskClick,
   dragHandleProps,
   isDragging,
 }: TaskCardProps) {
@@ -309,7 +340,12 @@ function TaskCard({
       {/* Card content */}
       <div className="flex-1 min-w-0">
         <div className="flex items-start justify-between mb-2">
-          <h4 className="font-medium text-sm truncate">{task.title}</h4>
+          <button
+            onClick={onTaskClick}
+            className="font-medium text-sm truncate text-left hover:text-floor-highlight transition-colors"
+          >
+            {task.title}
+          </button>
           <button
             onClick={() => setShowAssignMenu(!showAssignMenu)}
             className="p-1 hover:bg-floor-accent rounded flex-shrink-0"
