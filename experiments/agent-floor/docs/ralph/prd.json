@@ -27,7 +27,7 @@
   },
   "meta": {
     "totalStories": 52,
-    "passedStories": 31
+    "passedStories": 32
   },
   "stories": [
     {
@@ -2097,7 +2097,7 @@
       "title": "Create ProviderConfig component",
       "description": "UI for managing LLM provider settings.",
       "priority": 2,
-      "passes": false,
+      "passes": true,
       "source": {
         "prdPath": "docs/MASTER_PRD.md",
         "prdId": "PRD-027"
@@ -2152,7 +2152,12 @@
             ]
           }
         }
-      ]
+      ],
+      "lastAttempt": {
+        "timestamp": "2026-01-22T15:24:48Z",
+        "engine": "claude",
+        "success": true
+      }
     },
     {
       "id": "PRD027-002",
