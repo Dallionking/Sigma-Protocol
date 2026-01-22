@@ -503,3 +503,39 @@ src/
   - Imports `ROLE_VOICE_MAPPING` and `getVoiceForRole` from `@/lib/voice/elevenlabs`
   - Preview works with or without ElevenLabs API key (simulates demo mode)
   - Displays 5 common roles: PM, Architect, Frontend, Backend, QA
+
+### PRD019-002: Coffee Break Behavior (2026-01-22)
+- Enhanced `src/server/agents/AgentWorker.ts` with coffee break lifecycle
+- Enhanced `src/game/scenes/OfficeScene.ts` with water cooler zone
+- Enhanced `src/game/sprites/AgentSprite.ts` with resting animation
+- Features:
+  - [AC1] Fatigue increases with tasks via `increaseFatigue()` (5 for mentions, 15 for tasks)
+  - [AC2] Coffee break triggered when fatigue ≤ 30 (`COFFEE_BREAK_THRESHOLD`)
+  - [AC3] Water cooler zone in upper right of office (x: width-80, y: 120)
+  - [AC4] Resting animation: coffee ☕ icon + gentle breathing tween
+  - [AC5] Fatigue restores 50 points after 10s break (`COFFEE_BREAK_RESTORE_AMOUNT`)
+- Coffee break constants in AgentWorker.ts:
+  - `COFFEE_BREAK_THRESHOLD = 30` - Fatigue level that triggers break
+  - `COFFEE_BREAK_DURATION_MS = 10000` - 10 second break
+  - `COFFEE_BREAK_RESTORE_AMOUNT = 50` - Fatigue restored after break
+- AgentWorker methods:
+  - `needsCoffeeBreak()` - Check if fatigue below threshold
+  - `isOnCoffeeBreak()` - Check if currently on break
+  - `startCoffeeBreak(onStarted?, onEnded?)` - Initiate break with callbacks
+  - `arrivedAtWaterCooler()` - Called when walk to cooler completes
+  - `completeCoffeeBreak()` - Private, restores fatigue after timer
+- OfficeScene methods:
+  - `createWaterCooler()` - Creates water cooler sprite and zone
+  - `getWaterCoolerZone()` - Returns zone coordinates
+  - `walkAgentToWaterCooler(agentId, options)` - Walk agent to cooler
+  - `walkAgentBackToDesk(agentId, options)` - Return agent to desk
+  - `isAgentAtWaterCooler(agentId)` - Check if agent is at cooler
+- AgentSprite methods:
+  - `startResting()` - Show coffee icon and breathing animation
+  - `stopResting()` - Clear resting animation
+  - `getIsResting()` - Check if currently resting
+- Integration notes:
+  - Fatigue now DECREASES with rest (via `decreaseFatigue`) and INCREASES with work (via `increaseFatigue`)
+  - Note the naming convention was fixed: fatigue level 100 = fully rested, 0 = exhausted
+  - External coordinator (AgentManager/OfficeScene) handles walking to water cooler
+  - Water cooler texture is procedurally generated (blue jug + gray stand)
