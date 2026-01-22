@@ -27,7 +27,7 @@
   },
   "meta": {
     "totalStories": 52,
-    "passedStories": 32
+    "passedStories": 33
   },
   "stories": [
     {
@@ -2164,7 +2164,7 @@
       "title": "Create settings page",
       "description": "Full settings page with all configuration options.",
       "priority": 2,
-      "passes": false,
+      "passes": true,
       "source": {
         "prdPath": "docs/MASTER_PRD.md",
         "prdId": "PRD-027"
@@ -2214,7 +2214,12 @@
             ]
           }
         }
-      ]
+      ],
+      "lastAttempt": {
+        "timestamp": "2026-01-22T15:32:10Z",
+        "engine": "claude",
+        "success": true
+      }
     },
     {
       "id": "PRD030-001",
