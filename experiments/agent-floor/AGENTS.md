@@ -355,3 +355,27 @@ src/
   - Formal: professional tone, proper grammar
   - Casual: friendly, approachable, may use humor
   - Low fatigue suggests agents need breaks (potential coffee break animation trigger)
+
+### PRD021-001: GitHub Integration Service (2026-01-22)
+- Created `src/server/integrations/github.ts` - GitHub API integration via gh CLI
+- Features:
+  - `GitHubService` class with configurable working directory, timeout, and retries
+  - `createBranch(name)` - Create and checkout new branch, or switch if exists
+  - `commit(files, message)` - Stage files and create commit with SHA return
+  - `createPR(title, body)` - Push branch and create PR with URL return
+  - `getPRStatus(number)` - Get PR state, mergeability, CI checks, review decision
+  - `isAvailable()` - Check gh CLI authentication status
+  - `getRepoInfo()` - Get current repository owner/name
+- Exported types:
+  - `CommandResult` - CLI execution result
+  - `BranchResult` - Branch creation result
+  - `CommitResult` - Commit result with SHA
+  - `PRResult` - PR creation result with URL
+  - `PRStatus` - Comprehensive PR status info
+  - `GitHubServiceOptions` - Configuration interface
+- Integration notes:
+  - Uses gh CLI for all GitHub API operations (no direct HTTP)
+  - Automatic retry with exponential backoff on network errors
+  - 2-minute default timeout per operation
+  - Branch names auto-sanitized for git compatibility
+  - Factory function: `createGitHubService(options?)`
