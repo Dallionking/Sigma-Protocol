@@ -6,6 +6,7 @@ import { useFloorStore } from "@/lib/store/floor-store";
 import { formatDistanceToNow } from "date-fns";
 import type { FloorMessage } from "@/types/message";
 import CodeBlock, { parseCodeBlocks, hasCodeBlocks } from "./CodeBlock";
+import MessageReactions, { useMessageReactions, type ReactionType } from "./MessageReactions";
 
 export default function ChatPanel() {
   const { messages, agents, inputMessage, setInputMessage, sendMessage } =
@@ -14,6 +15,7 @@ export default function ChatPanel() {
   const inputRef = useRef<HTMLInputElement>(null);
   const [showMentions, setShowMentions] = useState(false);
   const [mentionFilter, setMentionFilter] = useState("");
+  const { getReactions, toggleReaction } = useMessageReactions();
 
   // Auto-scroll to bottom
   useEffect(() => {
@@ -88,7 +90,13 @@ export default function ChatPanel() {
       {/* Messages */}
       <div className="flex-1 overflow-y-auto p-4 space-y-3">
         {messages.map((message) => (
-          <MessageBubble key={message.id} message={message} agents={agents} />
+          <MessageBubble
+            key={message.id}
+            message={message}
+            agents={agents}
+            reactions={getReactions(message.id)}
+            onToggleReaction={toggleReaction}
+          />
         ))}
         <div ref={messagesEndRef} />
       </div>
@@ -154,9 +162,13 @@ export default function ChatPanel() {
 function MessageBubble({
   message,
   agents,
+  reactions,
+  onToggleReaction,
 }: {
   message: FloorMessage;
   agents: { id: string; name: string; status: string }[];
+  reactions: import("./MessageReactions").Reaction[];
+  onToggleReaction: (messageId: string, reactionType: ReactionType) => void;
 }) {
   const fromAgent = agents.find((a) => a.id === message.from);
   const isSystem = message.type === "system";
@@ -254,6 +266,14 @@ function MessageBubble({
           }`}
         >
           {renderContent(message.content)}
+        </div>
+        {/* Message Reactions */}
+        <div className={isUser ? "flex justify-end" : "flex justify-start"}>
+          <MessageReactions
+            messageId={message.id}
+            reactions={reactions}
+            onToggleReaction={onToggleReaction}
+          />
         </div>
       </div>
     </div>
