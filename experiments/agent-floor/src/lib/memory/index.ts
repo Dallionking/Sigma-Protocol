@@ -14,3 +14,13 @@ export {
   type MemorySection,
   type SearchResult,
 } from "./LongTermMemory";
+
+export {
+  ShortTermMemory,
+  createShortTermMemory,
+  type ShortTermMemoryOptions,
+  type SessionData,
+  type TaskContext,
+  type Decision,
+  type ConversationMessage,
+} from "./ShortTermMemory";

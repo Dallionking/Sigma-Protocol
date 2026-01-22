@@ -301,3 +301,29 @@ src/
   - Section matching is case-insensitive
   - Search returns 1-indexed line numbers for human readability
   - Factory function: `createLongTermMemory(options?)`
+
+### PRD014-002: ShortTermMemory Class (2026-01-22)
+- Created `src/lib/memory/ShortTermMemory.ts` - Session-level memory in JSON
+- Features:
+  - `load(sessionId)` - Load session from JSON file, auto-create if missing
+  - `save(sessionId?)` - Save session to JSON file
+  - `setCurrentTask(task)` / `getCurrentTask()` - Task context management
+  - `updateTaskStatus(status)` / `clearCurrentTask()` - Task lifecycle
+  - `addDecision(decision)` / `getDecisions()` - Decision tracking
+  - `addMessage(message)` / `getHistory()` - Conversation history (capped at 50)
+  - `getRecentMessages(count)` / `getRecentDecisions(count)` - Recent items
+  - `searchHistory(keyword)` - Search messages by content
+  - `listSessions()` / `delete(sessionId)` - Session management
+  - `reset()` - Clear loaded state for session switching
+- Exported types:
+  - `ShortTermMemoryOptions` - Configuration interface
+  - `SessionData` - Full session structure
+  - `TaskContext` - Current task with status, timestamps, assignee
+  - `Decision` - Decision record with reasoning and alternatives
+  - `ConversationMessage` - Message with role, content, metadata
+- Integration notes:
+  - Default storage: `docs/ralph/session/{sessionId}.json`
+  - History auto-truncates to maxHistorySize (default 50)
+  - Uses `autoCreate: true` by default for new sessions
+  - `generateId()` creates unique IDs with timestamp + random suffix
+  - Factory function: `createShortTermMemory(options?)`
