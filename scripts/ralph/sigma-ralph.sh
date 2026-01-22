@@ -977,8 +977,9 @@ handle_story_failure() {
                 echo "  [A] Abort Ralph loop"
                 echo ""
                 read -p "Choice [R/S/D/V/A]: " choice
+                choice=$(echo "$choice" | tr '[:lower:]' '[:upper:]')
 
-                case "${choice^^}" in
+                case "$choice" in
                     R)
                         log_info "Retrying story..."
                         return 2  # Signal retry

@@ -1,16 +1,29 @@
-@import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Inter:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
+/* Vercel-inspired 2026 SaaS Design System */
 :root {
-  --floor-bg: #1a1a2e;
-  --floor-panel: #16213e;
-  --floor-accent: #0f3460;
-  --floor-highlight: #e94560;
-  --floor-text: #eaeaea;
-  --floor-muted: #8b8b8b;
+  /* Core Colors - Pure Black Theme */
+  --floor-bg: #000000;
+  --floor-panel: #0a0a0a;
+  --floor-card: #111111;
+  --floor-accent: #171717;
+  --floor-border: #262626;
+  --floor-highlight: #0070f3;
+  --floor-text: #ededed;
+  --floor-muted: #888888;
+  --floor-subtle: #666666;
+
+  /* Vercel Gradient Colors */
+  --gradient-blue: #0070f3;
+  --gradient-cyan: #50e3c2;
+  --gradient-purple: #7928ca;
+  --gradient-pink: #ff0080;
+  --gradient-orange: #f5a623;
 }
 
 * {
@@ -25,10 +38,13 @@ body {
   overflow-x: hidden;
   background-color: var(--floor-bg);
   color: var(--floor-text);
+  font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 body {
-  font-family: 'Inter', system-ui, sans-serif;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
 }
 
 /* Pixel font for game elements */
@@ -38,46 +54,51 @@ body {
   line-height: 1.5;
 }
 
-/* Custom scrollbar */
+/* Vercel-style scrollbar */
 ::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
+  width: 6px;
+  height: 6px;
 }
 
 ::-webkit-scrollbar-track {
-  background: var(--floor-panel);
-  border-radius: 4px;
+  background: transparent;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: var(--floor-accent);
-  border-radius: 4px;
+  background: var(--floor-border);
+  border-radius: 3px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: var(--floor-highlight);
+  background: var(--floor-muted);
 }
 
-/* Agent status indicators */
+/* Agent status indicators - Vercel colors */
 .status-idle {
-  @apply bg-agent-idle;
+  @apply bg-gradient-cyan;
 }
 
 .status-working {
-  @apply bg-agent-working;
+  @apply bg-gradient-blue;
 }
 
 .status-thinking {
-  @apply bg-agent-thinking;
+  @apply bg-gradient-purple;
 }
 
 .status-talking {
-  @apply bg-agent-talking;
+  @apply bg-gradient-pink;
+}
+
+/* Vercel-style panels */
+.panel {
+  @apply bg-floor-card border border-floor-border rounded-vercel;
+  backdrop-filter: blur(8px);
 }
 
 /* Chat panel styling */
 .chat-panel {
-  @apply bg-floor-panel border-l border-floor-accent;
+  @apply bg-floor-panel border-l border-floor-border;
 }
 
 .chat-message {
@@ -85,53 +106,75 @@ body {
 }
 
 .chat-message-user {
-  @apply bg-floor-accent ml-8;
+  @apply bg-floor-card ml-8 border border-floor-border;
 }
 
 .chat-message-agent {
-  @apply bg-floor-panel border border-floor-accent mr-8;
+  @apply bg-floor-accent mr-8 border border-floor-border;
 }
 
-/* Task board styling */
+/* Task board styling - Vercel cards */
 .task-card {
-  @apply bg-floor-panel border border-floor-accent rounded-lg p-3 mb-2 cursor-pointer;
-  @apply hover:border-floor-highlight transition-colors;
+  @apply bg-floor-card border border-floor-border rounded-lg p-4 mb-3 cursor-pointer;
+  @apply hover:border-floor-muted transition-all duration-200;
+  @apply hover:shadow-vercel;
 }
 
 .task-card-priority-critical {
-  @apply border-l-4 border-l-red-500;
+  @apply border-l-2 border-l-gradient-pink;
 }
 
 .task-card-priority-high {
-  @apply border-l-4 border-l-orange-500;
+  @apply border-l-2 border-l-gradient-orange;
 }
 
 .task-card-priority-medium {
-  @apply border-l-4 border-l-yellow-500;
+  @apply border-l-2 border-l-gradient-blue;
 }
 
 .task-card-priority-low {
-  @apply border-l-4 border-l-green-500;
+  @apply border-l-2 border-l-gradient-cyan;
+}
+
+/* Vercel-style buttons */
+.btn-primary {
+  @apply bg-white text-black font-medium px-4 py-2 rounded-lg;
+  @apply hover:bg-gray-200 transition-colors duration-200;
+}
+
+.btn-secondary {
+  @apply bg-transparent text-white font-medium px-4 py-2 rounded-lg;
+  @apply border border-floor-border hover:border-floor-muted;
+  @apply transition-colors duration-200;
+}
+
+.btn-gradient {
+  background: linear-gradient(to right, var(--gradient-blue), var(--gradient-purple), var(--gradient-pink));
+  @apply text-white font-medium px-4 py-2 rounded-lg;
+  @apply hover:opacity-90 transition-opacity duration-200;
+}
+
+/* Vercel-style input */
+.input {
+  @apply bg-floor-card border border-floor-border rounded-lg px-4 py-2;
+  @apply text-floor-text placeholder:text-floor-muted;
+  @apply focus:outline-none focus:border-floor-highlight focus:ring-1 focus:ring-floor-highlight;
+  @apply transition-all duration-200;
 }
 
 /* Phaser game canvas container */
 .game-container {
-  @apply w-full h-full;
+  @apply w-full h-full rounded-lg overflow-hidden;
+  @apply border border-floor-border;
   image-rendering: pixelated;
   image-rendering: crisp-edges;
 }
 
 /* Thinking bubble animation */
 @keyframes thinking-dots {
-  0%, 20% {
-    opacity: 0;
-  }
-  50% {
-    opacity: 1;
-  }
-  100% {
-    opacity: 0;
-  }
+  0%, 20% { opacity: 0.3; }
+  50% { opacity: 1; }
+  100% { opacity: 0.3; }
 }
 
 .thinking-dot {
@@ -168,32 +211,85 @@ body {
 }
 
 @keyframes walk {
-  from {
-    background-position: 0 0;
-  }
-  to {
-    background-position: -128px 0;
-  }
+  from { background-position: 0 0; }
+  to { background-position: -128px 0; }
 }
 
-/* Mention highlight */
+/* Mention highlight - Vercel blue */
 .mention {
-  @apply text-floor-highlight font-medium cursor-pointer;
+  @apply text-gradient-blue font-medium cursor-pointer;
 }
 
 .mention:hover {
   @apply underline;
 }
 
-/* Code block in chat */
+/* Code block in chat - Vercel style */
 .code-block {
-  @apply bg-gray-900 rounded-md p-3 my-2 overflow-x-auto;
-  font-family: 'Fira Code', 'Monaco', monospace;
+  @apply bg-floor-card border border-floor-border rounded-lg p-4 my-2 overflow-x-auto;
+  font-family: 'Geist Mono', 'SF Mono', 'Monaco', monospace;
   font-size: 0.875rem;
 }
 
-/* Notification badge */
+/* Notification badge - Vercel gradient */
 .notification-badge {
-  @apply absolute -top-1 -right-1 w-5 h-5 bg-floor-highlight text-white text-xs;
+  @apply absolute -top-1 -right-1 w-5 h-5 text-white text-xs;
   @apply rounded-full flex items-center justify-center font-bold;
+  background: linear-gradient(135deg, var(--gradient-blue), var(--gradient-purple));
+}
+
+/* Vercel-style glow effects */
+.glow-blue {
+  box-shadow: 0 0 20px rgba(0, 112, 243, 0.3);
+}
+
+.glow-purple {
+  box-shadow: 0 0 20px rgba(121, 40, 202, 0.3);
+}
+
+.glow-pink {
+  box-shadow: 0 0 20px rgba(255, 0, 128, 0.3);
+}
+
+/* Gradient text - Vercel style */
+.gradient-text {
+  background: linear-gradient(to right, var(--gradient-blue), var(--gradient-purple), var(--gradient-pink));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Vercel-style divider */
+.divider {
+  @apply border-t border-floor-border;
+}
+
+/* Agent avatar ring colors */
+.avatar-ring-idle {
+  @apply ring-2 ring-gradient-cyan;
+}
+
+.avatar-ring-working {
+  @apply ring-2 ring-gradient-blue;
+}
+
+.avatar-ring-thinking {
+  @apply ring-2 ring-gradient-purple;
+}
+
+.avatar-ring-talking {
+  @apply ring-2 ring-gradient-pink;
+}
+
+/* Subtle background pattern */
+.bg-grid {
+  background-image:
+    linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+  background-size: 32px 32px;
+}
+
+/* Top glow effect like Vercel */
+.bg-glow-top {
+  background: radial-gradient(ellipse 80% 50% at 50% -20%, rgba(0, 112, 243, 0.15), transparent);
 }
