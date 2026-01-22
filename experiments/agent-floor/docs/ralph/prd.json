@@ -27,7 +27,7 @@
   },
   "meta": {
     "totalStories": 52,
-    "passedStories": 15
+    "passedStories": 16
   },
   "stories": [
     {
@@ -444,7 +444,7 @@
       "title": "Add drag-and-drop to task board",
       "description": "Enable drag-and-drop between task columns using @hello-pangea/dnd library.",
       "priority": 2,
-      "passes": false,
+      "passes": true,
       "source": {
         "prdPath": "docs/MASTER_PRD.md",
         "prdId": "PRD-006"
@@ -480,7 +480,12 @@
       "agentInstructions": "Use frontend-design and react-performance skills. Spawn frontend-engineer subagent. Update src/components/tasks/TaskBoard.tsx.",
       "files": [
         "src/components/tasks/TaskBoard.tsx"
-      ]
+      ],
+      "lastAttempt": {
+        "timestamp": "2026-01-22T13:18:41Z",
+        "engine": "claude",
+        "success": true
+      }
     },
     {
       "id": "PRD006-002",
