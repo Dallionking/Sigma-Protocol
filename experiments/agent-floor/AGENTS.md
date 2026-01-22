@@ -195,3 +195,21 @@ src/
   - AlertTriangle icon from lucide-react
   - RefreshCw icon for retry button
 - Test page at `/test/error-boundary` for validation
+
+### PRD003-001: Settings Store with localStorage (2026-01-22)
+- Created `src/lib/store/settings-store.ts`
+- Features:
+  - Zustand store with `persist` middleware for localStorage
+  - `StoredProviderConfig[]` - Provider configs (API keys, enabled, defaultModel)
+  - `selectedTeam` / `recentTeams` - Team preference tracking
+  - `UIPreferences` with `PanelPreferences` - Panel visibility states
+  - `createJSONStorage(() => localStorage)` for persistence
+  - Version field for future migrations (version: 1)
+- Exported selector hooks:
+  - `useTheme()` - Get current theme
+  - `usePanels()` - Get panel visibility states
+  - `useProviders()` - Get all provider configs
+  - `useEnabledProviders()` - Get only enabled providers
+  - `useSelectedTeam()` - Get selected team ID
+- localStorage key: `agent-floor-settings`
+- Default providers: claude-code, anthropic, openai, gemini, openrouter, xai, ollama
