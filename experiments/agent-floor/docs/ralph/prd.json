@@ -27,7 +27,7 @@
   },
   "meta": {
     "totalStories": 52,
-    "passedStories": 21
+    "passedStories": 22
   },
   "stories": [
     {
@@ -990,7 +990,7 @@
       "title": "Create OpenAI API adapter",
       "description": "LLM provider adapter for OpenAI API using official SDK.",
       "priority": 2,
-      "passes": false,
+      "passes": true,
       "source": {
         "prdPath": "docs/MASTER_PRD.md",
         "prdId": "PRD-013"
@@ -1028,7 +1028,12 @@
       "agentInstructions": "Use architecture-patterns skill. Create at src/server/providers/openai.ts.",
       "files": [
         "src/server/providers/openai.ts"
-      ]
+      ],
+      "lastAttempt": {
+        "timestamp": "2026-01-22T14:35:44Z",
+        "engine": "claude",
+        "success": true
+      }
     },
     {
       "id": "PRD014-001",
