@@ -423,3 +423,15 @@ export { AnthropicAdapter, createAnthropicAdapter, SUPPORTED_MODELS as ANTHROPIC
 
 // Export OpenAI adapter for direct use
 export { OpenAIAdapter, createOpenAIAdapter, SUPPORTED_MODELS as OPENAI_MODELS } from "./openai";
+
+// Export TokenTracker for token usage tracking (PRD-020)
+export {
+  TokenTracker,
+  createTokenTracker,
+  getTokenTracker,
+  PROVIDER_RATES,
+  type TokenUsageRecord,
+  type AgentTokenStats,
+  type UsageEvent,
+  type UsageEventCallback,
+} from "./token-tracker";

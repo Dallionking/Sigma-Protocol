@@ -20,6 +20,7 @@ import type {
 } from "./types";
 import { ROLE_TASK_KEYWORDS } from "./types";
 import { AgentWorker, type AgentMessage } from "./AgentWorker";
+import type { TokenTracker } from "../providers/token-tracker";
 
 /** Configuration for AgentManager */
 export interface AgentManagerConfig {
@@ -30,6 +31,7 @@ export interface AgentManagerConfig {
 export class AgentManager {
   private readonly room: FloorRoom;
   private readonly messageBus: MessageBus;
+  private readonly tokenTracker: TokenTracker | null;
   private readonly workers: Map<string, AgentWorker> = new Map();
   private readonly config: AgentManagerConfig;
 
@@ -40,10 +42,12 @@ export class AgentManager {
   constructor(
     room: FloorRoom,
     messageBus: MessageBus,
+    tokenTracker?: TokenTracker,
     config: AgentManagerConfig = {}
   ) {
     this.room = room;
     this.messageBus = messageBus;
+    this.tokenTracker = tokenTracker ?? null;
     this.config = config;
 
     // Set LLM provider if provided in config
@@ -51,7 +55,7 @@ export class AgentManager {
       this.llmProvider = config.llmProvider;
     }
 
-    console.log("🤖 AgentManager initialized");
+    console.log("🤖 AgentManager initialized" + (tokenTracker ? " with token tracking" : ""));
   }
 
   /**
@@ -167,6 +171,7 @@ export class AgentManager {
       systemPrompt: agent.systemPrompt,
       provider: agent.provider,
       model: agent.model,
+      tokenTracker: this.tokenTracker ?? undefined,
     });
 
     // Set up state change callback to sync with Colyseus state

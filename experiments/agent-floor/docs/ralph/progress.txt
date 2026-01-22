@@ -225,3 +225,28 @@
 
 
 ---
+
+### 2026-01-22T15:01:30Z - PRD020-001
+**Status:** COMPLETED
+**Engine:** claude
+
+
+---
+
+### 2026-01-22T15:15:00Z - PRD020-002
+**Status:** COMPLETED
+**Engine:** claude
+**Story:** Add token tracking to provider adapters
+**Notes:**
+- Created TokenTracker class (src/server/providers/token-tracker.ts)
+  - [AC1] Track inputTokens/outputTokens per request via recordUsage()
+  - [AC2] Aggregate per agent via agentStats Map
+  - [AC3] Emit usage events via setUsageCallback()
+  - [AC4] Cost calculation per provider via PROVIDER_RATES and calculateCost()
+- Added TokenUsageSchema to FloorRoom Colyseus state
+- Integrated TokenTracker with AgentManager and AgentWorker
+- AgentWorker.callLLMWithRetry() now records usage after successful LLM calls
+- FloorRoom broadcasts tokenUsageUpdate events to all clients
+- All acceptance criteria verified with unit tests
+
+---

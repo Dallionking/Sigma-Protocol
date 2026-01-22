@@ -22,7 +22,7 @@ import type {
   CommunicationStyle,
   AgentMood,
 } from "@/types/agent";
-import type { LLMProvider, Message, Completion } from "@/types/provider";
+import type { LLMProvider, Message, Completion, ProviderId } from "@/types/provider";
 import type {
   AgentWorkerConfig,
   TaskAssignmentPayload,
@@ -30,6 +30,7 @@ import type {
   AgentWorkContext,
 } from "./types";
 import { isValidTransition } from "./types";
+import type { TokenTracker } from "../providers/token-tracker";
 
 /** Default tick interval in milliseconds */
 const DEFAULT_TICK_INTERVAL_MS = 5000;
@@ -75,6 +76,8 @@ export interface ExtendedAgentWorkerConfig extends AgentWorkerConfig {
   personalityCommunication?: CommunicationStyle;
   mood?: AgentMood;
   fatigueLevel?: number;
+  // Token tracking (PRD-020)
+  tokenTracker?: TokenTracker;
 }
 
 export class AgentWorker {
@@ -116,6 +119,9 @@ export class AgentWorker {
   private consecutiveErrors = 0;
   private lastErrorTime: number | null = null;
 
+  // Token tracking (PRD-020)
+  private tokenTracker: TokenTracker | null = null;
+
   constructor(config: ExtendedAgentWorkerConfig) {
     this.agentId = config.agentId;
     this.tickIntervalMs = config.tickIntervalMs ?? DEFAULT_TICK_INTERVAL_MS;
@@ -132,6 +138,9 @@ export class AgentWorker {
     if (config.personalityCommunication) this.personalityCommunication = config.personalityCommunication;
     if (config.mood) this.mood = config.mood;
     if (config.fatigueLevel !== undefined) this.fatigueLevel = config.fatigueLevel;
+
+    // Token tracking (PRD-020)
+    if (config.tokenTracker) this.tokenTracker = config.tokenTracker;
   }
 
   // ==========================================================================
@@ -780,6 +789,7 @@ ${personalityInstructions.map(i => `- ${i}`).join("\n")}`;
 
   /**
    * Call LLM with exponential backoff retry
+   * Tracks token usage via TokenTracker (PRD-020)
    */
   private async callLLMWithRetry(
     messages: Message[]
@@ -801,6 +811,17 @@ ${personalityInstructions.map(i => `- ${i}`).join("\n")}`;
           model: this.modelName || undefined,
           maxTokens: 1024,
         });
+
+        // Track token usage (PRD-020 AC1, AC2, AC4)
+        if (this.tokenTracker && completion.usage) {
+          this.tokenTracker.recordUsage(
+            this.agentId,
+            (this.providerName || this.llmProvider.id) as ProviderId,
+            completion.model || this.modelName || "unknown",
+            completion.usage.inputTokens,
+            completion.usage.outputTokens
+          );
+        }
 
         return completion;
       } catch (error) {

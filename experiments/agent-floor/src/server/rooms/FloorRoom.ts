@@ -3,6 +3,7 @@ import { Schema, type, MapSchema, ArraySchema } from "@colyseus/schema";
 import { nanoid } from "nanoid";
 import { AgentManager } from "../agents/AgentManager";
 import { MessageBus } from "../agents/MessageBus";
+import { createTokenTracker, type TokenTracker, type UsageEvent } from "../providers/token-tracker";
 
 // Schema definitions for Colyseus state sync
 class Position extends Schema {
@@ -54,16 +55,33 @@ class TaskSchema extends Schema {
   @type("number") updatedAt: number = 0;
 }
 
+/**
+ * Token usage tracking schema for Colyseus state sync
+ * @see PRD-020: Token/Cost Dashboard
+ */
+class TokenUsageSchema extends Schema {
+  @type("string") agentId: string = "";
+  @type("string") provider: string = "";
+  @type("string") model: string = "";
+  @type("number") totalInputTokens: number = 0;
+  @type("number") totalOutputTokens: number = 0;
+  @type("number") totalCost: number = 0;
+  @type("number") requestCount: number = 0;
+  @type("number") lastUpdated: number = 0;
+}
+
 class FloorState extends Schema {
   @type({ map: AgentSchema }) agents = new MapSchema<AgentSchema>();
   @type([MessageSchema]) messages = new ArraySchema<MessageSchema>();
   @type({ map: TaskSchema }) tasks = new MapSchema<TaskSchema>();
+  @type({ map: TokenUsageSchema }) tokenUsage = new MapSchema<TokenUsageSchema>();
   @type("string") teamId: string = "";
 }
 
 export class FloorRoom extends Room<FloorState> {
   private agentManager!: AgentManager;
   private messageBus!: MessageBus;
+  private tokenTracker!: TokenTracker;
   private maxMessages = 100; // Keep last 100 messages
 
   onCreate(options: { teamId: string }) {
@@ -75,7 +93,13 @@ export class FloorRoom extends Room<FloorState> {
 
     // Initialize managers
     this.messageBus = new MessageBus(this);
-    this.agentManager = new AgentManager(this, this.messageBus);
+    this.tokenTracker = createTokenTracker();
+    this.agentManager = new AgentManager(this, this.messageBus, this.tokenTracker);
+
+    // Wire up token usage events to Colyseus state (AC3)
+    this.tokenTracker.setUsageCallback((event: UsageEvent) => {
+      this.updateTokenUsage(event);
+    });
 
     // Load team template
     this.loadTeamTemplate(options.teamId);
@@ -559,6 +583,55 @@ export class FloorRoom extends Room<FloorState> {
     }
 
     return message;
+  }
+
+  /**
+   * Update token usage in Colyseus state (AC3 - Emit usage events)
+   *
+   * @param event - Usage event from TokenTracker
+   */
+  private updateTokenUsage(event: UsageEvent): void {
+    const { agentId, aggregated } = event;
+
+    // Get or create token usage schema for this agent
+    let usage = this.state.tokenUsage.get(agentId);
+    if (!usage) {
+      usage = new TokenUsageSchema();
+      usage.agentId = agentId;
+      this.state.tokenUsage.set(agentId, usage);
+    }
+
+    // Update with aggregated stats
+    usage.provider = aggregated.provider;
+    usage.model = aggregated.model;
+    usage.totalInputTokens = aggregated.totalInputTokens;
+    usage.totalOutputTokens = aggregated.totalOutputTokens;
+    usage.totalCost = aggregated.totalCost;
+    usage.requestCount = aggregated.requestCount;
+    usage.lastUpdated = aggregated.lastUpdated;
+
+    // Broadcast token usage update to all clients
+    this.broadcast("tokenUsageUpdate", {
+      agentId,
+      provider: aggregated.provider,
+      model: aggregated.model,
+      inputTokens: event.inputTokens,
+      outputTokens: event.outputTokens,
+      cost: event.cost,
+      totalInputTokens: aggregated.totalInputTokens,
+      totalOutputTokens: aggregated.totalOutputTokens,
+      totalCost: aggregated.totalCost,
+      requestCount: aggregated.requestCount,
+    });
+  }
+
+  /**
+   * Get the token tracker for this room
+   *
+   * @returns TokenTracker instance
+   */
+  getTokenTracker(): TokenTracker {
+    return this.tokenTracker;
   }
 
   onJoin(client: Client) {
