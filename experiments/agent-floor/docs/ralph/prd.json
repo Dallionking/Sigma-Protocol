@@ -27,7 +27,7 @@
   },
   "meta": {
     "totalStories": 52,
-    "passedStories": 23
+    "passedStories": 24
   },
   "stories": [
     {
@@ -1089,7 +1089,7 @@
       "title": "Create ShortTermMemory class",
       "description": "Session-level memory stored in JSON for current task context and recent decisions.",
       "priority": 2,
-      "passes": false,
+      "passes": true,
       "source": {
         "prdPath": "docs/MASTER_PRD.md",
         "prdId": "PRD-014"
@@ -1125,7 +1125,12 @@
       "agentInstructions": "Use memory-systems skill. Create at src/lib/memory/ShortTermMemory.ts.",
       "files": [
         "src/lib/memory/ShortTermMemory.ts"
-      ]
+      ],
+      "lastAttempt": {
+        "timestamp": "2026-01-22T14:43:32Z",
+        "engine": "claude",
+        "success": true
+      }
     },
     {
       "id": "PRD015-001",
