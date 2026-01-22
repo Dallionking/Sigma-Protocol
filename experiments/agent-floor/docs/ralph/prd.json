@@ -27,7 +27,7 @@
   },
   "meta": {
     "totalStories": 52,
-    "passedStories": 2
+    "passedStories": 3
   },
   "stories": [
     {
@@ -243,7 +243,7 @@
       "title": "Create AgentSprite Phaser class",
       "description": "Phaser sprite class for agent characters with animations, status indicators, and interactions.",
       "priority": 1,
-      "passes": false,
+      "passes": true,
       "source": {
         "prdPath": "docs/MASTER_PRD.md",
         "prdId": "PRD-004"
@@ -286,7 +286,12 @@
       "agentInstructions": "Use frontend-design skill. Spawn frontend-engineer subagent. Create sprite class at src/game/sprites/AgentSprite.ts.",
       "files": [
         "src/game/sprites/AgentSprite.ts"
-      ]
+      ],
+      "lastAttempt": {
+        "timestamp": "2026-01-22T12:10:15Z",
+        "engine": "claude",
+        "success": true
+      }
     },
     {
       "id": "PRD004-003",
