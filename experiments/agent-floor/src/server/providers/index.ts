@@ -25,6 +25,8 @@ import type {
   Completion,
 } from "@/types/provider";
 
+import { ClaudeCodeAdapter, createClaudeCodeAdapter } from "./claude-code";
+
 // =============================================================================
 // Provider Registry
 // =============================================================================
@@ -343,12 +345,12 @@ function createCLIStubProvider(): LLMProvider {
 // =============================================================================
 
 /**
- * Initialize the registry with default stub providers
+ * Initialize the registry with default providers
  * Call this on server startup
  */
 export function initializeDefaultProviders(): void {
-  // Claude Code CLI (uses Max subscription)
-  registerProvider(createCLIStubProvider());
+  // Claude Code CLI (uses Max subscription) - Real adapter
+  registerProvider(createClaudeCodeAdapter());
 
   // Anthropic (Claude API)
   registerProvider(
@@ -421,3 +423,7 @@ initializeDefaultProviders();
 // =============================================================================
 
 export type { LLMProvider, ProviderId, Message, CompletionOptions, Completion };
+
+// Export Claude Code adapter for direct use
+export { ClaudeCodeAdapter, createClaudeCodeAdapter } from "./claude-code";
+export { formatPrompt, parseOutput } from "./claude-code";

@@ -128,12 +128,31 @@ src/
   - `hasProvider(id)` - Check existence
   - `unregisterProvider(id)` / `clearProviders()` - Removal utilities
 - Default stub providers auto-registered on import:
-  - `claude-code` (CLI-based, type: "cli", Max subscription)
+  - `claude-code` (CLI-based, type: "cli", Max subscription) - **Now uses real adapter**
   - `anthropic` (Claude API, supportsVision, supportsTools)
   - `openai` (supportsVision, supportsTools)
   - `gemini` (1M context, supportsVision, supportsTools)
   - `openrouter` (multi-model router)
   - `xai` (Grok, supportsTools)
   - `ollama` (local inference)
-- Stub providers return mock responses - replace with real adapters in PRD-012/013
+- Stub providers return mock responses - replace with real adapters in PRD-013
 - Re-exports LLMProvider types from `@/types/provider`
+
+### PRD012-001: Claude Code CLI Adapter (2026-01-22)
+- Created `src/server/providers/claude-code.ts` - Real Claude Code CLI adapter
+- Features:
+  - `ClaudeCodeAdapter` class implementing `LLMProvider` interface
+  - `formatPrompt(messages)` - Converts message array to CLI prompt format
+  - `parseOutput(output)` - Parses JSON or plain text CLI responses
+  - Spawns `claude` CLI with `--dangerously-skip-permissions` flag
+  - 5-minute timeout (`DEFAULT_TIMEOUT_MS = 5 * 60 * 1000`)
+  - Automatic retry with exponential backoff (3 attempts)
+  - Streaming support via async generator
+  - `isAvailable()` checks CLI installation
+- Exported utilities:
+  - `createClaudeCodeAdapter(options?)` - Factory function
+  - `formatPrompt(messages)` / `parseOutput(output)` - Helpers
+- Integration notes:
+  - Uses `--print` flag for non-interactive output
+  - Supports `--model` and `--max-tokens` options
+  - Estimates token usage if not provided by CLI
