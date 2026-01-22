@@ -1,5 +1,11 @@
 import * as Phaser from "phaser";
 import type { Agent, AgentStatus, Position } from "@/types/agent";
+import { Pathfinding, type WorldPoint, type PathResult } from "../utils/pathfinding";
+
+/**
+ * Walk direction for 4-direction animation
+ */
+export type WalkDirection = "up" | "down" | "left" | "right";
 
 /**
  * Status color mapping for visual indicators
@@ -13,11 +19,38 @@ const STATUS_COLORS: Record<AgentStatus, number> = {
 };
 
 /**
+ * Direction color tints for walk frames
+ * These tints help visually distinguish directions without sprite sheets
+ */
+const DIRECTION_TINTS: Record<WalkDirection, number> = {
+  down: 0xffffff,  // No tint - facing camera (default)
+  up: 0xcccccc,    // Slightly darker - facing away
+  left: 0xeeeeff,  // Slight blue tint - left side
+  right: 0xffeee8, // Slight warm tint - right side
+};
+
+/**
+ * Options for walkTo method
+ */
+export interface WalkToOptions {
+  /** Called when the agent arrives at the destination */
+  onArrival?: () => void;
+  /** Called when the path cannot be found */
+  onBlocked?: () => void;
+  /** Agents to avoid (their positions will be marked as blocked) */
+  avoidAgents?: AgentSprite[];
+  /** Use direct movement instead of pathfinding (for short distances) */
+  direct?: boolean;
+}
+
+/**
  * Configuration for AgentSprite initialization
  */
 export interface AgentSpriteConfig {
   agent: Agent;
   onSelect?: (agentId: string) => void;
+  /** Pathfinding instance for movement (required for walkTo with pathfinding) */
+  pathfinder?: Pathfinding;
 }
 
 /**
@@ -48,11 +81,17 @@ export class AgentSprite extends Phaser.GameObjects.Container {
   private isSelected: boolean = false;
   private isWalking: boolean = false;
   private walkTween: Phaser.Tweens.Tween | null = null;
+  private currentDirection: WalkDirection = "down";
+  private currentPath: WorldPoint[] = [];
+  private currentPathIndex: number = 0;
+  private walkAnimFrame: number = 0;
+  private onArrivalCallback: (() => void) | null = null;
 
   // Animation constants
   private static readonly WALK_SPEED = 100; // pixels per second
   private static readonly WALK_BOB_AMPLITUDE = 2;
   private static readonly WALK_BOB_FREQUENCY = 8;
+  private static readonly WALK_FRAME_DURATION = 150; // ms per walk animation frame
 
   constructor(scene: Phaser.Scene, config: AgentSpriteConfig) {
     const { agent } = config;
@@ -145,34 +184,135 @@ export class AgentSprite extends Phaser.GameObjects.Container {
   }
 
   /**
-   * Walk to a target position with smooth animation
+   * Walk to a target position using pathfinding with smooth animation
    *
-   * @param targetX - Target X coordinate
-   * @param targetY - Target Y coordinate
+   * @param targetX - Target X coordinate (world pixels)
+   * @param targetY - Target Y coordinate (world pixels)
+   * @param options - Walk options including callbacks and collision avoidance
    * @returns Promise that resolves when walking is complete
    */
-  walkTo(targetX: number, targetY: number): Promise<void> {
-    return new Promise((resolve) => {
-      // Cancel any existing walk
-      if (this.walkTween) {
-        this.walkTween.stop();
-        this.walkTween = null;
+  async walkTo(targetX: number, targetY: number, options: WalkToOptions = {}): Promise<void> {
+    const { onArrival, onBlocked, avoidAgents, direct } = options;
+
+    // Cancel any existing walk
+    this.stopWalking();
+
+    // Calculate distance
+    const distance = Phaser.Math.Distance.Between(this.x, this.y, targetX, targetY);
+
+    // Skip if already at destination
+    if (distance < 5) {
+      onArrival?.();
+      return;
+    }
+
+    // Store callback for when we arrive
+    this.onArrivalCallback = onArrival || null;
+
+    // Set walking state
+    this.isWalking = true;
+    this.setStatus("walking");
+
+    // Determine initial direction
+    this.updateWalkDirection(targetX, targetY);
+
+    // Use pathfinding if available and not direct mode
+    const pathfinder = this.config.pathfinder;
+    if (pathfinder && !direct) {
+      // Mark other agents as obstacles to avoid
+      if (avoidAgents && avoidAgents.length > 0) {
+        for (const agent of avoidAgents) {
+          if (agent !== this) {
+            const gridPos = pathfinder.worldToGrid({ x: agent.x, y: agent.y });
+            pathfinder.avoidPoint(gridPos.x, gridPos.y);
+          }
+        }
       }
 
-      // Calculate distance and duration
+      // Find path using A* pathfinding
+      const pathResult = await pathfinder.findPath(
+        { x: this.x, y: this.y },
+        { x: targetX, y: targetY }
+      );
+
+      // Clear avoided points
+      pathfinder.clearAvoidedPoints();
+
+      if (!pathResult || pathResult.smoothedPath.length === 0) {
+        // No path found - blocked
+        this.isWalking = false;
+        this.setStatus("idle");
+        onBlocked?.();
+        return;
+      }
+
+      // Use smoothed path for natural movement
+      await this.walkAlongPath(pathResult.smoothedPath);
+    } else {
+      // Direct movement without pathfinding
+      await this.walkDirect(targetX, targetY);
+    }
+
+    // Walking complete - trigger callback
+    this.isWalking = false;
+    this.sprite.setY(-12); // Reset bob
+    this.sprite.clearTint(); // Clear direction tint
+    this.currentDirection = "down";
+
+    if (this.onArrivalCallback) {
+      this.onArrivalCallback();
+      this.onArrivalCallback = null;
+    }
+  }
+
+  /**
+   * Walk along a smoothed path with interpolation
+   * @param path - Array of world coordinate points
+   */
+  private async walkAlongPath(path: WorldPoint[]): Promise<void> {
+    if (path.length < 2) return;
+
+    this.currentPath = path;
+    this.currentPathIndex = 0;
+
+    // Walk through each segment of the path
+    for (let i = 1; i < path.length && this.isWalking; i++) {
+      this.currentPathIndex = i;
+      const target = path[i];
+
+      // Update direction based on movement
+      this.updateWalkDirection(target.x, target.y);
+
+      // Tween to next point
+      await this.tweenToPoint(target.x, target.y);
+    }
+
+    this.currentPath = [];
+    this.currentPathIndex = 0;
+  }
+
+  /**
+   * Walk directly to a point without pathfinding
+   * @param targetX - Target X coordinate
+   * @param targetY - Target Y coordinate
+   */
+  private async walkDirect(targetX: number, targetY: number): Promise<void> {
+    await this.tweenToPoint(targetX, targetY);
+  }
+
+  /**
+   * Tween to a single point with walking animation
+   */
+  private tweenToPoint(targetX: number, targetY: number): Promise<void> {
+    return new Promise((resolve) => {
       const distance = Phaser.Math.Distance.Between(this.x, this.y, targetX, targetY);
       const duration = (distance / AgentSprite.WALK_SPEED) * 1000;
 
-      if (distance < 5) {
+      if (distance < 2) {
         resolve();
         return;
       }
 
-      // Set walking state
-      this.isWalking = true;
-      this.setStatus("walking");
-
-      // Create walking tween
       this.walkTween = this.scene.tweens.add({
         targets: this,
         x: targetX,
@@ -183,9 +323,7 @@ export class AgentSprite extends Phaser.GameObjects.Container {
           this.updateWalkAnimation();
         },
         onComplete: () => {
-          this.isWalking = false;
           this.walkTween = null;
-          this.sprite.setY(-12); // Reset bob
           resolve();
         },
       });
@@ -193,13 +331,75 @@ export class AgentSprite extends Phaser.GameObjects.Container {
   }
 
   /**
-   * Update the walking bob animation
+   * Update walk direction based on movement vector
+   */
+  private updateWalkDirection(targetX: number, targetY: number): void {
+    const dx = targetX - this.x;
+    const dy = targetY - this.y;
+
+    // Determine primary direction based on larger delta
+    if (Math.abs(dx) > Math.abs(dy)) {
+      this.currentDirection = dx > 0 ? "right" : "left";
+    } else {
+      this.currentDirection = dy > 0 ? "down" : "up";
+    }
+
+    // Apply direction-based tint
+    this.sprite.setTint(DIRECTION_TINTS[this.currentDirection]);
+  }
+
+  /**
+   * Stop the current walk and reset state
+   */
+  stopWalking(): void {
+    if (this.walkTween) {
+      this.walkTween.stop();
+      this.walkTween = null;
+    }
+
+    if (this.isWalking) {
+      this.isWalking = false;
+      this.sprite.setY(-12);
+      this.sprite.clearTint();
+      this.currentPath = [];
+      this.currentPathIndex = 0;
+      this.onArrivalCallback = null;
+    }
+  }
+
+  /**
+   * Update the walking bob animation with direction-aware effects
    */
   private updateWalkAnimation(): void {
-    if (this.isWalking) {
-      const time = this.scene.time.now;
-      const bobOffset = Math.sin(time / 1000 * AgentSprite.WALK_BOB_FREQUENCY * Math.PI * 2) * AgentSprite.WALK_BOB_AMPLITUDE;
-      this.sprite.setY(-12 + bobOffset);
+    if (!this.isWalking) return;
+
+    const time = this.scene.time.now;
+
+    // Calculate bob offset (up-down motion)
+    const bobOffset = Math.sin(time / 1000 * AgentSprite.WALK_BOB_FREQUENCY * Math.PI * 2) * AgentSprite.WALK_BOB_AMPLITUDE;
+    this.sprite.setY(-12 + bobOffset);
+
+    // Calculate frame for walk animation (4 frames: 0, 1, 2, 1)
+    const frameIndex = Math.floor(time / AgentSprite.WALK_FRAME_DURATION) % 4;
+    this.walkAnimFrame = frameIndex === 3 ? 1 : frameIndex;
+
+    // Apply slight horizontal sway for left/right walking
+    if (this.currentDirection === "left" || this.currentDirection === "right") {
+      const swayOffset = Math.sin(time / 1000 * AgentSprite.WALK_BOB_FREQUENCY * Math.PI) * 1;
+      this.sprite.setX(swayOffset);
+    } else {
+      this.sprite.setX(0);
+    }
+
+    // Scale effect for up/down (perspective simulation)
+    if (this.currentDirection === "up") {
+      // Slightly smaller when walking away
+      this.sprite.setScale(1.15);
+    } else if (this.currentDirection === "down") {
+      // Slightly larger when walking toward
+      this.sprite.setScale(1.25);
+    } else {
+      this.sprite.setScale(1.2);
     }
   }
 
@@ -393,6 +593,34 @@ export class AgentSprite extends Phaser.GameObjects.Container {
   }
 
   /**
+   * Get the current walk direction
+   */
+  getCurrentDirection(): WalkDirection {
+    return this.currentDirection;
+  }
+
+  /**
+   * Get the current path being walked
+   */
+  getCurrentPath(): WorldPoint[] {
+    return this.currentPath;
+  }
+
+  /**
+   * Get the current position in the path
+   */
+  getCurrentPathIndex(): number {
+    return this.currentPathIndex;
+  }
+
+  /**
+   * Set the pathfinder instance (for deferred initialization)
+   */
+  setPathfinder(pathfinder: Pathfinding): void {
+    this.config.pathfinder = pathfinder;
+  }
+
+  /**
    * Update agent data (position, status, etc.)
    *
    * @param agent - Updated agent data
@@ -416,11 +644,8 @@ export class AgentSprite extends Phaser.GameObjects.Container {
    * Destroy the sprite and clean up resources
    */
   destroy(fromScene?: boolean): void {
-    // Stop any running tweens
-    if (this.walkTween) {
-      this.walkTween.stop();
-      this.walkTween = null;
-    }
+    // Stop any running walk
+    this.stopWalking();
 
     // Clear talking line
     this.clearTalkingLine();

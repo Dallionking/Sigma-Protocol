@@ -1,6 +1,7 @@
 import * as Phaser from "phaser";
 import type { Agent, AgentStatus } from "@/types/agent";
-import { AgentSprite } from "../sprites/AgentSprite";
+import { AgentSprite, type WalkToOptions } from "../sprites/AgentSprite";
+import { Pathfinding, TileType } from "../utils/pathfinding";
 
 /**
  * Configuration for OfficeScene initialization
@@ -42,6 +43,9 @@ export class OfficeScene extends Phaser.Scene {
   private floorTiles: Phaser.GameObjects.Image[] = [];
   private talkingLines: Phaser.GameObjects.Graphics[] = [];
   private titleText: Phaser.GameObjects.Text | null = null;
+
+  // Pathfinding
+  private pathfinder: Pathfinding | null = null;
 
   // Constants
   private static readonly TILE_SIZE = 32;
@@ -126,10 +130,35 @@ export class OfficeScene extends Phaser.Scene {
   create(): void {
     this.drawFloorGrid();
     this.createTitle();
+    this.initializePathfinding();
     this.setupInputHandlers();
 
     // Notify that the scene is ready
     this.config.onReady?.();
+  }
+
+  /**
+   * Initialize the pathfinding system for agent movement
+   */
+  private initializePathfinding(): void {
+    const width = this.cameras.main.width;
+    const height = this.cameras.main.height;
+    const gridWidth = Math.ceil(width / OfficeScene.TILE_SIZE);
+    const gridHeight = Math.ceil(height / OfficeScene.TILE_SIZE);
+
+    this.pathfinder = new Pathfinding({
+      tileSize: OfficeScene.TILE_SIZE,
+      gridWidth,
+      gridHeight,
+      allowDiagonals: true,
+      allowCornerCutting: false,
+    });
+
+    // Initialize all tiles as walkable
+    this.pathfinder.initializeGrid();
+
+    // Mark desk areas as blocked (will be updated when agents are added)
+    // Desks are at y + 30 from agent position, approximately 48x32 pixels
   }
 
   /**
@@ -306,6 +335,14 @@ export class OfficeScene extends Phaser.Scene {
     // Create desk
     const desk = this.add.image(x, y + 30, "desk");
 
+    // Mark desk area as blocked in pathfinding grid
+    if (this.pathfinder) {
+      const deskGridX = Math.floor(x / OfficeScene.TILE_SIZE);
+      const deskGridY = Math.floor((y + 30) / OfficeScene.TILE_SIZE);
+      // Desk is 48x32 pixels = roughly 2x1 tiles
+      this.pathfinder.setAreaBlocked(deskGridX - 1, deskGridY, 2, 1, TileType.DESK);
+    }
+
     // Create AgentSprite with positioned agent data
     const positionedAgent: Agent = {
       ...agent,
@@ -315,6 +352,7 @@ export class OfficeScene extends Phaser.Scene {
     const agentSprite = new AgentSprite(this, {
       agent: positionedAgent,
       onSelect: (agentId) => this.setSelectedAgent(agentId),
+      pathfinder: this.pathfinder || undefined,
     });
 
     // Store sprite data
@@ -365,6 +403,8 @@ export class OfficeScene extends Phaser.Scene {
   resize(width: number, height: number): void {
     this.cameras.main.setSize(width, height);
     this.drawFloorGrid();
+    // Reinitialize pathfinding for new grid size
+    this.initializePathfinding();
   }
 
   /**
@@ -390,15 +430,67 @@ export class OfficeScene extends Phaser.Scene {
   }
 
   /**
-   * Walk an agent to a target position
+   * Walk an agent to a target position using pathfinding
+   * @param agentId - ID of the agent to move
+   * @param targetX - Target X coordinate (world pixels)
+   * @param targetY - Target Y coordinate (world pixels)
+   * @param options - Walk options including callbacks
    */
-  async walkAgentTo(agentId: string, targetX: number, targetY: number): Promise<void> {
+  async walkAgentTo(
+    agentId: string,
+    targetX: number,
+    targetY: number,
+    options: WalkToOptions = {}
+  ): Promise<void> {
     const spriteData = this.agentSprites.get(agentId);
-    if (spriteData) {
-      await spriteData.sprite.walkTo(targetX, targetY);
-      // Update desk position after walk
-      spriteData.desk.setPosition(targetX, targetY + 30);
-    }
+    if (!spriteData) return;
+
+    // Get all other agent sprites for collision avoidance
+    const otherAgents: AgentSprite[] = [];
+    this.agentSprites.forEach((data, id) => {
+      if (id !== agentId) {
+        otherAgents.push(data.sprite);
+      }
+    });
+
+    // Walk with collision avoidance
+    await spriteData.sprite.walkTo(targetX, targetY, {
+      ...options,
+      avoidAgents: otherAgents,
+    });
+
+    // Update desk position after walk (if agent has their own desk)
+    spriteData.desk.setPosition(targetX, targetY + 30);
+  }
+
+  /**
+   * Walk an agent to another agent's position (for conversations)
+   * @param agentId - ID of the agent to move
+   * @param targetAgentId - ID of the target agent
+   * @param options - Walk options including callbacks
+   */
+  async walkAgentToAgent(
+    agentId: string,
+    targetAgentId: string,
+    options: WalkToOptions = {}
+  ): Promise<void> {
+    const sourceSprite = this.agentSprites.get(agentId);
+    const targetSprite = this.agentSprites.get(targetAgentId);
+
+    if (!sourceSprite || !targetSprite) return;
+
+    // Walk to a position near the target agent (offset to avoid overlap)
+    const targetX = targetSprite.sprite.x - 40; // Stand to the left
+    const targetY = targetSprite.sprite.y;
+
+    await this.walkAgentTo(agentId, targetX, targetY, options);
+  }
+
+  /**
+   * Get the pathfinder instance
+   */
+  getPathfinder(): Pathfinding | null {
+    return this.pathfinder;
   }
 }
 
