@@ -27,7 +27,7 @@
   },
   "meta": {
     "totalStories": 52,
-    "passedStories": 34
+    "passedStories": 35
   },
   "stories": [
     {
@@ -2279,7 +2279,7 @@
       "title": "Create AGENTS.md for long-term memory",
       "description": "Initialize long-term memory file for agent learnings.",
       "priority": 2,
-      "passes": false,
+      "passes": true,
       "source": {
         "prdPath": "docs/MASTER_PRD.md",
         "prdId": "PRD-030"
@@ -2315,7 +2315,12 @@
       "agentInstructions": "Use memory-systems skill. Create at docs/AGENTS.md.",
       "files": [
         "docs/AGENTS.md"
-      ]
+      ],
+      "lastAttempt": {
+        "timestamp": "2026-01-22T15:36:57Z",
+        "engine": "claude",
+        "success": true
+      }
     },
     {
       "id": "SCRIPTS-001",
