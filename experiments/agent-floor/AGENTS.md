@@ -232,3 +232,25 @@ src/
   - Code blocks detected via regex: /```\w*\n[\s\S]*?```/
 - Styling: Uses floor theme colors (floor-accent, floor-muted, floor-text)
 - Test page at `/test/code-block` for validation
+
+### PRD013-001: Anthropic API Adapter (2026-01-22)
+- Created `src/server/providers/anthropic.ts` - Real Anthropic API adapter
+- Features:
+  - `AnthropicAdapter` class implementing `LLMProvider` interface
+  - Uses official `@anthropic-ai/sdk` package
+  - Supports Claude Sonnet 4 and Claude Opus 4 models via `SUPPORTED_MODELS` alias map
+  - `async *stream()` method for streaming responses via async generator
+  - `complete()` method for non-streaming completions
+  - `isAvailable()` health check method
+  - Retry logic with exponential backoff and jitter (3 retries max)
+  - `isRetryableError()` classifies retryable errors (429, 5xx, network errors)
+  - `convertMessages()` converts internal Message format to Anthropic format
+- Exported utilities:
+  - `createAnthropicAdapter(options?)` - Factory function
+  - `SUPPORTED_MODELS` - Model alias mapping
+  - `AnthropicAdapterOptions` - Configuration interface
+- Integration notes:
+  - Auto-registered in provider registry on import
+  - API key from `ANTHROPIC_API_KEY` env var or passed as option
+  - Default model: `claude-sonnet-4-20250514`
+  - 5-minute timeout by default

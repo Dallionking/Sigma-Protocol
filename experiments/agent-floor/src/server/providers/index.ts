@@ -26,6 +26,7 @@ import type {
 } from "@/types/provider";
 
 import { ClaudeCodeAdapter, createClaudeCodeAdapter } from "./claude-code";
+import { AnthropicAdapter, createAnthropicAdapter } from "./anthropic";
 
 // =============================================================================
 // Provider Registry
@@ -352,14 +353,8 @@ export function initializeDefaultProviders(): void {
   // Claude Code CLI (uses Max subscription) - Real adapter
   registerProvider(createClaudeCodeAdapter());
 
-  // Anthropic (Claude API)
-  registerProvider(
-    createStubProvider("anthropic", "Anthropic Claude", {
-      supportsVision: true,
-      supportsTools: true,
-      maxContext: 200000,
-    })
-  );
+  // Anthropic (Claude API) - Real adapter using @anthropic-ai/sdk
+  registerProvider(createAnthropicAdapter());
 
   // OpenAI
   registerProvider(
@@ -427,3 +422,6 @@ export type { LLMProvider, ProviderId, Message, CompletionOptions, Completion };
 // Export Claude Code adapter for direct use
 export { ClaudeCodeAdapter, createClaudeCodeAdapter } from "./claude-code";
 export { formatPrompt, parseOutput } from "./claude-code";
+
+// Export Anthropic adapter for direct use
+export { AnthropicAdapter, createAnthropicAdapter, SUPPORTED_MODELS as ANTHROPIC_MODELS } from "./anthropic";
