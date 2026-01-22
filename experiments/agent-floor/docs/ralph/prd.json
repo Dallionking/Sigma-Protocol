@@ -27,7 +27,7 @@
   },
   "meta": {
     "totalStories": 52,
-    "passedStories": 14
+    "passedStories": 15
   },
   "stories": [
     {
@@ -358,7 +358,7 @@
       "title": "Add code block rendering with syntax highlighting",
       "description": "Render code blocks in chat messages with syntax highlighting using shiki or prism.",
       "priority": 2,
-      "passes": false,
+      "passes": true,
       "source": {
         "prdPath": "docs/MASTER_PRD.md",
         "prdId": "PRD-005"
@@ -394,7 +394,12 @@
       "agentInstructions": "Use frontend-design skill. Spawn frontend-engineer subagent. Create component at src/components/chat/CodeBlock.tsx.",
       "files": [
         "src/components/chat/CodeBlock.tsx"
-      ]
+      ],
+      "lastAttempt": {
+        "timestamp": "2026-01-22T13:13:48Z",
+        "engine": "claude",
+        "success": true
+      }
     },
     {
       "id": "PRD005-002",
