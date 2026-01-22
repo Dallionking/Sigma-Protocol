@@ -27,7 +27,7 @@
   },
   "meta": {
     "totalStories": 52,
-    "passedStories": 18
+    "passedStories": 19
   },
   "stories": [
     {
@@ -593,7 +593,7 @@
       "title": "Add graceful reconnection handling",
       "description": "Handle WebSocket disconnection and reconnection gracefully with exponential backoff.",
       "priority": 2,
-      "passes": false,
+      "passes": true,
       "source": {
         "prdPath": "docs/MASTER_PRD.md",
         "prdId": "PRD-008"
@@ -630,7 +630,12 @@
       "files": [
         "src/lib/store/floor-store.ts",
         "src/server/rooms/FloorRoom.ts"
-      ]
+      ],
+      "lastAttempt": {
+        "timestamp": "2026-01-22T14:23:51Z",
+        "engine": "claude",
+        "success": true
+      }
     },
     {
       "id": "PRD009-001",
