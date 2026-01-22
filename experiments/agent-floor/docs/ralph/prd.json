@@ -27,7 +27,7 @@
   },
   "meta": {
     "totalStories": 52,
-    "passedStories": 29
+    "passedStories": 30
   },
   "stories": [
     {
@@ -1710,7 +1710,7 @@
       "title": "Create GitHub integration service",
       "description": "GitHub API integration via gh CLI for agents.",
       "priority": 2,
-      "passes": false,
+      "passes": true,
       "source": {
         "prdPath": "docs/MASTER_PRD.md",
         "prdId": "PRD-021"
@@ -1746,7 +1746,12 @@
       "agentInstructions": "Use agentic-coding skill. Spawn lead-architect subagent. Create at src/server/integrations/github.ts.",
       "files": [
         "src/server/integrations/github.ts"
-      ]
+      ],
+      "lastAttempt": {
+        "timestamp": "2026-01-22T15:11:07Z",
+        "engine": "claude",
+        "success": true
+      }
     },
     {
       "id": "PRD021-002",

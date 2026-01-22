@@ -379,3 +379,35 @@ src/
   - 2-minute default timeout per operation
   - Branch names auto-sanitized for git compatibility
   - Factory function: `createGitHubService(options?)`
+
+### PRD022-001: SandboxedWorkspace Class (2026-01-22)
+- Created `src/server/workspace/SandboxedWorkspace.ts` - Isolated file system per team
+- Features:
+  - `initialize()` - Create isolated workspace directory for team
+  - `readFile(path)` - Read file with path traversal protection
+  - `writeFile(path, content)` - Write file with size limits
+  - `deleteFile(path)` - Delete file from workspace
+  - `listFiles(dir)` - List directory contents
+  - `exists(path)` - Check if path exists
+  - `runCommand(cmd)` - Execute command with allowlist validation
+  - `getAllowedCommands()` - Get list of allowed commands
+  - `isCommandAllowed(cmd)` - Check if command is permitted
+- Security features:
+  - Path traversal prevention (`../`, `..\\`, null bytes, double-encoding)
+  - Symlink validation (prevents escaping workspace)
+  - Command allowlist (node, npm, git, ls, cat, etc.)
+  - Dangerous pattern detection (sudo, rm -rf, shell pipes)
+  - File size limits (default 10MB)
+  - Directory depth limits (max 20 levels)
+  - Command timeout enforcement (default 30s)
+- Exported types:
+  - `SandboxedWorkspaceOptions` - Configuration interface
+  - `FileResult`, `ReadResult`, `WriteResult` - File operation results
+  - `CommandResult` - Command execution result
+  - `FileEntry` - Directory listing entry
+  - `WorkspaceInfo` - Workspace metadata
+- Integration notes:
+  - Default workspace root: `.workspaces/{teamId}`
+  - Team IDs are sanitized to prevent path injection
+  - Factory function: `createSandboxedWorkspace(teamId, options?)`
+  - All operations are relative to team workspace
