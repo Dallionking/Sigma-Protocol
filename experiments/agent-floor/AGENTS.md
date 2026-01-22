@@ -13,6 +13,7 @@ src/
 ├── lib/
 │   └── store/      # Zustand stores
 ├── server/
+│   ├── agents/     # Agent lifecycle management (AgentManager, AgentWorker)
 │   └── rooms/      # Colyseus rooms
 └── types/          # TypeScript type definitions
 ```
@@ -36,12 +37,21 @@ src/
 - Agent types are in `@/types/agent`
 - Use path alias `@/` for imports from src/
 
+### AgentManager System
+- AgentManager lives in `src/server/agents/AgentManager.ts`
+- AgentWorker handles per-agent work loops (tick-based)
+- State machine: idle → thinking → working → talking (walking also valid)
+- Valid transitions defined in `types.ts` - use `isValidTransition()` helper
+- ROLE_TASK_KEYWORDS maps roles to task keywords for intelligent routing
+- Workers notify state changes via callback to AgentManager
+- AgentManager syncs state to Colyseus for real-time client updates
+
 ## Known Issues
 
 ### Pre-existing Build Errors (2026-01-22)
 - `floor-store.ts`: Type errors with Colyseus state typing (`state` is of type 'unknown')
-- `FloorRoom.ts`: Missing AgentManager/MessageBus modules, decorator errors
-- These are outside scope of pathfinding work and should be fixed in their respective PRDs
+- `FloorRoom.ts`: Decorator errors (Colyseus @type decorators require experimentalDecorators)
+- These are pre-existing and don't block agent system functionality
 
 ## Completed Stories
 
@@ -54,3 +64,17 @@ src/
   - Catmull-Rom spline path smoothing
   - World-to-grid coordinate conversion
   - Point avoidance for dynamic obstacles
+
+### PRD009-001: AgentManager Class (2026-01-22)
+- Created `src/server/agents/` module with:
+  - `AgentManager.ts` - Orchestrator for agent lifecycle
+  - `AgentWorker.ts` - Per-agent work loop handler
+  - `MessageBus.ts` - Message routing placeholder (for PRD-010)
+  - `types.ts` - Shared types and state machine helpers
+  - `index.ts` - Barrel exports
+- Features:
+  - `startAgentLoops()` / `stopAgentLoops()` lifecycle methods
+  - Spawns AgentWorker for each agent in room
+  - Task routing based on role-to-keyword matching
+  - State machine with validated transitions
+  - Syncs agent state to Colyseus for real-time updates
