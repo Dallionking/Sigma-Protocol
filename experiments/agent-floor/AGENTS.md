@@ -327,3 +327,31 @@ src/
   - Uses `autoCreate: true` by default for new sessions
   - `generateId()` creates unique IDs with timestamp + random suffix
   - Factory function: `createShortTermMemory(options?)`
+
+### PRD019-001: Agent Personality Traits (2026-01-22)
+- Extended `src/types/agent.ts` with personality/mood/fatigue types
+- Personality traits:
+  - `PersonalityTrait`: "introvert" | "extrovert"
+  - `CommunicationStyle`: "formal" | "casual"
+  - `PersonalityTraits` interface combines both
+- Mood system:
+  - `AgentMood`: "happy" | "stressed" | "focused" | "tired"
+  - Mood affects response tone via `getMoodInstructions()`
+- Fatigue system:
+  - `FatigueState`: level (0-100), lastBreak, tasksCompletedSinceBreak
+  - `getFatigueInstructions()` adjusts response verbosity based on energy
+  - `decreaseFatigue(amount)` / `increaseFatigue(amount)` for fatigue management
+- Updated AgentSchema in `FloorRoom.ts`:
+  - Added `personalitySociability`, `personalityCommunication`, `mood`
+  - Added `fatigueLevel`, `fatigueLastBreak`, `fatigueTasksSinceBreak`
+  - All team templates configured with distinct personalities
+- Updated `AgentWorker.ts`:
+  - `buildPersonalityAwareSystemPrompt()` - combines base prompt + personality + mood + fatigue
+  - Used in `handleMention()` and `processTask()` for personality-aware LLM calls
+  - `setMood()` / `getMood()` / `setFatigueLevel()` for runtime modification
+- Integration notes:
+  - Introverts: prefer concise, thoughtful responses
+  - Extroverts: more engaging, collaborative tone
+  - Formal: professional tone, proper grammar
+  - Casual: friendly, approachable, may use humor
+  - Low fatigue suggests agents need breaks (potential coffee break animation trigger)

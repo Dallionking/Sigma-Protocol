@@ -27,7 +27,7 @@
   },
   "meta": {
     "totalStories": 52,
-    "passedStories": 25
+    "passedStories": 26
   },
   "stories": [
     {
@@ -1261,7 +1261,7 @@
       "title": "Create template loader utility",
       "description": "Utility to load and validate team templates with Zod schemas.",
       "priority": 2,
-      "passes": false,
+      "passes": true,
       "source": {
         "prdPath": "docs/MASTER_PRD.md",
         "prdId": "PRD-015"
@@ -1292,7 +1292,12 @@
       "agentInstructions": "Use architecture-patterns skill. Create at src/lib/utils/templates.ts.",
       "files": [
         "src/lib/utils/templates.ts"
-      ]
+      ],
+      "lastAttempt": {
+        "timestamp": "2026-01-22T14:49:51Z",
+        "engine": "claude",
+        "success": true
+      }
     },
     {
       "id": "PRD016-001",
