@@ -213,3 +213,22 @@ src/
   - `useSelectedTeam()` - Get selected team ID
 - localStorage key: `agent-floor-settings`
 - Default providers: claude-code, anthropic, openai, gemini, openrouter, xai, ollama
+
+### PRD005-001: Code Block Rendering with Syntax Highlighting (2026-01-22)
+- Created `src/components/chat/CodeBlock.tsx`
+- Features:
+  - Uses shiki for syntax highlighting (chosen over prism for better quality)
+  - `codeToHtml()` with `github-dark-default` theme
+  - Copy button with "Copied!" feedback (2s timeout)
+  - Language label display with icon
+  - Language alias mapping (js→javascript, ts→typescript, etc.)
+  - Graceful fallback to plain text if language not supported
+- Exported utilities:
+  - `parseCodeBlocks(content)` - Parse markdown code fences into parts
+  - `hasCodeBlocks(content)` - Quick check for code block presence
+- Integration notes:
+  - ChatPanel imports CodeBlock and utilities
+  - `renderContent()` uses `parseCodeBlocks()` for mixed content
+  - Code blocks detected via regex: /```\w*\n[\s\S]*?```/
+- Styling: Uses floor theme colors (floor-accent, floor-muted, floor-text)
+- Test page at `/test/code-block` for validation
