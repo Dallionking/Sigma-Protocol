@@ -27,7 +27,7 @@
   },
   "meta": {
     "totalStories": 52,
-    "passedStories": 0
+    "passedStories": 1
   },
   "stories": [
     {
@@ -35,25 +35,68 @@
       "title": "Create .env.example with all environment variables",
       "description": "Create environment variables template file listing all required API keys and configuration options for the AgentFloor project.",
       "priority": 1,
-      "passes": false,
+      "passes": true,
       "source": {
         "prdPath": "docs/MASTER_PRD.md",
         "prdId": "PRD-001"
       },
       "acceptanceCriteria": [
-        { "id": "AC1", "description": "Lists COLYSEUS_PORT", "type": "automated" },
-        { "id": "AC2", "description": "Lists ANTHROPIC_API_KEY", "type": "automated" },
-        { "id": "AC3", "description": "Lists OPENAI_API_KEY", "type": "automated" },
-        { "id": "AC4", "description": "Lists GOOGLE_API_KEY", "type": "automated" },
-        { "id": "AC5", "description": "Lists OPENROUTER_API_KEY", "type": "automated" },
-        { "id": "AC6", "description": "Lists CLAUDE_CODE_PATH", "type": "automated" },
-        { "id": "AC7", "description": "Lists ELEVENLABS_API_KEY", "type": "automated" },
-        { "id": "AC8", "description": "Lists GITHUB_TOKEN", "type": "automated" },
-        { "id": "AC9", "description": "Includes helpful comments", "type": "manual" }
+        {
+          "id": "AC1",
+          "description": "Lists COLYSEUS_PORT",
+          "type": "automated"
+        },
+        {
+          "id": "AC2",
+          "description": "Lists ANTHROPIC_API_KEY",
+          "type": "automated"
+        },
+        {
+          "id": "AC3",
+          "description": "Lists OPENAI_API_KEY",
+          "type": "automated"
+        },
+        {
+          "id": "AC4",
+          "description": "Lists GOOGLE_API_KEY",
+          "type": "automated"
+        },
+        {
+          "id": "AC5",
+          "description": "Lists OPENROUTER_API_KEY",
+          "type": "automated"
+        },
+        {
+          "id": "AC6",
+          "description": "Lists CLAUDE_CODE_PATH",
+          "type": "automated"
+        },
+        {
+          "id": "AC7",
+          "description": "Lists ELEVENLABS_API_KEY",
+          "type": "automated"
+        },
+        {
+          "id": "AC8",
+          "description": "Lists GITHUB_TOKEN",
+          "type": "automated"
+        },
+        {
+          "id": "AC9",
+          "description": "Includes helpful comments",
+          "type": "manual"
+        }
       ],
       "dependsOn": [],
       "agentInstructions": "Use architecture-patterns skill. Create .env.example at project root with all environment variables needed for multi-provider LLM support, Colyseus server, ElevenLabs voice, and GitHub integration.",
-      "files": [".env.example"]
+      "files": [
+        ".env.example"
+      ],
+      "lastAttempt": {
+        "timestamp": "2026-01-22T09:24:36Z",
+        "engine": "claude",
+        "success": true
+      }
     },
     {
       "id": "PRD002-001",
@@ -66,20 +109,40 @@
         "prdId": "PRD-002"
       },
       "acceptanceCriteria": [
-        { "id": "AC1", "description": "Catches render errors", "type": "automated" },
-        { "id": "AC2", "description": "Displays fallback UI with retry button", "type": "visual" },
-        { "id": "AC3", "description": "Logs error to console", "type": "automated" },
-        { "id": "AC4", "description": "Styled consistently with floor theme", "type": "visual" }
+        {
+          "id": "AC1",
+          "description": "Catches render errors",
+          "type": "automated"
+        },
+        {
+          "id": "AC2",
+          "description": "Displays fallback UI with retry button",
+          "type": "visual"
+        },
+        {
+          "id": "AC3",
+          "description": "Logs error to console",
+          "type": "automated"
+        },
+        {
+          "id": "AC4",
+          "description": "Styled consistently with floor theme",
+          "type": "visual"
+        }
       ],
       "dependsOn": [],
       "agentInstructions": "Use frontend-design skill. Spawn frontend-engineer subagent. Create error boundary component at src/components/ui/error-boundary.tsx.",
-      "files": ["src/components/ui/error-boundary.tsx"],
+      "files": [
+        "src/components/ui/error-boundary.tsx"
+      ],
       "tasks": [
         {
           "id": "UI-001",
           "validation": {
             "route": "/floor/dev-team",
-            "checks": ["Error boundary wrapper exists"]
+            "checks": [
+              "Error boundary wrapper exists"
+            ]
           }
         }
       ]
@@ -95,15 +158,37 @@
         "prdId": "PRD-003"
       },
       "acceptanceCriteria": [
-        { "id": "AC1", "description": "Stores provider configurations", "type": "automated" },
-        { "id": "AC2", "description": "Stores selected team preference", "type": "automated" },
-        { "id": "AC3", "description": "Stores UI preferences (panel states)", "type": "automated" },
-        { "id": "AC4", "description": "Persists to localStorage", "type": "automated" },
-        { "id": "AC5", "description": "Hydrates on app load", "type": "automated" }
+        {
+          "id": "AC1",
+          "description": "Stores provider configurations",
+          "type": "automated"
+        },
+        {
+          "id": "AC2",
+          "description": "Stores selected team preference",
+          "type": "automated"
+        },
+        {
+          "id": "AC3",
+          "description": "Stores UI preferences (panel states)",
+          "type": "automated"
+        },
+        {
+          "id": "AC4",
+          "description": "Persists to localStorage",
+          "type": "automated"
+        },
+        {
+          "id": "AC5",
+          "description": "Hydrates on app load",
+          "type": "automated"
+        }
       ],
       "dependsOn": [],
       "agentInstructions": "Use architecture-patterns skill. Create Zustand store with persist middleware at src/lib/store/settings-store.ts.",
-      "files": ["src/lib/store/settings-store.ts"]
+      "files": [
+        "src/lib/store/settings-store.ts"
+      ]
     },
     {
       "id": "PRD004-001",
@@ -116,15 +201,37 @@
         "prdId": "PRD-004"
       },
       "acceptanceCriteria": [
-        { "id": "AC1", "description": "Extends Phaser.Scene", "type": "automated" },
-        { "id": "AC2", "description": "preload() loads all assets", "type": "automated" },
-        { "id": "AC3", "description": "create() sets up floor grid and agents", "type": "automated" },
-        { "id": "AC4", "description": "update() handles animations", "type": "automated" },
-        { "id": "AC5", "description": "Manages agent sprite lifecycle", "type": "automated" }
+        {
+          "id": "AC1",
+          "description": "Extends Phaser.Scene",
+          "type": "automated"
+        },
+        {
+          "id": "AC2",
+          "description": "preload() loads all assets",
+          "type": "automated"
+        },
+        {
+          "id": "AC3",
+          "description": "create() sets up floor grid and agents",
+          "type": "automated"
+        },
+        {
+          "id": "AC4",
+          "description": "update() handles animations",
+          "type": "automated"
+        },
+        {
+          "id": "AC5",
+          "description": "Manages agent sprite lifecycle",
+          "type": "automated"
+        }
       ],
       "dependsOn": [],
       "agentInstructions": "Use frontend-design and react-performance skills. Spawn frontend-engineer subagent. Create Phaser scene at src/game/scenes/OfficeScene.ts.",
-      "files": ["src/game/scenes/OfficeScene.ts"]
+      "files": [
+        "src/game/scenes/OfficeScene.ts"
+      ]
     },
     {
       "id": "PRD004-002",
@@ -137,16 +244,44 @@
         "prdId": "PRD-004"
       },
       "acceptanceCriteria": [
-        { "id": "AC1", "description": "Extends Phaser.GameObjects.Container", "type": "automated" },
-        { "id": "AC2", "description": "Contains sprite, name label, status indicator", "type": "automated" },
-        { "id": "AC3", "description": "walkTo(x, y) method with animation", "type": "automated" },
-        { "id": "AC4", "description": "setStatus(status) method", "type": "automated" },
-        { "id": "AC5", "description": "Click selection handling", "type": "automated" },
-        { "id": "AC6", "description": "Talking line to other agents", "type": "visual" }
+        {
+          "id": "AC1",
+          "description": "Extends Phaser.GameObjects.Container",
+          "type": "automated"
+        },
+        {
+          "id": "AC2",
+          "description": "Contains sprite, name label, status indicator",
+          "type": "automated"
+        },
+        {
+          "id": "AC3",
+          "description": "walkTo(x, y) method with animation",
+          "type": "automated"
+        },
+        {
+          "id": "AC4",
+          "description": "setStatus(status) method",
+          "type": "automated"
+        },
+        {
+          "id": "AC5",
+          "description": "Click selection handling",
+          "type": "automated"
+        },
+        {
+          "id": "AC6",
+          "description": "Talking line to other agents",
+          "type": "visual"
+        }
       ],
-      "dependsOn": ["PRD004-001"],
+      "dependsOn": [
+        "PRD004-001"
+      ],
       "agentInstructions": "Use frontend-design skill. Spawn frontend-engineer subagent. Create sprite class at src/game/sprites/AgentSprite.ts.",
-      "files": ["src/game/sprites/AgentSprite.ts"]
+      "files": [
+        "src/game/sprites/AgentSprite.ts"
+      ]
     },
     {
       "id": "PRD004-003",
@@ -159,15 +294,39 @@
         "prdId": "PRD-004"
       },
       "acceptanceCriteria": [
-        { "id": "AC1", "description": "Initialize EasyStar with floor grid", "type": "automated" },
-        { "id": "AC2", "description": "Define walkable tiles", "type": "automated" },
-        { "id": "AC3", "description": "findPath(start, end) function", "type": "automated" },
-        { "id": "AC4", "description": "Async path calculation", "type": "automated" },
-        { "id": "AC5", "description": "Path smoothing", "type": "automated" }
+        {
+          "id": "AC1",
+          "description": "Initialize EasyStar with floor grid",
+          "type": "automated"
+        },
+        {
+          "id": "AC2",
+          "description": "Define walkable tiles",
+          "type": "automated"
+        },
+        {
+          "id": "AC3",
+          "description": "findPath(start, end) function",
+          "type": "automated"
+        },
+        {
+          "id": "AC4",
+          "description": "Async path calculation",
+          "type": "automated"
+        },
+        {
+          "id": "AC5",
+          "description": "Path smoothing",
+          "type": "automated"
+        }
       ],
-      "dependsOn": ["PRD004-001"],
+      "dependsOn": [
+        "PRD004-001"
+      ],
       "agentInstructions": "Use architecture-patterns skill. Install easystarjs and create pathfinding utility at src/game/utils/pathfinding.ts.",
-      "files": ["src/game/utils/pathfinding.ts"]
+      "files": [
+        "src/game/utils/pathfinding.ts"
+      ]
     },
     {
       "id": "PRD005-001",
@@ -180,15 +339,37 @@
         "prdId": "PRD-005"
       },
       "acceptanceCriteria": [
-        { "id": "AC1", "description": "Detect code blocks in markdown", "type": "automated" },
-        { "id": "AC2", "description": "Syntax highlighting (shiki or prism)", "type": "visual" },
-        { "id": "AC3", "description": "Copy button", "type": "visual" },
-        { "id": "AC4", "description": "Language label", "type": "visual" },
-        { "id": "AC5", "description": "Styled consistently", "type": "visual" }
+        {
+          "id": "AC1",
+          "description": "Detect code blocks in markdown",
+          "type": "automated"
+        },
+        {
+          "id": "AC2",
+          "description": "Syntax highlighting (shiki or prism)",
+          "type": "visual"
+        },
+        {
+          "id": "AC3",
+          "description": "Copy button",
+          "type": "visual"
+        },
+        {
+          "id": "AC4",
+          "description": "Language label",
+          "type": "visual"
+        },
+        {
+          "id": "AC5",
+          "description": "Styled consistently",
+          "type": "visual"
+        }
       ],
       "dependsOn": [],
       "agentInstructions": "Use frontend-design skill. Spawn frontend-engineer subagent. Create component at src/components/chat/CodeBlock.tsx.",
-      "files": ["src/components/chat/CodeBlock.tsx"]
+      "files": [
+        "src/components/chat/CodeBlock.tsx"
+      ]
     },
     {
       "id": "PRD005-002",
@@ -201,14 +382,32 @@
         "prdId": "PRD-005"
       },
       "acceptanceCriteria": [
-        { "id": "AC1", "description": "Reaction picker on hover", "type": "visual" },
-        { "id": "AC2", "description": "3 reactions: thumbs up, eyes, checkmark", "type": "visual" },
-        { "id": "AC3", "description": "Reaction count display", "type": "visual" },
-        { "id": "AC4", "description": "Toggle reaction on/off", "type": "automated" }
+        {
+          "id": "AC1",
+          "description": "Reaction picker on hover",
+          "type": "visual"
+        },
+        {
+          "id": "AC2",
+          "description": "3 reactions: thumbs up, eyes, checkmark",
+          "type": "visual"
+        },
+        {
+          "id": "AC3",
+          "description": "Reaction count display",
+          "type": "visual"
+        },
+        {
+          "id": "AC4",
+          "description": "Toggle reaction on/off",
+          "type": "automated"
+        }
       ],
       "dependsOn": [],
       "agentInstructions": "Use frontend-design skill. Create component at src/components/chat/MessageReactions.tsx.",
-      "files": ["src/components/chat/MessageReactions.tsx"]
+      "files": [
+        "src/components/chat/MessageReactions.tsx"
+      ]
     },
     {
       "id": "PRD006-001",
@@ -221,15 +420,37 @@
         "prdId": "PRD-006"
       },
       "acceptanceCriteria": [
-        { "id": "AC1", "description": "Install @hello-pangea/dnd", "type": "automated" },
-        { "id": "AC2", "description": "Drag tasks between columns", "type": "visual" },
-        { "id": "AC3", "description": "Visual drag feedback", "type": "visual" },
-        { "id": "AC4", "description": "Update task status on drop", "type": "automated" },
-        { "id": "AC5", "description": "Persist to Colyseus state", "type": "automated" }
+        {
+          "id": "AC1",
+          "description": "Install @hello-pangea/dnd",
+          "type": "automated"
+        },
+        {
+          "id": "AC2",
+          "description": "Drag tasks between columns",
+          "type": "visual"
+        },
+        {
+          "id": "AC3",
+          "description": "Visual drag feedback",
+          "type": "visual"
+        },
+        {
+          "id": "AC4",
+          "description": "Update task status on drop",
+          "type": "automated"
+        },
+        {
+          "id": "AC5",
+          "description": "Persist to Colyseus state",
+          "type": "automated"
+        }
       ],
       "dependsOn": [],
       "agentInstructions": "Use frontend-design and react-performance skills. Spawn frontend-engineer subagent. Update src/components/tasks/TaskBoard.tsx.",
-      "files": ["src/components/tasks/TaskBoard.tsx"]
+      "files": [
+        "src/components/tasks/TaskBoard.tsx"
+      ]
     },
     {
       "id": "PRD006-002",
@@ -242,16 +463,42 @@
         "prdId": "PRD-006"
       },
       "acceptanceCriteria": [
-        { "id": "AC1", "description": "Shows all task fields", "type": "visual" },
-        { "id": "AC2", "description": "Edit title/description inline", "type": "automated" },
-        { "id": "AC3", "description": "Assignee selector", "type": "visual" },
-        { "id": "AC4", "description": "Priority selector", "type": "visual" },
-        { "id": "AC5", "description": "Activity history", "type": "visual" },
-        { "id": "AC6", "description": "Close button", "type": "visual" }
+        {
+          "id": "AC1",
+          "description": "Shows all task fields",
+          "type": "visual"
+        },
+        {
+          "id": "AC2",
+          "description": "Edit title/description inline",
+          "type": "automated"
+        },
+        {
+          "id": "AC3",
+          "description": "Assignee selector",
+          "type": "visual"
+        },
+        {
+          "id": "AC4",
+          "description": "Priority selector",
+          "type": "visual"
+        },
+        {
+          "id": "AC5",
+          "description": "Activity history",
+          "type": "visual"
+        },
+        {
+          "id": "AC6",
+          "description": "Close button",
+          "type": "visual"
+        }
       ],
       "dependsOn": [],
       "agentInstructions": "Use frontend-design skill. Create component at src/components/tasks/TaskDetailModal.tsx.",
-      "files": ["src/components/tasks/TaskDetailModal.tsx"]
+      "files": [
+        "src/components/tasks/TaskDetailModal.tsx"
+      ]
     },
     {
       "id": "PRD007-001",
@@ -264,15 +511,37 @@
         "prdId": "PRD-007"
       },
       "acceptanceCriteria": [
-        { "id": "AC1", "description": "Edit agent name", "type": "automated" },
-        { "id": "AC2", "description": "Select provider dropdown", "type": "visual" },
-        { "id": "AC3", "description": "Select model dropdown", "type": "visual" },
-        { "id": "AC4", "description": "Edit system prompt textarea", "type": "automated" },
-        { "id": "AC5", "description": "Save and Cancel buttons", "type": "visual" }
+        {
+          "id": "AC1",
+          "description": "Edit agent name",
+          "type": "automated"
+        },
+        {
+          "id": "AC2",
+          "description": "Select provider dropdown",
+          "type": "visual"
+        },
+        {
+          "id": "AC3",
+          "description": "Select model dropdown",
+          "type": "visual"
+        },
+        {
+          "id": "AC4",
+          "description": "Edit system prompt textarea",
+          "type": "automated"
+        },
+        {
+          "id": "AC5",
+          "description": "Save and Cancel buttons",
+          "type": "visual"
+        }
       ],
       "dependsOn": [],
       "agentInstructions": "Use frontend-design skill. Create component at src/components/settings/AgentConfigModal.tsx.",
-      "files": ["src/components/settings/AgentConfigModal.tsx"]
+      "files": [
+        "src/components/settings/AgentConfigModal.tsx"
+      ]
     },
     {
       "id": "PRD008-001",
@@ -285,15 +554,38 @@
         "prdId": "PRD-008"
       },
       "acceptanceCriteria": [
-        { "id": "AC1", "description": "Detect disconnection", "type": "automated" },
-        { "id": "AC2", "description": "Show reconnecting UI", "type": "visual" },
-        { "id": "AC3", "description": "Auto-reconnect with exponential backoff", "type": "automated" },
-        { "id": "AC4", "description": "Restore state on reconnect", "type": "automated" },
-        { "id": "AC5", "description": "Handle reconnection failures", "type": "automated" }
+        {
+          "id": "AC1",
+          "description": "Detect disconnection",
+          "type": "automated"
+        },
+        {
+          "id": "AC2",
+          "description": "Show reconnecting UI",
+          "type": "visual"
+        },
+        {
+          "id": "AC3",
+          "description": "Auto-reconnect with exponential backoff",
+          "type": "automated"
+        },
+        {
+          "id": "AC4",
+          "description": "Restore state on reconnect",
+          "type": "automated"
+        },
+        {
+          "id": "AC5",
+          "description": "Handle reconnection failures",
+          "type": "automated"
+        }
       ],
       "dependsOn": [],
       "agentInstructions": "Use architecture-patterns skill. Update src/lib/store/floor-store.ts and src/server/rooms/FloorRoom.ts.",
-      "files": ["src/lib/store/floor-store.ts", "src/server/rooms/FloorRoom.ts"]
+      "files": [
+        "src/lib/store/floor-store.ts",
+        "src/server/rooms/FloorRoom.ts"
+      ]
     },
     {
       "id": "PRD009-001",
@@ -306,15 +598,37 @@
         "prdId": "PRD-009"
       },
       "acceptanceCriteria": [
-        { "id": "AC1", "description": "Spawns AgentWorker for each agent", "type": "automated" },
-        { "id": "AC2", "description": "startAgentLoops() method", "type": "automated" },
-        { "id": "AC3", "description": "stopAgentLoops() method", "type": "automated" },
-        { "id": "AC4", "description": "Routes tasks to appropriate agents", "type": "automated" },
-        { "id": "AC5", "description": "Manages agent state transitions", "type": "automated" }
+        {
+          "id": "AC1",
+          "description": "Spawns AgentWorker for each agent",
+          "type": "automated"
+        },
+        {
+          "id": "AC2",
+          "description": "startAgentLoops() method",
+          "type": "automated"
+        },
+        {
+          "id": "AC3",
+          "description": "stopAgentLoops() method",
+          "type": "automated"
+        },
+        {
+          "id": "AC4",
+          "description": "Routes tasks to appropriate agents",
+          "type": "automated"
+        },
+        {
+          "id": "AC5",
+          "description": "Manages agent state transitions",
+          "type": "automated"
+        }
       ],
       "dependsOn": [],
       "agentInstructions": "Use agentic-coding and agent-development skills. Spawn lead-architect subagent. Create at src/server/agents/AgentManager.ts.",
-      "files": ["src/server/agents/AgentManager.ts"]
+      "files": [
+        "src/server/agents/AgentManager.ts"
+      ]
     },
     {
       "id": "PRD009-002",
@@ -327,15 +641,40 @@
         "prdId": "PRD-009"
       },
       "acceptanceCriteria": [
-        { "id": "AC1", "description": "Work loop: check messages → check tasks → idle", "type": "automated" },
-        { "id": "AC2", "description": "Processes assigned tasks via LLM", "type": "automated" },
-        { "id": "AC3", "description": "Responds to @mentions", "type": "automated" },
-        { "id": "AC4", "description": "Updates agent status in real-time", "type": "automated" },
-        { "id": "AC5", "description": "Handles errors gracefully", "type": "automated" }
+        {
+          "id": "AC1",
+          "description": "Work loop: check messages → check tasks → idle",
+          "type": "automated"
+        },
+        {
+          "id": "AC2",
+          "description": "Processes assigned tasks via LLM",
+          "type": "automated"
+        },
+        {
+          "id": "AC3",
+          "description": "Responds to @mentions",
+          "type": "automated"
+        },
+        {
+          "id": "AC4",
+          "description": "Updates agent status in real-time",
+          "type": "automated"
+        },
+        {
+          "id": "AC5",
+          "description": "Handles errors gracefully",
+          "type": "automated"
+        }
       ],
-      "dependsOn": ["PRD009-001", "PRD011-001"],
+      "dependsOn": [
+        "PRD009-001",
+        "PRD011-001"
+      ],
       "agentInstructions": "Use agentic-coding and agent-development skills. Create at src/server/agents/AgentWorker.ts.",
-      "files": ["src/server/agents/AgentWorker.ts"]
+      "files": [
+        "src/server/agents/AgentWorker.ts"
+      ]
     },
     {
       "id": "PRD010-001",
@@ -348,15 +687,37 @@
         "prdId": "PRD-010"
       },
       "acceptanceCriteria": [
-        { "id": "AC1", "description": "parseMentions(content) extracts @mentions", "type": "automated" },
-        { "id": "AC2", "description": "routeMessage(message) sends to correct agents", "type": "automated" },
-        { "id": "AC3", "description": "Handles broadcast messages", "type": "automated" },
-        { "id": "AC4", "description": "Message queue per agent", "type": "automated" },
-        { "id": "AC5", "description": "getMessagesFor(agentId) method", "type": "automated" }
+        {
+          "id": "AC1",
+          "description": "parseMentions(content) extracts @mentions",
+          "type": "automated"
+        },
+        {
+          "id": "AC2",
+          "description": "routeMessage(message) sends to correct agents",
+          "type": "automated"
+        },
+        {
+          "id": "AC3",
+          "description": "Handles broadcast messages",
+          "type": "automated"
+        },
+        {
+          "id": "AC4",
+          "description": "Message queue per agent",
+          "type": "automated"
+        },
+        {
+          "id": "AC5",
+          "description": "getMessagesFor(agentId) method",
+          "type": "automated"
+        }
       ],
       "dependsOn": [],
       "agentInstructions": "Use architecture-patterns skill. Spawn lead-architect subagent. Create at src/server/agents/MessageBus.ts.",
-      "files": ["src/server/agents/MessageBus.ts"]
+      "files": [
+        "src/server/agents/MessageBus.ts"
+      ]
     },
     {
       "id": "PRD010-002",
@@ -369,15 +730,37 @@
         "prdId": "PRD-010"
       },
       "acceptanceCriteria": [
-        { "id": "AC1", "description": "createA2AMessage(from, to, method, params)", "type": "automated" },
-        { "id": "AC2", "description": "createA2AResponse(id, result)", "type": "automated" },
-        { "id": "AC3", "description": "parseA2AMessage(json)", "type": "automated" },
-        { "id": "AC4", "description": "validateA2AMessage(message)", "type": "automated" },
-        { "id": "AC5", "description": "TypeScript types for A2A", "type": "automated" }
+        {
+          "id": "AC1",
+          "description": "createA2AMessage(from, to, method, params)",
+          "type": "automated"
+        },
+        {
+          "id": "AC2",
+          "description": "createA2AResponse(id, result)",
+          "type": "automated"
+        },
+        {
+          "id": "AC3",
+          "description": "parseA2AMessage(json)",
+          "type": "automated"
+        },
+        {
+          "id": "AC4",
+          "description": "validateA2AMessage(message)",
+          "type": "automated"
+        },
+        {
+          "id": "AC5",
+          "description": "TypeScript types for A2A",
+          "type": "automated"
+        }
       ],
       "dependsOn": [],
       "agentInstructions": "Use architecture-patterns skill. Create at src/lib/protocols/a2a.ts.",
-      "files": ["src/lib/protocols/a2a.ts"]
+      "files": [
+        "src/lib/protocols/a2a.ts"
+      ]
     },
     {
       "id": "PRD011-001",
@@ -390,15 +773,37 @@
         "prdId": "PRD-011"
       },
       "acceptanceCriteria": [
-        { "id": "AC1", "description": "LLMProvider interface with complete/stream methods", "type": "automated" },
-        { "id": "AC2", "description": "registerProvider(provider) function", "type": "automated" },
-        { "id": "AC3", "description": "getProvider(id) function", "type": "automated" },
-        { "id": "AC4", "description": "listProviders() function", "type": "automated" },
-        { "id": "AC5", "description": "Default providers registered on init", "type": "automated" }
+        {
+          "id": "AC1",
+          "description": "LLMProvider interface with complete/stream methods",
+          "type": "automated"
+        },
+        {
+          "id": "AC2",
+          "description": "registerProvider(provider) function",
+          "type": "automated"
+        },
+        {
+          "id": "AC3",
+          "description": "getProvider(id) function",
+          "type": "automated"
+        },
+        {
+          "id": "AC4",
+          "description": "listProviders() function",
+          "type": "automated"
+        },
+        {
+          "id": "AC5",
+          "description": "Default providers registered on init",
+          "type": "automated"
+        }
       ],
       "dependsOn": [],
       "agentInstructions": "Use architecture-patterns skill. Spawn lead-architect subagent. Create at src/server/providers/index.ts.",
-      "files": ["src/server/providers/index.ts"]
+      "files": [
+        "src/server/providers/index.ts"
+      ]
     },
     {
       "id": "PRD012-001",
@@ -411,16 +816,44 @@
         "prdId": "PRD-012"
       },
       "acceptanceCriteria": [
-        { "id": "AC1", "description": "Implements LLMProvider interface", "type": "automated" },
-        { "id": "AC2", "description": "Spawns claude CLI with --dangerously-skip-permissions", "type": "automated" },
-        { "id": "AC3", "description": "formatPrompt(messages) helper", "type": "automated" },
-        { "id": "AC4", "description": "Parses JSON/text output", "type": "automated" },
-        { "id": "AC5", "description": "Timeout after 5 minutes", "type": "automated" },
-        { "id": "AC6", "description": "Retry on failure", "type": "automated" }
+        {
+          "id": "AC1",
+          "description": "Implements LLMProvider interface",
+          "type": "automated"
+        },
+        {
+          "id": "AC2",
+          "description": "Spawns claude CLI with --dangerously-skip-permissions",
+          "type": "automated"
+        },
+        {
+          "id": "AC3",
+          "description": "formatPrompt(messages) helper",
+          "type": "automated"
+        },
+        {
+          "id": "AC4",
+          "description": "Parses JSON/text output",
+          "type": "automated"
+        },
+        {
+          "id": "AC5",
+          "description": "Timeout after 5 minutes",
+          "type": "automated"
+        },
+        {
+          "id": "AC6",
+          "description": "Retry on failure",
+          "type": "automated"
+        }
       ],
-      "dependsOn": ["PRD011-001"],
+      "dependsOn": [
+        "PRD011-001"
+      ],
       "agentInstructions": "Use agentic-coding skill. Create at src/server/providers/claude-code.ts. Use child_process.spawn.",
-      "files": ["src/server/providers/claude-code.ts"]
+      "files": [
+        "src/server/providers/claude-code.ts"
+      ]
     },
     {
       "id": "PRD013-001",
@@ -433,15 +866,39 @@
         "prdId": "PRD-013"
       },
       "acceptanceCriteria": [
-        { "id": "AC1", "description": "Implements LLMProvider interface", "type": "automated" },
-        { "id": "AC2", "description": "Uses @anthropic-ai/sdk", "type": "automated" },
-        { "id": "AC3", "description": "Supports claude-sonnet-4 and claude-opus-4", "type": "automated" },
-        { "id": "AC4", "description": "Streaming support", "type": "automated" },
-        { "id": "AC5", "description": "Error handling with retries", "type": "automated" }
+        {
+          "id": "AC1",
+          "description": "Implements LLMProvider interface",
+          "type": "automated"
+        },
+        {
+          "id": "AC2",
+          "description": "Uses @anthropic-ai/sdk",
+          "type": "automated"
+        },
+        {
+          "id": "AC3",
+          "description": "Supports claude-sonnet-4 and claude-opus-4",
+          "type": "automated"
+        },
+        {
+          "id": "AC4",
+          "description": "Streaming support",
+          "type": "automated"
+        },
+        {
+          "id": "AC5",
+          "description": "Error handling with retries",
+          "type": "automated"
+        }
       ],
-      "dependsOn": ["PRD011-001"],
+      "dependsOn": [
+        "PRD011-001"
+      ],
       "agentInstructions": "Use architecture-patterns skill. Create at src/server/providers/anthropic.ts.",
-      "files": ["src/server/providers/anthropic.ts"]
+      "files": [
+        "src/server/providers/anthropic.ts"
+      ]
     },
     {
       "id": "PRD013-002",
@@ -454,15 +911,39 @@
         "prdId": "PRD-013"
       },
       "acceptanceCriteria": [
-        { "id": "AC1", "description": "Implements LLMProvider interface", "type": "automated" },
-        { "id": "AC2", "description": "Uses openai SDK", "type": "automated" },
-        { "id": "AC3", "description": "Supports gpt-4o and gpt-4o-mini", "type": "automated" },
-        { "id": "AC4", "description": "Streaming support", "type": "automated" },
-        { "id": "AC5", "description": "Error handling with retries", "type": "automated" }
+        {
+          "id": "AC1",
+          "description": "Implements LLMProvider interface",
+          "type": "automated"
+        },
+        {
+          "id": "AC2",
+          "description": "Uses openai SDK",
+          "type": "automated"
+        },
+        {
+          "id": "AC3",
+          "description": "Supports gpt-4o and gpt-4o-mini",
+          "type": "automated"
+        },
+        {
+          "id": "AC4",
+          "description": "Streaming support",
+          "type": "automated"
+        },
+        {
+          "id": "AC5",
+          "description": "Error handling with retries",
+          "type": "automated"
+        }
       ],
-      "dependsOn": ["PRD011-001"],
+      "dependsOn": [
+        "PRD011-001"
+      ],
       "agentInstructions": "Use architecture-patterns skill. Create at src/server/providers/openai.ts.",
-      "files": ["src/server/providers/openai.ts"]
+      "files": [
+        "src/server/providers/openai.ts"
+      ]
     },
     {
       "id": "PRD014-001",
@@ -475,15 +956,38 @@
         "prdId": "PRD-014"
       },
       "acceptanceCriteria": [
-        { "id": "AC1", "description": "read() loads from docs/AGENTS.md", "type": "automated" },
-        { "id": "AC2", "description": "write(section, content) appends", "type": "automated" },
-        { "id": "AC3", "description": "getSection(name) returns section content", "type": "automated" },
-        { "id": "AC4", "description": "search(keyword) finds relevant entries", "type": "automated" },
-        { "id": "AC5", "description": "Creates file if not exists", "type": "automated" }
+        {
+          "id": "AC1",
+          "description": "read() loads from docs/AGENTS.md",
+          "type": "automated"
+        },
+        {
+          "id": "AC2",
+          "description": "write(section, content) appends",
+          "type": "automated"
+        },
+        {
+          "id": "AC3",
+          "description": "getSection(name) returns section content",
+          "type": "automated"
+        },
+        {
+          "id": "AC4",
+          "description": "search(keyword) finds relevant entries",
+          "type": "automated"
+        },
+        {
+          "id": "AC5",
+          "description": "Creates file if not exists",
+          "type": "automated"
+        }
       ],
       "dependsOn": [],
       "agentInstructions": "Use memory-systems skill. Create at src/lib/memory/LongTermMemory.ts.",
-      "files": ["src/lib/memory/LongTermMemory.ts", "docs/AGENTS.md"]
+      "files": [
+        "src/lib/memory/LongTermMemory.ts",
+        "docs/AGENTS.md"
+      ]
     },
     {
       "id": "PRD014-002",
@@ -496,15 +1000,37 @@
         "prdId": "PRD-014"
       },
       "acceptanceCriteria": [
-        { "id": "AC1", "description": "Stores current task context", "type": "automated" },
-        { "id": "AC2", "description": "Stores recent decisions", "type": "automated" },
-        { "id": "AC3", "description": "Stores conversation history (last 50)", "type": "automated" },
-        { "id": "AC4", "description": "load(sessionId) from file", "type": "automated" },
-        { "id": "AC5", "description": "save(sessionId) to file", "type": "automated" }
+        {
+          "id": "AC1",
+          "description": "Stores current task context",
+          "type": "automated"
+        },
+        {
+          "id": "AC2",
+          "description": "Stores recent decisions",
+          "type": "automated"
+        },
+        {
+          "id": "AC3",
+          "description": "Stores conversation history (last 50)",
+          "type": "automated"
+        },
+        {
+          "id": "AC4",
+          "description": "load(sessionId) from file",
+          "type": "automated"
+        },
+        {
+          "id": "AC5",
+          "description": "save(sessionId) to file",
+          "type": "automated"
+        }
       ],
       "dependsOn": [],
       "agentInstructions": "Use memory-systems skill. Create at src/lib/memory/ShortTermMemory.ts.",
-      "files": ["src/lib/memory/ShortTermMemory.ts"]
+      "files": [
+        "src/lib/memory/ShortTermMemory.ts"
+      ]
     },
     {
       "id": "PRD015-001",
@@ -517,15 +1043,37 @@
         "prdId": "PRD-015"
       },
       "acceptanceCriteria": [
-        { "id": "AC1", "description": "5 agents: PM, Architect, Frontend, Backend, QA", "type": "automated" },
-        { "id": "AC2", "description": "Desk positions defined", "type": "automated" },
-        { "id": "AC3", "description": "Detailed system prompts for each role", "type": "manual" },
-        { "id": "AC4", "description": "Default provider/model assignments", "type": "automated" },
-        { "id": "AC5", "description": "Personality traits defined", "type": "manual" }
+        {
+          "id": "AC1",
+          "description": "5 agents: PM, Architect, Frontend, Backend, QA",
+          "type": "automated"
+        },
+        {
+          "id": "AC2",
+          "description": "Desk positions defined",
+          "type": "automated"
+        },
+        {
+          "id": "AC3",
+          "description": "Detailed system prompts for each role",
+          "type": "manual"
+        },
+        {
+          "id": "AC4",
+          "description": "Default provider/model assignments",
+          "type": "automated"
+        },
+        {
+          "id": "AC5",
+          "description": "Personality traits defined",
+          "type": "manual"
+        }
       ],
       "dependsOn": [],
       "agentInstructions": "Use agent-development and prompt-engineering-patterns skills. Create at templates/dev-team.json.",
-      "files": ["templates/dev-team.json"]
+      "files": [
+        "templates/dev-team.json"
+      ]
     },
     {
       "id": "PRD015-002",
@@ -538,14 +1086,32 @@
         "prdId": "PRD-015"
       },
       "acceptanceCriteria": [
-        { "id": "AC1", "description": "5 agents: Analyst, Quant, Risk, Trader, Compliance", "type": "automated" },
-        { "id": "AC2", "description": "Desk positions defined", "type": "automated" },
-        { "id": "AC3", "description": "Domain-specific system prompts", "type": "manual" },
-        { "id": "AC4", "description": "Provider/model assignments", "type": "automated" }
+        {
+          "id": "AC1",
+          "description": "5 agents: Analyst, Quant, Risk, Trader, Compliance",
+          "type": "automated"
+        },
+        {
+          "id": "AC2",
+          "description": "Desk positions defined",
+          "type": "automated"
+        },
+        {
+          "id": "AC3",
+          "description": "Domain-specific system prompts",
+          "type": "manual"
+        },
+        {
+          "id": "AC4",
+          "description": "Provider/model assignments",
+          "type": "automated"
+        }
       ],
       "dependsOn": [],
       "agentInstructions": "Use agent-development and prompt-engineering-patterns skills. Create at templates/trading-floor.json.",
-      "files": ["templates/trading-floor.json"]
+      "files": [
+        "templates/trading-floor.json"
+      ]
     },
     {
       "id": "PRD015-003",
@@ -558,14 +1124,32 @@
         "prdId": "PRD-015"
       },
       "acceptanceCriteria": [
-        { "id": "AC1", "description": "5 agents: Writer, Designer, Reviewer, Editor, Producer", "type": "automated" },
-        { "id": "AC2", "description": "Desk positions defined", "type": "automated" },
-        { "id": "AC3", "description": "Creative system prompts", "type": "manual" },
-        { "id": "AC4", "description": "Provider/model assignments", "type": "automated" }
+        {
+          "id": "AC1",
+          "description": "5 agents: Writer, Designer, Reviewer, Editor, Producer",
+          "type": "automated"
+        },
+        {
+          "id": "AC2",
+          "description": "Desk positions defined",
+          "type": "automated"
+        },
+        {
+          "id": "AC3",
+          "description": "Creative system prompts",
+          "type": "manual"
+        },
+        {
+          "id": "AC4",
+          "description": "Provider/model assignments",
+          "type": "automated"
+        }
       ],
       "dependsOn": [],
       "agentInstructions": "Use agent-development and prompt-engineering-patterns skills. Create at templates/creative-studio.json.",
-      "files": ["templates/creative-studio.json"]
+      "files": [
+        "templates/creative-studio.json"
+      ]
     },
     {
       "id": "PRD015-004",
@@ -578,14 +1162,32 @@
         "prdId": "PRD-015"
       },
       "acceptanceCriteria": [
-        { "id": "AC1", "description": "loadTemplate(templateId) function", "type": "automated" },
-        { "id": "AC2", "description": "validateTemplate(template) with Zod", "type": "automated" },
-        { "id": "AC3", "description": "listTemplates() function", "type": "automated" },
-        { "id": "AC4", "description": "TypeScript types for templates", "type": "automated" }
+        {
+          "id": "AC1",
+          "description": "loadTemplate(templateId) function",
+          "type": "automated"
+        },
+        {
+          "id": "AC2",
+          "description": "validateTemplate(template) with Zod",
+          "type": "automated"
+        },
+        {
+          "id": "AC3",
+          "description": "listTemplates() function",
+          "type": "automated"
+        },
+        {
+          "id": "AC4",
+          "description": "TypeScript types for templates",
+          "type": "automated"
+        }
       ],
       "dependsOn": [],
       "agentInstructions": "Use architecture-patterns skill. Create at src/lib/utils/templates.ts.",
-      "files": ["src/lib/utils/templates.ts"]
+      "files": [
+        "src/lib/utils/templates.ts"
+      ]
     },
     {
       "id": "PRD016-001",
@@ -598,22 +1200,52 @@
         "prdId": "PRD-016"
       },
       "acceptanceCriteria": [
-        { "id": "AC1", "description": "Extends Phaser.GameObjects.Container", "type": "automated" },
-        { "id": "AC2", "description": "show(text) streams text character by character", "type": "visual" },
-        { "id": "AC3", "description": "Auto-sizing bubble based on content", "type": "visual" },
-        { "id": "AC4", "description": "Fade out after 3 seconds", "type": "visual" },
-        { "id": "AC5", "description": "Different styles: thinking (cloud) vs speaking (speech)", "type": "visual" },
-        { "id": "AC6", "description": "Typing indicator dots animation", "type": "visual" }
+        {
+          "id": "AC1",
+          "description": "Extends Phaser.GameObjects.Container",
+          "type": "automated"
+        },
+        {
+          "id": "AC2",
+          "description": "show(text) streams text character by character",
+          "type": "visual"
+        },
+        {
+          "id": "AC3",
+          "description": "Auto-sizing bubble based on content",
+          "type": "visual"
+        },
+        {
+          "id": "AC4",
+          "description": "Fade out after 3 seconds",
+          "type": "visual"
+        },
+        {
+          "id": "AC5",
+          "description": "Different styles: thinking (cloud) vs speaking (speech)",
+          "type": "visual"
+        },
+        {
+          "id": "AC6",
+          "description": "Typing indicator dots animation",
+          "type": "visual"
+        }
       ],
-      "dependsOn": ["PRD004-001"],
+      "dependsOn": [
+        "PRD004-001"
+      ],
       "agentInstructions": "Use frontend-design skill. Spawn frontend-engineer subagent. Create at src/game/sprites/ThoughtBubble.ts.",
-      "files": ["src/game/sprites/ThoughtBubble.ts"],
+      "files": [
+        "src/game/sprites/ThoughtBubble.ts"
+      ],
       "tasks": [
         {
           "id": "UI-016",
           "validation": {
             "route": "/floor/dev-team",
-            "checks": ["Thought bubble appears when agent thinks"]
+            "checks": [
+              "Thought bubble appears when agent thinks"
+            ]
           }
         }
       ]
@@ -629,15 +1261,40 @@
         "prdId": "PRD-017"
       },
       "acceptanceCriteria": [
-        { "id": "AC1", "description": "4-direction walk frames (up, down, left, right)", "type": "visual" },
-        { "id": "AC2", "description": "Smooth interpolation between tiles", "type": "visual" },
-        { "id": "AC3", "description": "walkTo(x, y) uses pathfinding", "type": "automated" },
-        { "id": "AC4", "description": "onArrival callback", "type": "automated" },
-        { "id": "AC5", "description": "Collision avoidance with other agents", "type": "automated" }
+        {
+          "id": "AC1",
+          "description": "4-direction walk frames (up, down, left, right)",
+          "type": "visual"
+        },
+        {
+          "id": "AC2",
+          "description": "Smooth interpolation between tiles",
+          "type": "visual"
+        },
+        {
+          "id": "AC3",
+          "description": "walkTo(x, y) uses pathfinding",
+          "type": "automated"
+        },
+        {
+          "id": "AC4",
+          "description": "onArrival callback",
+          "type": "automated"
+        },
+        {
+          "id": "AC5",
+          "description": "Collision avoidance with other agents",
+          "type": "automated"
+        }
       ],
-      "dependsOn": ["PRD004-002", "PRD004-003"],
+      "dependsOn": [
+        "PRD004-002",
+        "PRD004-003"
+      ],
       "agentInstructions": "Use frontend-design skill. Update src/game/sprites/AgentSprite.ts to add walking animation.",
-      "files": ["src/game/sprites/AgentSprite.ts"]
+      "files": [
+        "src/game/sprites/AgentSprite.ts"
+      ]
     },
     {
       "id": "PRD018-001",
@@ -650,15 +1307,37 @@
         "prdId": "PRD-018"
       },
       "acceptanceCriteria": [
-        { "id": "AC1", "description": "ElevenLabs API client", "type": "automated" },
-        { "id": "AC2", "description": "textToSpeech(text, voiceId) function", "type": "automated" },
-        { "id": "AC3", "description": "Audio queue management", "type": "automated" },
-        { "id": "AC4", "description": "Voice mapping per agent role", "type": "automated" },
-        { "id": "AC5", "description": "Error handling", "type": "automated" }
+        {
+          "id": "AC1",
+          "description": "ElevenLabs API client",
+          "type": "automated"
+        },
+        {
+          "id": "AC2",
+          "description": "textToSpeech(text, voiceId) function",
+          "type": "automated"
+        },
+        {
+          "id": "AC3",
+          "description": "Audio queue management",
+          "type": "automated"
+        },
+        {
+          "id": "AC4",
+          "description": "Voice mapping per agent role",
+          "type": "automated"
+        },
+        {
+          "id": "AC5",
+          "description": "Error handling",
+          "type": "automated"
+        }
       ],
       "dependsOn": [],
       "agentInstructions": "Use architecture-patterns skill. Create at src/lib/voice/elevenlabs.ts.",
-      "files": ["src/lib/voice/elevenlabs.ts"]
+      "files": [
+        "src/lib/voice/elevenlabs.ts"
+      ]
     },
     {
       "id": "PRD018-002",
@@ -671,15 +1350,39 @@
         "prdId": "PRD-018"
       },
       "acceptanceCriteria": [
-        { "id": "AC1", "description": "Voice selection per agent", "type": "visual" },
-        { "id": "AC2", "description": "Preview voice button", "type": "visual" },
-        { "id": "AC3", "description": "Volume slider", "type": "visual" },
-        { "id": "AC4", "description": "Mute toggle", "type": "visual" },
-        { "id": "AC5", "description": "Enable/disable voice globally", "type": "visual" }
+        {
+          "id": "AC1",
+          "description": "Voice selection per agent",
+          "type": "visual"
+        },
+        {
+          "id": "AC2",
+          "description": "Preview voice button",
+          "type": "visual"
+        },
+        {
+          "id": "AC3",
+          "description": "Volume slider",
+          "type": "visual"
+        },
+        {
+          "id": "AC4",
+          "description": "Mute toggle",
+          "type": "visual"
+        },
+        {
+          "id": "AC5",
+          "description": "Enable/disable voice globally",
+          "type": "visual"
+        }
       ],
-      "dependsOn": ["PRD018-001"],
+      "dependsOn": [
+        "PRD018-001"
+      ],
       "agentInstructions": "Use frontend-design skill. Create at src/components/settings/VoiceSettings.tsx.",
-      "files": ["src/components/settings/VoiceSettings.tsx"]
+      "files": [
+        "src/components/settings/VoiceSettings.tsx"
+      ]
     },
     {
       "id": "PRD019-001",
@@ -692,15 +1395,38 @@
         "prdId": "PRD-019"
       },
       "acceptanceCriteria": [
-        { "id": "AC1", "description": "Personality traits: introvert/extrovert, formal/casual", "type": "automated" },
-        { "id": "AC2", "description": "Mood: happy, stressed, focused, tired", "type": "automated" },
-        { "id": "AC3", "description": "Fatigue counter", "type": "automated" },
-        { "id": "AC4", "description": "Personality affects system prompt", "type": "automated" },
-        { "id": "AC5", "description": "Mood affects response style", "type": "automated" }
+        {
+          "id": "AC1",
+          "description": "Personality traits: introvert/extrovert, formal/casual",
+          "type": "automated"
+        },
+        {
+          "id": "AC2",
+          "description": "Mood: happy, stressed, focused, tired",
+          "type": "automated"
+        },
+        {
+          "id": "AC3",
+          "description": "Fatigue counter",
+          "type": "automated"
+        },
+        {
+          "id": "AC4",
+          "description": "Personality affects system prompt",
+          "type": "automated"
+        },
+        {
+          "id": "AC5",
+          "description": "Mood affects response style",
+          "type": "automated"
+        }
       ],
       "dependsOn": [],
       "agentInstructions": "Use agent-development and prompt-engineering-patterns skills. Update src/types/agent.ts and src/server/rooms/FloorRoom.ts.",
-      "files": ["src/types/agent.ts", "src/server/rooms/FloorRoom.ts"]
+      "files": [
+        "src/types/agent.ts",
+        "src/server/rooms/FloorRoom.ts"
+      ]
     },
     {
       "id": "PRD019-002",
@@ -713,15 +1439,41 @@
         "prdId": "PRD-019"
       },
       "acceptanceCriteria": [
-        { "id": "AC1", "description": "Fatigue increases with tasks", "type": "automated" },
-        { "id": "AC2", "description": "At threshold, agent takes break", "type": "automated" },
-        { "id": "AC3", "description": "Walks to water cooler zone", "type": "visual" },
-        { "id": "AC4", "description": "Idle animation at cooler", "type": "visual" },
-        { "id": "AC5", "description": "Fatigue resets after break", "type": "automated" }
+        {
+          "id": "AC1",
+          "description": "Fatigue increases with tasks",
+          "type": "automated"
+        },
+        {
+          "id": "AC2",
+          "description": "At threshold, agent takes break",
+          "type": "automated"
+        },
+        {
+          "id": "AC3",
+          "description": "Walks to water cooler zone",
+          "type": "visual"
+        },
+        {
+          "id": "AC4",
+          "description": "Idle animation at cooler",
+          "type": "visual"
+        },
+        {
+          "id": "AC5",
+          "description": "Fatigue resets after break",
+          "type": "automated"
+        }
       ],
-      "dependsOn": ["PRD019-001", "PRD017-001"],
+      "dependsOn": [
+        "PRD019-001",
+        "PRD017-001"
+      ],
       "agentInstructions": "Use agentic-coding skill. Update src/server/agents/AgentWorker.ts and src/game/sprites/AgentSprite.ts.",
-      "files": ["src/server/agents/AgentWorker.ts", "src/game/sprites/AgentSprite.ts"]
+      "files": [
+        "src/server/agents/AgentWorker.ts",
+        "src/game/sprites/AgentSprite.ts"
+      ]
     },
     {
       "id": "PRD020-001",
@@ -734,21 +1486,46 @@
         "prdId": "PRD-020"
       },
       "acceptanceCriteria": [
-        { "id": "AC1", "description": "Per-agent token counter (input/output)", "type": "visual" },
-        { "id": "AC2", "description": "Cost calculation based on provider rates", "type": "automated" },
-        { "id": "AC3", "description": "Budget progress bar", "type": "visual" },
-        { "id": "AC4", "description": "Warning when approaching limit", "type": "visual" },
-        { "id": "AC5", "description": "Reset counters button", "type": "visual" }
+        {
+          "id": "AC1",
+          "description": "Per-agent token counter (input/output)",
+          "type": "visual"
+        },
+        {
+          "id": "AC2",
+          "description": "Cost calculation based on provider rates",
+          "type": "automated"
+        },
+        {
+          "id": "AC3",
+          "description": "Budget progress bar",
+          "type": "visual"
+        },
+        {
+          "id": "AC4",
+          "description": "Warning when approaching limit",
+          "type": "visual"
+        },
+        {
+          "id": "AC5",
+          "description": "Reset counters button",
+          "type": "visual"
+        }
       ],
       "dependsOn": [],
       "agentInstructions": "Use frontend-design skill. Spawn frontend-engineer subagent. Create at src/components/dashboard/TokenDashboard.tsx.",
-      "files": ["src/components/dashboard/TokenDashboard.tsx"],
+      "files": [
+        "src/components/dashboard/TokenDashboard.tsx"
+      ],
       "tasks": [
         {
           "id": "UI-020",
           "validation": {
             "route": "/floor/dev-team",
-            "checks": ["Token counter visible", "Cost displayed"]
+            "checks": [
+              "Token counter visible",
+              "Cost displayed"
+            ]
           }
         }
       ]
@@ -764,14 +1541,34 @@
         "prdId": "PRD-020"
       },
       "acceptanceCriteria": [
-        { "id": "AC1", "description": "Track inputTokens and outputTokens per request", "type": "automated" },
-        { "id": "AC2", "description": "Aggregate per agent", "type": "automated" },
-        { "id": "AC3", "description": "Emit usage events to Colyseus state", "type": "automated" },
-        { "id": "AC4", "description": "Cost calculation per provider", "type": "automated" }
+        {
+          "id": "AC1",
+          "description": "Track inputTokens and outputTokens per request",
+          "type": "automated"
+        },
+        {
+          "id": "AC2",
+          "description": "Aggregate per agent",
+          "type": "automated"
+        },
+        {
+          "id": "AC3",
+          "description": "Emit usage events to Colyseus state",
+          "type": "automated"
+        },
+        {
+          "id": "AC4",
+          "description": "Cost calculation per provider",
+          "type": "automated"
+        }
       ],
-      "dependsOn": ["PRD011-001"],
+      "dependsOn": [
+        "PRD011-001"
+      ],
       "agentInstructions": "Use architecture-patterns skill. Update src/server/providers/index.ts with token tracking.",
-      "files": ["src/server/providers/index.ts"]
+      "files": [
+        "src/server/providers/index.ts"
+      ]
     },
     {
       "id": "PRD021-001",
@@ -784,15 +1581,37 @@
         "prdId": "PRD-021"
       },
       "acceptanceCriteria": [
-        { "id": "AC1", "description": "createBranch(name) function", "type": "automated" },
-        { "id": "AC2", "description": "commit(files, message) function", "type": "automated" },
-        { "id": "AC3", "description": "createPR(title, body) function", "type": "automated" },
-        { "id": "AC4", "description": "getPRStatus(number) function", "type": "automated" },
-        { "id": "AC5", "description": "Uses gh CLI under the hood", "type": "automated" }
+        {
+          "id": "AC1",
+          "description": "createBranch(name) function",
+          "type": "automated"
+        },
+        {
+          "id": "AC2",
+          "description": "commit(files, message) function",
+          "type": "automated"
+        },
+        {
+          "id": "AC3",
+          "description": "createPR(title, body) function",
+          "type": "automated"
+        },
+        {
+          "id": "AC4",
+          "description": "getPRStatus(number) function",
+          "type": "automated"
+        },
+        {
+          "id": "AC5",
+          "description": "Uses gh CLI under the hood",
+          "type": "automated"
+        }
       ],
       "dependsOn": [],
       "agentInstructions": "Use agentic-coding skill. Spawn lead-architect subagent. Create at src/server/integrations/github.ts.",
-      "files": ["src/server/integrations/github.ts"]
+      "files": [
+        "src/server/integrations/github.ts"
+      ]
     },
     {
       "id": "PRD021-002",
@@ -805,15 +1624,39 @@
         "prdId": "PRD-021"
       },
       "acceptanceCriteria": [
-        { "id": "AC1", "description": "Renders unified diff format", "type": "visual" },
-        { "id": "AC2", "description": "Syntax highlighting", "type": "visual" },
-        { "id": "AC3", "description": "Line numbers", "type": "visual" },
-        { "id": "AC4", "description": "Collapse/expand hunks", "type": "visual" },
-        { "id": "AC5", "description": "Link to GitHub PR", "type": "visual" }
+        {
+          "id": "AC1",
+          "description": "Renders unified diff format",
+          "type": "visual"
+        },
+        {
+          "id": "AC2",
+          "description": "Syntax highlighting",
+          "type": "visual"
+        },
+        {
+          "id": "AC3",
+          "description": "Line numbers",
+          "type": "visual"
+        },
+        {
+          "id": "AC4",
+          "description": "Collapse/expand hunks",
+          "type": "visual"
+        },
+        {
+          "id": "AC5",
+          "description": "Link to GitHub PR",
+          "type": "visual"
+        }
       ],
-      "dependsOn": ["PRD021-001"],
+      "dependsOn": [
+        "PRD021-001"
+      ],
       "agentInstructions": "Use frontend-design skill. Create at src/components/chat/DiffViewer.tsx.",
-      "files": ["src/components/chat/DiffViewer.tsx"]
+      "files": [
+        "src/components/chat/DiffViewer.tsx"
+      ]
     },
     {
       "id": "PRD022-001",
@@ -826,15 +1669,37 @@
         "prdId": "PRD-022"
       },
       "acceptanceCriteria": [
-        { "id": "AC1", "description": "Isolated directory per team", "type": "automated" },
-        { "id": "AC2", "description": "readFile(path) function", "type": "automated" },
-        { "id": "AC3", "description": "writeFile(path, content) function", "type": "automated" },
-        { "id": "AC4", "description": "runCommand(cmd) with allowlist", "type": "automated" },
-        { "id": "AC5", "description": "Security: prevent path traversal", "type": "automated" }
+        {
+          "id": "AC1",
+          "description": "Isolated directory per team",
+          "type": "automated"
+        },
+        {
+          "id": "AC2",
+          "description": "readFile(path) function",
+          "type": "automated"
+        },
+        {
+          "id": "AC3",
+          "description": "writeFile(path, content) function",
+          "type": "automated"
+        },
+        {
+          "id": "AC4",
+          "description": "runCommand(cmd) with allowlist",
+          "type": "automated"
+        },
+        {
+          "id": "AC5",
+          "description": "Security: prevent path traversal",
+          "type": "automated"
+        }
       ],
       "dependsOn": [],
       "agentInstructions": "Use agentic-coding and architecture-patterns skills. Spawn lead-architect subagent. Create at src/server/workspace/SandboxedWorkspace.ts.",
-      "files": ["src/server/workspace/SandboxedWorkspace.ts"]
+      "files": [
+        "src/server/workspace/SandboxedWorkspace.ts"
+      ]
     },
     {
       "id": "PRD022-002",
@@ -847,15 +1712,39 @@
         "prdId": "PRD-022"
       },
       "acceptanceCriteria": [
-        { "id": "AC1", "description": "Recursive directory tree", "type": "visual" },
-        { "id": "AC2", "description": "File icons by extension", "type": "visual" },
-        { "id": "AC3", "description": "Expand/collapse folders", "type": "visual" },
-        { "id": "AC4", "description": "Click to view file contents", "type": "visual" },
-        { "id": "AC5", "description": "Real-time updates", "type": "automated" }
+        {
+          "id": "AC1",
+          "description": "Recursive directory tree",
+          "type": "visual"
+        },
+        {
+          "id": "AC2",
+          "description": "File icons by extension",
+          "type": "visual"
+        },
+        {
+          "id": "AC3",
+          "description": "Expand/collapse folders",
+          "type": "visual"
+        },
+        {
+          "id": "AC4",
+          "description": "Click to view file contents",
+          "type": "visual"
+        },
+        {
+          "id": "AC5",
+          "description": "Real-time updates",
+          "type": "automated"
+        }
       ],
-      "dependsOn": ["PRD022-001"],
+      "dependsOn": [
+        "PRD022-001"
+      ],
       "agentInstructions": "Use frontend-design skill. Create at src/components/workspace/FileTree.tsx.",
-      "files": ["src/components/workspace/FileTree.tsx"]
+      "files": [
+        "src/components/workspace/FileTree.tsx"
+      ]
     },
     {
       "id": "PRD023-001",
@@ -868,21 +1757,48 @@
         "prdId": "PRD-023"
       },
       "acceptanceCriteria": [
-        { "id": "AC1", "description": "Meeting room area defined in tilemap", "type": "visual" },
-        { "id": "AC2", "description": "Visual distinction (different floor)", "type": "visual" },
-        { "id": "AC3", "description": "Agents can walk to meeting room", "type": "automated" },
-        { "id": "AC4", "description": "Triggers meeting mode when agents gather", "type": "automated" },
-        { "id": "AC5", "description": "Whiteboard sprite in room", "type": "visual" }
+        {
+          "id": "AC1",
+          "description": "Meeting room area defined in tilemap",
+          "type": "visual"
+        },
+        {
+          "id": "AC2",
+          "description": "Visual distinction (different floor)",
+          "type": "visual"
+        },
+        {
+          "id": "AC3",
+          "description": "Agents can walk to meeting room",
+          "type": "automated"
+        },
+        {
+          "id": "AC4",
+          "description": "Triggers meeting mode when agents gather",
+          "type": "automated"
+        },
+        {
+          "id": "AC5",
+          "description": "Whiteboard sprite in room",
+          "type": "visual"
+        }
       ],
-      "dependsOn": ["PRD004-001"],
+      "dependsOn": [
+        "PRD004-001"
+      ],
       "agentInstructions": "Use frontend-design skill. Update src/game/scenes/OfficeScene.ts and create tilemap at public/assets/tilemaps/office.json.",
-      "files": ["src/game/scenes/OfficeScene.ts", "public/assets/tilemaps/office.json"],
+      "files": [
+        "src/game/scenes/OfficeScene.ts",
+        "public/assets/tilemaps/office.json"
+      ],
       "tasks": [
         {
           "id": "UI-023",
           "validation": {
             "route": "/floor/dev-team",
-            "checks": ["Meeting room visible on floor"]
+            "checks": [
+              "Meeting room visible on floor"
+            ]
           }
         }
       ]
@@ -898,21 +1814,47 @@
         "prdId": "PRD-024"
       },
       "acceptanceCriteria": [
-        { "id": "AC1", "description": "Timeline bar with event markers", "type": "visual" },
-        { "id": "AC2", "description": "Scrubber to move through time", "type": "visual" },
-        { "id": "AC3", "description": "Playback controls (play, pause, speed)", "type": "visual" },
-        { "id": "AC4", "description": "Event type colors (task, chat, etc.)", "type": "visual" },
-        { "id": "AC5", "description": "Jump to specific event", "type": "visual" }
+        {
+          "id": "AC1",
+          "description": "Timeline bar with event markers",
+          "type": "visual"
+        },
+        {
+          "id": "AC2",
+          "description": "Scrubber to move through time",
+          "type": "visual"
+        },
+        {
+          "id": "AC3",
+          "description": "Playback controls (play, pause, speed)",
+          "type": "visual"
+        },
+        {
+          "id": "AC4",
+          "description": "Event type colors (task, chat, etc.)",
+          "type": "visual"
+        },
+        {
+          "id": "AC5",
+          "description": "Jump to specific event",
+          "type": "visual"
+        }
       ],
       "dependsOn": [],
       "agentInstructions": "Use frontend-design skill. Create at src/components/timeline/ActivityTimeline.tsx and src/lib/store/timeline-store.ts.",
-      "files": ["src/components/timeline/ActivityTimeline.tsx", "src/lib/store/timeline-store.ts"],
+      "files": [
+        "src/components/timeline/ActivityTimeline.tsx",
+        "src/lib/store/timeline-store.ts"
+      ],
       "tasks": [
         {
           "id": "UI-024",
           "validation": {
             "route": "/floor/dev-team",
-            "checks": ["Timeline visible", "Scrubber draggable"]
+            "checks": [
+              "Timeline visible",
+              "Scrubber draggable"
+            ]
           }
         }
       ]
@@ -928,15 +1870,39 @@
         "prdId": "PRD-025"
       },
       "acceptanceCriteria": [
-        { "id": "AC1", "description": "XP awarded: small task=10, medium=25, large=50", "type": "automated" },
-        { "id": "AC2", "description": "Level formula: Math.floor(sqrt(xp/100))", "type": "automated" },
-        { "id": "AC3", "description": "Level badge displayed on agent sprite", "type": "visual" },
-        { "id": "AC4", "description": "Level up animation", "type": "visual" },
-        { "id": "AC5", "description": "Leaderboard component", "type": "visual" }
+        {
+          "id": "AC1",
+          "description": "XP awarded: small task=10, medium=25, large=50",
+          "type": "automated"
+        },
+        {
+          "id": "AC2",
+          "description": "Level formula: Math.floor(sqrt(xp/100))",
+          "type": "automated"
+        },
+        {
+          "id": "AC3",
+          "description": "Level badge displayed on agent sprite",
+          "type": "visual"
+        },
+        {
+          "id": "AC4",
+          "description": "Level up animation",
+          "type": "visual"
+        },
+        {
+          "id": "AC5",
+          "description": "Leaderboard component",
+          "type": "visual"
+        }
       ],
       "dependsOn": [],
       "agentInstructions": "Use frontend-design and agentic-coding skills. Update src/types/agent.ts, create src/server/agents/XPSystem.ts and src/components/floor/AgentXPBadge.tsx.",
-      "files": ["src/types/agent.ts", "src/server/agents/XPSystem.ts", "src/components/floor/AgentXPBadge.tsx"]
+      "files": [
+        "src/types/agent.ts",
+        "src/server/agents/XPSystem.ts",
+        "src/components/floor/AgentXPBadge.tsx"
+      ]
     },
     {
       "id": "PRD026-001",
@@ -949,15 +1915,37 @@
         "prdId": "PRD-026"
       },
       "acceptanceCriteria": [
-        { "id": "AC1", "description": "sendSlackNotification(webhookUrl, message)", "type": "automated" },
-        { "id": "AC2", "description": "sendDiscordNotification(webhookUrl, message)", "type": "automated" },
-        { "id": "AC3", "description": "Notification triggers: need_input, task_complete, error", "type": "automated" },
-        { "id": "AC4", "description": "Rich message formatting", "type": "automated" },
-        { "id": "AC5", "description": "Deep link back to floor", "type": "automated" }
+        {
+          "id": "AC1",
+          "description": "sendSlackNotification(webhookUrl, message)",
+          "type": "automated"
+        },
+        {
+          "id": "AC2",
+          "description": "sendDiscordNotification(webhookUrl, message)",
+          "type": "automated"
+        },
+        {
+          "id": "AC3",
+          "description": "Notification triggers: need_input, task_complete, error",
+          "type": "automated"
+        },
+        {
+          "id": "AC4",
+          "description": "Rich message formatting",
+          "type": "automated"
+        },
+        {
+          "id": "AC5",
+          "description": "Deep link back to floor",
+          "type": "automated"
+        }
       ],
       "dependsOn": [],
       "agentInstructions": "Use architecture-patterns skill. Create at src/server/notifications/webhooks.ts.",
-      "files": ["src/server/notifications/webhooks.ts"]
+      "files": [
+        "src/server/notifications/webhooks.ts"
+      ]
     },
     {
       "id": "PRD027-001",
@@ -970,22 +1958,53 @@
         "prdId": "PRD-027"
       },
       "acceptanceCriteria": [
-        { "id": "AC1", "description": "List configured providers", "type": "visual" },
-        { "id": "AC2", "description": "Add provider form", "type": "visual" },
-        { "id": "AC3", "description": "API key input (masked)", "type": "visual" },
-        { "id": "AC4", "description": "Test connection button with result", "type": "visual" },
-        { "id": "AC5", "description": "Delete provider button", "type": "visual" },
-        { "id": "AC6", "description": "Model selection per provider", "type": "visual" }
+        {
+          "id": "AC1",
+          "description": "List configured providers",
+          "type": "visual"
+        },
+        {
+          "id": "AC2",
+          "description": "Add provider form",
+          "type": "visual"
+        },
+        {
+          "id": "AC3",
+          "description": "API key input (masked)",
+          "type": "visual"
+        },
+        {
+          "id": "AC4",
+          "description": "Test connection button with result",
+          "type": "visual"
+        },
+        {
+          "id": "AC5",
+          "description": "Delete provider button",
+          "type": "visual"
+        },
+        {
+          "id": "AC6",
+          "description": "Model selection per provider",
+          "type": "visual"
+        }
       ],
-      "dependsOn": ["PRD003-001"],
+      "dependsOn": [
+        "PRD003-001"
+      ],
       "agentInstructions": "Use frontend-design skill. Spawn frontend-engineer subagent. Create at src/components/settings/ProviderConfig.tsx.",
-      "files": ["src/components/settings/ProviderConfig.tsx"],
+      "files": [
+        "src/components/settings/ProviderConfig.tsx"
+      ],
       "tasks": [
         {
           "id": "UI-027",
           "validation": {
             "route": "/settings",
-            "checks": ["Provider list visible", "Add provider button"]
+            "checks": [
+              "Provider list visible",
+              "Add provider button"
+            ]
           }
         }
       ]
@@ -1001,21 +2020,48 @@
         "prdId": "PRD-027"
       },
       "acceptanceCriteria": [
-        { "id": "AC1", "description": "Provider configuration section", "type": "visual" },
-        { "id": "AC2", "description": "Voice settings section", "type": "visual" },
-        { "id": "AC3", "description": "Notification settings section", "type": "visual" },
-        { "id": "AC4", "description": "Theme preferences", "type": "visual" },
-        { "id": "AC5", "description": "Back to home link", "type": "visual" }
+        {
+          "id": "AC1",
+          "description": "Provider configuration section",
+          "type": "visual"
+        },
+        {
+          "id": "AC2",
+          "description": "Voice settings section",
+          "type": "visual"
+        },
+        {
+          "id": "AC3",
+          "description": "Notification settings section",
+          "type": "visual"
+        },
+        {
+          "id": "AC4",
+          "description": "Theme preferences",
+          "type": "visual"
+        },
+        {
+          "id": "AC5",
+          "description": "Back to home link",
+          "type": "visual"
+        }
       ],
-      "dependsOn": ["PRD027-001"],
+      "dependsOn": [
+        "PRD027-001"
+      ],
       "agentInstructions": "Use frontend-design skill. Create at src/app/settings/page.tsx.",
-      "files": ["src/app/settings/page.tsx"],
+      "files": [
+        "src/app/settings/page.tsx"
+      ],
       "tasks": [
         {
           "id": "UI-028",
           "validation": {
             "route": "/settings",
-            "checks": ["Settings page renders", "Sections visible"]
+            "checks": [
+              "Settings page renders",
+              "Sections visible"
+            ]
           }
         }
       ]
@@ -1031,16 +2077,42 @@
         "prdId": "PRD-030"
       },
       "acceptanceCriteria": [
-        { "id": "AC1", "description": "Project description and vision", "type": "manual" },
-        { "id": "AC2", "description": "Prerequisites (Node.js, pnpm)", "type": "manual" },
-        { "id": "AC3", "description": "Installation steps", "type": "manual" },
-        { "id": "AC4", "description": "Running dev server", "type": "manual" },
-        { "id": "AC5", "description": "Architecture overview with diagram", "type": "manual" },
-        { "id": "AC6", "description": "Contributing guide", "type": "manual" }
+        {
+          "id": "AC1",
+          "description": "Project description and vision",
+          "type": "manual"
+        },
+        {
+          "id": "AC2",
+          "description": "Prerequisites (Node.js, pnpm)",
+          "type": "manual"
+        },
+        {
+          "id": "AC3",
+          "description": "Installation steps",
+          "type": "manual"
+        },
+        {
+          "id": "AC4",
+          "description": "Running dev server",
+          "type": "manual"
+        },
+        {
+          "id": "AC5",
+          "description": "Architecture overview with diagram",
+          "type": "manual"
+        },
+        {
+          "id": "AC6",
+          "description": "Contributing guide",
+          "type": "manual"
+        }
       ],
       "dependsOn": [],
       "agentInstructions": "Create comprehensive README.md at project root.",
-      "files": ["README.md"]
+      "files": [
+        "README.md"
+      ]
     },
     {
       "id": "PRD030-002",
@@ -1053,15 +2125,37 @@
         "prdId": "PRD-030"
       },
       "acceptanceCriteria": [
-        { "id": "AC1", "description": "Project context section", "type": "manual" },
-        { "id": "AC2", "description": "Architecture patterns section", "type": "manual" },
-        { "id": "AC3", "description": "Code conventions section", "type": "manual" },
-        { "id": "AC4", "description": "Learnings section", "type": "manual" },
-        { "id": "AC5", "description": "Decisions log section", "type": "manual" }
+        {
+          "id": "AC1",
+          "description": "Project context section",
+          "type": "manual"
+        },
+        {
+          "id": "AC2",
+          "description": "Architecture patterns section",
+          "type": "manual"
+        },
+        {
+          "id": "AC3",
+          "description": "Code conventions section",
+          "type": "manual"
+        },
+        {
+          "id": "AC4",
+          "description": "Learnings section",
+          "type": "manual"
+        },
+        {
+          "id": "AC5",
+          "description": "Decisions log section",
+          "type": "manual"
+        }
       ],
       "dependsOn": [],
       "agentInstructions": "Use memory-systems skill. Create at docs/AGENTS.md.",
-      "files": ["docs/AGENTS.md"]
+      "files": [
+        "docs/AGENTS.md"
+      ]
     },
     {
       "id": "SCRIPTS-001",
@@ -1074,16 +2168,42 @@
         "prdId": "SCRIPTS"
       },
       "acceptanceCriteria": [
-        { "id": "AC1", "description": "Tests landing page renders", "type": "automated" },
-        { "id": "AC2", "description": "Tests floor page with agents", "type": "automated" },
-        { "id": "AC3", "description": "Tests chat panel", "type": "automated" },
-        { "id": "AC4", "description": "Tests task board", "type": "automated" },
-        { "id": "AC5", "description": "Takes screenshots for evidence", "type": "automated" },
-        { "id": "AC6", "description": "Returns exit code 0 on success", "type": "automated" }
+        {
+          "id": "AC1",
+          "description": "Tests landing page renders",
+          "type": "automated"
+        },
+        {
+          "id": "AC2",
+          "description": "Tests floor page with agents",
+          "type": "automated"
+        },
+        {
+          "id": "AC3",
+          "description": "Tests chat panel",
+          "type": "automated"
+        },
+        {
+          "id": "AC4",
+          "description": "Tests task board",
+          "type": "automated"
+        },
+        {
+          "id": "AC5",
+          "description": "Takes screenshots for evidence",
+          "type": "automated"
+        },
+        {
+          "id": "AC6",
+          "description": "Returns exit code 0 on success",
+          "type": "automated"
+        }
       ],
       "dependsOn": [],
       "agentInstructions": "Use agent-browser-validation and quality-gates skills. Spawn qa-engineer subagent. Create at scripts/validate-ui.sh.",
-      "files": ["scripts/validate-ui.sh"]
+      "files": [
+        "scripts/validate-ui.sh"
+      ]
     },
     {
       "id": "SCRIPTS-002",
@@ -1096,15 +2216,39 @@
         "prdId": "SCRIPTS"
       },
       "acceptanceCriteria": [
-        { "id": "AC1", "description": "Vitest configured for unit tests", "type": "automated" },
-        { "id": "AC2", "description": "Playwright configured for E2E", "type": "automated" },
-        { "id": "AC3", "description": "Test setup file with mocks", "type": "automated" },
-        { "id": "AC4", "description": "npm run test works", "type": "automated" },
-        { "id": "AC5", "description": "npm run test:e2e works", "type": "automated" }
+        {
+          "id": "AC1",
+          "description": "Vitest configured for unit tests",
+          "type": "automated"
+        },
+        {
+          "id": "AC2",
+          "description": "Playwright configured for E2E",
+          "type": "automated"
+        },
+        {
+          "id": "AC3",
+          "description": "Test setup file with mocks",
+          "type": "automated"
+        },
+        {
+          "id": "AC4",
+          "description": "npm run test works",
+          "type": "automated"
+        },
+        {
+          "id": "AC5",
+          "description": "npm run test:e2e works",
+          "type": "automated"
+        }
       ],
       "dependsOn": [],
       "agentInstructions": "Use quality-gates skill. Spawn qa-engineer subagent. Create vitest.config.ts, playwright.config.ts, and src/__tests__/setup.ts.",
-      "files": ["vitest.config.ts", "playwright.config.ts", "src/__tests__/setup.ts"]
+      "files": [
+        "vitest.config.ts",
+        "playwright.config.ts",
+        "src/__tests__/setup.ts"
+      ]
     }
   ]
 }

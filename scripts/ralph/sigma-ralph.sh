@@ -48,6 +48,11 @@ RETRY_DELAY=5               # Seconds between retries
 AUTO_ROLLBACK=true          # Git rollback on failure
 FAILURE_MODE="prompt"       # prompt | skip | abort
 
+# Session auto-restart settings (for Claude Code Max session limits)
+SESSION_TIMEOUT=9000        # 2 hours 30 minutes = 9000 seconds
+AUTO_RESTART=false          # Auto-restart when session timeout reached
+SESSION_START_TIME=0        # Tracks when this session started
+
 # Colors for output
 RED='\033[0;31m'
 GREEN='\033[0;32m'
@@ -144,6 +149,11 @@ ERROR RECOVERY OPTIONS:
     --failure-mode=MODE    How to handle failures: prompt, skip, abort (default: prompt)
     --no-rollback          Don't auto-rollback git changes on failure
 
+SESSION AUTO-RESTART OPTIONS:
+    --auto-restart         Enable auto-restart when session timeout reached
+    --session-timeout=SEC  Session timeout in seconds (default: 9000 = 2h30m)
+                           Restarts loop before Claude Code session expires
+
 EXAMPLES:
     # Run prototype implementation
     sigma-ralph.sh --workspace=/path/to/myapp --mode=prototype
@@ -231,6 +241,14 @@ parse_args() {
                 ;;
             --no-rollback)
                 AUTO_ROLLBACK=false
+                shift
+                ;;
+            --auto-restart)
+                AUTO_RESTART=true
+                shift
+                ;;
+            --session-timeout=*)
+                SESSION_TIMEOUT="${1#*=}"
                 shift
                 ;;
             --help|-h)
@@ -1198,7 +1216,42 @@ run_story() {
     fi
 }
 
+# Check if session timeout reached (for auto-restart)
+check_session_timeout() {
+    if [[ "$AUTO_RESTART" != true ]]; then
+        return 1  # Not using auto-restart
+    fi
+
+    local current_time=$(date +%s)
+    local elapsed=$((current_time - SESSION_START_TIME))
+
+    if [[ $elapsed -ge $SESSION_TIMEOUT ]]; then
+        return 0  # Timeout reached
+    fi
+
+    return 1  # Still within session
+}
+
+# Format seconds as human readable time
+format_time() {
+    local seconds=$1
+    local hours=$((seconds / 3600))
+    local minutes=$(((seconds % 3600) / 60))
+    local secs=$((seconds % 60))
+
+    if [[ $hours -gt 0 ]]; then
+        printf "%dh%dm%ds" $hours $minutes $secs
+    elif [[ $minutes -gt 0 ]]; then
+        printf "%dm%ds" $minutes $secs
+    else
+        printf "%ds" $secs
+    fi
+}
+
 main_loop() {
+    # Record session start time
+    SESSION_START_TIME=$(date +%s)
+
     log_info "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
     log_info "🔄 SIGMA-RALPH LOOP v${VERSION}"
     log_info "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
@@ -1208,6 +1261,9 @@ main_loop() {
     log_info "Engine:    $ENGINE"
     log_info "Stream:    ${STREAM:-all}"
     log_info "Progress:  $(get_progress)"
+    if [[ "$AUTO_RESTART" == true ]]; then
+        log_info "Session:   $(format_time $SESSION_TIMEOUT) (auto-restart enabled)"
+    fi
     log_info "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 
     # Initialize progress file with header
@@ -1216,13 +1272,22 @@ main_loop() {
     local iteration=0
     local consecutive_failures=0
     local max_consecutive_failures=3
-    
+
     while [[ $iteration -lt $MAX_ITERATIONS ]]; do
         iteration=$((iteration + 1))
-        
+
+        # Check session timeout before starting next story
+        if check_session_timeout; then
+            log_warn "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+            log_warn "⏰ SESSION TIMEOUT ($(format_time $SESSION_TIMEOUT))"
+            log_warn "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+            log_info "Progress: $(get_progress)"
+            return 124  # Special exit code for session timeout
+        fi
+
         # Get next story
         local story_json=$(get_next_story)
-        
+
         if [[ "$story_json" == "null" ]] || [[ -z "$story_json" ]]; then
             log_success "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
             log_success "🎉 ALL STORIES COMPLETE!"
@@ -1230,15 +1295,23 @@ main_loop() {
             log_info "Final progress: $(get_progress)"
             return 0
         fi
-        
+
         local story_id=$(echo "$story_json" | jq -r '.id')
-        log_info "Iteration $iteration/$MAX_ITERATIONS - Story: $story_id"
-        
+
+        # Show time remaining if auto-restart enabled
+        if [[ "$AUTO_RESTART" == true ]]; then
+            local elapsed=$(($(date +%s) - SESSION_START_TIME))
+            local remaining=$((SESSION_TIMEOUT - elapsed))
+            log_info "Iteration $iteration/$MAX_ITERATIONS - Story: $story_id ($(format_time $remaining) remaining)"
+        else
+            log_info "Iteration $iteration/$MAX_ITERATIONS - Story: $story_id"
+        fi
+
         if run_story "$story_json"; then
             consecutive_failures=0
         else
             consecutive_failures=$((consecutive_failures + 1))
-            
+
             if [[ $consecutive_failures -ge $max_consecutive_failures ]]; then
                 log_error "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
                 log_error "⛔ STOPPING: $max_consecutive_failures consecutive failures"
@@ -1247,11 +1320,11 @@ main_loop() {
                 return 1
             fi
         fi
-        
+
         log_info "Progress: $(get_progress)"
         echo ""
     done
-    
+
     log_warn "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
     log_warn "⚠️ MAX ITERATIONS REACHED ($MAX_ITERATIONS)"
     log_warn "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
@@ -1266,7 +1339,42 @@ main_loop() {
 main() {
     parse_args "$@"
     validate_requirements
-    main_loop
+
+    if [[ "$AUTO_RESTART" == true ]]; then
+        # Auto-restart mode: loop until all stories complete
+        local cycle=1
+        while true; do
+            log_info "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+            log_info "🔄 AUTO-RESTART CYCLE $cycle"
+            log_info "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+
+            main_loop
+            local exit_code=$?
+
+            if [[ $exit_code -eq 0 ]]; then
+                # All stories complete
+                log_success "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+                log_success "🎉 ALL STORIES COMPLETE ACROSS ALL CYCLES!"
+                log_success "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+                exit 0
+            elif [[ $exit_code -eq 124 ]]; then
+                # Session timeout - restart
+                log_warn "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+                log_warn "⏰ RESTARTING IN 10 SECONDS..."
+                log_warn "   Press Ctrl+C to abort"
+                log_warn "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+                sleep 10
+                cycle=$((cycle + 1))
+            else
+                # Error - exit
+                log_error "Loop exited with error code $exit_code"
+                exit $exit_code
+            fi
+        done
+    else
+        # Single run mode (default)
+        main_loop
+    fi
 }
 
 main "$@"

@@ -56,10 +56,10 @@ export default function ChatPanel() {
     // Extract mentions from message
     const mentionRegex = /@(\w+)/g;
     const mentions: string[] = [];
-    let match;
+    let match: RegExpExecArray | null;
     while ((match = mentionRegex.exec(inputMessage)) !== null) {
       const agent = agents.find(
-        (a) => a.name.toLowerCase() === match[1].toLowerCase()
+        (a) => a.name.toLowerCase() === match![1].toLowerCase()
       );
       if (agent) mentions.push(agent.id);
     }
