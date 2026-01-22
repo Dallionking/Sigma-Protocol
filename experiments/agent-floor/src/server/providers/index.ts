@@ -27,6 +27,7 @@ import type {
 
 import { ClaudeCodeAdapter, createClaudeCodeAdapter } from "./claude-code";
 import { AnthropicAdapter, createAnthropicAdapter } from "./anthropic";
+import { OpenAIAdapter, createOpenAIAdapter } from "./openai";
 
 // =============================================================================
 // Provider Registry
@@ -356,14 +357,8 @@ export function initializeDefaultProviders(): void {
   // Anthropic (Claude API) - Real adapter using @anthropic-ai/sdk
   registerProvider(createAnthropicAdapter());
 
-  // OpenAI
-  registerProvider(
-    createStubProvider("openai", "OpenAI", {
-      supportsVision: true,
-      supportsTools: true,
-      maxContext: 128000,
-    })
-  );
+  // OpenAI (GPT-4o API) - Real adapter using openai SDK
+  registerProvider(createOpenAIAdapter());
 
   // Google Gemini
   registerProvider(
@@ -425,3 +420,6 @@ export { formatPrompt, parseOutput } from "./claude-code";
 
 // Export Anthropic adapter for direct use
 export { AnthropicAdapter, createAnthropicAdapter, SUPPORTED_MODELS as ANTHROPIC_MODELS } from "./anthropic";
+
+// Export OpenAI adapter for direct use
+export { OpenAIAdapter, createOpenAIAdapter, SUPPORTED_MODELS as OPENAI_MODELS } from "./openai";

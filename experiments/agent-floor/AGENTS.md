@@ -254,3 +254,27 @@ src/
   - API key from `ANTHROPIC_API_KEY` env var or passed as option
   - Default model: `claude-sonnet-4-20250514`
   - 5-minute timeout by default
+
+### PRD013-002: OpenAI API Adapter (2026-01-22)
+- Created `src/server/providers/openai.ts` - Real OpenAI API adapter
+- Features:
+  - `OpenAIAdapter` class implementing `LLMProvider` interface
+  - Uses official `openai` npm package
+  - Supports GPT-4o and GPT-4o-mini models via `SUPPORTED_MODELS` alias map
+  - `async *stream()` method for streaming responses via async generator
+  - `complete()` method for non-streaming completions
+  - `isAvailable()` health check method
+  - Retry logic with exponential backoff and jitter (3 retries max)
+  - `isRetryableError()` classifies retryable errors (429, 5xx, network errors)
+  - `convertMessages()` converts internal Message format to OpenAI format
+- Exported utilities:
+  - `createOpenAIAdapter(options?)` - Factory function
+  - `SUPPORTED_MODELS` - Model alias mapping (gpt-4o, gpt-4o-mini)
+  - `OpenAIAdapterOptions` - Configuration interface
+- Integration notes:
+  - Auto-registered in provider registry on import
+  - API key from `OPENAI_API_KEY` env var or passed as option
+  - Default model: `gpt-4o`
+  - 5-minute timeout by default
+  - Supports custom baseURL for API proxies
+  - Supports organization ID for OpenAI organization accounts
