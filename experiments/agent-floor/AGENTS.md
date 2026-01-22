@@ -156,3 +156,25 @@ src/
   - Uses `--print` flag for non-interactive output
   - Supports `--model` and `--max-tokens` options
   - Estimates token usage if not provided by CLI
+
+### PRD017-001: Walking Animation (2026-01-22)
+- Enhanced `src/game/sprites/AgentSprite.ts` with pathfinding-based walking
+- Features:
+  - `WalkDirection` type: "up" | "down" | "left" | "right"
+  - `WalkToOptions` interface with `onArrival`, `onBlocked`, `avoidAgents`, `direct` options
+  - `walkTo(x, y, options)` - Async walk with pathfinding and callbacks
+  - `walkAlongPath(path)` - Iterate through smoothed path points
+  - `updateWalkDirection(targetX, targetY)` - Calculate direction from movement vector
+  - `stopWalking()` - Cancel current walk and reset state
+  - Direction-based visual effects: tints, scale (perspective), sway
+- Walk animation effects:
+  - Bob offset: `Math.sin(time * frequency) * amplitude` for vertical bounce
+  - Sway offset for left/right walking
+  - Scale: up=1.15, down=1.25 for perspective simulation
+  - `DIRECTION_TINTS` for visual direction distinction
+- Integration notes:
+  - OfficeScene creates Pathfinding instance in `initializePathfinding()`
+  - Pathfinding grid matches camera dimensions / TILE_SIZE
+  - Desks marked as `TileType.DESK` in pathfinding grid
+  - `walkAgentTo()` automatically passes other agents for collision avoidance
+  - Uses `pathfinder.avoidPoint()` for dynamic obstacle avoidance
