@@ -11,6 +11,7 @@ src/
 │   ├── sprites/    # Phaser sprite classes (AgentSprite)
 │   └── utils/      # Game utilities (Pathfinding)
 ├── lib/
+│   ├── memory/     # Three-tier memory system (LongTermMemory)
 │   └── store/      # Zustand stores
 ├── server/
 │   ├── agents/     # Agent lifecycle management (AgentManager, AgentWorker)
@@ -278,3 +279,25 @@ src/
   - 5-minute timeout by default
   - Supports custom baseURL for API proxies
   - Supports organization ID for OpenAI organization accounts
+
+### PRD014-001: LongTermMemory Class (2026-01-22)
+- Created `src/lib/memory/LongTermMemory.ts` - Memory persistence to AGENTS.md
+- Features:
+  - `read()` - Load and parse markdown file, auto-create if missing
+  - `write(section, content)` - Append to existing section or create new one
+  - `getSection(name)` - Retrieve section content (case-insensitive)
+  - `search(keyword)` - Find entries with line numbers and context
+  - `exists()` - Check if memory file exists
+  - `hasSection(name)` - Check if section exists
+  - `getAllSections()` - Get all parsed sections with metadata
+  - `reset()` - Clear loaded state for reloading
+- Exported types:
+  - `LongTermMemoryOptions` - Configuration interface
+  - `MemorySection` - Parsed section with name, level, content, lines
+  - `SearchResult` - Search match with section, line, content, context
+- Integration notes:
+  - Default file path: `docs/AGENTS.md` relative to workspace
+  - Uses `autoCreate: true` by default to bootstrap new projects
+  - Section matching is case-insensitive
+  - Search returns 1-indexed line numbers for human readability
+  - Factory function: `createLongTermMemory(options?)`
