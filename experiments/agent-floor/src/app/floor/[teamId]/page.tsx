@@ -4,10 +4,11 @@ import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import dynamic from "next/dynamic";
 import Link from "next/link";
-import { ArrowLeft, MessageSquare, ListTodo, Settings, Users } from "lucide-react";
+import { ArrowLeft, MessageSquare, ListTodo, Settings, Users, Activity } from "lucide-react";
 import ChatPanel from "@/components/chat/ChatPanel";
 import TaskBoard from "@/components/tasks/TaskBoard";
 import AgentList from "@/components/floor/AgentList";
+import { TokenDashboard } from "@/components/dashboard";
 import { useFloorStore } from "@/lib/store/floor-store";
 import {
   ConnectionStatusIndicator,
@@ -28,7 +29,7 @@ const FloorCanvas = dynamic(() => import("@/components/floor/FloorCanvas"), {
   ),
 });
 
-type Panel = "chat" | "tasks" | "agents" | "settings" | null;
+type Panel = "chat" | "tasks" | "agents" | "dashboard" | "settings" | null;
 
 export default function FloorPage() {
   const params = useParams();
@@ -109,6 +110,18 @@ export default function FloorPage() {
           >
             <ListTodo className="w-5 h-5" />
           </button>
+          <button
+            onClick={() => togglePanel("dashboard")}
+            className={`p-2 rounded-lg transition-colors ${
+              activePanel === "dashboard"
+                ? "bg-floor-highlight text-white"
+                : "hover:bg-floor-accent"
+            }`}
+            title="Token Dashboard"
+            data-testid="dashboard-tab"
+          >
+            <Activity className="w-5 h-5" />
+          </button>
           <div className="w-px h-6 bg-floor-accent mx-2" />
           <button
             onClick={() => togglePanel("settings")}
@@ -146,6 +159,7 @@ export default function FloorPage() {
             {activePanel === "chat" && <ChatPanel />}
             {activePanel === "tasks" && <TaskBoard />}
             {activePanel === "agents" && <AgentList />}
+            {activePanel === "dashboard" && <TokenDashboard />}
             {activePanel === "settings" && (
               <div className="p-4">
                 <h2 className="text-lg font-semibold mb-4">Settings</h2>
