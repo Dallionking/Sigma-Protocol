@@ -38,6 +38,7 @@ interface FloorState {
   selectAgent: (agentId: string | null) => void;
   moveAgent: (agentId: string, position: Position) => void;
   updateAgentStatus: (agentId: string, status: AgentStatus) => void;
+  updateAgent: (agentId: string, updates: Partial<Pick<Agent, 'name' | 'provider' | 'model' | 'systemPrompt'>>) => void;
 
   // Message actions
   sendMessage: (content: string, to?: string) => void;
@@ -142,6 +143,20 @@ export const useFloorStore = create<FloorState>((set, get) => ({
     const { room } = get();
     if (room) {
       room.send("updateAgentStatus", { agentId, status });
+    }
+  },
+
+  updateAgent: (agentId, updates) => {
+    const { room } = get();
+    if (room) {
+      room.send("updateAgent", { agentId, updates });
+    } else {
+      // Mock update for development
+      set((state) => ({
+        agents: state.agents.map((a) =>
+          a.id === agentId ? { ...a, ...updates } : a
+        ),
+      }));
     }
   },
 

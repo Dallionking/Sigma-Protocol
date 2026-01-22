@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import { useFloorStore } from "@/lib/store/floor-store";
 import {
   User,
@@ -11,11 +12,25 @@ import {
   Pause,
   ChevronRight,
 } from "lucide-react";
-import type { AgentStatus } from "@/types/agent";
+import type { Agent, AgentStatus } from "@/types/agent";
+import AgentConfigModal, { type AgentConfigUpdates } from "@/components/settings/AgentConfigModal";
 
 export default function AgentList() {
-  const { agents, selectedAgentId, selectAgent, updateAgentStatus } =
+  const { agents, selectedAgentId, selectAgent, updateAgentStatus, updateAgent } =
     useFloorStore();
+  const [configModalAgent, setConfigModalAgent] = useState<Agent | null>(null);
+
+  const handleOpenConfig = (agent: Agent) => {
+    setConfigModalAgent(agent);
+  };
+
+  const handleCloseConfig = () => {
+    setConfigModalAgent(null);
+  };
+
+  const handleSaveConfig = (agentId: string, updates: AgentConfigUpdates) => {
+    updateAgent(agentId, updates);
+  };
 
   return (
     <div className="h-full flex flex-col">
@@ -119,9 +134,10 @@ export default function AgentList() {
                   <button
                     onClick={(e) => {
                       e.stopPropagation();
-                      // Open settings
+                      handleOpenConfig(agent);
                     }}
                     className="p-2 border border-floor-accent rounded-lg hover:bg-floor-accent"
+                    aria-label={`Configure ${agent.name}`}
                   >
                     <Settings className="w-4 h-4" />
                   </button>
@@ -162,6 +178,15 @@ export default function AgentList() {
           </div>
         </div>
       </div>
+
+      {/* Agent Configuration Modal */}
+      {configModalAgent && (
+        <AgentConfigModal
+          agent={configModalAgent}
+          onClose={handleCloseConfig}
+          onSave={handleSaveConfig}
+        />
+      )}
     </div>
   );
 }
