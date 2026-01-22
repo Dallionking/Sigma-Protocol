@@ -27,7 +27,7 @@
   },
   "meta": {
     "totalStories": 52,
-    "passedStories": 39
+    "passedStories": 40
   },
   "stories": [
     {
@@ -1436,7 +1436,7 @@
       "title": "Create ElevenLabs voice integration",
       "description": "Text-to-speech for agent messages using ElevenLabs API.",
       "priority": 3,
-      "passes": false,
+      "passes": true,
       "source": {
         "prdPath": "docs/MASTER_PRD.md",
         "prdId": "PRD-018"
@@ -1472,7 +1472,12 @@
       "agentInstructions": "Use architecture-patterns skill. Create at src/lib/voice/elevenlabs.ts.",
       "files": [
         "src/lib/voice/elevenlabs.ts"
-      ]
+      ],
+      "lastAttempt": {
+        "timestamp": "2026-01-22T16:23:28Z",
+        "engine": "claude",
+        "success": true
+      }
     },
     {
       "id": "PRD018-002",

@@ -481,3 +481,25 @@ src/
   - Default model: `eleven_multilingual_v2`
   - Default output format: `mp3_44100_128`
   - 30-second timeout per request
+
+### PRD018-002: VoiceSettings Component (2026-01-22)
+- Enhanced `src/components/settings/VoiceSettings.tsx` with full voice configuration UI
+- Features:
+  - [AC1] Voice selection per agent via dropdown with 16 ElevenLabs voices
+  - [AC2] Preview voice button with loading/playing states
+  - [AC3] Volume slider (0-100%) with visual feedback
+  - [AC4] Mute toggle button with red highlight when muted
+  - [AC5] Global voice enable/disable switch
+- Voice configuration persistence:
+  - `useAgentVoices()` hook stores voice mappings in localStorage
+  - Key: `agent-floor-voice-settings`
+  - Falls back to `ROLE_VOICE_MAPPING` defaults from elevenlabs.ts
+- UI patterns:
+  - `AgentVoiceSelector` component for per-agent voice rows
+  - Dropdown closes on outside click (useRef + mousedown listener)
+  - Preview shows loading spinner while generating audio
+  - Matches ProviderConfig styling with floor theme colors
+- Integration notes:
+  - Imports `ROLE_VOICE_MAPPING` and `getVoiceForRole` from `@/lib/voice/elevenlabs`
+  - Preview works with or without ElevenLabs API key (simulates demo mode)
+  - Displays 5 common roles: PM, Architect, Frontend, Backend, QA
