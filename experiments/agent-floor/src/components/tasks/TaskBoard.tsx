@@ -1,9 +1,20 @@
 "use client";
 
-import { useState } from "react";
-import { Plus, MoreVertical, User, Clock, AlertCircle } from "lucide-react";
+import { useState, useCallback } from "react";
+import {
+  DragDropContext,
+  Droppable,
+  Draggable,
+  DropResult,
+  DraggableProvided,
+  DroppableProvided,
+  DraggableStateSnapshot,
+  DroppableStateSnapshot,
+} from "@hello-pangea/dnd";
+import { Plus, MoreVertical, User, Clock, AlertCircle, GripVertical } from "lucide-react";
 import { useFloorStore } from "@/lib/store/floor-store";
 import { formatDistanceToNow } from "date-fns";
+import { cn } from "@/lib/utils/cn";
 
 type TaskStatus = "todo" | "in-progress" | "review" | "done" | "blocked";
 
@@ -47,19 +58,29 @@ export default function TaskBoard() {
     setShowCreateForm(false);
   };
 
-  const handleDragStart = (e: React.DragEvent, taskId: string) => {
-    e.dataTransfer.setData("taskId", taskId);
-  };
+  const handleDragEnd = useCallback(
+    (result: DropResult) => {
+      const { destination, source, draggableId } = result;
 
-  const handleDrop = (e: React.DragEvent, status: TaskStatus) => {
-    e.preventDefault();
-    const taskId = e.dataTransfer.getData("taskId");
-    updateTask(taskId, { status });
-  };
+      // Dropped outside a droppable area
+      if (!destination) return;
 
-  const handleDragOver = (e: React.DragEvent) => {
-    e.preventDefault();
-  };
+      // Dropped in the same position
+      if (
+        destination.droppableId === source.droppableId &&
+        destination.index === source.index
+      ) {
+        return;
+      }
+
+      // Get the new status from the destination droppable ID
+      const newStatus = destination.droppableId as TaskStatus;
+
+      // Update the task status - this will sync to Colyseus if connected
+      updateTask(draggableId, { status: newStatus });
+    },
+    [updateTask]
+  );
 
   return (
     <div className="h-full flex flex-col">
@@ -135,61 +156,129 @@ export default function TaskBoard() {
         </div>
       )}
 
-      {/* Task columns */}
-      <div className="flex-1 overflow-y-auto p-4">
-        {statusColumns.map((column) => {
-          const columnTasks = tasks.filter((t) => t.status === column.id);
+      {/* Task columns with drag-and-drop */}
+      <DragDropContext onDragEnd={handleDragEnd}>
+        <div className="flex-1 overflow-y-auto p-4">
+          {statusColumns.map((column) => {
+            const columnTasks = tasks.filter((t) => t.status === column.id);
 
-          return (
-            <div key={column.id} className="mb-4">
-              <div className="flex items-center gap-2 mb-2">
-                <div className={`w-2 h-2 rounded-full ${column.color}`} />
-                <span className="font-medium text-sm">{column.label}</span>
-                <span className="text-floor-muted text-xs">
-                  ({columnTasks.length})
-                </span>
-              </div>
-
-              <div
-                onDrop={(e) => handleDrop(e, column.id)}
-                onDragOver={handleDragOver}
-                className="space-y-2 min-h-[60px] p-2 rounded-lg bg-floor-bg border border-dashed border-floor-accent"
-              >
-                {columnTasks.length === 0 ? (
-                  <p className="text-floor-muted text-xs text-center py-2">
-                    No tasks
-                  </p>
-                ) : (
-                  columnTasks.map((task) => (
-                    <TaskCard
-                      key={task.id}
-                      task={task}
-                      agents={agents}
-                      onDragStart={handleDragStart}
-                      onAssign={(agentId) => assignTask(task.id, agentId)}
-                    />
-                  ))
-                )}
-              </div>
-            </div>
-          );
-        })}
-      </div>
+            return (
+              <TaskColumn
+                key={column.id}
+                column={column}
+                tasks={columnTasks}
+                agents={agents}
+                onAssign={assignTask}
+              />
+            );
+          })}
+        </div>
+      </DragDropContext>
     </div>
   );
+}
+
+interface TaskColumnProps {
+  column: { id: TaskStatus; label: string; color: string };
+  tasks: Task[];
+  agents: { id: string; name: string }[];
+  onAssign: (taskId: string, agentId: string) => void;
+}
+
+function TaskColumn({ column, tasks, agents, onAssign }: TaskColumnProps) {
+  return (
+    <div className="mb-4">
+      <div className="flex items-center gap-2 mb-2">
+        <div className={`w-2 h-2 rounded-full ${column.color}`} />
+        <span className="font-medium text-sm">{column.label}</span>
+        <span className="text-floor-muted text-xs">
+          ({tasks.length})
+        </span>
+      </div>
+
+      <Droppable droppableId={column.id}>
+        {(provided: DroppableProvided, snapshot: DroppableStateSnapshot) => (
+          <div
+            ref={provided.innerRef}
+            {...provided.droppableProps}
+            className={cn(
+              "space-y-2 min-h-[60px] p-2 rounded-lg border border-dashed transition-colors duration-200",
+              snapshot.isDraggingOver
+                ? "bg-floor-highlight/10 border-floor-highlight"
+                : "bg-floor-bg border-floor-accent"
+            )}
+          >
+            {tasks.length === 0 && !snapshot.isDraggingOver ? (
+              <p className="text-floor-muted text-xs text-center py-2">
+                No tasks
+              </p>
+            ) : null}
+
+            {tasks.map((task, index) => (
+              <DraggableTaskCard
+                key={task.id}
+                task={task}
+                index={index}
+                agents={agents}
+                onAssign={(agentId) => onAssign(task.id, agentId)}
+              />
+            ))}
+
+            {provided.placeholder}
+          </div>
+        )}
+      </Droppable>
+    </div>
+  );
+}
+
+interface DraggableTaskCardProps {
+  task: Task;
+  index: number;
+  agents: { id: string; name: string }[];
+  onAssign: (agentId: string) => void;
+}
+
+function DraggableTaskCard({ task, index, agents, onAssign }: DraggableTaskCardProps) {
+  return (
+    <Draggable draggableId={task.id} index={index}>
+      {(provided: DraggableProvided, snapshot: DraggableStateSnapshot) => (
+        <div
+          ref={provided.innerRef}
+          {...provided.draggableProps}
+          className={cn(
+            "transition-shadow duration-200",
+            snapshot.isDragging && "shadow-lg shadow-floor-highlight/20"
+          )}
+        >
+          <TaskCard
+            task={task}
+            agents={agents}
+            onAssign={onAssign}
+            dragHandleProps={provided.dragHandleProps}
+            isDragging={snapshot.isDragging}
+          />
+        </div>
+      )}
+    </Draggable>
+  );
+}
+
+interface TaskCardProps {
+  task: Task;
+  agents: { id: string; name: string }[];
+  onAssign: (agentId: string) => void;
+  dragHandleProps?: DraggableProvided["dragHandleProps"];
+  isDragging?: boolean;
 }
 
 function TaskCard({
   task,
   agents,
-  onDragStart,
   onAssign,
-}: {
-  task: Task;
-  agents: { id: string; name: string }[];
-  onDragStart: (e: React.DragEvent, taskId: string) => void;
-  onAssign: (agentId: string) => void;
-}) {
+  dragHandleProps,
+  isDragging,
+}: TaskCardProps) {
   const [showAssignMenu, setShowAssignMenu] = useState(false);
   const assignee = agents.find((a) => a.id === task.assignee);
 
@@ -202,72 +291,86 @@ function TaskCard({
 
   return (
     <div
-      draggable
-      onDragStart={(e) => onDragStart(e, task.id)}
-      className={`task-card ${priorityColors[task.priority]} relative`}
+      className={cn(
+        "task-card relative flex gap-2",
+        priorityColors[task.priority],
+        isDragging && "ring-2 ring-floor-highlight bg-floor-panel/95"
+      )}
     >
-      <div className="flex items-start justify-between mb-2">
-        <h4 className="font-medium text-sm">{task.title}</h4>
-        <button
-          onClick={() => setShowAssignMenu(!showAssignMenu)}
-          className="p-1 hover:bg-floor-accent rounded"
-        >
-          <MoreVertical className="w-4 h-4 text-floor-muted" />
-        </button>
+      {/* Drag handle */}
+      <div
+        {...dragHandleProps}
+        className="flex-shrink-0 flex items-center cursor-grab active:cursor-grabbing text-floor-muted hover:text-floor-text"
+        aria-label="Drag to reorder"
+      >
+        <GripVertical className="w-4 h-4" />
       </div>
 
-      {task.description && (
-        <p className="text-floor-muted text-xs mb-2 line-clamp-2">
-          {task.description}
-        </p>
-      )}
-
-      <div className="flex items-center justify-between text-xs">
-        <div className="flex items-center gap-2">
-          {assignee ? (
-            <span className="flex items-center gap-1 text-floor-muted">
-              <User className="w-3 h-3" />
-              {assignee.name}
-            </span>
-          ) : (
-            <span className="text-floor-muted italic">Unassigned</span>
-          )}
+      {/* Card content */}
+      <div className="flex-1 min-w-0">
+        <div className="flex items-start justify-between mb-2">
+          <h4 className="font-medium text-sm truncate">{task.title}</h4>
+          <button
+            onClick={() => setShowAssignMenu(!showAssignMenu)}
+            className="p-1 hover:bg-floor-accent rounded flex-shrink-0"
+          >
+            <MoreVertical className="w-4 h-4 text-floor-muted" />
+          </button>
         </div>
 
-        <span className="text-floor-muted flex items-center gap-1">
-          <Clock className="w-3 h-3" />
-          {formatDistanceToNow(task.updatedAt, { addSuffix: true })}
-        </span>
-      </div>
+        {task.description && (
+          <p className="text-floor-muted text-xs mb-2 line-clamp-2">
+            {task.description}
+          </p>
+        )}
 
-      {/* Priority badge */}
-      {task.priority === "critical" && (
-        <div className="absolute top-2 right-8 text-red-500">
-          <AlertCircle className="w-4 h-4" />
-        </div>
-      )}
-
-      {/* Assign menu */}
-      {showAssignMenu && (
-        <div className="absolute right-0 top-8 z-10 bg-floor-panel border border-floor-accent rounded-lg shadow-lg overflow-hidden min-w-[150px]">
-          <div className="p-2 border-b border-floor-accent text-xs text-floor-muted">
-            Assign to:
+        <div className="flex items-center justify-between text-xs">
+          <div className="flex items-center gap-2">
+            {assignee ? (
+              <span className="flex items-center gap-1 text-floor-muted">
+                <User className="w-3 h-3" />
+                {assignee.name}
+              </span>
+            ) : (
+              <span className="text-floor-muted italic">Unassigned</span>
+            )}
           </div>
-          {agents.map((agent) => (
-            <button
-              key={agent.id}
-              onClick={() => {
-                onAssign(agent.id);
-                setShowAssignMenu(false);
-              }}
-              className="w-full px-3 py-2 text-left text-sm hover:bg-floor-accent flex items-center gap-2"
-            >
-              <User className="w-3 h-3" />
-              {agent.name}
-            </button>
-          ))}
+
+          <span className="text-floor-muted flex items-center gap-1">
+            <Clock className="w-3 h-3" />
+            {formatDistanceToNow(task.updatedAt, { addSuffix: true })}
+          </span>
         </div>
-      )}
+
+        {/* Priority badge */}
+        {task.priority === "critical" && (
+          <div className="absolute top-2 right-8 text-red-500">
+            <AlertCircle className="w-4 h-4" />
+          </div>
+        )}
+
+        {/* Assign menu */}
+        {showAssignMenu && (
+          <div className="absolute right-0 top-8 z-10 bg-floor-panel border border-floor-accent rounded-lg shadow-lg overflow-hidden min-w-[150px]">
+            <div className="p-2 border-b border-floor-accent text-xs text-floor-muted">
+              Assign to:
+            </div>
+            {agents.map((agent) => (
+              <button
+                key={agent.id}
+                onClick={() => {
+                  onAssign(agent.id);
+                  setShowAssignMenu(false);
+                }}
+                className="w-full px-3 py-2 text-left text-sm hover:bg-floor-accent flex items-center gap-2"
+              >
+                <User className="w-3 h-3" />
+                {agent.name}
+              </button>
+            ))}
+          </div>
+        )}
+      </div>
     </div>
   );
 }
