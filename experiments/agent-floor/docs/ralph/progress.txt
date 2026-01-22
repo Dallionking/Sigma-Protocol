@@ -56,3 +56,25 @@
 
 
 ---
+
+### 2026-01-22T12:25:25Z - PRD009-002
+**Status:** COMPLETED
+**Engine:** claude
+
+
+---
+
+### 2026-01-22T12:30:00Z - PRD010-001
+**Status:** COMPLETED
+**Engine:** claude
+**Story:** Create MessageBus class
+**Notes:**
+- Full implementation of MessageBus for A2A (Agent-to-Agent) protocol
+- parseMentions() extracts @mentions with position and agent ID resolution
+- routeMessage() routes to correct agents based on @mentions, direct addressing, or broadcast
+- broadcastMessage() sends to all agents except sender
+- Per-agent message queues with getMessagesFor(agentId) method
+- Exported types: RoutableMessage, QueuedMessage, ParsedMention, MessageType
+- All acceptance criteria verified and passing
+
+---

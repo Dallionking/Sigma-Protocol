@@ -96,3 +96,23 @@ src/
   - Workers initialized with full context (name, role, systemPrompt)
   - `routeMessageToWorkers()` for MessageBus integration
   - `setLLMProvider()` propagates to all workers
+
+### PRD010-001: MessageBus Class (2026-01-22)
+- Full implementation of `MessageBus.ts` for A2A (Agent-to-Agent) protocol
+- Features:
+  - `parseMentions(content)` - Extract @mentions with position tracking
+  - `routeMessage(message)` - Route to correct agent(s) based on @mentions or direct addressing
+  - `broadcastMessage()` - Send to all agents except sender
+  - Per-agent message queues (`Map<agentId, QueuedMessage[]>`)
+  - `getMessagesFor(agentId)` - Retrieve queued messages
+  - `markMessageProcessed()` - Mark messages as handled
+  - `setMessageQueuedCallback()` - Integration hook for AgentManager
+- Types exported:
+  - `RoutableMessage` - Base message for routing
+  - `QueuedMessage` - Message with queue metadata
+  - `ParsedMention` - Extracted mention with agent resolution
+  - `MessageType` - Union type for message categories
+- Integration notes:
+  - MessageBus initializes queues for existing agents on construction
+  - Use `setMessageQueuedCallback()` to notify AgentManager of new messages
+  - FloorRoom passes messages via `routeMessage()` on user chat

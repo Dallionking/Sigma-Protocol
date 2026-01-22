@@ -15,6 +15,12 @@ export type {
 } from "./AgentWorker";
 
 export { MessageBus } from "./MessageBus";
-export type { RoutableMessage } from "./MessageBus";
+export type {
+  RoutableMessage,
+  QueuedMessage,
+  ParsedMention,
+  MessageQueuedCallback,
+  MessageType,
+} from "./MessageBus";
 
 export * from "./types";
