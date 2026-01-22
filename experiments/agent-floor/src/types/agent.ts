@@ -1,5 +1,24 @@
 export type AgentStatus = "idle" | "thinking" | "working" | "talking" | "walking";
 
+// Personality traits for PRD-019
+export type PersonalityTrait = "introvert" | "extrovert";
+export type CommunicationStyle = "formal" | "casual";
+
+export interface PersonalityTraits {
+  sociability: PersonalityTrait;
+  communication: CommunicationStyle;
+}
+
+// Mood system for PRD-019
+export type AgentMood = "happy" | "stressed" | "focused" | "tired";
+
+// Fatigue system for PRD-019
+export interface FatigueState {
+  level: number; // 0-100, where 100 is fully rested
+  lastBreak: number; // timestamp of last break
+  tasksCompletedSinceBreak: number;
+}
+
 export type AgentRole =
   | "project-manager"
   | "architect"
@@ -36,6 +55,10 @@ export interface Agent {
   provider: string;
   model: string;
   systemPrompt: string;
+  // Personality & mood (PRD-019)
+  personality: PersonalityTraits;
+  mood: AgentMood;
+  fatigue: FatigueState;
 }
 
 export interface AgentConfig {
@@ -47,6 +70,9 @@ export interface AgentConfig {
   systemPrompt: string;
   provider?: string;
   model?: string;
+  // Personality & mood (PRD-019)
+  personality?: Partial<PersonalityTraits>;
+  mood?: AgentMood;
 }
 
 export interface TeamTemplate {

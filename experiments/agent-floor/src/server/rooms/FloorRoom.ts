@@ -25,6 +25,13 @@ class AgentSchema extends Schema {
   @type("string") provider: string = "claude-code";
   @type("string") model: string = "opus";
   @type("string") systemPrompt: string = "";
+  // Personality & mood (PRD-019)
+  @type("string") personalitySociability: string = "extrovert"; // introvert | extrovert
+  @type("string") personalityCommunication: string = "casual"; // formal | casual
+  @type("string") mood: string = "happy"; // happy | stressed | focused | tired
+  @type("number") fatigueLevel: number = 100; // 0-100, 100 = fully rested
+  @type("number") fatigueLastBreak: number = 0; // timestamp
+  @type("number") fatigueTasksSinceBreak: number = 0;
 }
 
 class MessageSchema extends Schema {
@@ -106,6 +113,12 @@ export class FloorRoom extends Room<FloorState> {
           model: "opus",
           systemPrompt:
             "You are Alex, a project manager. Break down requirements, assign tasks, coordinate the team, and ensure delivery.",
+          personalitySociability: "extrovert",
+          personalityCommunication: "casual",
+          mood: "happy",
+          fatigueLevel: 100,
+          fatigueLastBreak: Date.now(),
+          fatigueTasksSinceBreak: 0,
         },
         {
           id: "architect",
@@ -121,6 +134,12 @@ export class FloorRoom extends Room<FloorState> {
           model: "opus",
           systemPrompt:
             "You are Jordan, a senior software architect. Design systems, review PRs, mentor the team, and make technical decisions.",
+          personalitySociability: "introvert",
+          personalityCommunication: "formal",
+          mood: "focused",
+          fatigueLevel: 100,
+          fatigueLastBreak: Date.now(),
+          fatigueTasksSinceBreak: 0,
         },
         {
           id: "frontend",
@@ -136,6 +155,12 @@ export class FloorRoom extends Room<FloorState> {
           model: "sonnet",
           systemPrompt:
             "You are Sam, a frontend engineer. Build React components, implement UI designs, and ensure great user experiences.",
+          personalitySociability: "extrovert",
+          personalityCommunication: "casual",
+          mood: "happy",
+          fatigueLevel: 100,
+          fatigueLastBreak: Date.now(),
+          fatigueTasksSinceBreak: 0,
         },
         {
           id: "backend",
@@ -151,6 +176,12 @@ export class FloorRoom extends Room<FloorState> {
           model: "gpt-4o",
           systemPrompt:
             "You are Riley, a backend engineer. Build APIs, manage databases, handle infrastructure, and optimize performance.",
+          personalitySociability: "introvert",
+          personalityCommunication: "casual",
+          mood: "focused",
+          fatigueLevel: 100,
+          fatigueLastBreak: Date.now(),
+          fatigueTasksSinceBreak: 0,
         },
         {
           id: "qa",
@@ -166,6 +197,12 @@ export class FloorRoom extends Room<FloorState> {
           model: "claude-sonnet-4",
           systemPrompt:
             "You are Casey, a QA engineer. Write tests, find bugs, ensure quality, and verify requirements are met.",
+          personalitySociability: "extrovert",
+          personalityCommunication: "formal",
+          mood: "stressed",
+          fatigueLevel: 100,
+          fatigueLastBreak: Date.now(),
+          fatigueTasksSinceBreak: 0,
         },
       ],
       "trading-floor": [
@@ -183,6 +220,12 @@ export class FloorRoom extends Room<FloorState> {
           model: "opus",
           systemPrompt:
             "You are Morgan, a market analyst. Research markets, analyze trends, and provide insights to the team.",
+          personalitySociability: "introvert",
+          personalityCommunication: "formal",
+          mood: "focused",
+          fatigueLevel: 100,
+          fatigueLastBreak: Date.now(),
+          fatigueTasksSinceBreak: 0,
         },
         {
           id: "quant",
@@ -198,6 +241,12 @@ export class FloorRoom extends Room<FloorState> {
           model: "opus",
           systemPrompt:
             "You are Taylor, a quantitative analyst. Build models, analyze data, and develop trading strategies.",
+          personalitySociability: "introvert",
+          personalityCommunication: "formal",
+          mood: "focused",
+          fatigueLevel: 100,
+          fatigueLastBreak: Date.now(),
+          fatigueTasksSinceBreak: 0,
         },
         {
           id: "risk",
@@ -213,6 +262,12 @@ export class FloorRoom extends Room<FloorState> {
           model: "gpt-4o",
           systemPrompt:
             "You are Jordan, a risk manager. Monitor positions, assess risks, and ensure compliance with risk limits.",
+          personalitySociability: "introvert",
+          personalityCommunication: "formal",
+          mood: "stressed",
+          fatigueLevel: 100,
+          fatigueLastBreak: Date.now(),
+          fatigueTasksSinceBreak: 0,
         },
         {
           id: "trader",
@@ -228,6 +283,12 @@ export class FloorRoom extends Room<FloorState> {
           model: "sonnet",
           systemPrompt:
             "You are Alex, a trader. Execute trades, manage positions, and optimize execution quality.",
+          personalitySociability: "extrovert",
+          personalityCommunication: "casual",
+          mood: "happy",
+          fatigueLevel: 100,
+          fatigueLastBreak: Date.now(),
+          fatigueTasksSinceBreak: 0,
         },
         {
           id: "compliance",
@@ -243,6 +304,12 @@ export class FloorRoom extends Room<FloorState> {
           model: "claude-sonnet-4",
           systemPrompt:
             "You are Sam, a compliance officer. Ensure regulatory compliance, review trades, and maintain audit trails.",
+          personalitySociability: "extrovert",
+          personalityCommunication: "formal",
+          mood: "focused",
+          fatigueLevel: 100,
+          fatigueLastBreak: Date.now(),
+          fatigueTasksSinceBreak: 0,
         },
       ],
       "creative-studio": [
@@ -260,6 +327,12 @@ export class FloorRoom extends Room<FloorState> {
           model: "opus",
           systemPrompt:
             "You are Quinn, a creative writer. Write compelling copy, stories, and content for various media.",
+          personalitySociability: "introvert",
+          personalityCommunication: "casual",
+          mood: "focused",
+          fatigueLevel: 100,
+          fatigueLastBreak: Date.now(),
+          fatigueTasksSinceBreak: 0,
         },
         {
           id: "designer",
@@ -275,6 +348,12 @@ export class FloorRoom extends Room<FloorState> {
           model: "opus",
           systemPrompt:
             "You are Avery, a designer. Create visual designs, layouts, and brand assets.",
+          personalitySociability: "extrovert",
+          personalityCommunication: "casual",
+          mood: "happy",
+          fatigueLevel: 100,
+          fatigueLastBreak: Date.now(),
+          fatigueTasksSinceBreak: 0,
         },
         {
           id: "reviewer",
@@ -290,6 +369,12 @@ export class FloorRoom extends Room<FloorState> {
           model: "gpt-4o",
           systemPrompt:
             "You are Jordan, a content reviewer. Review work, provide feedback, and ensure quality standards.",
+          personalitySociability: "introvert",
+          personalityCommunication: "formal",
+          mood: "focused",
+          fatigueLevel: 100,
+          fatigueLastBreak: Date.now(),
+          fatigueTasksSinceBreak: 0,
         },
         {
           id: "editor",
@@ -305,6 +390,12 @@ export class FloorRoom extends Room<FloorState> {
           model: "claude-sonnet-4",
           systemPrompt:
             "You are Riley, an editor. Edit content, refine messaging, and polish final outputs.",
+          personalitySociability: "introvert",
+          personalityCommunication: "formal",
+          mood: "stressed",
+          fatigueLevel: 100,
+          fatigueLastBreak: Date.now(),
+          fatigueTasksSinceBreak: 0,
         },
         {
           id: "producer",
@@ -320,6 +411,12 @@ export class FloorRoom extends Room<FloorState> {
           model: "sonnet",
           systemPrompt:
             "You are Casey, a producer. Coordinate projects, manage timelines, and ensure deliverables.",
+          personalitySociability: "extrovert",
+          personalityCommunication: "casual",
+          mood: "happy",
+          fatigueLevel: 100,
+          fatigueLastBreak: Date.now(),
+          fatigueTasksSinceBreak: 0,
         },
       ],
     };

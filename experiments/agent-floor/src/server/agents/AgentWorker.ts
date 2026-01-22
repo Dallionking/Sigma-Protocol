@@ -15,7 +15,13 @@
  * - Graceful error handling with recovery
  */
 
-import type { AgentStatus, AgentRole } from "@/types/agent";
+import type {
+  AgentStatus,
+  AgentRole,
+  PersonalityTrait,
+  CommunicationStyle,
+  AgentMood,
+} from "@/types/agent";
 import type { LLMProvider, Message, Completion } from "@/types/provider";
 import type {
   AgentWorkerConfig,
@@ -64,6 +70,11 @@ export interface ExtendedAgentWorkerConfig extends AgentWorkerConfig {
   systemPrompt?: string;
   provider?: string;
   model?: string;
+  // Personality & mood (PRD-019)
+  personalitySociability?: PersonalityTrait;
+  personalityCommunication?: CommunicationStyle;
+  mood?: AgentMood;
+  fatigueLevel?: number;
 }
 
 export class AgentWorker {
@@ -76,6 +87,12 @@ export class AgentWorker {
   private systemPrompt: string = "";
   private providerName: string = "";
   private modelName: string = "";
+
+  // Personality & mood (PRD-019)
+  private personalitySociability: PersonalityTrait = "extrovert";
+  private personalityCommunication: CommunicationStyle = "casual";
+  private mood: AgentMood = "happy";
+  private fatigueLevel: number = 100;
 
   // Work loop state
   private running = false;
@@ -109,6 +126,12 @@ export class AgentWorker {
     if (config.systemPrompt) this.systemPrompt = config.systemPrompt;
     if (config.provider) this.providerName = config.provider;
     if (config.model) this.modelName = config.model;
+
+    // Personality & mood (PRD-019)
+    if (config.personalitySociability) this.personalitySociability = config.personalitySociability;
+    if (config.personalityCommunication) this.personalityCommunication = config.personalityCommunication;
+    if (config.mood) this.mood = config.mood;
+    if (config.fatigueLevel !== undefined) this.fatigueLevel = config.fatigueLevel;
   }
 
   // ==========================================================================
@@ -139,7 +162,12 @@ export class AgentWorker {
     return this.messageQueue.filter((m) => !m.processed).length;
   }
 
-  getContext(): AgentWorkContext {
+  getContext(): AgentWorkContext & {
+    personalitySociability: PersonalityTrait;
+    personalityCommunication: CommunicationStyle;
+    mood: AgentMood;
+    fatigueLevel: number;
+  } {
     return {
       agentId: this.agentId,
       name: this.name,
@@ -149,6 +177,11 @@ export class AgentWorker {
       model: this.modelName,
       currentTask: this.currentTask,
       talkingTo: this.talkingTo,
+      // Personality & mood (PRD-019)
+      personalitySociability: this.personalitySociability,
+      personalityCommunication: this.personalityCommunication,
+      mood: this.mood,
+      fatigueLevel: this.fatigueLevel,
     };
   }
 
@@ -371,6 +404,145 @@ export class AgentWorker {
   }
 
   // ==========================================================================
+  // Personality-Aware Prompt Generation (PRD-019)
+  // ==========================================================================
+
+  /**
+   * Build a personality-aware system prompt that incorporates:
+   * - Base system prompt (role, responsibilities)
+   * - Personality traits (introvert/extrovert, formal/casual)
+   * - Current mood (happy, stressed, focused, tired)
+   * - Fatigue level (affects response verbosity)
+   */
+  private buildPersonalityAwareSystemPrompt(): string {
+    const basePrompt = this.systemPrompt || `You are ${this.name}, a ${this.role}.`;
+
+    // Personality modifiers based on traits
+    const personalityInstructions: string[] = [];
+
+    // Sociability affects communication frequency and depth
+    if (this.personalitySociability === "introvert") {
+      personalityInstructions.push(
+        "You prefer to think deeply before responding. Keep responses concise and thoughtful. You're more comfortable with written communication than spontaneous discussion."
+      );
+    } else {
+      personalityInstructions.push(
+        "You're naturally outgoing and enjoy collaboration. You engage actively in discussions and aren't afraid to share ideas early. You build rapport easily with team members."
+      );
+    }
+
+    // Communication style affects tone and formality
+    if (this.personalityCommunication === "formal") {
+      personalityInstructions.push(
+        "Maintain a professional, formal tone. Use proper grammar and avoid slang. Structure your responses clearly with proper punctuation."
+      );
+    } else {
+      personalityInstructions.push(
+        "Keep your tone friendly and approachable. It's okay to use casual language and even appropriate humor when it fits the situation."
+      );
+    }
+
+    // Mood affects response style and energy
+    const moodInstructions = this.getMoodInstructions();
+    if (moodInstructions) {
+      personalityInstructions.push(moodInstructions);
+    }
+
+    // Fatigue affects response length and detail
+    const fatigueInstructions = this.getFatigueInstructions();
+    if (fatigueInstructions) {
+      personalityInstructions.push(fatigueInstructions);
+    }
+
+    // Combine all instructions
+    if (personalityInstructions.length === 0) {
+      return basePrompt;
+    }
+
+    return `${basePrompt}
+
+PERSONALITY & CURRENT STATE:
+${personalityInstructions.map(i => `- ${i}`).join("\n")}`;
+  }
+
+  /**
+   * Get mood-specific instructions for the system prompt
+   */
+  private getMoodInstructions(): string | null {
+    switch (this.mood) {
+      case "happy":
+        return "You're in a positive mood today. Approach tasks with enthusiasm and be encouraging to teammates.";
+      case "stressed":
+        return "You're feeling a bit stressed. Focus on the essentials and be direct. It's okay to ask for help if needed.";
+      case "focused":
+        return "You're in a deep focus state. Provide detailed, thorough responses but don't get sidetracked by tangents.";
+      case "tired":
+        return "You're feeling tired. Keep responses brief and to the point. Prioritize the most important information.";
+      default:
+        return null;
+    }
+  }
+
+  /**
+   * Get fatigue-specific instructions for the system prompt
+   */
+  private getFatigueInstructions(): string | null {
+    if (this.fatigueLevel >= 80) {
+      return null; // Well-rested, no modification needed
+    } else if (this.fatigueLevel >= 50) {
+      return "Energy level is moderate. Balance thoroughness with efficiency.";
+    } else if (this.fatigueLevel >= 20) {
+      return "Energy is running low. Focus only on what's essential. Consider suggesting a break if appropriate.";
+    } else {
+      return "Energy is very low. Provide minimal but accurate responses. A break is strongly recommended.";
+    }
+  }
+
+  /**
+   * Update the agent's mood
+   */
+  setMood(mood: AgentMood): void {
+    this.mood = mood;
+    console.log(`🎭 AgentWorker ${this.agentId} mood changed to: ${mood}`);
+  }
+
+  /**
+   * Get the agent's current mood
+   */
+  getMood(): AgentMood {
+    return this.mood;
+  }
+
+  /**
+   * Update the agent's fatigue level
+   */
+  setFatigueLevel(level: number): void {
+    this.fatigueLevel = Math.max(0, Math.min(100, level));
+    console.log(`⚡ AgentWorker ${this.agentId} fatigue level: ${this.fatigueLevel}`);
+  }
+
+  /**
+   * Get the agent's fatigue level
+   */
+  getFatigueLevel(): number {
+    return this.fatigueLevel;
+  }
+
+  /**
+   * Decrease fatigue (after completing work)
+   */
+  decreaseFatigue(amount: number = 10): void {
+    this.setFatigueLevel(this.fatigueLevel - amount);
+  }
+
+  /**
+   * Increase fatigue (after rest/break)
+   */
+  increaseFatigue(amount: number = 20): void {
+    this.setFatigueLevel(this.fatigueLevel + amount);
+  }
+
+  // ==========================================================================
   // Work Loop Implementation
   // ==========================================================================
 
@@ -477,6 +649,7 @@ export class AgentWorker {
 
   /**
    * Handle @mention - respond via LLM
+   * Uses personality-aware system prompt (PRD-019)
    */
   private async handleMention(message: AgentMessage): Promise<void> {
     if (!this.llmProvider) {
@@ -491,11 +664,13 @@ export class AgentWorker {
       return;
     }
 
-    // Build prompt for LLM
+    // Build personality-aware prompt for LLM (PRD-019)
+    const personalityAwarePrompt = this.buildPersonalityAwareSystemPrompt();
+
     const messages: Message[] = [
       {
         role: "system",
-        content: this.systemPrompt || `You are ${this.name}, a ${this.role}.`,
+        content: personalityAwarePrompt,
       },
       {
         role: "user",
@@ -513,6 +688,9 @@ export class AgentWorker {
       if (message.from !== "user" && message.from !== "system") {
         this.startTalking(message.from);
       }
+
+      // Decrease fatigue after responding (PRD-019)
+      this.decreaseFatigue(5);
     }
   }
 
@@ -526,6 +704,7 @@ export class AgentWorker {
 
   /**
    * Process the current task
+   * Uses personality-aware system prompt (PRD-019)
    */
   private async processTask(): Promise<void> {
     if (!this.currentTask) return;
@@ -544,13 +723,13 @@ export class AgentWorker {
       return;
     }
 
-    // Build task prompt
+    // Build personality-aware task prompt (PRD-019)
+    const personalityAwarePrompt = this.buildPersonalityAwareSystemPrompt();
+
     const messages: Message[] = [
       {
         role: "system",
-        content:
-          this.systemPrompt ||
-          `You are ${this.name}, a ${this.role}. Complete the assigned task.`,
+        content: `${personalityAwarePrompt}\n\nComplete the assigned task thoroughly.`,
       },
       {
         role: "user",
@@ -571,6 +750,9 @@ export class AgentWorker {
         `Completed task "${this.currentTask.title}":\n\n${response.content}`,
         "broadcast"
       );
+
+      // Decrease fatigue after completing task (PRD-019)
+      this.decreaseFatigue(15);
 
       // Task completion will be handled by AgentManager
       // For now, stay in working state until clearTask() is called

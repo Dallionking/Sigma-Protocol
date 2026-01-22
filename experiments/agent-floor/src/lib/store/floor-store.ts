@@ -455,6 +455,13 @@ export const useFloorStore = create<FloorState>((set, get) => ({
 
 // Mock data for development without server
 function getMockAgents(teamId: string): Agent[] {
+  // Default personality & fatigue state for mock agents (PRD-019)
+  const defaultPersonality = {
+    personality: { sociability: "extrovert" as const, communication: "casual" as const },
+    mood: "happy" as const,
+    fatigue: { level: 100, lastBreak: Date.now(), tasksCompletedSinceBreak: 0 },
+  };
+
   const baseAgents: Record<string, Agent[]> = {
     "dev-team": [
       {
@@ -470,6 +477,9 @@ function getMockAgents(teamId: string): Agent[] {
         provider: "claude-code",
         model: "opus",
         systemPrompt: "You are a project manager.",
+        personality: { sociability: "extrovert", communication: "casual" },
+        mood: "happy",
+        fatigue: { level: 100, lastBreak: Date.now(), tasksCompletedSinceBreak: 0 },
       },
       {
         id: "architect",
@@ -484,6 +494,9 @@ function getMockAgents(teamId: string): Agent[] {
         provider: "claude-code",
         model: "opus",
         systemPrompt: "You are a senior architect.",
+        personality: { sociability: "introvert", communication: "formal" },
+        mood: "focused",
+        fatigue: { level: 100, lastBreak: Date.now(), tasksCompletedSinceBreak: 0 },
       },
       {
         id: "frontend",
@@ -498,6 +511,9 @@ function getMockAgents(teamId: string): Agent[] {
         provider: "claude-code",
         model: "sonnet",
         systemPrompt: "You are a frontend engineer.",
+        personality: { sociability: "extrovert", communication: "casual" },
+        mood: "happy",
+        fatigue: { level: 100, lastBreak: Date.now(), tasksCompletedSinceBreak: 0 },
       },
       {
         id: "backend",
@@ -512,6 +528,9 @@ function getMockAgents(teamId: string): Agent[] {
         provider: "openai",
         model: "gpt-4o",
         systemPrompt: "You are a backend engineer.",
+        personality: { sociability: "introvert", communication: "casual" },
+        mood: "focused",
+        fatigue: { level: 100, lastBreak: Date.now(), tasksCompletedSinceBreak: 0 },
       },
       {
         id: "qa",
@@ -526,6 +545,9 @@ function getMockAgents(teamId: string): Agent[] {
         provider: "anthropic",
         model: "claude-sonnet-4",
         systemPrompt: "You are a QA engineer.",
+        personality: { sociability: "extrovert", communication: "formal" },
+        mood: "stressed",
+        fatigue: { level: 100, lastBreak: Date.now(), tasksCompletedSinceBreak: 0 },
       },
     ],
     "trading-floor": [
@@ -542,6 +564,9 @@ function getMockAgents(teamId: string): Agent[] {
         provider: "claude-code",
         model: "opus",
         systemPrompt: "You are a market analyst.",
+        personality: { sociability: "introvert", communication: "formal" },
+        mood: "focused",
+        fatigue: { level: 100, lastBreak: Date.now(), tasksCompletedSinceBreak: 0 },
       },
     ],
     "creative-studio": [
@@ -558,6 +583,9 @@ function getMockAgents(teamId: string): Agent[] {
         provider: "claude-code",
         model: "opus",
         systemPrompt: "You are a creative writer.",
+        personality: { sociability: "introvert", communication: "casual" },
+        mood: "focused",
+        fatigue: { level: 100, lastBreak: Date.now(), tasksCompletedSinceBreak: 0 },
       },
     ],
   };
