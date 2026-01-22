@@ -27,7 +27,7 @@
   },
   "meta": {
     "totalStories": 52,
-    "passedStories": 40
+    "passedStories": 41
   },
   "stories": [
     {
@@ -1484,7 +1484,7 @@
       "title": "Create VoiceSettings component",
       "description": "UI for configuring voice settings per agent.",
       "priority": 3,
-      "passes": false,
+      "passes": true,
       "source": {
         "prdPath": "docs/MASTER_PRD.md",
         "prdId": "PRD-018"
@@ -1522,7 +1522,12 @@
       "agentInstructions": "Use frontend-design skill. Create at src/components/settings/VoiceSettings.tsx.",
       "files": [
         "src/components/settings/VoiceSettings.tsx"
-      ]
+      ],
+      "lastAttempt": {
+        "timestamp": "2026-01-22T16:43:09Z",
+        "engine": "claude",
+        "success": true
+      }
     },
     {
       "id": "PRD019-001",
