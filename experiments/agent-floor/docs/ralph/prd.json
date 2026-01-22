@@ -27,7 +27,7 @@
   },
   "meta": {
     "totalStories": 52,
-    "passedStories": 3
+    "passedStories": 4
   },
   "stories": [
     {
@@ -298,7 +298,7 @@
       "title": "Integrate EasyStar.js pathfinding",
       "description": "Add pathfinding for agent movement between locations using EasyStar.js library.",
       "priority": 1,
-      "passes": false,
+      "passes": true,
       "source": {
         "prdPath": "docs/MASTER_PRD.md",
         "prdId": "PRD-004"
@@ -336,7 +336,12 @@
       "agentInstructions": "Use architecture-patterns skill. Install easystarjs and create pathfinding utility at src/game/utils/pathfinding.ts.",
       "files": [
         "src/game/utils/pathfinding.ts"
-      ]
+      ],
+      "lastAttempt": {
+        "timestamp": "2026-01-22T12:14:18Z",
+        "engine": "claude",
+        "success": true
+      }
     },
     {
       "id": "PRD005-001",
