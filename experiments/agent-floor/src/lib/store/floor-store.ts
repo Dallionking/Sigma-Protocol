@@ -14,12 +14,34 @@ interface Task {
   updatedAt: number;
 }
 
+// Connection status enum for detailed state tracking
+export type ConnectionStatus =
+  | "disconnected"
+  | "connecting"
+  | "connected"
+  | "reconnecting"
+  | "failed";
+
+// Reconnection configuration
+const RECONNECT_CONFIG = {
+  maxRetries: 5,
+  baseDelayMs: 1000,
+  maxDelayMs: 30000,
+  backoffMultiplier: 2,
+} as const;
+
 interface FloorState {
   // Connection state
   client: Client | null;
   room: Room | null;
   isConnected: boolean;
+  connectionStatus: ConnectionStatus;
   teamId: string | null;
+
+  // Reconnection state
+  reconnectAttempts: number;
+  reconnectTimeoutId: ReturnType<typeof setTimeout> | null;
+  lastError: string | null;
 
   // Floor state
   agents: Agent[];
@@ -33,6 +55,8 @@ interface FloorState {
   // Actions
   connect: (teamId: string) => Promise<void>;
   disconnect: () => void;
+  reconnect: () => Promise<void>;
+  cancelReconnect: () => void;
 
   // Agent actions
   selectAgent: (agentId: string | null) => void;
@@ -50,12 +74,27 @@ interface FloorState {
   assignTask: (taskId: string, agentId: string) => void;
 }
 
+// Helper to calculate exponential backoff delay
+function calculateBackoffDelay(attempt: number): number {
+  const delay = Math.min(
+    RECONNECT_CONFIG.baseDelayMs * Math.pow(RECONNECT_CONFIG.backoffMultiplier, attempt),
+    RECONNECT_CONFIG.maxDelayMs
+  );
+  // Add jitter (±10%) to prevent thundering herd
+  const jitter = delay * 0.1 * (Math.random() * 2 - 1);
+  return Math.round(delay + jitter);
+}
+
 export const useFloorStore = create<FloorState>((set, get) => ({
   // Initial state
   client: null,
   room: null,
   isConnected: false,
+  connectionStatus: "disconnected",
   teamId: null,
+  reconnectAttempts: 0,
+  reconnectTimeoutId: null,
+  lastError: null,
   agents: [],
   messages: [],
   tasks: [],
@@ -64,11 +103,31 @@ export const useFloorStore = create<FloorState>((set, get) => ({
 
   // Connect to Colyseus server
   connect: async (teamId: string) => {
+    const { cancelReconnect } = get();
+
+    // Cancel any pending reconnection
+    cancelReconnect();
+
+    set({
+      connectionStatus: "connecting",
+      teamId,
+      lastError: null,
+      reconnectAttempts: 0,
+    });
+
     try {
       const client = new Client("ws://localhost:2567");
       const room = await client.joinOrCreate("floor", { teamId });
 
-      set({ client, room, teamId, isConnected: true });
+      set({
+        client,
+        room,
+        teamId,
+        isConnected: true,
+        connectionStatus: "connected",
+        reconnectAttempts: 0,
+        lastError: null,
+      });
 
       // Listen for state changes
       room.onStateChange((state) => {
@@ -98,18 +157,41 @@ export const useFloorStore = create<FloorState>((set, get) => ({
         set({ agents, messages, tasks });
       });
 
-      room.onLeave(() => {
-        set({ isConnected: false });
+      // Handle disconnection - trigger automatic reconnection
+      room.onLeave((code) => {
+        console.log(`📡 Disconnected from room (code: ${code})`);
+        const { teamId: currentTeamId, reconnect } = get();
+
+        set({
+          isConnected: false,
+          connectionStatus: "disconnected",
+          room: null,
+        });
+
+        // Auto-reconnect for unexpected disconnections (not manual disconnect)
+        // Code 1000 = normal closure, 4000+ = application-specific codes
+        if (currentTeamId && code !== 1000 && code < 4000) {
+          console.log("🔄 Initiating automatic reconnection...");
+          reconnect();
+        }
       });
 
       room.onError((code, message) => {
         console.error("Room error:", code, message);
+        set({ lastError: `Room error: ${code} - ${message}` });
       });
     } catch (error) {
-      console.error("Connection failed:", error);
-      // For development, populate with mock data if server not running
+      const errorMessage = error instanceof Error ? error.message : "Unknown error";
+      console.error("Connection failed:", errorMessage);
+
       set({
         isConnected: false,
+        connectionStatus: "disconnected",
+        lastError: errorMessage,
+      });
+
+      // For development, populate with mock data if server not running
+      set({
         agents: getMockAgents(teamId),
         messages: getMockMessages(),
         tasks: getMockTasks(),
@@ -117,14 +199,153 @@ export const useFloorStore = create<FloorState>((set, get) => ({
     }
   },
 
+  // Reconnect with exponential backoff
+  reconnect: async () => {
+    const { teamId, reconnectAttempts, connectionStatus } = get();
+
+    // Don't reconnect if no teamId or already connecting/reconnecting
+    if (!teamId || connectionStatus === "connecting" || connectionStatus === "reconnecting") {
+      return;
+    }
+
+    // Check if max retries exceeded
+    if (reconnectAttempts >= RECONNECT_CONFIG.maxRetries) {
+      console.error(`❌ Max reconnection attempts (${RECONNECT_CONFIG.maxRetries}) exceeded`);
+      set({
+        connectionStatus: "failed",
+        lastError: `Failed to reconnect after ${RECONNECT_CONFIG.maxRetries} attempts`,
+      });
+      return;
+    }
+
+    const nextAttempt = reconnectAttempts + 1;
+    const delay = calculateBackoffDelay(reconnectAttempts);
+
+    console.log(`🔄 Reconnection attempt ${nextAttempt}/${RECONNECT_CONFIG.maxRetries} in ${delay}ms`);
+
+    set({
+      connectionStatus: "reconnecting",
+      reconnectAttempts: nextAttempt,
+    });
+
+    // Schedule reconnection with exponential backoff
+    const timeoutId = setTimeout(async () => {
+      try {
+        const client = new Client("ws://localhost:2567");
+
+        // Use reconnect to restore session if available, otherwise joinOrCreate
+        const room = await client.joinOrCreate("floor", { teamId });
+
+        console.log(`✅ Reconnected successfully after ${nextAttempt} attempt(s)`);
+
+        set({
+          client,
+          room,
+          isConnected: true,
+          connectionStatus: "connected",
+          reconnectAttempts: 0,
+          reconnectTimeoutId: null,
+          lastError: null,
+        });
+
+        // Re-attach state change listener
+        room.onStateChange((state) => {
+          const agents: Agent[] = [];
+          const messages: FloorMessage[] = [];
+          const tasks: Task[] = [];
+
+          if (state.agents) {
+            state.agents.forEach((agent: Agent) => {
+              agents.push({ ...agent });
+            });
+          }
+
+          if (state.messages) {
+            state.messages.forEach((msg: FloorMessage) => {
+              messages.push({ ...msg });
+            });
+          }
+
+          if (state.tasks) {
+            state.tasks.forEach((task: Task) => {
+              tasks.push({ ...task });
+            });
+          }
+
+          set({ agents, messages, tasks });
+        });
+
+        // Re-attach leave listener for future disconnections
+        room.onLeave((code) => {
+          console.log(`📡 Disconnected from room (code: ${code})`);
+          const { teamId: currentTeamId, reconnect } = get();
+
+          set({
+            isConnected: false,
+            connectionStatus: "disconnected",
+            room: null,
+          });
+
+          if (currentTeamId && code !== 1000 && code < 4000) {
+            console.log("🔄 Initiating automatic reconnection...");
+            reconnect();
+          }
+        });
+
+        room.onError((code, message) => {
+          console.error("Room error:", code, message);
+          set({ lastError: `Room error: ${code} - ${message}` });
+        });
+
+      } catch (error) {
+        const errorMessage = error instanceof Error ? error.message : "Unknown error";
+        console.error(`Reconnection attempt ${nextAttempt} failed:`, errorMessage);
+
+        set({
+          lastError: errorMessage,
+          reconnectTimeoutId: null,
+        });
+
+        // Try again
+        const { reconnect } = get();
+        reconnect();
+      }
+    }, delay);
+
+    set({ reconnectTimeoutId: timeoutId });
+  },
+
+  // Cancel pending reconnection
+  cancelReconnect: () => {
+    const { reconnectTimeoutId } = get();
+    if (reconnectTimeoutId) {
+      clearTimeout(reconnectTimeoutId);
+      set({
+        reconnectTimeoutId: null,
+        reconnectAttempts: 0,
+      });
+    }
+  },
+
   disconnect: () => {
-    const { room, client } = get();
-    if (room) room.leave();
+    const { room, cancelReconnect } = get();
+
+    // Cancel any pending reconnection
+    cancelReconnect();
+
+    // Leave room with code 1000 (normal closure) to prevent auto-reconnect
+    if (room) {
+      room.leave(true); // consented leave
+    }
+
     set({
       client: null,
       room: null,
       isConnected: false,
+      connectionStatus: "disconnected",
       teamId: null,
+      reconnectAttempts: 0,
+      lastError: null,
     });
   },
 

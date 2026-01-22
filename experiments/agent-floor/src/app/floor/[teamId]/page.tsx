@@ -9,6 +9,11 @@ import ChatPanel from "@/components/chat/ChatPanel";
 import TaskBoard from "@/components/tasks/TaskBoard";
 import AgentList from "@/components/floor/AgentList";
 import { useFloorStore } from "@/lib/store/floor-store";
+import {
+  ConnectionStatusIndicator,
+  ConnectionOverlay,
+  ConnectionToast,
+} from "@/components/ui/connection-status";
 
 // Dynamic import for Phaser (client-side only)
 const FloorCanvas = dynamic(() => import("@/components/floor/FloorCanvas"), {
@@ -29,7 +34,7 @@ export default function FloorPage() {
   const params = useParams();
   const teamId = params.teamId as string;
   const [activePanel, setActivePanel] = useState<Panel>("chat");
-  const { connect, disconnect, isConnected, agents } = useFloorStore();
+  const { connect, disconnect, connectionStatus, agents, reconnect } = useFloorStore();
 
   useEffect(() => {
     // Connect to Colyseus server
@@ -60,14 +65,7 @@ export default function FloorPage() {
               {teamId.replace("-", " ")}
             </h1>
             <div className="flex items-center gap-2 text-sm">
-              <span
-                className={`w-2 h-2 rounded-full ${
-                  isConnected ? "bg-green-400" : "bg-red-400"
-                }`}
-              />
-              <span className="text-floor-muted">
-                {isConnected ? "Connected" : "Connecting..."}
-              </span>
+              <ConnectionStatusIndicator size="sm" />
               <span className="text-floor-muted">•</span>
               <span className="text-floor-muted">
                 {agents.length} agents active
@@ -131,6 +129,15 @@ export default function FloorPage() {
         {/* Game canvas */}
         <div className="flex-1 relative">
           <FloorCanvas teamId={teamId} />
+
+          {/* Connection overlay for reconnecting/failed states */}
+          <ConnectionOverlay
+            onRetry={() => reconnect()}
+            onCancel={() => {
+              // On cancel during reconnect, just stop reconnecting
+              // On cancel after failure, go back to landing
+            }}
+          />
         </div>
 
         {/* Side panel */}
@@ -148,6 +155,9 @@ export default function FloorPage() {
           </div>
         )}
       </div>
+
+      {/* Toast notifications for connection events */}
+      <ConnectionToast />
     </div>
   );
 }
