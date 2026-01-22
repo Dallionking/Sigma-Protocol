@@ -1,5 +1,6 @@
 import * as Phaser from "phaser";
 import type { Agent, AgentStatus } from "@/types/agent";
+import { AgentSprite } from "../sprites/AgentSprite";
 
 /**
  * Configuration for OfficeScene initialization
@@ -11,14 +12,10 @@ export interface OfficeSceneConfig {
 }
 
 /**
- * Agent sprite container with all visual components
+ * Agent sprite data with associated desk
  */
-interface AgentSpriteContainer {
-  container: Phaser.GameObjects.Container;
-  sprite: Phaser.GameObjects.Image;
-  nameLabel: Phaser.GameObjects.Text;
-  statusDot: Phaser.GameObjects.Arc;
-  highlight?: Phaser.GameObjects.Graphics;
+interface AgentSpriteData {
+  sprite: AgentSprite;
   desk: Phaser.GameObjects.Image;
 }
 
@@ -39,7 +36,7 @@ export class OfficeScene extends Phaser.Scene {
   // Agent management
   private agents: Agent[] = [];
   private selectedAgentId: string | null = null;
-  private agentSprites: Map<string, AgentSpriteContainer> = new Map();
+  private agentSprites: Map<string, AgentSpriteData> = new Map();
 
   // Graphics
   private floorTiles: Phaser.GameObjects.Image[] = [];
@@ -173,19 +170,25 @@ export class OfficeScene extends Phaser.Scene {
 
   /**
    * Set up input handlers for agent selection
+   * Note: AgentSprite handles its own click events via onSelect callback
+   * This handler clears selection when clicking on empty space
    */
   private setupInputHandlers(): void {
     this.input.on("pointerdown", (pointer: Phaser.Input.Pointer) => {
-      let clickedAgentId: string | null = null;
+      // Check if click was on empty space (not on any agent)
+      let clickedOnAgent = false;
 
-      this.agentSprites.forEach((spriteData, agentId) => {
-        const bounds = spriteData.container.getBounds();
+      this.agentSprites.forEach((spriteData) => {
+        const bounds = spriteData.sprite.getBounds();
         if (bounds.contains(pointer.x, pointer.y)) {
-          clickedAgentId = agentId;
+          clickedOnAgent = true;
         }
       });
 
-      this.setSelectedAgent(clickedAgentId);
+      // Clear selection if clicked on empty space
+      if (!clickedOnAgent) {
+        this.setSelectedAgent(null);
+      }
     });
   }
 
@@ -205,79 +208,50 @@ export class OfficeScene extends Phaser.Scene {
    */
   private updateAgentSprites(): void {
     // Update existing sprites
-    this.agents.forEach((agent) => {
+    this.agents.forEach((agent, index) => {
       const spriteData = this.agentSprites.get(agent.id);
       if (spriteData) {
-        // Update status texture
-        const statusTexture = `agent-${agent.status}`;
-        if (spriteData.sprite.texture.key !== statusTexture) {
-          spriteData.sprite.setTexture(statusTexture);
+        // Update agent data (handles status changes)
+        spriteData.sprite.updateAgentData(agent);
+
+        // Update selection state
+        spriteData.sprite.setSelected(this.selectedAgentId === agent.id);
+
+        // Update position if not walking (for layout changes)
+        if (!spriteData.sprite.getIsWalking()) {
+          const targetX = OfficeScene.AGENT_START_X + index * OfficeScene.AGENT_SPACING;
+          const targetY = OfficeScene.AGENT_START_Y;
+          spriteData.sprite.setPosition(targetX, targetY);
+          spriteData.desk.setPosition(targetX, targetY + 30);
         }
-
-        // Update status dot color
-        const statusColor = this.getStatusColor(agent.status);
-        spriteData.statusDot.setFillStyle(statusColor);
-
-        // Update selection highlight
-        this.updateSelectionHighlight(agent.id, spriteData);
-
-        // Update position (for walking animation in future PRDs)
-        const targetX = OfficeScene.AGENT_START_X + this.agents.indexOf(agent) * OfficeScene.AGENT_SPACING;
-        const targetY = OfficeScene.AGENT_START_Y;
-        spriteData.container.setPosition(targetX, targetY);
-        spriteData.desk.setPosition(targetX, targetY + 30);
       }
     });
-  }
-
-  /**
-   * Update the selection highlight for an agent
-   */
-  private updateSelectionHighlight(agentId: string, spriteData: AgentSpriteContainer): void {
-    const isSelected = this.selectedAgentId === agentId;
-
-    if (isSelected && !spriteData.highlight) {
-      // Add highlight
-      const highlight = this.add.graphics();
-      highlight.lineStyle(2, 0xe94560);
-      highlight.strokeCircle(0, -20, 18);
-      spriteData.container.add(highlight);
-      spriteData.highlight = highlight;
-    } else if (!isSelected && spriteData.highlight) {
-      // Remove highlight
-      spriteData.highlight.destroy();
-      spriteData.highlight = undefined;
-    }
   }
 
   /**
    * Update talking connection lines between agents
    */
   private updateTalkingLines(): void {
-    // Clear existing lines
+    // Clear existing lines from old system
     this.talkingLines.forEach((line) => line.destroy());
     this.talkingLines = [];
 
-    // Draw new lines
+    // Update talking lines using AgentSprite's built-in method
     this.agents.forEach((agent) => {
+      const spriteData = this.agentSprites.get(agent.id);
+      if (!spriteData) return;
+
       if (agent.talkingTo) {
         const targetAgent = this.agents.find((a) => a.id === agent.talkingTo);
-        if (targetAgent) {
-          const sourceSprite = this.agentSprites.get(agent.id);
-          const targetSprite = this.agentSprites.get(targetAgent.id);
+        const targetSpriteData = targetAgent ? this.agentSprites.get(targetAgent.id) : null;
 
-          if (sourceSprite && targetSprite) {
-            const line = this.add.graphics();
-            line.lineStyle(2, 0xc084fc, 0.5);
-            line.lineBetween(
-              sourceSprite.container.x,
-              sourceSprite.container.y - 20,
-              targetSprite.container.x,
-              targetSprite.container.y - 20
-            );
-            this.talkingLines.push(line);
-          }
+        if (targetSpriteData) {
+          spriteData.sprite.drawTalkingLine(targetSpriteData.sprite);
+        } else {
+          spriteData.sprite.clearTalkingLine();
         }
+      } else {
+        spriteData.sprite.clearTalkingLine();
       }
     });
   }
@@ -323,7 +297,7 @@ export class OfficeScene extends Phaser.Scene {
   }
 
   /**
-   * Create a sprite for a new agent
+   * Create a sprite for a new agent using AgentSprite class
    */
   private createAgentSprite(agent: Agent, index: number): void {
     const x = OfficeScene.AGENT_START_X + index * OfficeScene.AGENT_SPACING;
@@ -332,31 +306,20 @@ export class OfficeScene extends Phaser.Scene {
     // Create desk
     const desk = this.add.image(x, y + 30, "desk");
 
-    // Create agent sprite
-    const statusTexture = `agent-${agent.status}`;
-    const sprite = this.add.image(0, -20, statusTexture);
+    // Create AgentSprite with positioned agent data
+    const positionedAgent: Agent = {
+      ...agent,
+      position: { x, y },
+    };
 
-    // Create name label
-    const nameLabel = this.add.text(0, 20, agent.name, {
-      fontFamily: '"Press Start 2P", monospace',
-      fontSize: "8px",
-      color: "#eaeaea",
-    }).setOrigin(0.5);
-
-    // Create status indicator dot
-    const statusDot = this.add.circle(12, -30, 4, this.getStatusColor(agent.status));
-
-    // Create container for all agent elements
-    const container = this.add.container(x, y, [sprite, nameLabel, statusDot]);
-    container.setSize(32, 48);
-    container.setInteractive();
+    const agentSprite = new AgentSprite(this, {
+      agent: positionedAgent,
+      onSelect: (agentId) => this.setSelectedAgent(agentId),
+    });
 
     // Store sprite data
     this.agentSprites.set(agent.id, {
-      container,
-      sprite,
-      nameLabel,
-      statusDot,
+      sprite: agentSprite,
       desk,
     });
   }
@@ -367,11 +330,8 @@ export class OfficeScene extends Phaser.Scene {
   private removeAgentSprite(agentId: string): void {
     const spriteData = this.agentSprites.get(agentId);
     if (spriteData) {
-      spriteData.container.destroy();
+      spriteData.sprite.destroy();
       spriteData.desk.destroy();
-      if (spriteData.highlight) {
-        spriteData.highlight.destroy();
-      }
       this.agentSprites.delete(agentId);
     }
   }
@@ -412,17 +372,33 @@ export class OfficeScene extends Phaser.Scene {
    */
   shutdown(): void {
     this.agentSprites.forEach((spriteData) => {
-      spriteData.container.destroy();
+      spriteData.sprite.destroy();
       spriteData.desk.destroy();
-      if (spriteData.highlight) {
-        spriteData.highlight.destroy();
-      }
     });
     this.agentSprites.clear();
     this.floorTiles.forEach((tile) => tile.destroy());
     this.floorTiles = [];
     this.talkingLines.forEach((line) => line.destroy());
     this.talkingLines = [];
+  }
+
+  /**
+   * Get an AgentSprite by agent ID
+   */
+  getAgentSprite(agentId: string): AgentSprite | undefined {
+    return this.agentSprites.get(agentId)?.sprite;
+  }
+
+  /**
+   * Walk an agent to a target position
+   */
+  async walkAgentTo(agentId: string, targetX: number, targetY: number): Promise<void> {
+    const spriteData = this.agentSprites.get(agentId);
+    if (spriteData) {
+      await spriteData.sprite.walkTo(targetX, targetY);
+      // Update desk position after walk
+      spriteData.desk.setPosition(targetX, targetY + 30);
+    }
   }
 }
 
