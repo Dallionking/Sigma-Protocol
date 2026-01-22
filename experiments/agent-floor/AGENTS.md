@@ -78,3 +78,21 @@ src/
   - Task routing based on role-to-keyword matching
   - State machine with validated transitions
   - Syncs agent state to Colyseus for real-time updates
+
+### PRD009-002: AgentWorker Class (2026-01-22)
+- Enhanced `AgentWorker.ts` with autonomous work loop:
+  - Work loop priority: check messages → check tasks → idle
+  - Message queue with types: mention, direct, broadcast, task
+  - LLM provider integration via `LLMProvider` interface
+  - `callLLMWithRetry()` with exponential backoff (3 retries)
+  - Circuit breaker pattern for error recovery
+- Key methods:
+  - `enqueueMessage()` - Add message to worker inbox
+  - `handleMention()` - Process @mentions via LLM
+  - `processTask()` - Execute assigned tasks via LLM
+  - `setLLMProvider()` - Configure LLM for completions
+  - `setSendMessageCallback()` - Wire up message sending
+- AgentManager updates:
+  - Workers initialized with full context (name, role, systemPrompt)
+  - `routeMessageToWorkers()` for MessageBus integration
+  - `setLLMProvider()` propagates to all workers

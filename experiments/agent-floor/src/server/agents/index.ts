@@ -7,7 +7,12 @@ export { AgentManager } from "./AgentManager";
 export type { AgentManagerConfig } from "./AgentManager";
 
 export { AgentWorker } from "./AgentWorker";
-export type { StateChangeCallback, CompletionCallback } from "./AgentWorker";
+export type {
+  StateChangeCallback,
+  SendMessageCallback,
+  AgentMessage,
+  ExtendedAgentWorkerConfig,
+} from "./AgentWorker";
 
 export { MessageBus } from "./MessageBus";
 export type { RoutableMessage } from "./MessageBus";

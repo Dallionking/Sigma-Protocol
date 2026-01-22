@@ -7,21 +7,24 @@
  * - Routes tasks to appropriate agents based on role
  * - Manages agent state transitions
  * - Coordinates inter-agent communication via MessageBus
+ * - Routes messages to workers for @mention handling
  */
 
 import type { FloorRoom } from "../rooms/FloorRoom";
-import type { MessageBus } from "./MessageBus";
+import type { MessageBus, RoutableMessage } from "./MessageBus";
 import type { AgentStatus, AgentRole } from "@/types/agent";
+import type { LLMProvider } from "@/types/provider";
 import type {
   TaskAssignmentPayload,
   AgentStateTransition,
 } from "./types";
 import { ROLE_TASK_KEYWORDS } from "./types";
-import { AgentWorker } from "./AgentWorker";
+import { AgentWorker, type AgentMessage } from "./AgentWorker";
 
 /** Configuration for AgentManager */
 export interface AgentManagerConfig {
   tickIntervalMs?: number; // Default tick interval for workers
+  llmProvider?: LLMProvider; // Optional LLM provider for workers
 }
 
 export class AgentManager {
@@ -31,6 +34,8 @@ export class AgentManager {
   private readonly config: AgentManagerConfig;
 
   private running = false;
+  private llmProvider: LLMProvider | null = null;
+  private messageIdCounter = 0;
 
   constructor(
     room: FloorRoom,
@@ -41,7 +46,24 @@ export class AgentManager {
     this.messageBus = messageBus;
     this.config = config;
 
+    // Set LLM provider if provided in config
+    if (config.llmProvider) {
+      this.llmProvider = config.llmProvider;
+    }
+
     console.log("🤖 AgentManager initialized");
+  }
+
+  /**
+   * Set the LLM provider for all workers
+   */
+  setLLMProvider(provider: LLMProvider): void {
+    this.llmProvider = provider;
+    // Update existing workers
+    this.workers.forEach((worker) => {
+      worker.setLLMProvider(provider);
+    });
+    console.log(`🤖 AgentManager: LLM provider set to ${provider.name}`);
   }
 
   /**
@@ -129,10 +151,22 @@ export class AgentManager {
       return existingWorker;
     }
 
-    // Create new worker
+    // Get agent data from room state
+    const agent = this.room.state.agents.get(agentId);
+    if (!agent) {
+      console.error(`AgentManager: Agent ${agentId} not found in room state`);
+      throw new Error(`Agent ${agentId} not found`);
+    }
+
+    // Create new worker with agent context
     const worker = new AgentWorker({
       agentId,
       tickIntervalMs: this.config.tickIntervalMs,
+      name: agent.name,
+      role: agent.role as AgentRole,
+      systemPrompt: agent.systemPrompt,
+      provider: agent.provider,
+      model: agent.model,
     });
 
     // Set up state change callback to sync with Colyseus state
@@ -140,13 +174,52 @@ export class AgentManager {
       this.handleStateTransition(transition);
     });
 
+    // Set up message sending callback
+    worker.setSendMessageCallback((fromAgentId, content, targetAgentId) => {
+      this.handleWorkerMessage(fromAgentId, content, targetAgentId);
+    });
+
+    // Set LLM provider if available
+    if (this.llmProvider) {
+      worker.setLLMProvider(this.llmProvider);
+    }
+
     // Store and start worker
     this.workers.set(agentId, worker);
     worker.start();
 
-    console.log(`🤖 AgentManager: Spawned worker for ${agentId}`);
+    console.log(`🤖 AgentManager: Spawned worker for ${agentId} (${agent.name})`);
 
     return worker;
+  }
+
+  /**
+   * Handle message from a worker (send to room/other agents)
+   */
+  private handleWorkerMessage(
+    fromAgentId: string,
+    content: string,
+    targetAgentId?: string
+  ): void {
+    const agent = this.room.state.agents.get(fromAgentId);
+    const agentName = agent?.name ?? fromAgentId;
+
+    // Add message to room state
+    const messageId = `msg-${Date.now()}-${this.messageIdCounter++}`;
+
+    // Broadcast to room (handled by FloorRoom)
+    this.room.broadcast("agent-message", {
+      id: messageId,
+      from: fromAgentId,
+      fromName: agentName,
+      content,
+      target: targetAgentId,
+      timestamp: Date.now(),
+    });
+
+    console.log(
+      `📤 AgentManager: ${agentName} sent message${targetAgentId ? ` to ${targetAgentId}` : ""}`
+    );
   }
 
   /**
@@ -408,6 +481,7 @@ export class AgentManager {
    * This is called by MessageBus when a message is directed to an agent
    */
   handleAgentMessage(agentId: string, message: {
+    id?: string;
     from: string;
     content: string;
     type: string;
@@ -418,21 +492,80 @@ export class AgentManager {
       return;
     }
 
-    // If message is from another agent, potentially start conversation
-    if (message.from !== "system" && message.from !== "user") {
-      const fromAgent = this.room.state.agents.get(message.from);
-      if (fromAgent) {
-        // Could trigger conversation logic here
-        console.log(
-          `📨 AgentManager: ${agentId} received message from ${message.from}`
-        );
-      }
+    // Generate message ID if not provided
+    const messageId = message.id ?? `msg-${Date.now()}-${this.messageIdCounter++}`;
+
+    // Determine message type for worker
+    let messageType: AgentMessage["type"] = "direct";
+    if (message.type === "mention" || message.content.includes(`@${worker.getContext().name}`)) {
+      messageType = "mention";
+    } else if (message.type === "broadcast") {
+      messageType = "broadcast";
+    } else if (message.type === "task") {
+      messageType = "task";
     }
 
-    // Task assignment message
-    if (message.type === "task") {
-      // Extract task ID from content or handle task assignment
-      console.log(`📋 AgentManager: ${agentId} received task message`);
+    // Enqueue message to worker
+    worker.enqueueMessage({
+      id: messageId,
+      from: message.from,
+      content: message.content,
+      type: messageType,
+      timestamp: Date.now(),
+    });
+
+    console.log(
+      `📨 AgentManager: Routed ${messageType} to ${agentId} from ${message.from}`
+    );
+  }
+
+  /**
+   * Route a message from MessageBus to appropriate workers
+   */
+  routeMessageToWorkers(message: RoutableMessage): void {
+    // Parse @mentions from content
+    const mentionPattern = /@(\w+)/g;
+    let match;
+
+    while ((match = mentionPattern.exec(message.content)) !== null) {
+      const mentionedName = match[1].toLowerCase();
+
+      // Find worker by agent name
+      this.workers.forEach((worker, agentId) => {
+        const context = worker.getContext();
+        if (context.name.toLowerCase() === mentionedName) {
+          this.handleAgentMessage(agentId, {
+            id: message.id,
+            from: message.from,
+            content: message.content,
+            type: "mention",
+          });
+        }
+      });
+    }
+
+    // If direct message to specific agent
+    if (message.to && message.to !== "broadcast" && message.to !== "user") {
+      this.handleAgentMessage(message.to, {
+        id: message.id,
+        from: message.from,
+        content: message.content,
+        type: "direct",
+      });
+    }
+
+    // If broadcast, send to all workers
+    if (message.to === "broadcast") {
+      this.workers.forEach((_, agentId) => {
+        if (agentId !== message.from) {
+          this.handleAgentMessage(agentId, {
+            id: message.id,
+            from: message.from,
+            content: message.content,
+            type: "broadcast",
+          });
+        }
+      });
     }
   }
 }
