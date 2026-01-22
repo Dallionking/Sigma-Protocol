@@ -27,7 +27,7 @@
   },
   "meta": {
     "totalStories": 52,
-    "passedStories": 27
+    "passedStories": 28
   },
   "stories": [
     {
@@ -1605,7 +1605,7 @@
       "title": "Create TokenDashboard component",
       "description": "Dashboard showing token usage and costs per agent.",
       "priority": 2,
-      "passes": false,
+      "passes": true,
       "source": {
         "prdPath": "docs/MASTER_PRD.md",
         "prdId": "PRD-020"
@@ -1653,7 +1653,12 @@
             ]
           }
         }
-      ]
+      ],
+      "lastAttempt": {
+        "timestamp": "2026-01-22T15:01:30Z",
+        "engine": "claude",
+        "success": true
+      }
     },
     {
       "id": "PRD020-002",
