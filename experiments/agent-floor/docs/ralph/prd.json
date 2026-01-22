@@ -27,7 +27,7 @@
   },
   "meta": {
     "totalStories": 52,
-    "passedStories": 10
+    "passedStories": 11
   },
   "stories": [
     {
@@ -1300,7 +1300,7 @@
       "title": "Add walking animation to AgentSprite",
       "description": "4-direction walk animation with smooth movement using pathfinding.",
       "priority": 1,
-      "passes": false,
+      "passes": true,
       "source": {
         "prdPath": "docs/MASTER_PRD.md",
         "prdId": "PRD-017"
@@ -1339,7 +1339,12 @@
       "agentInstructions": "Use frontend-design skill. Update src/game/sprites/AgentSprite.ts to add walking animation.",
       "files": [
         "src/game/sprites/AgentSprite.ts"
-      ]
+      ],
+      "lastAttempt": {
+        "timestamp": "2026-01-22T12:52:19Z",
+        "engine": "claude",
+        "success": true
+      }
     },
     {
       "id": "PRD018-001",
