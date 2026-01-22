@@ -27,7 +27,7 @@
   },
   "meta": {
     "totalStories": 52,
-    "passedStories": 16
+    "passedStories": 17
   },
   "stories": [
     {
@@ -492,7 +492,7 @@
       "title": "Create task detail modal",
       "description": "Modal showing full task details with inline edit capability.",
       "priority": 2,
-      "passes": false,
+      "passes": true,
       "source": {
         "prdPath": "docs/MASTER_PRD.md",
         "prdId": "PRD-006"
@@ -533,7 +533,12 @@
       "agentInstructions": "Use frontend-design skill. Create component at src/components/tasks/TaskDetailModal.tsx.",
       "files": [
         "src/components/tasks/TaskDetailModal.tsx"
-      ]
+      ],
+      "lastAttempt": {
+        "timestamp": "2026-01-22T13:25:15Z",
+        "engine": "claude",
+        "success": true
+      }
     },
     {
       "id": "PRD007-001",
