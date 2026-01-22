@@ -1,0 +1,243 @@
+# Product Requirements Document: LaunchList
+## Viral Waitlist Landing Page
+
+### 1. Executive Summary
+
+LaunchList is a pre-launch landing page platform that helps startups build anticipation and collect emails through a gamified referral system. Users earn their place in line by referring friends.
+
+### 2. Problem Statement
+
+Startups need to validate ideas and build audiences before launch. A simple email form isn't engaging enough. They need a viral mechanism that turns signups into advocates.
+
+### 3. Target Users
+
+**Primary**: Startup founders and product managers
+**Secondary**: People signing up for waitlists
+
+### 4. Core Features
+
+#### 4.1 Landing Page
+- Hero section with headline, subheadline, CTA
+- Feature/benefit highlights (3-4 cards)
+- Social proof (logos, testimonials, stats)
+- Email signup form (prominent)
+- Footer with links
+
+#### 4.2 Email Capture
+- Email input with validation
+- "Join Waitlist" button
+- Duplicate detection
+- reCAPTCHA spam protection
+- Success animation
+
+#### 4.3 Thank You Page
+- Confirmation message
+- Position in waitlist shown
+- Unique referral link
+- Social share buttons (Twitter, LinkedIn, Copy)
+- Referral count tracker
+- Reward tier progress
+
+#### 4.4 Referral System
+- Unique code per signup (e.g., ?ref=abc123)
+- Track referral chain
+- Reward tiers:
+  - 3 referrals: Early access
+  - 10 referrals: Founding member badge
+  - 25 referrals: Free first month
+
+#### 4.5 Admin Dashboard
+- Total signups
+- Today's signups
+- Signup velocity chart
+- Top referrers table
+- Export CSV
+
+### 5. Technical Requirements
+
+#### 5.1 Frontend
+- Next.js 14+ with App Router
+- TailwindCSS + shadcn/ui
+- Framer Motion (animations)
+- React Share (social sharing)
+
+#### 5.2 Backend
+- Supabase Database
+- Resend (transactional email)
+- reCAPTCHA v3
+
+#### 5.3 Database Schema
+
+```sql
+-- Waitlist signups
+signups (
+  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  email text UNIQUE NOT NULL,
+  referral_code text UNIQUE NOT NULL,
+  referred_by uuid REFERENCES signups(id),
+  referral_count integer DEFAULT 0,
+  position integer NOT NULL, -- Queue position
+  status text DEFAULT 'waiting', -- waiting, invited, converted
+  ip_address text,
+  user_agent text,
+  utm_source text,
+  utm_medium text,
+  utm_campaign text,
+  created_at timestamptz DEFAULT now()
+)
+
+-- Referral events
+referrals (
+  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  referrer_id uuid REFERENCES signups(id) NOT NULL,
+  referee_id uuid REFERENCES signups(id) NOT NULL,
+  created_at timestamptz DEFAULT now()
+)
+
+-- Admin users (for dashboard)
+admin_users (
+  id uuid PRIMARY KEY REFERENCES auth.users,
+  role text DEFAULT 'admin',
+  created_at timestamptz DEFAULT now()
+)
+```
+
+### 6. User Flows
+
+#### 6.1 New Signup
+1. Land on page
+2. Read value proposition
+3. Enter email
+4. Click "Join Waitlist"
+5. See thank you page with referral link
+6. Receive confirmation email
+
+#### 6.2 Referred Signup
+1. Click referral link (?ref=abc123)
+2. Land on page (referrer code stored)
+3. Enter email
+4. Click "Join Waitlist"
+5. Referrer's count incremented
+6. Both notified if milestone reached
+
+#### 6.3 Checking Position
+1. Revisit thank you page (via email link)
+2. See current position
+3. See referral count
+4. See progress to next tier
+
+### 7. Design Requirements
+
+#### Landing Page Layout
+```
+┌─────────────────────────────────────┐
+│          [Logo]                     │
+├─────────────────────────────────────┤
+│                                     │
+│   The Future of [Product]           │
+│   Tagline explaining value prop     │
+│                                     │
+│   ┌─────────────────┐ ┌──────────┐ │
+│   │ Enter email     │ │ Join     │ │
+│   └─────────────────┘ └──────────┘ │
+│                                     │
+│   🎉 2,847 people on the waitlist  │
+├─────────────────────────────────────┤
+│   [Feature 1]  [Feature 2]  [...]   │
+├─────────────────────────────────────┤
+│   "Quote from beta user..."         │
+│   - Name, Title @ Company           │
+├─────────────────────────────────────┤
+│   © 2025 | Privacy | Terms          │
+└─────────────────────────────────────┘
+```
+
+#### Thank You Page Layout
+```
+┌─────────────────────────────────────┐
+│                                     │
+│   ✅ You're on the list!            │
+│                                     │
+│   You're #1,234 in line             │
+│                                     │
+│   ┌─────────────────────────────┐   │
+│   │ Your referral link:         │   │
+│   │ launchlist.app/?ref=abc123  │   │
+│   │ [Copy] [Tweet] [LinkedIn]   │   │
+│   └─────────────────────────────┘   │
+│                                     │
+│   Move up the line! Refer friends:  │
+│   ○○○ 3 referrals = Early Access   │
+│   ○○○○○ 10 = Founding Member       │
+│                                     │
+│   Your referrals: 0                 │
+│                                     │
+└─────────────────────────────────────┘
+```
+
+### 8. Email Templates
+
+#### Welcome Email
+```
+Subject: You're on the [Product] waitlist! 🎉
+
+Hey!
+
+You're officially #1,234 on the [Product] waitlist.
+
+Want to skip the line? Share your unique link and move up:
+[REFERRAL_LINK]
+
+🏆 Rewards:
+• 3 referrals → Early access
+• 10 referrals → Founding member status
+• 25 referrals → Free first month
+
+Current referrals: 0
+
+Can't wait to have you!
+The [Product] Team
+```
+
+### 9. Analytics Tracking
+
+Track these events:
+- `page_view` - Landing page load
+- `signup_started` - Email input focused
+- `signup_completed` - Successful signup
+- `referral_link_copied` - Copy button clicked
+- `referral_shared` - Social share clicked
+- `referral_converted` - Referred signup completed
+
+### 10. Non-Functional Requirements
+
+- Page load < 2 seconds
+- 99.9% uptime
+- GDPR compliant (privacy policy, data export)
+- Mobile-first responsive design
+- SEO optimized (meta tags, OG images)
+
+### 11. Out of Scope (V1)
+
+- A/B testing
+- Custom domains
+- Embeddable widget
+- SMS notifications
+- Slack integration
+- Multiple campaigns
+
+### 12. Success Criteria
+
+- Landing page converts at > 5%
+- Average user refers 1.5 people
+- Emails delivered with < 1% bounce
+
+### 13. Timeline
+
+**Quick Demo Build**: 3-4 hours
+- Hour 1: Landing page design/build
+- Hour 2: Email capture + database
+- Hour 3: Referral system + thank you page
+- Hour 4: Admin dashboard + polish
+
+

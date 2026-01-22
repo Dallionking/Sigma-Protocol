@@ -1,0 +1,120 @@
+---
+description: "Sigma UX Designer - Wireframes, user flows, accessibility (WCAG). Use for UX design tasks."
+globs: ["**/wireframes/**/*", "**/flows/**/*", "**/ux/**/*", "**/design/**/*"]
+keywords: ["ux", "wireframe", "user flow", "accessibility", "wcag", "mobile-first", "responsive", "user journey", "interface"]
+---
+
+# Sigma UX Designer Skill
+
+Design user experiences, create wireframes, define user flows, ensure accessibility.
+
+## Core Principles
+
+1. **User-Centered** - Design for users, not preferences
+2. **Accessibility First** - WCAG 2.1 AA minimum
+3. **Mobile-First** - Design for smallest screen, scale up
+4. **Consistency** - Reuse patterns and components
+
+## User Flow Template
+
+```markdown
+## User Flow: [Name]
+
+**Goal:** [What user wants]
+**Entry Point:** [Where flow starts]
+**Success Criteria:** [How we know it worked]
+
+### Happy Path
+1. [Screen] → User action → [Next Screen]
+2. [Screen] → User action → [Success]
+
+### Error Paths
+- At Step N: If [condition] → [Error state] → [Recovery]
+```
+
+## Wireframe Format
+
+```
+┌─────────────────────────────────────┐
+│  Logo           Nav1  Nav2  [CTA]  │
+├─────────────────────────────────────┤
+│  ┌───────────────────────────────┐  │
+│  │         Hero Section          │  │
+│  │    Headline (H1)              │  │
+│  │    [Primary CTA Button]       │  │
+│  └───────────────────────────────┘  │
+│  ┌─────────┐ ┌─────────┐ ┌───────┐  │
+│  │ Card 1  │ │ Card 2  │ │Card 3 │  │
+│  └─────────┘ └─────────┘ └───────┘  │
+└─────────────────────────────────────┘
+```
+
+## Accessibility Checklist (WCAG 2.1 AA)
+
+### Perceivable
+- [ ] All images have alt text
+- [ ] Color contrast ≥ 4.5:1 (text)
+- [ ] Content not dependent on color alone
+
+### Operable
+- [ ] All functionality via keyboard
+- [ ] Visible focus indicators
+- [ ] Skip navigation links
+
+### Understandable
+- [ ] Labels for all form inputs
+- [ ] Error messages clear and actionable
+
+## Responsive Breakpoints
+
+| Name | Range | Columns |
+|------|-------|---------|
+| Mobile | 320-767px | 4 |
+| Tablet | 768-1023px | 8 |
+| Desktop | 1024px+ | 12 |
+
+---
+
+## Persuasion Layer Cues (Cialdini + NESB)
+
+### Commitment Micro-Interactions
+
+Design progressive commitment into conversion flows:
+
+| Step | Level | UX Implementation |
+|------|-------|-------------------|
+| 1 | Micro | Scroll past hero, hover on CTA |
+| 2 | Small | Click CTA (opens modal) |
+| 3 | Medium | Enter email (2-step opt-in) |
+| 4 | Medium | Answer preference question |
+| 5 | Large | Complete form / Start trial |
+
+### Trust Signal Placement
+
+| Signal | Placement | Purpose |
+|--------|-----------|---------|
+| User Count | Hero, near CTA | Social proof at decision |
+| Testimonials | After each section | Reinforce benefits |
+| Logos | Below hero, footer | Authority transfer |
+| Guarantees | Pricing, CTAs | Risk reversal |
+
+**Rule:** Trust signals within 100px of every CTA.
+
+### NESB Visual Cues
+
+| Trigger | UX Implementation |
+|---------|-------------------|
+| **NEW** | "New" badges, "Just launched" labels |
+| **EASY** | Step counters, time estimates |
+| **SAFE** | Guarantee badges, security icons |
+| **BIG** | Large outcome numbers, progress visuals |
+
+### Five Drivers in UX
+
+| Driver | UX Implementation |
+|--------|-------------------|
+| **Encourage Dreams** | Success celebrations, achievement animations |
+| **Justify Failures** | Onboarding: "Not your fault" messaging |
+| **Allay Fears** | Inline reassurances, FAQ tooltips |
+| **Confirm Suspicions** | Comparison tables (old vs new) |
+| **Throw Rocks** | "Unlike [old way]" messaging |

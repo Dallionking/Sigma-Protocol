@@ -1,0 +1,346 @@
+# Product Requirements Document: InvoiceFlow
+## Freelancer Invoicing Platform
+
+### 1. Executive Summary
+
+InvoiceFlow is a simple yet powerful invoicing tool designed for freelancers and small businesses. Create professional invoices, track payments, and manage clients all in one place.
+
+### 2. Problem Statement
+
+Freelancers spend too much time on administrative tasks. Creating invoices in Word or Excel is tedious, tracking payments is manual, and chasing late payments is awkward. They need a streamlined tool that handles invoicing professionally.
+
+### 3. Target Users
+
+**Primary**: Freelancers and independent contractors
+**Secondary**: Small businesses (1-5 employees), consultants
+
+### 4. Core Features
+
+#### 4.1 User Account
+- Email/password signup
+- Business profile setup:
+  - Business name
+  - Logo upload
+  - Address
+  - Tax ID (optional)
+  - Default payment terms
+  - Currency
+
+#### 4.2 Client Management
+- Create clients with:
+  - Name (company or individual)
+  - Email
+  - Address
+  - Phone (optional)
+  - Default payment terms
+  - Notes
+- Edit/delete clients
+- View client invoice history
+- Outstanding balance per client
+
+#### 4.3 Invoice Creation
+- Select client (or create new)
+- Invoice date
+- Due date (auto-calculated from terms)
+- Line items:
+  - Description
+  - Quantity
+  - Unit price
+  - Total (auto-calculated)
+- Subtotal (auto-calculated)
+- Tax rate (percentage)
+- Discount (percentage or fixed)
+- Total (auto-calculated)
+- Notes (e.g., payment instructions)
+- Terms & conditions
+
+#### 4.4 Invoice Management
+- View all invoices (list + filters)
+- Filter by: status, client, date range
+- Search invoices
+- Duplicate invoice
+- Edit draft invoices
+- Delete invoices (with confirmation)
+
+#### 4.5 Invoice Status
+- Draft: Not sent yet
+- Sent: Sent to client
+- Viewed: Client opened (if tracking)
+- Paid: Payment received
+- Partial: Partial payment received
+- Overdue: Past due date, unpaid
+
+#### 4.6 PDF Generation
+- Professional template
+- Includes business branding
+- Download as PDF
+- Send via email (with PDF attached)
+
+#### 4.7 Dashboard
+- Total outstanding
+- Total received (this month/year)
+- Overdue invoices count + amount
+- Recent invoices
+- Quick actions (new invoice, new client)
+
+### 5. Technical Requirements
+
+#### 5.1 Frontend
+- Next.js 14+ with App Router
+- TailwindCSS + shadcn/ui
+- react-pdf or @react-pdf/renderer
+- date-fns for date handling
+- Resend for emails
+
+#### 5.2 Backend
+- Supabase Auth
+- Supabase Database (PostgreSQL)
+- Supabase Storage (logos, PDFs)
+- Edge Functions (PDF generation)
+
+#### 5.3 Database Schema
+
+```sql
+-- Business profiles
+businesses (
+  id uuid PRIMARY KEY REFERENCES auth.users,
+  name text NOT NULL,
+  logo_url text,
+  address text,
+  city text,
+  country text,
+  tax_id text,
+  currency text DEFAULT 'USD',
+  default_payment_terms integer DEFAULT 30, -- days
+  invoice_prefix text DEFAULT 'INV',
+  next_invoice_number integer DEFAULT 1,
+  bank_details text,
+  created_at timestamptz DEFAULT now()
+)
+
+-- Clients
+clients (
+  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  business_id uuid REFERENCES businesses(id) ON DELETE CASCADE,
+  name text NOT NULL,
+  email text,
+  address text,
+  city text,
+  country text,
+  phone text,
+  payment_terms integer, -- Override default
+  notes text,
+  created_at timestamptz DEFAULT now()
+)
+
+-- Invoices
+invoices (
+  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  business_id uuid REFERENCES businesses(id) ON DELETE CASCADE,
+  client_id uuid REFERENCES clients(id),
+  invoice_number text UNIQUE NOT NULL,
+  status text DEFAULT 'draft', -- draft, sent, viewed, paid, partial, overdue
+  invoice_date date NOT NULL,
+  due_date date NOT NULL,
+  subtotal decimal(12,2) DEFAULT 0,
+  tax_rate decimal(5,2) DEFAULT 0,
+  tax_amount decimal(12,2) DEFAULT 0,
+  discount_type text, -- 'percentage' or 'fixed'
+  discount_value decimal(12,2) DEFAULT 0,
+  discount_amount decimal(12,2) DEFAULT 0,
+  total decimal(12,2) DEFAULT 0,
+  amount_paid decimal(12,2) DEFAULT 0,
+  notes text,
+  terms text,
+  sent_at timestamptz,
+  viewed_at timestamptz,
+  paid_at timestamptz,
+  created_at timestamptz DEFAULT now()
+)
+
+-- Invoice line items
+line_items (
+  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  invoice_id uuid REFERENCES invoices(id) ON DELETE CASCADE,
+  description text NOT NULL,
+  quantity decimal(10,2) DEFAULT 1,
+  unit_price decimal(12,2) NOT NULL,
+  total decimal(12,2) NOT NULL,
+  position integer NOT NULL,
+  created_at timestamptz DEFAULT now()
+)
+
+-- Payments (for partial payments)
+payments (
+  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  invoice_id uuid REFERENCES invoices(id) ON DELETE CASCADE,
+  amount decimal(12,2) NOT NULL,
+  payment_date date NOT NULL,
+  payment_method text, -- bank, card, cash, other
+  notes text,
+  created_at timestamptz DEFAULT now()
+)
+```
+
+### 6. User Flows
+
+#### 6.1 First-Time Setup
+1. Sign up
+2. Complete business profile
+3. Upload logo
+4. Set currency and payment terms
+5. Redirected to empty dashboard
+
+#### 6.2 Creating First Invoice
+1. Click "New Invoice"
+2. Click "New Client" (inline)
+3. Fill client details
+4. Add line items
+5. Review totals
+6. Save as draft or send immediately
+
+#### 6.3 Sending Invoice
+1. Open invoice
+2. Click "Send Invoice"
+3. Preview email
+4. Confirm send
+5. Status updates to "Sent"
+
+#### 6.4 Recording Payment
+1. Open paid invoice
+2. Click "Record Payment"
+3. Enter amount and date
+4. Status updates to "Paid" or "Partial"
+
+### 7. Design Requirements
+
+#### Invoice Template Layout
+```
+┌─────────────────────────────────────────────────┐
+│  [Logo]              INVOICE                    │
+│  Business Name       #INV-0001                  │
+│  Address             Date: Jan 15, 2025         │
+│                      Due: Feb 14, 2025          │
+├─────────────────────────────────────────────────┤
+│  Bill To:                                       │
+│  Client Name                                    │
+│  Client Address                                 │
+│  client@email.com                               │
+├─────────────────────────────────────────────────┤
+│  Description          Qty    Price    Total    │
+│  ─────────────────────────────────────────────  │
+│  Web Development       40   $100.00  $4,000.00 │
+│  Design Services       10   $80.00     $800.00 │
+├─────────────────────────────────────────────────┤
+│                       Subtotal     $4,800.00   │
+│                       Tax (10%)      $480.00   │
+│                       ─────────────────────    │
+│                       TOTAL        $5,280.00   │
+├─────────────────────────────────────────────────┤
+│  Payment Instructions:                          │
+│  Bank: Example Bank                             │
+│  Account: 1234567890                            │
+│                                                 │
+│  Notes: Thank you for your business!            │
+└─────────────────────────────────────────────────┘
+```
+
+#### Dashboard Layout
+```
+┌─────────────────────────────────────────────────┐
+│  Good morning, John!                            │
+│                                                 │
+│  ┌──────────┐ ┌──────────┐ ┌──────────┐        │
+│  │$12,500   │ │$45,000   │ │3         │        │
+│  │Outstanding│ │This Month│ │Overdue   │        │
+│  └──────────┘ └──────────┘ └──────────┘        │
+├─────────────────────────────────────────────────┤
+│  [+ New Invoice]  [+ New Client]                │
+├─────────────────────────────────────────────────┤
+│  Recent Invoices                                │
+│  INV-0015  Acme Corp     $2,500  SENT    →     │
+│  INV-0014  Jane Doe      $1,200  PAID    →     │
+│  INV-0013  Widget Inc    $3,800  OVERDUE →     │
+└─────────────────────────────────────────────────┘
+```
+
+### 8. Email Templates
+
+#### Invoice Email
+```
+Subject: Invoice #INV-0015 from [Business Name]
+
+Hi [Client Name],
+
+Please find attached invoice #INV-0015 for $5,280.00.
+
+Due date: February 14, 2025
+
+If you have any questions, please don't hesitate to reach out.
+
+[View Invoice Online] (optional - hosted version)
+
+Best regards,
+[Business Name]
+
+---
+[PDF Attachment: INV-0015.pdf]
+```
+
+### 9. PDF Generation
+
+Using @react-pdf/renderer for server-side PDF:
+
+```typescript
+import { Document, Page, Text, View, Image } from '@react-pdf/renderer';
+
+function InvoicePDF({ invoice, business, client, items }) {
+  return (
+    <Document>
+      <Page size="A4" style={styles.page}>
+        <View style={styles.header}>
+          {business.logo_url && <Image src={business.logo_url} style={styles.logo} />}
+          <Text style={styles.title}>INVOICE</Text>
+        </View>
+        {/* ... rest of invoice layout */}
+      </Page>
+    </Document>
+  );
+}
+```
+
+### 10. Non-Functional Requirements
+
+- Invoice loads in < 2 seconds
+- PDF generates in < 5 seconds
+- Email sends in < 10 seconds
+- Mobile-responsive dashboard
+
+### 11. Out of Scope (V1)
+
+- Recurring invoices
+- Time tracking integration
+- Multi-currency per invoice
+- Client portal
+- Payment gateway integration
+- Expense tracking
+- Proposals/quotes
+- Multiple team members
+
+### 12. Success Criteria
+
+- Invoice created in < 5 minutes
+- PDF matches on-screen preview
+- Emails delivered reliably
+
+### 13. Timeline
+
+**Medium Demo Build**: 1-2 days (10-14 hours)
+- Hours 1-2: Auth + Business setup
+- Hours 3-4: Client management
+- Hours 5-7: Invoice creation + line items
+- Hours 8-9: PDF generation
+- Hours 10-11: Email sending + status
+- Hours 12-14: Dashboard + polish
+
+

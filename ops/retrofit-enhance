@@ -1,11 +1,13 @@
 ---
-version: "2.2.0"
-last_updated: "2025-12-17"
+version: "3.1.0"
+last_updated: "2026-01-21"
 changelog:
+  - "3.1.0: Added --ralph flag for auto-generating prd.json backlogs from PRDs, enables sigma ralph autonomous implementation"
+  - "3.0.0: Added --mode=update for in-place editing of existing docs, section-level detection, merge strategies"
   - "2.2.0: Added Step 1.5 (Offer Architecture) to cascade rules, TRANSITION-MAP.md naming support"
   - "2.1.0: Expanded to general-purpose SSS command sync system with version tracking"
   - "2.0.0: Initial release for Flow Tree/Design DNA enhancements"
-description: "Hybrid SSS updater: (1) Enhance OLD workflow with Flow Tree/Design DNA, (2) Sync ANY updated SSS commands to existing codebases via version tracking. Supports Step 1.5 (conditional)."
+description: "Comprehensive SSS updater: (1) UPDATE existing docs with new frameworks in-place, (2) ENHANCE old workflow to new 13-step, (3) SYNC command versions. Preserves customizations."
 allowed-tools:
   # PRIMARY MCP Tools (Use First)
   - mcp_Ref_ref_search_documentation
@@ -30,33 +32,51 @@ allowed-tools:
   - grep
   - run_terminal_cmd
 parameters:
-  # Enhancement Mode (Legacy)
+  # Update Mode (NEW - Preferred for existing projects)
+  - --mode          # update, enhance, sync, auto (default: auto)
+  - --strategy      # merge, append, replace (default: merge)
+  - --backup        # Create backup before editing (default: true)
+  - --steps         # Specific steps to update (comma-separated, e.g., "3,4,5")
+  # Enhancement Mode (Legacy workflow upgrade)
   - --from-step
   - --cascade
-  # Sync Mode (NEW)
-  - --mode          # enhance, sync, auto (default: auto)
+  # Sync Mode (Version tracking)
   - --check-only    # Only report, don't execute
   - --force         # Re-run even if versions match
   - --commands      # Specific commands to sync (comma-separated)
+  # Ralph Mode (NEW - Auto-generate prd.json backlogs)
+  - --ralph         # Generate Ralph backlog from PRDs (default: false)
+  - --ralph-scope   # Scope for Ralph: ios, web, prototype, all (default: auto-detect)
   # Shared
   - --dry-run
   - --verbose
 ---
 
-# @retrofit-enhance — Hybrid SSS Enhancement & Command Sync System
+# @retrofit-enhance — Comprehensive SSS Update & Enhancement System
 
 **Mission**
-A **dual-purpose command** that:
+A **four-mode command** that intelligently updates your SSS documentation:
 
-1. **Enhancement Mode (Legacy):** For codebases that ran the OLD SSS workflow (Steps 0-10), enhances them with NEW frameworks (Flow Tree, Design DNA, IA Frameworks)
+1. **Update Mode (NEW - v3.0):** For projects that already ran SSS steps but need NEW frameworks/phases added. **Edits existing documents in-place** without losing your customizations.
 
-2. **Sync Mode (NEW):** For ANY codebase with SSS commands already applied, detects when commands have been updated and re-runs them to propagate improvements
+2. **Enhancement Mode:** For codebases that ran the OLD SSS workflow (Steps 0-10), enhances them with NEW frameworks (Flow Tree, Design DNA, IA Frameworks)
+
+3. **Sync Mode:** For ANY codebase with SSS commands already applied, detects when commands have been updated and re-runs them to propagate improvements
+
+4. **Ralph Mode (NEW - v3.1):** Automatically generates `docs/ralph/*/prd.json` backlogs from existing PRDs, enabling autonomous implementation via `sigma ralph`
 
 **Valuation Context:** You are a **Senior Design Systems Architect** at a $500M company, ensuring all projects benefit from the latest SSS methodology improvements.
 
 ---
 
 ## 🎯 Purpose
+
+### Update Mode (--mode=update) ⭐ NEW - Most Common Use Case
+- ✅ **Already ran SSS steps** but protocol has been updated since then
+- ✅ **Want to add new frameworks/phases** to existing documents
+- ✅ **Preserve your customizations** - only adds what's missing
+- ✅ **Granular control** - update specific steps or all at once
+- ✅ Perfect for: "I ran Step 3 in November, but now there are new IA frameworks"
 
 ### Enhancement Mode (--mode=enhance)
 - ✅ Projects that ran Steps 1-10 with the OLD workflow
@@ -65,10 +85,17 @@ A **dual-purpose command** that:
 - ✅ Projects where Flow Tree reveals screens not covered by existing PRDs
 
 ### Sync Mode (--mode=sync)
-- ✅ Any project with `.sss-manifest.json` tracking previous command runs
+- ✅ Any project with `.sigma-manifest.json` tracking previous command runs
 - ✅ Detect when SSS commands have newer versions available
 - ✅ Re-run updated commands to get new features/improvements
 - ✅ Works with newly added commands not previously run
+
+### Ralph Mode (--ralph flag) ⭐ NEW v3.1
+- ✅ **Auto-generate prd.json backlogs** from existing PRDs
+- ✅ **Multi-platform support** — auto-detect iOS, Web, prototype scopes
+- ✅ **Ready for sigma ralph** — output is immediately runnable
+- ✅ **Parses Section 16** (Ralph Loop Tasks) from PRDs when present
+- ✅ Perfect for: "I have PRDs but want to run autonomous implementation"
 
 **NOT for:**
 - ❌ Brand new projects (use regular steps)
@@ -81,16 +108,21 @@ A **dual-purpose command** that:
 ```
 @retrofit-enhance --mode=auto (default)
     │
-    ├─ Check: Does .sss-manifest.json exist?
+    ├─ Check 1: Do SSS docs exist but have missing sections?
     │   │
-    │   ├─ YES: Run Sync Mode
-    │   │   └─ Compare manifest versions vs current command versions
-    │   │   └─ Identify commands needing updates
-    │   │   └─ Execute updates with HITL checkpoints
-    │   │
-    │   └─ NO: Continue to legacy check
+    │   └─ YES: Run UPDATE Mode
+    │       └─ Scan existing docs for section headers
+    │       └─ Compare against latest step templates
+    │       └─ Add missing sections IN-PLACE (preserve customizations)
     │
-    └─ Check: Does target have OLD workflow (Steps 0-10 without Step 4)?
+    ├─ Check 2: Does .sigma-manifest.json exist?
+    │   │
+    │   └─ YES: Run Sync Mode
+    │       └─ Compare manifest versions vs current command versions
+    │       └─ Identify commands needing updates
+    │       └─ Execute updates with HITL checkpoints
+    │
+    └─ Check 3: Does target have OLD workflow (Steps 0-10 without Step 4)?
         │
         ├─ YES: Run Enhancement Mode (legacy behavior)
         │   └─ Add Flow Tree, Design DNA, IA frameworks
@@ -104,8 +136,19 @@ A **dual-purpose command** that:
 
 ### **Auto Mode (Recommended)**
 ```bash
-@retrofit-enhance                     # Auto-detect: sync if manifest exists, enhance otherwise
+@retrofit-enhance                     # Auto-detect best mode based on project state
 @retrofit-enhance --dry-run           # Show what would happen, don't execute
+```
+
+### **Update Mode (Edit Existing Docs)** ⭐ NEW
+```bash
+@retrofit-enhance --mode=update                    # Update all steps with new frameworks
+@retrofit-enhance --mode=update --steps=3,4,5     # Update only specific steps
+@retrofit-enhance --mode=update --strategy=merge  # Merge new sections (default, preserves yours)
+@retrofit-enhance --mode=update --strategy=append # Append new sections at end
+@retrofit-enhance --mode=update --strategy=replace # Replace sections (backs up first)
+@retrofit-enhance --mode=update --backup=true     # Create .bak files before editing (default)
+@retrofit-enhance --mode=update --dry-run         # Show what would be added without editing
 ```
 
 ### **Sync Mode (Version Updates)**
@@ -131,6 +174,22 @@ A **dual-purpose command** that:
 @retrofit-enhance --mode=enhance --cascade=prd-only  # Only generate new PRDs for new screens
 ```
 
+### **Ralph Mode (Generate prd.json Backlogs)** ⭐ NEW
+```bash
+@retrofit-enhance --ralph                      # Auto-detect platforms and generate backlogs
+@retrofit-enhance --ralph --ralph-scope=ios    # Only generate iOS backlog
+@retrofit-enhance --ralph --ralph-scope=web    # Only generate Web backlog
+@retrofit-enhance --ralph --ralph-scope=all    # Generate all platform backlogs
+@retrofit-enhance --ralph --dry-run            # Preview what would be generated
+```
+
+**After Ralph backlog creation, run:**
+```bash
+sigma ralph -b docs/ralph/ios/prd.json         # Run iOS implementation loop
+sigma ralph -b docs/ralph/web/prd.json         # Run Web implementation loop
+sigma ralph --all --parallel                   # Run all in parallel tmux panes
+```
+
 ---
 
 ## 🎭 Parameters
@@ -138,7 +197,14 @@ A **dual-purpose command** that:
 ### Mode Selection
 | Parameter | Values | Description | Default |
 |-----------|--------|-------------|---------|
-| `--mode` | `auto`, `sync`, `enhance` | Operation mode | `auto` |
+| `--mode` | `auto`, `update`, `sync`, `enhance` | Operation mode | `auto` |
+
+### Update Mode Parameters (NEW)
+| Parameter | Values | Description | Default |
+|-----------|--------|-------------|---------|
+| `--strategy` | `merge`, `append`, `replace` | How to add new content | `merge` |
+| `--steps` | comma-separated (e.g., `3,4,5`) | Specific steps to update | all |
+| `--backup` | boolean | Create .bak before editing | `true` |
 
 ### Sync Mode Parameters
 | Parameter | Values | Description | Default |
@@ -152,6 +218,12 @@ A **dual-purpose command** that:
 |-----------|--------|-------------|---------|
 | `--from-step` | `3`, `4`, `5` | Step to start enhancement from | `3` |
 | `--cascade` | `full`, `partial`, `prd-only` | How far to cascade updates | `full` |
+
+### Ralph Mode Parameters (NEW v3.1)
+| Parameter | Values | Description | Default |
+|-----------|--------|-------------|---------|
+| `--ralph` | boolean | Enable Ralph backlog generation | `false` |
+| `--ralph-scope` | `ios`, `web`, `prototype`, `all`, `auto` | Platform scope for backlogs | `auto` |
 
 ### Shared Parameters
 | Parameter | Values | Description | Default |
@@ -191,6 +263,502 @@ A **dual-purpose command** that:
         ├─ Checkpoint 2: Approve Flow Tree (new screens)
         ├─ Checkpoint 3: Approve PRD generation
         └─ Checkpoint 4: Final verification
+```
+
+---
+
+## 🆕 Update Mode Workflow (--mode=update)
+
+This is the **most common use case** for existing projects. It:
+1. Scans your existing SSS documents
+2. Detects which sections/frameworks you're missing
+3. **Adds only what's missing** without touching what you've customized
+
+```
+@retrofit-enhance --mode=update
+    │
+    ├─ Phase U1: Section-Level Scan
+    │   ├─ Parse all SSS docs for section headers
+    │   ├─ Build "what you have" inventory
+    │   └─ Compare against "what's available" in latest templates
+    │
+    ├─ Phase U2: Gap Detection
+    │   ├─ Identify missing frameworks per step
+    │   ├─ Identify missing phases within steps
+    │   ├─ Flag new sections added since your last run
+    │   └─ Calculate "update delta"
+    │
+    ├─ Phase U3: Present Update Plan (HITL)
+    │   ├─ Show exactly what will be added per file
+    │   ├─ Offer: EDIT (merge), APPEND, REPLACE, or SKIP per file
+    │   └─ User approves plan
+    │
+    └─ Phase U4: Execute In-Place Updates
+        ├─ Create .bak backups (if --backup=true)
+        ├─ Insert new sections at appropriate locations
+        ├─ Preserve all user customizations
+        └─ Update .sigma-manifest.json with new versions
+```
+
+---
+
+## 📊 Phase U1: Section-Level Document Scanning
+
+### U1.1: Framework Detection Per Step
+
+```typescript
+// What we scan for in each step's document
+const STEP_FRAMEWORKS: Record<string, FrameworkDefinition[]> = {
+  'step-1': [
+    { id: 'problem-statement', header: '## Problem Statement', required: true },
+    { id: 'target-users', header: '## Target Users', required: true },
+    { id: 'success-metrics', header: '## Success Metrics', required: true },
+    { id: 'hormozi-offer', header: '## Value Proposition (Hormozi)', required: false, addedIn: '2.0.0' },
+  ],
+  'step-3': [
+    { id: 'personas', header: '## User Personas', required: true },
+    { id: 'journeys', header: '## User Journeys', required: true },
+    { id: 'emotional-mapping', header: '## Emotional Design Mapping', required: true },
+    // NEW frameworks added in v2.0+
+    { id: 'ia-frameworks', header: '## Information Architecture Frameworks', required: false, addedIn: '2.0.0' },
+    { id: 'rosenfeld-morville', header: '### Rosenfeld & Morville Three Circles', required: false, addedIn: '2.0.0' },
+    { id: 'honeycomb', header: '### User Experience Honeycomb', required: false, addedIn: '2.0.0' },
+    { id: 'dan-brown-principles', header: '### Dan Brown 8 Principles', required: false, addedIn: '2.0.0' },
+    { id: 'covert-sensemaking', header: '### Abby Covert Sensemaking', required: false, addedIn: '2.0.0' },
+    { id: 'animation-philosophy', header: '## Animation Philosophy', required: false, addedIn: '2.1.0' },
+  ],
+  'step-4': [
+    { id: 'screen-inventory', header: '## Screen Inventory', required: true },
+    { id: 'flow-diagrams', header: '## Flow Diagrams', required: true },
+    { id: 'transition-map', header: '## State Transitions', required: true, addedIn: '2.0.0' },
+    { id: 'traceability-matrix', header: '## Traceability Matrix', required: false, addedIn: '2.1.0' },
+    { id: 'zero-omission-cert', header: '## Zero Omission Certificate', required: false, addedIn: '2.1.0' },
+  ],
+  'step-5': [
+    { id: 'wireframe-spec', header: '## Wireframe Specifications', required: true },
+    { id: 'design-dna', header: '## Design DNA Archetype', required: false, addedIn: '2.0.0' },
+    { id: 'magic-ui-selection', header: '## Magic UI Template Selection', required: false, addedIn: '2.0.0' },
+    { id: 'animation-patterns', header: '## Animation Patterns', required: false, addedIn: '2.1.0' },
+  ],
+  'step-6': [
+    { id: 'color-system', header: '## Color System', required: true },
+    { id: 'typography', header: '## Typography', required: true },
+    { id: 'spacing', header: '## Spacing System', required: true },
+    { id: 'motion-animation', header: '## Phase G: Motion & Animation', required: false, addedIn: '2.1.0' },
+    { id: 'spring-physics', header: '### Spring Physics Presets', required: false, addedIn: '2.1.0' },
+  ],
+  'step-7': [
+    { id: 'state-definitions', header: '## State Definitions', required: true },
+    { id: 'loading-states', header: '## Loading States', required: true },
+    { id: 'error-states', header: '## Error States', required: true },
+    { id: 'premium-transitions', header: '## Framework 3.5: Premium State Transitions', required: false, addedIn: '2.1.0' },
+  ],
+  'step-11': [
+    { id: 'prd-template', header: '## PRD Generation', required: true },
+    { id: 'ralph-mode', header: '## Ralph Mode (JSON PRDs)', required: false, addedIn: '3.0.0' },
+  ],
+};
+
+interface FrameworkDefinition {
+  id: string;
+  header: string;           // Markdown header to look for
+  required: boolean;        // Was this in v1.0?
+  addedIn?: string;         // Version when this was added
+  subSections?: string[];   // Child sections to check
+}
+```
+
+### U1.2: Document Section Scanner
+
+```typescript
+async function scanDocumentSections(docPath: string): Promise<SectionInventory> {
+  const content = await readFile(docPath, 'utf-8');
+  const lines = content.split('\n');
+  
+  const sections: Section[] = [];
+  let currentSection: Section | null = null;
+  
+  for (let i = 0; i < lines.length; i++) {
+    const line = lines[i];
+    
+    // Detect headers (## or ###)
+    const headerMatch = line.match(/^(#{2,3})\s+(.+)$/);
+    if (headerMatch) {
+      if (currentSection) {
+        currentSection.endLine = i - 1;
+        sections.push(currentSection);
+      }
+      currentSection = {
+        level: headerMatch[1].length,
+        title: headerMatch[2],
+        startLine: i,
+        endLine: -1,  // Will be set when next section found
+        content: '',
+      };
+    }
+    
+    if (currentSection) {
+      currentSection.content += line + '\n';
+    }
+  }
+  
+  // Close last section
+  if (currentSection) {
+    currentSection.endLine = lines.length - 1;
+    sections.push(currentSection);
+  }
+  
+  return {
+    path: docPath,
+    sections,
+    totalLines: lines.length,
+  };
+}
+```
+
+---
+
+## 🔍 Phase U2: Gap Detection
+
+### U2.1: Compare Against Latest Templates
+
+```typescript
+interface UpdateGap {
+  step: string;
+  docPath: string;
+  missingFrameworks: FrameworkDefinition[];
+  existingFrameworks: string[];  // What user already has
+  insertionPoints: InsertionPoint[];  // Where to add new content
+}
+
+interface InsertionPoint {
+  framework: FrameworkDefinition;
+  afterSection: string;        // Insert after this section
+  lineNumber: number;          // Approximate line to insert at
+  templateContent: string;     // Content to insert from latest template
+}
+
+async function detectUpdateGaps(step: string, existingDoc: SectionInventory): Promise<UpdateGap> {
+  const frameworks = STEP_FRAMEWORKS[step] || [];
+  const existingSectionTitles = existingDoc.sections.map(s => s.title.toLowerCase());
+  
+  const missingFrameworks: FrameworkDefinition[] = [];
+  const insertionPoints: InsertionPoint[] = [];
+  
+  for (const framework of frameworks) {
+    // Check if framework header exists (fuzzy match)
+    const headerText = framework.header.replace(/^#+\s*/, '').toLowerCase();
+    const exists = existingSectionTitles.some(title => 
+      title.includes(headerText) || headerText.includes(title)
+    );
+    
+    if (!exists && framework.addedIn) {
+      missingFrameworks.push(framework);
+      
+      // Determine where to insert
+      const insertAfter = findBestInsertionPoint(framework, existingDoc);
+      insertionPoints.push({
+        framework,
+        afterSection: insertAfter.title,
+        lineNumber: insertAfter.endLine,
+        templateContent: await getFrameworkTemplate(step, framework.id),
+      });
+    }
+  }
+  
+  return {
+    step,
+    docPath: existingDoc.path,
+    missingFrameworks,
+    existingFrameworks: existingSectionTitles,
+    insertionPoints,
+  };
+}
+```
+
+### U2.2: Build Update Delta Report
+
+```typescript
+interface UpdateDelta {
+  totalStepsScanned: number;
+  stepsNeedingUpdates: number;
+  totalNewSections: number;
+  estimatedLinesAdded: number;
+  gaps: UpdateGap[];
+}
+
+async function buildUpdateDelta(targetDir: string, steps?: string[]): Promise<UpdateDelta> {
+  const stepsToScan = steps || Object.keys(STEP_FRAMEWORKS);
+  const gaps: UpdateGap[] = [];
+  
+  for (const step of stepsToScan) {
+    const docPath = getDocPathForStep(step, targetDir);
+    if (!await fileExists(docPath)) continue;  // Skip if doc doesn't exist
+    
+    const existingDoc = await scanDocumentSections(docPath);
+    const gap = await detectUpdateGaps(step, existingDoc);
+    
+    if (gap.missingFrameworks.length > 0) {
+      gaps.push(gap);
+    }
+  }
+  
+  return {
+    totalStepsScanned: stepsToScan.length,
+    stepsNeedingUpdates: gaps.length,
+    totalNewSections: gaps.reduce((sum, g) => sum + g.missingFrameworks.length, 0),
+    estimatedLinesAdded: gaps.reduce((sum, g) => 
+      sum + g.insertionPoints.reduce((s, ip) => s + ip.templateContent.split('\n').length, 0), 0
+    ),
+    gaps,
+  };
+}
+```
+
+---
+
+## 📋 Phase U3: Present Update Plan (HITL Checkpoint)
+
+```
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+🔄 SSS UPDATE PLAN (--mode=update)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+## Summary
+
+| Metric | Value |
+|--------|-------|
+| Steps Scanned | 8 |
+| Steps Needing Updates | 3 |
+| New Sections to Add | 7 |
+| Est. Lines Added | ~450 |
+
+## Step 3: UX-DESIGN.md
+
+**You have:** Personas, Journeys, Emotional Mapping ✅
+**Missing (added in v2.0+):**
+  + IA Frameworks section (~120 lines)
+    - Rosenfeld & Morville Three Circles
+    - User Experience Honeycomb  
+    - Dan Brown 8 Principles
+    - Abby Covert Sensemaking
+  + Animation Philosophy section (~40 lines)
+
+**Action:** [EDIT] [APPEND] [REPLACE] [SKIP]
+
+---
+
+## Step 5: WIREFRAME-SPEC.md
+
+**You have:** Wireframe Specifications ✅
+**Missing (added in v2.0+):**
+  + Design DNA Archetype (~60 lines)
+  + Magic UI Template Selection (~30 lines)
+  + Animation Patterns (~50 lines)
+
+**Action:** [EDIT] [APPEND] [REPLACE] [SKIP]
+
+---
+
+## Step 6: DESIGN-SYSTEM.md
+
+**You have:** Color, Typography, Spacing ✅
+**Missing (added in v2.1+):**
+  + Phase G: Motion & Animation (~100 lines)
+    - Spring Physics Presets
+    - Animation Libraries
+
+**Action:** [EDIT] [APPEND] [REPLACE] [SKIP]
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Choose action for ALL, or customize per step:
+> [A]ll EDIT | [C]ustomize per step | [D]ry-run | [Q]uit
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+```
+
+---
+
+## 🔨 Phase U4: Execute In-Place Updates
+
+### U4.1: Merge Strategy (Default)
+
+The **merge strategy** intelligently inserts new sections at the right location:
+
+```typescript
+async function executeUpdateMerge(gap: UpdateGap, createBackup: boolean): Promise<void> {
+  const docPath = gap.docPath;
+  
+  // Create backup
+  if (createBackup) {
+    await copyFile(docPath, docPath + '.bak');
+    console.log(`  ✅ Backup created: ${docPath}.bak`);
+  }
+  
+  // Read current content
+  let content = await readFile(docPath, 'utf-8');
+  const lines = content.split('\n');
+  
+  // Sort insertion points by line number (descending to preserve line numbers)
+  const sortedInsertions = [...gap.insertionPoints].sort((a, b) => b.lineNumber - a.lineNumber);
+  
+  for (const insertion of sortedInsertions) {
+    // Insert new content after the specified section
+    const newContent = `
+
+${insertion.templateContent}
+`;
+    lines.splice(insertion.lineNumber + 1, 0, ...newContent.split('\n'));
+    console.log(`  ✅ Added: ${insertion.framework.header}`);
+  }
+  
+  // Write updated content
+  await writeFile(docPath, lines.join('\n'));
+  console.log(`  ✅ Updated: ${docPath}`);
+}
+```
+
+### U4.2: Append Strategy
+
+Simply adds all new sections at the end:
+
+```typescript
+async function executeUpdateAppend(gap: UpdateGap, createBackup: boolean): Promise<void> {
+  const docPath = gap.docPath;
+  
+  if (createBackup) {
+    await copyFile(docPath, docPath + '.bak');
+  }
+  
+  let content = await readFile(docPath, 'utf-8');
+  
+  // Add separator
+  content += `
+
+---
+
+## 📦 Sections Added by @retrofit-enhance (v3.0.0)
+*Added: ${new Date().toISOString().split('T')[0]}*
+
+`;
+  
+  // Append all new sections
+  for (const insertion of gap.insertionPoints) {
+    content += insertion.templateContent + '\n\n';
+    console.log(`  ✅ Appended: ${insertion.framework.header}`);
+  }
+  
+  await writeFile(docPath, content);
+}
+```
+
+### U4.3: Replace Strategy
+
+Replaces entire sections (with backup):
+
+```typescript
+async function executeUpdateReplace(gap: UpdateGap): Promise<void> {
+  // Always create backup for replace
+  const docPath = gap.docPath;
+  await copyFile(docPath, docPath + '.bak');
+  console.log(`  ⚠️  Backup created (REQUIRED for replace): ${docPath}.bak`);
+  
+  // Get latest template for entire step
+  const stepNumber = extractStepNumber(gap.step);
+  const latestTemplate = await getLatestStepTemplate(stepNumber);
+  
+  // Replace entire file with latest template
+  await writeFile(docPath, latestTemplate);
+  console.log(`  ✅ Replaced with latest template: ${docPath}`);
+  console.log(`  💡 Review .bak file to merge any custom content`);
+}
+```
+
+### U4.4: Update Manifest
+
+```typescript
+async function updateManifestAfterUpdate(gaps: UpdateGap[]): Promise<void> {
+  const manifestPath = '.sigma-manifest.json';
+  let manifest: SigmaManifest;
+  
+  if (await fileExists(manifestPath)) {
+    manifest = JSON.parse(await readFile(manifestPath, 'utf-8'));
+  } else {
+    manifest = {
+      sigma_version: '3.0.0',
+      initialized: new Date().toISOString(),
+      last_sync: '',
+      commands_run: {},
+    };
+  }
+  
+  manifest.last_sync = new Date().toISOString();
+  
+  for (const gap of gaps) {
+    const stepKey = `step-${extractStepNumber(gap.step)}`;
+    manifest.commands_run[stepKey] = {
+      version: '3.0.0',  // Current version
+      ran_at: new Date().toISOString(),
+      output_files: [gap.docPath],
+      update_mode: true,
+      sections_added: gap.missingFrameworks.map(f => f.id),
+    };
+  }
+  
+  await writeFile(manifestPath, JSON.stringify(manifest, null, 2));
+  console.log(`✅ Updated .sigma-manifest.json`);
+}
+```
+
+---
+
+## ✅ Phase U5: Update Complete Summary
+
+```
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+✅ SSS UPDATE COMPLETE
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+## Updated Files
+
+| File | Sections Added | Strategy |
+|------|----------------|----------|
+| docs/ux/UX-DESIGN.md | +5 sections | MERGE |
+| docs/wireframes/WIREFRAME-SPEC.md | +3 sections | MERGE |
+| docs/design/DESIGN-SYSTEM.md | +1 section | APPEND |
+
+## Backups Created (restore with: cp FILE.bak FILE)
+  - docs/ux/UX-DESIGN.md.bak
+  - docs/wireframes/WIREFRAME-SPEC.md.bak
+  - docs/design/DESIGN-SYSTEM.md.bak
+
+## Sections Added
+
+### Step 3 (UX Design)
+  ✅ Information Architecture Frameworks
+  ✅ Rosenfeld & Morville Three Circles
+  ✅ User Experience Honeycomb
+  ✅ Dan Brown 8 Principles
+  ✅ Animation Philosophy
+
+### Step 5 (Wireframes)
+  ✅ Design DNA Archetype
+  ✅ Magic UI Template Selection
+  ✅ Animation Patterns
+
+### Step 6 (Design System)
+  ✅ Phase G: Motion & Animation
+
+## Manifest Updated
+  - .sigma-manifest.json reflects new versions
+
+## Next Steps
+
+1. Review added sections in each file
+2. Customize new sections for your project
+3. Run @step-verify to validate completeness
+4. Commit changes to version control
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 ```
 
 ---
@@ -862,6 +1430,217 @@ This will:
 2. Compare against existing PRDs
 3. Generate PRDs ONLY for undocumented screens
 4. Skip Steps 3-5 enhancements
+
+---
+
+## 🔄 Phase R: Ralph Backlog Generation (--ralph flag)
+
+When `--ralph` is specified, automatically generate `docs/ralph/*/prd.json` backlogs from existing PRDs.
+
+### R1: Detect PRD Sources and Platforms
+
+```typescript
+interface PRDSource {
+  path: string;
+  platform: 'ios' | 'web' | 'mobile' | 'prototype' | 'implementation';
+  hasSection16: boolean;  // Ralph Loop Tasks section
+  taskCount: number;
+}
+
+async function detectPRDSources(targetDir: string): Promise<PRDSource[]> {
+  const sources: PRDSource[] = [];
+
+  // Check Step 5 PRDs (prototype)
+  const step5Prds = await glob('docs/prds/flows/**/*.md');
+  for (const prd of step5Prds) {
+    const content = await readFile(prd);
+    const hasSection16 = /## (?:16\.|Ralph Loop Tasks)/i.test(content);
+    const platform = detectPlatformFromPath(prd);
+    sources.push({ path: prd, platform, hasSection16, taskCount: countTasks(content) });
+  }
+
+  // Check Step 11 PRDs (implementation)
+  const step11Prds = await glob('docs/prds/*.md');
+  for (const prd of step11Prds) {
+    const content = await readFile(prd);
+    const hasSection16 = /## (?:16\.|Ralph Loop Tasks)/i.test(content);
+    const platform = detectPlatformFromPath(prd);
+    sources.push({ path: prd, platform, hasSection16, taskCount: countTasks(content) });
+  }
+
+  return sources;
+}
+
+function detectPlatformFromPath(path: string): string {
+  if (/ios|swift|xcode/i.test(path)) return 'ios';
+  if (/web|react|next|vue/i.test(path)) return 'web';
+  if (/mobile|expo|react-native/i.test(path)) return 'mobile';
+  if (/flows/i.test(path)) return 'prototype';
+  return 'implementation';
+}
+```
+
+### R2: Generate Ralph Backlog Structure
+
+```typescript
+async function generateRalphBacklogs(
+  sources: PRDSource[],
+  scope: string,
+  dryRun: boolean
+): Promise<void> {
+  // Group by platform
+  const platforms = groupBy(sources, s => s.platform);
+
+  for (const [platform, prds] of Object.entries(platforms)) {
+    if (scope !== 'all' && scope !== 'auto' && scope !== platform) continue;
+
+    const backlogDir = `docs/ralph/${platform}`;
+    const stories = [];
+
+    for (const prd of prds) {
+      const content = await readFile(prd.path);
+      const prdStories = parsePRDToStories(content, prd.path, platform);
+      stories.push(...prdStories);
+    }
+
+    // Sort by priority
+    stories.sort((a, b) => a.priority - b.priority);
+
+    // Build backlog JSON
+    const backlog = {
+      $schema: '../../../schemas/ralph-backlog.schema.json',
+      meta: {
+        projectName: await getProjectName(),
+        platform,
+        generatedAt: new Date().toISOString(),
+        generatedBy: 'retrofit-enhance --ralph',
+        sourcePRDCount: prds.length,
+        totalStories: stories.length,
+        passedStories: 0,
+      },
+      stories,
+    };
+
+    if (dryRun) {
+      console.log(`[DRY RUN] Would create: ${backlogDir}/prd.json (${stories.length} stories)`);
+      continue;
+    }
+
+    // Create directory and write files
+    await run_terminal_cmd(`mkdir -p ${backlogDir}`);
+    await write(`${backlogDir}/prd.json`, JSON.stringify(backlog, null, 2));
+    await write(`${backlogDir}/progress.txt`, `# Ralph Loop Progress\n# Generated: ${new Date().toISOString()}\n\n`);
+
+    console.log(`✅ Created ${backlogDir}/prd.json (${stories.length} stories)`);
+  }
+}
+```
+
+### R3: Parse PRD Section 16 (Ralph Loop Tasks)
+
+```typescript
+function parsePRDToStories(content: string, prdPath: string, platform: string): Story[] {
+  const stories: Story[] = [];
+
+  // Check for Section 16: Ralph Loop Tasks
+  const section16Match = content.match(/## (?:16\.|Ralph Loop Tasks)([\s\S]*?)(?=##|$)/i);
+
+  if (section16Match) {
+    // Parse task table from Section 16
+    const taskTable = section16Match[1];
+    const taskRows = taskTable.match(/\|\s*([A-Z]+-\d+)\s*\|([^|]+)\|([^|]+)\|/g);
+
+    for (const row of taskRows || []) {
+      const [, taskId, name, acceptance] = row.match(/\|\s*([A-Z]+-\d+)\s*\|([^|]+)\|([^|]+)\|/) || [];
+      if (taskId) {
+        stories.push({
+          id: `${platform}-${taskId.toLowerCase()}`,
+          title: name.trim(),
+          priority: extractPriority(taskId),
+          passes: false,
+          source: { prdPath, step: 'step-11' },
+          acceptanceCriteria: parseAcceptanceCriteria(acceptance.trim(), platform),
+          tags: { platform, complexity: 'medium' },
+          dependsOn: [],
+          estimatedIterations: 1,
+        });
+      }
+    }
+  } else {
+    // Fallback: Generate stories from PRD sections
+    const title = content.match(/^#\s+(.+)$/m)?.[1] || 'Unnamed';
+    stories.push({
+      id: `${platform}-${generateStoryId(prdPath)}`,
+      title,
+      priority: 100,
+      passes: false,
+      source: { prdPath, step: 'step-5' },
+      acceptanceCriteria: [
+        { id: 'ac-1', type: 'command', command: '@gap-analysis', expectedScore: 85 },
+      ],
+      tags: { platform, complexity: 'medium' },
+      dependsOn: [],
+      estimatedIterations: 2,
+    });
+  }
+
+  return stories;
+}
+
+function parseAcceptanceCriteria(acString: string, platform: string): AcceptanceCriteria[] {
+  const criteria: AcceptanceCriteria[] = [];
+
+  // Add build verification based on platform
+  if (platform === 'ios') {
+    criteria.push({ id: 'ac-build', type: 'command', command: '@ball-ai-build' });
+    criteria.push({ id: 'ac-ui', type: 'ui-validation', skill: '@ball-ai-simulator' });
+  } else if (platform === 'web') {
+    criteria.push({ id: 'ac-build', type: 'command', command: 'npm run build' });
+    criteria.push({ id: 'ac-ui', type: 'ui-validation', skill: '@agent-browser' });
+  }
+
+  // Always add gap analysis
+  criteria.push({ id: 'ac-gap', type: 'command', command: '@gap-analysis', expectedScore: 85 });
+
+  return criteria;
+}
+```
+
+### R4: Ralph Generation Complete Report
+
+```
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+✅ RALPH BACKLOG GENERATION COMPLETE
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+## Backlogs Created
+
+| Platform | Path | Stories | PRDs |
+|----------|------|---------|------|
+| ios | docs/ralph/ios/prd.json | 22 | 8 |
+| web | docs/ralph/web/prd.json | 19 | 7 |
+
+## Files Created
+
+✅ docs/ralph/ios/prd.json
+✅ docs/ralph/ios/progress.txt
+✅ docs/ralph/web/prd.json
+✅ docs/ralph/web/progress.txt
+
+## Next Steps
+
+Run Ralph loop to implement stories autonomously:
+
+  sigma ralph -b docs/ralph/ios/prd.json     # iOS loop
+  sigma ralph -b docs/ralph/web/prd.json     # Web loop
+  sigma ralph --all --parallel               # Both in parallel
+
+Or run in Claude Code:
+
+  /ralph --backlog=docs/ralph/ios/prd.json
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+```
 
 ---
 

@@ -1,0 +1,64 @@
+{
+  "systemPrompt": "You are an expert at crafting engaging, authentic Twitter/X replies that promote developer tools. Your replies should feel natural, add value to the conversation, and subtly promote the product without being spammy. Always stay under 280 characters.",
+  
+  "toneTemplates": {
+    "educational": {
+      "description": "Share knowledge and explain how the product solves the problem",
+      "examples": [
+        "REPLACE: Share how your product helps with this specific problem. Keep it educational and helpful. {{githubUrl}}",
+        "REPLACE: Explain a feature that's relevant to the tweet's topic. Be specific, not generic. {{githubUrl}}",
+        "REPLACE: Pro tip style - share wisdom related to your product's domain. {{githubUrl}}"
+      ],
+      "guidelines": [
+        "Lead with the insight or solution",
+        "Reference a specific feature",
+        "Keep it helpful, not salesy"
+      ]
+    },
+    "relatable": {
+      "description": "Share personal experience and connect with the struggle",
+      "examples": [
+        "REPLACE: Share YOUR origin story - what problem were you facing that led you to build this? {{githubUrl}}",
+        "REPLACE: I felt this. [Your authentic experience with this problem]. Built [product] to solve it. {{githubUrl}}",
+        "REPLACE: This was me [timeframe] ago. [What changed for you]. Check out what I built: {{githubUrl}}"
+      ],
+      "guidelines": [
+        "Share a genuine experience",
+        "Show empathy for the struggle",
+        "Position the product as your solution"
+      ]
+    },
+    "valueFirst": {
+      "description": "Lead with valuable insight, mention product naturally",
+      "examples": [
+        "REPLACE: Share a key insight from your domain. Make them think. Then connect to your product: {{githubUrl}}",
+        "REPLACE: Drop some wisdom that's genuinely useful. Then: 'That's why we built [product]' {{githubUrl}}",
+        "REPLACE: The key insight is [truth bomb]. We open-sourced our approach: {{githubUrl}}"
+      ],
+      "guidelines": [
+        "Start with a powerful insight",
+        "Make them think",
+        "Product mention feels like supporting evidence"
+      ]
+    },
+    "direct": {
+      "description": "Straightforward product recommendation",
+      "examples": [
+        "REPLACE: Check out [product name] - it does [specific thing]. {{githubUrl}}",
+        "REPLACE: If you're [doing thing tweet mentions], [product] might help. {{githubUrl}}",
+        "REPLACE: We built [product] for exactly this. It's open source: {{githubUrl}}"
+      ],
+      "guidelines": [
+        "Be clear and concise",
+        "State what the product does",
+        "Include clear CTA"
+      ]
+    }
+  },
+  
+  "replyGenerationPrompt": "Generate a Twitter/X reply promoting {{productName}}.\n\nOriginal Tweet:\n{{tweetContent}}\n\nTweet Author: @{{authorUsername}}\nAuthor Bio: {{authorBio}}\n\nProduct Info:\n- Name: {{productName}}\n- Tagline: {{productTagline}}\n- GitHub: {{githubUrl}}\n- Creator: {{creator}}\n- Key Features: {{features}}\n\nTone: {{tone}}\nTone Guidelines: {{toneGuidelines}}\n\nRules:\n1. MUST be under 280 characters\n2. MUST include the GitHub URL\n3. Make it relevant to the original tweet's topic\n4. Don't be generic - reference something specific from the tweet\n5. Don't use hashtags\n6. Don't start with 'Great point!' or similar generic openers\n7. Sound like a real person, not a marketing bot\n\nGenerate the reply:",
+
+  "relevanceCheckPrompt": "Analyze if this tweet is relevant for promoting a [YOUR PRODUCT TYPE] tool.\n\nTweet: {{tweetContent}}\n\nIs this tweet about any of these topics?\n- REPLACE: Topic 1 relevant to your product\n- REPLACE: Topic 2 relevant to your product\n- REPLACE: Topic 3 relevant to your product\n- REPLACE: Problems your product solves\n- REPLACE: Tools similar to yours\n\nRespond with JSON: {\"relevant\": true/false, \"confidence\": 0-100, \"reason\": \"brief explanation\"}"
+}
+
+

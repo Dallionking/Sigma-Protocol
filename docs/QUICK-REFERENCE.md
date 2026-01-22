@@ -9,7 +9,7 @@
 
 ### New Project (Full)
 ```
-@step-0 → @step-1 → [@step-1.5 if monetized] → @step-2 → @step-3 → @step-4 → @step-5 → @step-6 → @step-7 → @step-8 → @step-9 → @step-10 → @step-11 → [@step-11.5 if parallel] → @step-12
+@step-0 → @step-1 → [@step-1.5 if monetized] → @step-2 → @step-3 → @step-4 → @step-5 → @step-6 → @step-7 → @step-8 → @step-9 → @step-10 → @step-11 → [@step-11b if parallel] → @step-12
 ```
 
 ### New Project (Minimal)
@@ -19,7 +19,7 @@
 
 **Notes:** 
 - Step 1.5 (Offer Architecture) is conditional - required only for monetized projects.
-- Step 11.5 (PRD Swarm) is optional - for parallel multi-terminal implementation (5+ PRDs).
+- Step 11b (PRD Swarm) is optional - for parallel multi-terminal implementation (5+ PRDs).
 
 ### Existing Project (Retrofit)
 ```
@@ -49,7 +49,7 @@
 | **Landing page** | `@step-9-landing-page` | Conversion copywriting |
 | **Break down features** | `@step-10-feature-breakdown` | Feature roadmap |
 | **Generate PRDs** | `@step-11-prd-generation` | Executable PRDs |
-| **Swarm PRDs** | `@step-11.5-prd-swarm` | Parallel implementation groups |
+| **Swarm PRDs** | `@step-11b-prd-swarm` | Parallel implementation groups |
 | **AI context** | `@step-12-context-engine` | .cursorrules generation |
 
 ---
@@ -90,9 +90,22 @@
 | **Orchestrate PRDs** | `@prd-orchestrate` | Swarm PRDs for parallel dev |
 | **Retrofit existing** | `@retrofit-analyze` | Analyze for SSS adoption |
 | **Generate SSS docs** | `@retrofit-generate` | Create missing docs |
-| **Clean repo** | `@cleanup-repo` | Content-aware cleanup + worktree detection |
+| **Clean repo** | `@maid` | Content-aware cleanup + code simplification |
 | **Update docs** | `@docs-update` | Sync documentation |
 | **Client handoff** | `@client-handoff` | Handoff package |
+
+---
+
+## Thread-Based Engineering
+
+| Task | Command | Description |
+|------|---------|-------------|
+| **Thread wizard** | `sigma thread` | Choose the right thread type |
+| **Thread status** | `sigma thread status` | View active threads |
+| **Track improvement** | `sigma thread metrics` | 4 dimensions of improvement |
+| **Fusion thread** | `sigma f-thread` | Same prompt to multiple agents |
+| **P-Thread (parallel)** | `sigma orchestrate` | Multiple parallel streams |
+| **Launch mprocs** | `sigma orchestrate --tui mprocs` | Best TUI for orchestration |
 
 ---
 
@@ -125,17 +138,29 @@
 @status                    # Check progress
 ```
 
-### Parallel Implementation (Swarms)
+### Parallel Implementation (P-Thread)
 ```bash
-@step-11.5-prd-swarm       # Analyze & group PRDs into swarms
-# OR
+# Option 1: CLI Orchestration (Recommended)
+sigma orchestrate --tui mprocs       # Best TUI experience
+sigma orchestrate --agent=claude     # Specify Claude Code
+sigma orchestrate --agent=opencode   # Or use OpenCode
+
+# Option 2: Manual Swarm Setup
+@step-11b-prd-swarm       # Analyze & group PRDs into swarms
 @prd-orchestrate --terminals=4  # Standalone swarm orchestration
 
-# Then in 4 separate terminals:
-Terminal 1: @implement-prd --swarm=1
-Terminal 2: @implement-prd --swarm=2
-Terminal 3: @implement-prd --swarm=3
-Terminal 4: @implement-prd --swarm=4
+# TUI Options:
+# - mprocs (brew install mprocs) - Sidebar navigation, recommended
+# - overmind (brew install overmind) - Procfile-based
+# - tmux (brew install tmux) - Classic panes
+```
+
+### Fusion Thread (F-Thread)
+```bash
+# Same prompt to multiple agents for best results
+sigma f-thread --prompt="Review auth security" --count=5
+sigma f-thread --aggregate=consensus  # Consensus mode
+sigma f-thread --aggregate=best       # Pick the best
 ```
 
 ### Pre-Deployment
@@ -185,13 +210,13 @@ Terminal 4: @implement-prd --swarm=4
 | Landing Page | `docs/landing-page/LANDING-PAGE.md` |
 | Feature Breakdown | `docs/implementation/FEATURE-BREAKDOWN.md` |
 | PRDs | `docs/prds/F[N]-[NAME].md` |
-| **Swarm Plan** | `docs/prds/SWARM-PLAN.md` *(Step 11.5)* |
-| **Swarm Folders** | `docs/prds/swarm-[N]/` *(Step 11.5)* |
-| **PRD Status** | `docs/prds/.prd-status.json` *(Step 11.5)* |
+| **Swarm Plan** | `docs/prds/SWARM-PLAN.md` *(Step 11b)* |
+| **Swarm Folders** | `docs/prds/swarm-[N]/` *(Step 11b)* |
+| **PRD Status** | `docs/prds/.prd-status.json` *(Step 11b)* |
 | Cursor Rules | `.cursorrules` |
 | **SSS Manifest** | `.sss-manifest.json` *(Version tracking)* |
-| **Agentic Tools** | `.sss/tools/` *(Grade 3 - typecheck, lint, test, build)* |
-| **Active Task** | `.sss/memory/active_task.md` *(Grade 4 - resume support)* |
+| **Agentic Tools** | `.sigma/tools/` *(Grade 3 - typecheck, lint, test, build)* |
+| **Active Task** | `.sigma/memory/active_task.md` *(Grade 4 - resume support)* |
 
 ---
 

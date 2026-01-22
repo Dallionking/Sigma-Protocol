@@ -3,7 +3,7 @@ version: "5.0.0"
 last_updated: "2025-12-29"
 changelog:
   - "5.0.0: Added Epistemic Confidence Gate (Tier 2) - emits Evidence Ledger, Gap Score, and confidence artifacts for @status integration"
-  - "4.0.0: Added Agentic Layer integration - uses .sss/tools/ for verification, updates active_task.md, Grade 4 closed-loop support for @dev-loop"
+  - "4.0.0: Added Agentic Layer integration - uses .sigma/tools/ for verification, updates active_task.md, Grade 4 closed-loop support for @dev-loop"
   - "3.0.0: Enhanced with clear differentiation from @holes (POST vs PRE implementation), workflow integration with @status, auto-generated actionable task lists, handoff documentation generation, cross-platform compatibility"
   - "2.0.0: Updated for 13-step workflow"
   - "1.0.0: Initial release - post-implementation gap analysis with auto-fix loop and UI Healer validation gate"
@@ -109,7 +109,7 @@ This command is **project-agnostic** (works on any repo), but becomes even stron
 | `--output` | dir | `docs/analysis/` | Where to save the report |
 | `--generate-todos` | boolean | `true` | Generate actionable todo list from findings |
 | `--workflow-integration` | boolean | `true` | Cross-reference with @status for workflow tracking |
-| `--emit-confidence` | boolean | `true` | Emit Epistemic Confidence artifact to .sss/confidence/ |
+| `--emit-confidence` | boolean | `true` | Emit Epistemic Confidence artifact to .sigma/confidence/ |
 
 ---
 
@@ -502,10 +502,10 @@ async function saveConfidenceArtifact(gaps: ImplementationGap[], evidenceLedger:
   };
   
   // Ensure directory exists
-  await run_terminal_cmd('mkdir -p .sss/confidence');
+  await run_terminal_cmd('mkdir -p .sigma/confidence');
   
   // Save artifact
-  const filename = `.sss/confidence/gap-analysis-${timestamp.split('T')[0]}.json`;
+  const filename = `.sigma/confidence/gap-analysis-${timestamp.split('T')[0]}.json`;
   await write(filename, JSON.stringify(artifact, null, 2));
   
   console.log(`\n📊 Epistemic artifact saved: ${filename}`);

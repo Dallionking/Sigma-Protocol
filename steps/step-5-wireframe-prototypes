@@ -1,7 +1,9 @@
 ---
-version: "3.5.0"
-last_updated: "2026-01-01"
+version: "3.7.0"
+last_updated: "2026-01-07"
 changelog:
+  - "3.7.0: Added Superdesign AI Design Agent integration - rapid UI mockup generation, wireframe prototyping, design system extraction. References superdesign-integration.md foundation skill"
+  - "3.6.0: Added Section 5B Backend Data Operations - ensures wireframe PRDs document data operations needed, enabling full-stack Step 11 PRDs"
   - "3.5.0: Added iOS Native (SwiftUI) as platform option with SF Symbols icon reference"
   - "3.4.0: Added UI Profile import + per-flow UI Profile Compliance blocks so wireframe PRDs match selected professional profile (Cool Professional / Satin Dark) by default"
   - "3.3.0: Added Phase 0.5 Module Reconciliation - compares flow-tree.json vs provenance, generates module-diff.md, supports safe add/remove actions"
@@ -105,7 +107,59 @@ Reply with `nextjs`, `tanstack`, `mobile`, or `swiftui`.
 
 ---
 
-## PHASE 0: BOILERPLATE SCAFFOLDING (NEW - OPTIONAL)
+## SUPERDESIGN RAPID PROTOTYPING (OPTIONAL — RECOMMENDED)
+
+**[Superdesign](https://superdesign.dev)** is an open-source AI Design Agent that accelerates wireframe and UI mockup generation. Use it **before or alongside** PRD writing to rapidly explore design options.
+
+### When to Use Superdesign
+
+| Use Case | Superdesign Prompt |
+|----------|-------------------|
+| **Explore layouts** | "Generate 5 variations of a dashboard layout with sidebar, header, and main content area" |
+| **Wireframe screens** | "Create a wireframe for a checkout flow: cart review → shipping → payment → confirmation" |
+| **Component design** | "Design a React pricing card component with 3 tiers and toggle for monthly/annual" |
+| **Style exploration** | "Design a login page in the style of Linear.app with dark theme" |
+
+### Superdesign Workflow for Step 5
+
+```
+1. Open Superdesign sidebar in Cursor
+2. Prompt: "Generate wireframe for [FLOW_NAME] flow with [KEY_SCREENS]"
+3. Review 3-5 variations
+4. Fork and iterate on best option
+5. Extract design patterns for PRD
+6. Use superdesign_extract_system to capture design tokens
+```
+
+### Example Prompt for Flow Wireframes
+
+```
+"Generate wireframes for an authentication flow:
+
+Screens:
+1. Login - email/password, social login buttons, forgot password link
+2. Sign Up - email, password, confirm password, terms checkbox
+3. Forgot Password - email input, back to login
+4. Email Verification - code input, resend button
+
+Style: Minimal, lots of whitespace, shadcn-inspired
+Output: HTML with Tailwind
+Variations: 3"
+```
+
+### Integration with PRD Generation
+
+After using Superdesign:
+1. **Screenshots** → Save to `/docs/wireframes/screenshots/`
+2. **Design tokens** → Extract with `superdesign_extract_system`
+3. **Component patterns** → Reference in PRD component specs
+4. **HTML files** → Use as reference for ASCII wireframes in PRD
+
+> **📚 Reference:** See `/src/foundation-skills/superdesign-integration.md` for detailed prompt patterns.
+
+---
+
+## PHASE 0: BOILERPLATE SCAFFOLDING (OPTIONAL)
 
 **If using SSS boilerplates, scaffold the project BEFORE generating wireframe PRDs.**
 
@@ -115,7 +169,7 @@ Check if you're already in a boilerplate project:
 
 ```bash
 # Check for provenance file
-cat .sss/boilerplate.json 2>/dev/null
+cat .sigma/boilerplate.json 2>/dev/null
 ```
 
 **If provenance file exists:** Skip to SHADCN MCP SETUP - your project is already scaffolded.
@@ -164,7 +218,7 @@ npm run dev
 ```
 
 **After scaffolding:**
-- Provenance file created at `.sss/boilerplate.json`
+- Provenance file created at `.sigma/boilerplate.json`
 - SSS commands available in `.cursor/commands/`
 - Auth, payments, and base UI ready to extend
 
@@ -211,7 +265,7 @@ This phase compares the project's selected modules (from initial scaffolding) ag
 
 ### When to Trigger
 
-- **Automatic:** Run if `product/flows/flow-tree.json` exists and project has `.sss/boilerplate.json`
+- **Automatic:** Run if `product/flows/flow-tree.json` exists and project has `.sigma/boilerplate.json`
 - **Manual:** User explicitly asks for module reconciliation
 - **Always skip if:** Custom build (no boilerplate)
 
@@ -225,7 +279,7 @@ const flowTree = JSON.parse(fs.readFileSync('product/flows/flow-tree.json'));
 const flowTreeModules = flowTree.modules.map(m => m.id);
 
 // Load provenance (from generator)
-const provenance = JSON.parse(fs.readFileSync('.sss/boilerplate.json'));
+const provenance = JSON.parse(fs.readFileSync('.sigma/boilerplate.json'));
 const selectedModules = provenance.modules?.selected || [];
 const prunedModules = provenance.modules?.pruned || [];
 ```
@@ -258,7 +312,7 @@ const toRestore = prunedModules.filter(
 
 **Generated:** [TODAY]
 **Flow-Tree Source:** product/flows/flow-tree.json
-**Provenance Source:** .sss/boilerplate.json
+**Provenance Source:** .sigma/boilerplate.json
 
 ## Summary
 
@@ -1752,6 +1806,56 @@ src/
 1. Run `npm run dev` to start the development server
 2. Open http://localhost:3000 to verify it works
 3. Begin implementing screens from Section 6
+
+---
+
+## 5B. BACKEND DATA OPERATIONS (MANDATORY — Enables Full-Stack PRDs in Step 11)
+
+**⚠️ CRITICAL: Even though Step 5 focuses on UI wireframes, you MUST document the backend data operations needed. This ensures Step 11 PRDs are full-stack from the start.**
+
+### Why This Section Exists
+
+Step 11 PRDs must include database schemas, server actions, and API endpoints. If we don't consider backend requirements during wireframing, Step 11 will produce frontend-only PRDs. This section forces early consideration of data operations.
+
+### Data Operations Required for This Flow
+
+| Screen | Operation | Type | Data Needed | Implementation Note |
+|--------|-----------|------|-------------|-------------------|
+| [Screen 1] | [e.g., Load user profile] | READ | [e.g., user.name, user.email, user.avatar] | [Will use server component / useQuery] |
+| [Screen 1] | [e.g., Update profile] | WRITE | [e.g., name, email, preferences] | [Will use server action / useMutation] |
+| [Screen 2] | [e.g., List items] | READ | [e.g., items with pagination] | [Cursor pagination, 20 per page] |
+| [Screen 3] | [e.g., Create item] | WRITE | [e.g., title, description, category] | [Optimistic update expected] |
+
+### Database Tables Needed (Preview for Step 11)
+
+| Table | Purpose | Key Fields | RLS Policy Needed |
+|-------|---------|------------|-------------------|
+| [table_name] | [purpose] | [id, user_id, ...] | Yes - user owns row |
+
+### Server Actions / API Endpoints Needed (Preview for Step 11)
+
+| Action/Endpoint | Purpose | Input | Output |
+|-----------------|---------|-------|--------|
+| `get[Entity]` | Fetch data for [screen] | [params] | [Entity or Entity[]] |
+| `create[Entity]` | Create from [form] | [FormData fields] | [Created Entity] |
+| `update[Entity]` | Update from [form] | [id, FormData] | [Updated Entity] |
+| `delete[Entity]` | Delete from [button] | [id] | [success boolean] |
+
+### External Integrations
+
+| Service | Purpose | Which Screens | Implementation Note |
+|---------|---------|---------------|---------------------|
+| [e.g., Stripe] | [e.g., Payment processing] | [Checkout screen] | [Use existing boilerplate hook] |
+| [e.g., Resend] | [e.g., Email notifications] | [Invite screen] | [Server action only] |
+
+### Security Considerations (Preview for Step 11)
+
+- [ ] Which operations require authentication? [List]
+- [ ] Which operations require specific roles? [List]
+- [ ] Are there rate limits needed? [List high-risk operations]
+- [ ] Are there sensitive fields to exclude from responses? [List]
+
+**Note to Step 11:** When generating the full PRD for this flow, use this section as the starting point for Section 6 (Database Schema) and Section 7 (Server Actions).
 
 ---
 

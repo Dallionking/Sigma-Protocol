@@ -1,0 +1,104 @@
+---
+description: "Sigma Quality Gates - Git hooks, testing, CI/CD patterns using Lefthook, Vitest, GitHub Actions."
+globs: ["lefthook.yml", ".github/workflows/*", "vitest.config.*", "jest.config.*", "*.test.*", "*.spec.*"]
+keywords: ["test", "ci", "cd", "hook", "lint", "coverage", "pipeline", "workflow", "quality", "lefthook", "vitest"]
+---
+
+# Sigma Quality Gates Skill
+
+Automated quality gates for hooks, testing, and CI/CD.
+
+## Philosophy
+
+**Progressive Enforcement:**
+- **Pre-commit**: Fast checks (lint, format, typecheck) on staged files
+- **Pre-push**: Comprehensive checks (tests, coverage)
+- **CI/CD**: Production validation (build, E2E, security)
+
+## Git Hooks: Lefthook
+
+### lefthook.yml
+
+```yaml
+pre-commit:
+  parallel: true
+  commands:
+    lint:
+      glob: "*.{js,ts,jsx,tsx}"
+      run: pnpm eslint --fix {staged_files}
+      stage_fixed: true
+
+    format:
+      glob: "*.{js,ts,jsx,tsx,json,md,css}"
+      run: pnpm prettier --write {staged_files}
+      stage_fixed: true
+
+    typecheck:
+      glob: "*.{ts,tsx}"
+      run: pnpm tsc --noEmit
+
+pre-push:
+  commands:
+    test:
+      run: pnpm test:ci
+
+    build:
+      run: pnpm build
+
+commit-msg:
+  commands:
+    commitlint:
+      run: pnpm commitlint --edit {1}
+```
+
+## Testing: Vitest
+
+```typescript
+// vitest.config.ts
+export default defineConfig({
+  test: {
+    globals: true,
+    environment: 'jsdom',
+    coverage: {
+      provider: 'v8',
+      thresholds: { lines: 60, branches: 70 },
+    },
+  },
+});
+```
+
+## CI: GitHub Actions
+
+```yaml
+name: CI
+on: [pull_request, push]
+
+jobs:
+  quality:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v2
+      - uses: actions/setup-node@v4
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm lint
+      - run: pnpm typecheck
+      - run: pnpm test:ci
+      - run: pnpm build
+```
+
+## Checklist
+
+### Essential
+- [ ] Lefthook with pre-commit (lint, format, typecheck)
+- [ ] Lefthook with pre-push (test, build)
+- [ ] GitHub Actions CI
+- [ ] Branch protection on main
+- [ ] Test framework (Vitest)
+- [ ] Coverage reporting
+
+### Recommended
+- [ ] E2E testing (Playwright)
+- [ ] Dependency audit
+- [ ] Conventional commits
+- [ ] Security scanning

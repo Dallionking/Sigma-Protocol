@@ -1,12 +1,13 @@
 ---
-version: "2.2.0"
-last_updated: "2025-12-17"
+version: "3.0.0"
+last_updated: "2026-01-11"
 changelog:
+  - "3.0.0: Added section-level analysis for update mode, framework version detection, .sigma-manifest.json support"
   - "2.2.0: Added Step 1.5 (Offer Architecture) detection, TRANSITION-MAP.md naming with legacy alias support"
   - "2.1.0: Added Phase A5 Bulletproof Artifact Check (TRACEABILITY-MATRIX.md, ZERO-OMISSION-CERTIFICATE.md, WIREFRAME-TRACKER.md)"
   - "2.0.0: Updated for 13-step workflow (Steps 0-12)"
   - "1.0.0: Initial release for 10-step workflow"
-description: "Analyze existing codebase for SSS methodology adoption - comprehensive gap analysis and remediation roadmap (Steps 0-12 + conditional 1.5)"
+description: "Analyze existing codebase for SSS methodology adoption - comprehensive gap analysis with section-level detection and update recommendations"
 allowed-tools:
   # PRIMARY MCP Tools (Use First)
   - mcp_Ref_ref_search_documentation
@@ -30,15 +31,18 @@ allowed-tools:
   - grep
   - run_terminal_cmd
 parameters:
-  - --depth
-  - --focus
-  - --export
+  - --depth        # quick, standard, deep (default: standard)
+  - --focus        # all, frontend, backend, database, security, docs (default: all)
+  - --export       # markdown, json (default: markdown)
+  - --section-level  # NEW: Include section-level analysis (default: true)
 ---
 
 # /retrofit-analyze — Existing Codebase Analysis for SSS Adoption
 
 **Mission**  
-Analyze an existing codebase (forked repo, legacy project, or inherited code) and generate a comprehensive report on how to adopt the **SSS (Scalable Startup System)** methodology. This command identifies what exists, what's missing, and creates a prioritized roadmap for generating all required SSS documentation.
+Analyze an existing codebase (forked repo, legacy project, or inherited code) and generate a comprehensive report on how to adopt the **SSS (Scalable Startup System)** methodology. This command identifies what exists, what's missing at both **file-level AND section-level**, and creates a prioritized roadmap.
+
+**New in v3.0:** Section-level analysis detects which **specific frameworks/phases** are missing within existing documents, enabling `@retrofit-enhance --mode=update` to surgically add only what's missing.
 
 **Valuation Context:** You are a **Principal Technical Consultant** at a top-tier consulting firm. A client has acquired/forked a codebase and needs to bring it up to **\$1B Series A standards**. Your analysis must be thorough, actionable, and prioritized.
 
@@ -312,6 +316,144 @@ Bulletproof Score: \${bulletproofScore}/100
 \`);
 \`\`\`
 
+### A6: Section-Level Analysis (NEW in v3.0)
+
+**Scan existing documents for specific frameworks/phases:**
+
+This goes beyond "does the file exist?" to analyze **what sections exist within each document**, enabling surgical updates.
+
+\`\`\`typescript
+// Framework registry - what sections should exist in each step
+const STEP_FRAMEWORKS = {
+  'step-3': {
+    doc: 'docs/ux/UX-DESIGN.md',
+    sections: [
+      { id: 'personas', pattern: /## User Personas/i, required: true, version: '1.0.0' },
+      { id: 'journeys', pattern: /## User Journeys/i, required: true, version: '1.0.0' },
+      { id: 'emotional', pattern: /## Emotional.*Design/i, required: true, version: '1.0.0' },
+      { id: 'ia-frameworks', pattern: /## Information Architecture/i, required: false, version: '2.0.0' },
+      { id: 'honeycomb', pattern: /### User Experience Honeycomb/i, required: false, version: '2.0.0' },
+      { id: 'dan-brown', pattern: /### Dan Brown.*Principles/i, required: false, version: '2.0.0' },
+      { id: 'animation-philosophy', pattern: /## Animation Philosophy/i, required: false, version: '2.1.0' },
+    ],
+  },
+  'step-5': {
+    doc: 'docs/wireframes/WIREFRAME-SPEC.md',
+    sections: [
+      { id: 'wireframe-spec', pattern: /## Wireframe Spec/i, required: true, version: '1.0.0' },
+      { id: 'design-dna', pattern: /## Design DNA/i, required: false, version: '2.0.0' },
+      { id: 'magic-ui', pattern: /## Magic UI/i, required: false, version: '2.0.0' },
+      { id: 'animation-patterns', pattern: /## Animation Patterns/i, required: false, version: '2.1.0' },
+    ],
+  },
+  'step-6': {
+    doc: 'docs/design/DESIGN-SYSTEM.md',
+    sections: [
+      { id: 'colors', pattern: /## Color/i, required: true, version: '1.0.0' },
+      { id: 'typography', pattern: /## Typography/i, required: true, version: '1.0.0' },
+      { id: 'motion', pattern: /## (Phase G|Motion)/i, required: false, version: '2.1.0' },
+      { id: 'spring-physics', pattern: /### Spring Physics/i, required: false, version: '2.1.0' },
+    ],
+  },
+  'step-7': {
+    doc: 'docs/states/STATE-SPEC.md',
+    sections: [
+      { id: 'loading', pattern: /## Loading States/i, required: true, version: '1.0.0' },
+      { id: 'error', pattern: /## Error States/i, required: true, version: '1.0.0' },
+      { id: 'premium-transitions', pattern: /## (Framework 3\.5|Premium.*Transitions)/i, required: false, version: '2.1.0' },
+    ],
+  },
+};
+
+async function analyzeSectionLevel(targetDir: string): Promise<SectionAnalysis[]> {
+  const results: SectionAnalysis[] = [];
+  
+  for (const [step, config] of Object.entries(STEP_FRAMEWORKS)) {
+    const docPath = path.join(targetDir, config.doc);
+    
+    if (!await fileExists(docPath)) {
+      results.push({
+        step,
+        docPath: config.doc,
+        exists: false,
+        sectionsFound: [],
+        sectionsMissing: config.sections.map(s => s.id),
+        completeness: 0,
+        canUpdate: false,  // File doesn't exist - needs generate, not update
+      });
+      continue;
+    }
+    
+    const content = await readFile(docPath, 'utf-8');
+    const found: string[] = [];
+    const missing: string[] = [];
+    
+    for (const section of config.sections) {
+      if (section.pattern.test(content)) {
+        found.push(section.id);
+      } else {
+        missing.push(section.id);
+      }
+    }
+    
+    results.push({
+      step,
+      docPath: config.doc,
+      exists: true,
+      sectionsFound: found,
+      sectionsMissing: missing,
+      completeness: Math.round((found.length / config.sections.length) * 100),
+      canUpdate: missing.length > 0 && found.length > 0,  // Has content but missing some
+    });
+  }
+  
+  return results;
+}
+\`\`\`
+
+**Section-Level Report:**
+
+\`\`\`
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+📊 SECTION-LEVEL ANALYSIS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+## Step 3: UX Design (docs/ux/UX-DESIGN.md)
+   File exists: ✅
+   Completeness: 57% (4/7 sections)
+   
+   ✅ User Personas
+   ✅ User Journeys
+   ✅ Emotional Design Mapping
+   ✅ (custom section preserved)
+   ❌ IA Frameworks (added v2.0)
+   ❌ User Experience Honeycomb (added v2.0)
+   ❌ Animation Philosophy (added v2.1)
+   
+   → Recommended: @retrofit-enhance --mode=update --steps=3
+
+## Step 5: Wireframes (docs/wireframes/WIREFRAME-SPEC.md)
+   File exists: ✅
+   Completeness: 25% (1/4 sections)
+   
+   ✅ Wireframe Specifications
+   ❌ Design DNA Archetype (added v2.0)
+   ❌ Magic UI Template Selection (added v2.0)
+   ❌ Animation Patterns (added v2.1)
+   
+   → Recommended: @retrofit-enhance --mode=update --steps=5
+
+## Step 6: Design System (docs/design/DESIGN-SYSTEM.md)
+   File exists: ❌
+   
+   → Recommended: @retrofit-generate --step=6
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+📈 SUMMARY: 3 steps can be UPDATED (add missing sections)
+            1 step needs to be GENERATED (file missing)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+\`\`\`
+
 ---
 
 ## Phase B: Gap Analysis
@@ -327,7 +469,9 @@ interface SSSComplianceMatrix {
   status: 'complete' | 'partial' | 'missing' | 'n/a';
   existingArtifacts: string[];
   missingArtifacts: string[];
+  missingSections: string[];  // NEW: Section-level gaps
   canAutoGenerate: boolean;
+  canUpdate: boolean;         // NEW: Can use update mode
   effort: 'low' | 'medium' | 'high';
   priority: number;
 }
@@ -376,7 +520,7 @@ function calculateTotalWeight(isMonetized: boolean): number {
 - \`/docs/retrofit/GAP-MATRIX.md\` - Detailed gap analysis matrix
 - \`/docs/retrofit/REMEDIATION-ROADMAP.md\` - Prioritized action plan
 
-### C2: Report Format
+### C2: Report Format (Updated for v3.0)
 
 \`\`\`markdown
 # SSS Retrofit Analysis Report
@@ -387,21 +531,55 @@ function calculateTotalWeight(isMonetized: boolean): number {
 |--------|-------|
 | **SSS Compliance Score** | [X]/100 ([Grade]) |
 | **Steps Complete** | [N]/13 |
+| **Steps Partial (need UPDATE)** | [N] |
+| **Steps Missing (need GENERATE)** | [N] |
 | **Features Discovered** | [N] |
 | **Est. Retrofit Effort** | [X] hours |
 
 ## SSS Step Compliance
 
-| Step | Name | Status | Action Required |
-|------|------|--------|-----------------|
-| 0 | Environment | ✅ | None |
-| 1 | Ideation | ❌ | Run @retrofit-generate --step=1 |
+| Step | Name | Status | Sections | Action Required |
+|------|------|--------|----------|-----------------|
+| 0 | Environment | ✅ Complete | 100% | None |
+| 1 | Ideation | ❌ Missing | 0% | @retrofit-generate --step=1 |
+| 3 | UX Design | ⚠️ Partial | 57% | @retrofit-enhance --mode=update --steps=3 |
+| 5 | Wireframes | ⚠️ Partial | 25% | @retrofit-enhance --mode=update --steps=5 |
 ...
+
+## Section-Level Gaps (Steps that exist but are outdated)
+
+### Step 3: UX Design
+- ❌ Missing: IA Frameworks (added v2.0)
+- ❌ Missing: Animation Philosophy (added v2.1)
+- 💡 **UPDATE** will add 2 sections (~160 lines) preserving your customizations
+
+### Step 5: Wireframes  
+- ❌ Missing: Design DNA (added v2.0)
+- ❌ Missing: Animation Patterns (added v2.1)
+- 💡 **UPDATE** will add 3 sections (~140 lines) preserving your customizations
+
+## Recommended Actions
+
+### Option 1: Quick Update (preserve customizations)
+\`\`\`bash
+# Update steps that exist but are missing newer sections
+@retrofit-enhance --mode=update --steps=3,5,6,7
+
+# Then generate steps that are completely missing
+@retrofit-generate --step=4
+\`\`\`
+
+### Option 2: Full Regeneration
+\`\`\`bash
+@retrofit-generate --all --force
+\`\`\`
+⚠️ Warning: This will overwrite customizations. Backups will be created.
 
 ## Next Steps
 
-1. Run: @retrofit-generate --priority=high
-2. Verify: @verify-prd [PRD-file]
+1. Run: @retrofit-enhance --mode=update (for partial steps)
+2. Run: @retrofit-generate --priority=high (for missing steps)
+3. Verify: @step-verify --step=all
 \`\`\`
 
 ---
@@ -410,24 +588,34 @@ function calculateTotalWeight(isMonetized: boolean): number {
 
 **Present Analysis Summary:**
 \`\`\`
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 📊 SSS RETROFIT ANALYSIS COMPLETE
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 Project: [Name]
 Compliance: [X]/100 ([Grade])
-Steps Complete: [N]/11
+Steps Complete: [N]/13
+Steps Partial: [N] (can UPDATE)
+Steps Missing: [N] (need GENERATE)
 Features Found: [N]
 
 📁 Reports Generated:
    ✅ /docs/retrofit/ANALYSIS-REPORT.md
    ✅ /docs/retrofit/GAP-MATRIX.md
    ✅ /docs/retrofit/REMEDIATION-ROADMAP.md
+   ✅ /docs/retrofit/SECTION-GAPS.md (NEW)
 
-🎯 Recommended Next Step:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+🎯 RECOMMENDED NEXT STEPS:
+
+1. UPDATE partial steps (preserves your work):
+   @retrofit-enhance --mode=update
+
+2. GENERATE missing steps:
    @retrofit-generate --priority=high
 
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 \`\`\`
 
 </goal>

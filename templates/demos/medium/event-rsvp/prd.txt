@@ -1,0 +1,393 @@
+# Product Requirements Document: EventHub
+## Event Management & RSVP Platform
+
+### 1. Executive Summary
+
+EventHub is an event management platform that enables organizers to create event pages, handle registrations, sell tickets, and check in attendees. Simple enough for small meetups, powerful enough for conferences.
+
+### 2. Problem Statement
+
+Event organizers need a simple way to create event pages, collect RSVPs, and manage attendees. Existing solutions are either too complex (Eventbrite) or too limited (Google Forms). They need a middle ground.
+
+### 3. Target Users
+
+**Organizers**: People hosting events (meetups, conferences, workshops)
+**Attendees**: People registering for and attending events
+
+### 4. Core Features
+
+#### 4.1 Organizer Account
+- Email/password signup
+- Profile with name and organization
+- Dashboard with all events
+
+#### 4.2 Event Creation
+- Event title
+- Date and time (with timezone)
+- Location (venue or virtual link)
+- Cover image
+- Rich description (markdown)
+- Category/tags
+- Visibility (public/private/unlisted)
+
+#### 4.3 Ticket Types
+- Multiple ticket types per event
+- For each ticket:
+  - Name (e.g., "General Admission", "VIP")
+  - Price (or free)
+  - Quantity available
+  - Sales start/end dates
+  - Description
+- Capacity across all tickets
+
+#### 4.4 Public Event Page
+- Beautiful event landing page
+- Event details and description
+- Location with map embed
+- Ticket selection
+- Register/buy button
+- Share buttons
+
+#### 4.5 Registration Flow
+- Select ticket type(s)
+- Enter attendee info:
+  - Name (required)
+  - Email (required)
+  - Custom questions (optional)
+- Payment (if paid, via Stripe)
+- Confirmation page
+- Confirmation email with:
+  - Event details
+  - QR code ticket
+  - Calendar invite (.ics)
+
+#### 4.6 Attendee Management
+- List all registrations
+- Filter by ticket type, check-in status
+- Search by name/email
+- View registration details
+- Cancel/refund registration
+- Export as CSV
+
+#### 4.7 Event Dashboard
+- Total registrations
+- Revenue (if paid)
+- Check-in rate
+- Registration over time chart
+- Recent registrations
+
+#### 4.8 Check-in
+- Mobile-friendly check-in page
+- QR code scanner
+- Manual search by name/email
+- Mark as checked in
+- Real-time attendance count
+
+### 5. Technical Requirements
+
+#### 5.1 Frontend
+- Next.js 14+ with App Router
+- TailwindCSS + shadcn/ui
+- QRCode generation (qrcode.react)
+- QR scanning (html5-qrcode)
+- Calendar generation (ics)
+- Maps embed (Google Maps or Mapbox)
+
+#### 5.2 Backend
+- Supabase Auth
+- Supabase Database (PostgreSQL)
+- Supabase Storage (images)
+- Stripe (payments)
+- Resend (emails)
+
+#### 5.3 Database Schema
+
+```sql
+-- Organizer profiles
+organizers (
+  id uuid PRIMARY KEY REFERENCES auth.users,
+  name text NOT NULL,
+  organization text,
+  avatar_url text,
+  created_at timestamptz DEFAULT now()
+)
+
+-- Events
+events (
+  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  organizer_id uuid REFERENCES organizers(id) ON DELETE CASCADE,
+  title text NOT NULL,
+  slug text UNIQUE NOT NULL,
+  description text,
+  cover_image_url text,
+  start_date timestamptz NOT NULL,
+  end_date timestamptz,
+  timezone text DEFAULT 'UTC',
+  location_type text NOT NULL, -- 'venue', 'virtual', 'hybrid'
+  venue_name text,
+  venue_address text,
+  venue_lat decimal(10, 8),
+  venue_lng decimal(11, 8),
+  virtual_url text,
+  category text,
+  visibility text DEFAULT 'public', -- 'public', 'private', 'unlisted'
+  status text DEFAULT 'draft', -- 'draft', 'published', 'cancelled'
+  total_capacity integer,
+  registration_count integer DEFAULT 0,
+  checkin_count integer DEFAULT 0,
+  published_at timestamptz,
+  created_at timestamptz DEFAULT now()
+)
+
+-- Ticket types
+ticket_types (
+  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  event_id uuid REFERENCES events(id) ON DELETE CASCADE,
+  name text NOT NULL,
+  description text,
+  price decimal(10, 2) DEFAULT 0,
+  currency text DEFAULT 'USD',
+  quantity integer, -- NULL = unlimited
+  quantity_sold integer DEFAULT 0,
+  sales_start timestamptz,
+  sales_end timestamptz,
+  position integer NOT NULL,
+  created_at timestamptz DEFAULT now()
+)
+
+-- Custom registration questions
+questions (
+  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  event_id uuid REFERENCES events(id) ON DELETE CASCADE,
+  question_text text NOT NULL,
+  question_type text NOT NULL, -- 'text', 'textarea', 'select', 'checkbox'
+  options text[], -- For select/checkbox
+  is_required boolean DEFAULT false,
+  position integer NOT NULL,
+  created_at timestamptz DEFAULT now()
+)
+
+-- Registrations
+registrations (
+  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  event_id uuid REFERENCES events(id) ON DELETE CASCADE,
+  ticket_type_id uuid REFERENCES ticket_types(id),
+  name text NOT NULL,
+  email text NOT NULL,
+  answers jsonb, -- Custom question answers
+  confirmation_code text UNIQUE NOT NULL,
+  status text DEFAULT 'confirmed', -- 'confirmed', 'cancelled', 'refunded'
+  checked_in boolean DEFAULT false,
+  checked_in_at timestamptz,
+  stripe_payment_id text,
+  amount_paid decimal(10, 2) DEFAULT 0,
+  created_at timestamptz DEFAULT now()
+)
+
+-- Promo codes
+promo_codes (
+  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  event_id uuid REFERENCES events(id) ON DELETE CASCADE,
+  code text NOT NULL,
+  discount_type text NOT NULL, -- 'percentage', 'fixed'
+  discount_value decimal(10, 2) NOT NULL,
+  max_uses integer,
+  uses integer DEFAULT 0,
+  valid_from timestamptz,
+  valid_until timestamptz,
+  created_at timestamptz DEFAULT now(),
+  UNIQUE(event_id, code)
+)
+```
+
+### 6. User Flows
+
+#### 6.1 Create Event
+1. Sign in as organizer
+2. Click "Create Event"
+3. Fill basic details (title, date, location)
+4. Add description and cover image
+5. Create ticket types
+6. Preview event page
+7. Publish event
+
+#### 6.2 Attendee Registration
+1. Visit event page
+2. Select ticket type
+3. Enter name and email
+4. Answer custom questions (if any)
+5. Complete payment (if paid)
+6. See confirmation with QR code
+7. Receive confirmation email
+
+#### 6.3 Check-in Attendee
+1. Open check-in page on mobile
+2. Scan attendee's QR code
+3. Or search by name/email
+4. Tap to check in
+5. See confirmation
+
+### 7. Design Requirements
+
+#### Event Page Layout
+```
+┌─────────────────────────────────────────────────┐
+│  [Cover Image]                                  │
+│                                                 │
+│  Annual Tech Meetup 2025                        │
+│  📅 January 20, 2025 · 6:00 PM PST             │
+│  📍 TechHub SF · 123 Main St                   │
+│                                                 │
+│  [Register Now]                                 │
+├─────────────────────────────────────────────────┤
+│  About                                          │
+│  Join us for our annual tech meetup where...   │
+│                                                 │
+│  Speakers                                       │
+│  • John Doe - CEO @ Startup                    │
+│  • Jane Smith - CTO @ BigCorp                  │
+├─────────────────────────────────────────────────┤
+│  Tickets                                        │
+│  ┌─────────────────────────────────────────┐   │
+│  │ General Admission            FREE        │   │
+│  │ Includes entry and refreshments         │   │
+│  │ 45/100 remaining        [Select]        │   │
+│  └─────────────────────────────────────────┘   │
+│  ┌─────────────────────────────────────────┐   │
+│  │ VIP                           $50        │   │
+│  │ Front row seating + swag bag            │   │
+│  │ 8/20 remaining          [Select]        │   │
+│  └─────────────────────────────────────────┘   │
+├─────────────────────────────────────────────────┤
+│  Location                                       │
+│  [Map Embed]                                   │
+│  TechHub SF                                    │
+│  123 Main St, San Francisco, CA               │
+└─────────────────────────────────────────────────┘
+```
+
+#### Confirmation Page
+```
+┌─────────────────────────────────────────────────┐
+│                                                 │
+│  ✅ You're registered!                         │
+│                                                 │
+│  Annual Tech Meetup 2025                        │
+│  January 20, 2025 · 6:00 PM                    │
+│                                                 │
+│  [QR Code]                                     │
+│                                                 │
+│  Confirmation: ABC123                          │
+│                                                 │
+│  [Add to Calendar]  [Share]                    │
+│                                                 │
+│  We've sent a confirmation email to            │
+│  attendee@email.com                            │
+│                                                 │
+└─────────────────────────────────────────────────┘
+```
+
+### 8. QR Code & Check-in
+
+Generate unique QR codes per registration:
+
+```typescript
+import QRCode from 'qrcode.react';
+
+function TicketQRCode({ confirmationCode, eventId }) {
+  const value = `${process.env.NEXT_PUBLIC_URL}/checkin/${eventId}?code=${confirmationCode}`;
+  
+  return (
+    <QRCode
+      value={value}
+      size={200}
+      level="M"
+    />
+  );
+}
+```
+
+Check-in with html5-qrcode:
+
+```typescript
+import { Html5QrcodeScanner } from 'html5-qrcode';
+
+function CheckInScanner({ onScan }) {
+  useEffect(() => {
+    const scanner = new Html5QrcodeScanner('reader', {
+      qrbox: { width: 250, height: 250 },
+      fps: 10,
+    });
+    
+    scanner.render((decodedText) => {
+      const url = new URL(decodedText);
+      const code = url.searchParams.get('code');
+      if (code) onScan(code);
+    }, (error) => {
+      // Handle error
+    });
+    
+    return () => scanner.clear();
+  }, []);
+  
+  return <div id="reader" />;
+}
+```
+
+### 9. Calendar Invite Generation
+
+```typescript
+import { createEvent } from 'ics';
+
+async function generateCalendarInvite(event: Event, registration: Registration) {
+  const { value, error } = createEvent({
+    title: event.title,
+    description: event.description,
+    start: dateToArray(event.start_date),
+    end: event.end_date ? dateToArray(event.end_date) : undefined,
+    location: event.venue_address || event.virtual_url,
+    url: `${process.env.NEXT_PUBLIC_URL}/events/${event.slug}`,
+    organizer: { name: event.organizer.name },
+    attendees: [{ name: registration.name, email: registration.email }],
+  });
+  
+  return value;
+}
+```
+
+### 10. Non-Functional Requirements
+
+- Event page loads in < 2 seconds
+- Registration completes in < 30 seconds
+- Check-in < 3 seconds per person
+- Support 1000+ attendees per event
+
+### 11. Out of Scope (V1)
+
+- Multi-day events with sessions
+- Speaker/agenda management
+- Networking features
+- Mobile app
+- Badge printing
+- Seating charts
+- Waitlist management
+- Multi-organizer events
+
+### 12. Success Criteria
+
+- Event created in < 10 minutes
+- Attendee registers in < 2 minutes
+- Check-in under 5 seconds
+
+### 13. Timeline
+
+**Medium Demo Build**: 1-2 days (12-16 hours)
+- Hours 1-2: Auth + Organizer setup
+- Hours 3-5: Event creation + tickets
+- Hours 6-8: Public event page
+- Hours 9-10: Registration flow
+- Hours 11-12: Confirmation + email
+- Hours 13-14: Attendee management
+- Hours 15-16: Check-in + polish
+
+

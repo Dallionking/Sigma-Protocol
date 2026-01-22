@@ -1,12 +1,13 @@
 ---
-version: "2.1.1"
-last_updated: "2025-12-21"
+version: "3.0.0"
+last_updated: "2026-01-11"
 changelog:
+  - "3.0.0: MAJOR - Added multi-browser-engine routing (Cursor browser, Playwright MCP, Claude browser). Supports Ralph-mode acceptance criteria verification."
   - "2.1.1: Added layout width + surface layering checks (ban container mx-auto for app shells; flag low-contrast card surfaces) to prevent narrow/flat dashboards"
   - "2.1.0: Added UI Profile compliance grading (reads UI-PROFILE.md + ui-profile.json) and toy-pattern thresholds for professional profiles"
   - "2.0.0: Updated for 13-step workflow, wireframe prototype references"
   - "1.0.0: Initial release"
-description: "Comprehensive UI testing, healing, and conversion optimization - browser testing, accessibility, responsive design, Hormozi principles enforcement"
+description: "Comprehensive UI testing, healing, and conversion optimization - multi-engine browser testing (Cursor/Playwright/Claude), accessibility, responsive design, Hormozi principles enforcement"
 allowed-tools:
   # PRIMARY MCP Tools (Use First)
   - mcp_Ref_ref_search_documentation
@@ -19,11 +20,23 @@ allowed-tools:
   - mcp_exa_deep_researcher_start
   - mcp_exa_deep_researcher_check
   
-  # ALWAYS ACTIVE (Specialized)
+  # BROWSER TOOLS - CURSOR IDE (Primary for Cursor users)
   - mcp_cursor-ide-browser_browser_navigate
   - mcp_cursor-ide-browser_browser_snapshot
   - mcp_cursor-ide-browser_browser_click
   - mcp_cursor-ide-browser_browser_take_screenshot
+  - mcp_cursor-ide-browser_browser_type
+  - mcp_cursor-ide-browser_browser_hover
+  - mcp_cursor-ide-browser_browser_wait_for
+  
+  # BROWSER TOOLS - PLAYWRIGHT MCP (For Claude Code / OpenCode with Playwright)
+  - mcp_playwright_browser_navigate
+  - mcp_playwright_browser_snapshot
+  - mcp_playwright_browser_click
+  - mcp_playwright_browser_screenshot
+  - mcp_playwright_browser_type
+  
+  # UI TOOLS
   - mcp_21st-devmagic_21st_magic_component_refiner
   
   # BACKUP MCP Tools (Use only if primary fails)
@@ -39,6 +52,8 @@ parameters:
   - --url
   - --fix-auto
   - --screenshots-only
+  - --browser-engine
+  - --ralph-mode
 ---
 
 # UI Healer — Comprehensive UI Testing + Conversion Optimization
@@ -57,6 +72,126 @@ This command runs complete UI testing AND conversion optimization in one compreh
 
 ---
 
+## Browser Engine Routing (v3.0 NEW)
+
+**UI Healer now supports multiple browser testing engines. It auto-detects which is available:**
+
+| Engine | Environment | Detection | Priority |
+|--------|-------------|-----------|----------|
+| **Cursor Browser** | Cursor IDE | `mcp_cursor-ide-browser_*` tools available | 1 (highest) |
+| **Playwright MCP** | Claude Code / OpenCode with Playwright | `mcp_playwright_*` tools available | 2 |
+| **Claude Browser** | Claude Code native browser | Built-in browser tools | 3 |
+| **Manual** | Fallback | No browser tools available | 4 (lowest) |
+
+### Auto-Detection Logic
+
+```typescript
+interface BrowserEngineConfig {
+  engine: 'cursor' | 'playwright' | 'claude-browser' | 'manual';
+  available: boolean;
+  toolPrefix: string;
+}
+
+function detectBrowserEngine(): BrowserEngineConfig {
+  // Priority 1: Cursor IDE browser agent (most capable)
+  if (toolExists('mcp_cursor-ide-browser_browser_navigate')) {
+    return {
+      engine: 'cursor',
+      available: true,
+      toolPrefix: 'mcp_cursor-ide-browser_browser_',
+    };
+  }
+  
+  // Priority 2: Playwright MCP (Claude Code / OpenCode)
+  if (toolExists('mcp_playwright_browser_navigate')) {
+    return {
+      engine: 'playwright',
+      available: true,
+      toolPrefix: 'mcp_playwright_browser_',
+    };
+  }
+  
+  // Priority 3: Claude native browser (when running in Claude Code)
+  // Detected by environment variable or agent context
+  if (process.env.CLAUDE_CODE === 'true' || agentHasWebBrowsing()) {
+    return {
+      engine: 'claude-browser',
+      available: true,
+      toolPrefix: 'web_browse_',
+    };
+  }
+  
+  // Fallback: Manual testing required
+  return {
+    engine: 'manual',
+    available: false,
+    toolPrefix: '',
+  };
+}
+```
+
+### Engine-Specific Operations
+
+| Operation | Cursor Browser | Playwright MCP | Claude Browser | Manual |
+|-----------|---------------|----------------|----------------|--------|
+| Navigate | `browser_navigate` | `browser_navigate` | Web browse | User visits URL |
+| Screenshot | `browser_take_screenshot` | `browser_screenshot` | N/A | User takes screenshot |
+| Click | `browser_click` | `browser_click` | N/A | User clicks |
+| Type | `browser_type` | `browser_type` | N/A | User types |
+| Snapshot | `browser_snapshot` | `browser_snapshot` | N/A | User describes |
+| Wait | `browser_wait_for` | `browser_wait_for` | N/A | User waits |
+
+### Ralph-Mode Integration
+
+When `--ralph-mode=true`, UI Healer is invoked by the Ralph loop to verify acceptance criteria:
+
+```typescript
+interface RalphUIValidation {
+  mode: 'cursor-browser' | 'playwright' | 'claude-browser' | 'any' | 'manual';
+  route: string;
+  checks: RalphUICheck[];
+  screenshotOnFailure: boolean;
+}
+
+interface RalphUICheck {
+  type: 'visual-regression' | 'accessibility' | 'responsive' | 
+        'interaction' | 'content-exists' | 'hormozi-conversion';
+  selector?: string;
+  expectedText?: string;
+  viewport?: 'mobile' | 'tablet' | 'desktop';
+  action?: 'click' | 'type' | 'hover' | 'scroll';
+  actionTarget?: string;
+  actionValue?: string;
+}
+
+// Usage from Ralph backlog acceptance criteria:
+// {
+//   "type": "ui-validation",
+//   "uiValidation": {
+//     "mode": "any",  // Use whatever browser engine is available
+//     "route": "/dashboard",
+//     "checks": [
+//       { "type": "content-exists", "expectedText": "Dashboard" },
+//       { "type": "accessibility" }
+//     ]
+//   }
+// }
+```
+
+### Override Browser Engine
+
+Force a specific engine (useful for CI or testing):
+
+```bash
+# Force Playwright (even if Cursor browser available)
+/ui-healer --browser-engine=playwright
+
+# Force manual mode (skip automated browser testing)
+/ui-healer --browser-engine=manual
+```
+
+---
+
 ## Parameters
 
 ```bash
@@ -71,6 +206,8 @@ This command runs complete UI testing AND conversion optimization in one compreh
 --heal                          # Apply automatic fixes (default: true)
 --mode=single/watch/ci          # Execution mode (default: single)
 --report                        # Generate detailed report (default: true)
+--browser-engine=auto           # Browser engine: auto, cursor, playwright, claude-browser, manual
+--ralph-mode=false              # Ralph loop integration mode (verifies acceptance criteria)
 ```
 
 ---
@@ -336,10 +473,60 @@ Your testing approach covers:
 
 ### 1.1 Browser Compatibility Testing
 
-**Use Cursor's Browser Agent** (not Playwright MCP):
+**Use the detected browser engine (auto-detects Cursor, Playwright, or Claude browser):**
 
 ```typescript
-// Browser testing using Cursor's built-in browser
+// Unified browser testing interface (works with any engine)
+const browserEngine = detectBrowserEngine();
+
+async function navigateTo(url: string): Promise<void> {
+  switch (browserEngine.engine) {
+    case 'cursor':
+      await mcp_cursor_ide_browser_browser_navigate({ url });
+      break;
+    case 'playwright':
+      await mcp_playwright_browser_navigate({ url });
+      break;
+    case 'claude-browser':
+      await web_browse({ url });
+      break;
+    case 'manual':
+      console.log(`MANUAL: Please navigate to ${url} and describe what you see.`);
+      break;
+  }
+}
+
+async function takeScreenshot(options?: { element?: string; fullPage?: boolean }): Promise<string> {
+  switch (browserEngine.engine) {
+    case 'cursor':
+      return await mcp_cursor_ide_browser_browser_take_screenshot(options);
+    case 'playwright':
+      return await mcp_playwright_browser_screenshot(options);
+    case 'claude-browser':
+      console.log('CLAUDE-BROWSER: Screenshot not available, using page snapshot instead.');
+      return 'snapshot';
+    case 'manual':
+      console.log('MANUAL: Please take a screenshot and describe key elements.');
+      return 'manual';
+  }
+}
+
+async function getPageSnapshot(): Promise<string> {
+  switch (browserEngine.engine) {
+    case 'cursor':
+      return await mcp_cursor_ide_browser_browser_snapshot();
+    case 'playwright':
+      return await mcp_playwright_browser_snapshot();
+    case 'claude-browser':
+      // Claude browser returns page content directly
+      return 'Page content from Claude browser';
+    case 'manual':
+      console.log('MANUAL: Please describe the page structure and key elements.');
+      return 'manual';
+  }
+}
+
+// Browser testing result interface
 interface BrowserTestResult {
   browser: string;
   page: string;

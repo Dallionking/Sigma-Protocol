@@ -1,0 +1,123 @@
+{
+  "$schema": "../../../schemas/modules-manifest.schema.json",
+  "template": "expo-mobile",
+  "platform": "mobile",
+  "framework": "expo",
+  "modules": {
+    "mobileOnboarding": {
+      "enabled": true,
+      "files": [
+        "app/(onboarding)/index.tsx",
+        "app/(onboarding)/welcome.tsx",
+        "app/(onboarding)/value-props.tsx",
+        "app/(onboarding)/permissions.tsx",
+        "app/(onboarding)/_layout.tsx",
+        "modules/onboarding/"
+      ],
+      "navItems": [],
+      "envVars": []
+    },
+    "auth": {
+      "enabled": true,
+      "files": [
+        "app/(auth)/login.tsx",
+        "app/(auth)/signup.tsx",
+        "app/(auth)/forgot-password.tsx",
+        "app/(auth)/_layout.tsx",
+        "modules/auth/",
+        "hooks/use-auth.ts",
+        "lib/supabase/"
+      ],
+      "navItems": [],
+      "envVars": [
+        "EXPO_PUBLIC_SUPABASE_URL",
+        "EXPO_PUBLIC_SUPABASE_ANON_KEY"
+      ]
+    },
+    "dashboard": {
+      "enabled": true,
+      "files": [
+        "app/(tabs)/index.tsx",
+        "app/(tabs)/_layout.tsx",
+        "modules/dashboard/"
+      ],
+      "navItems": [
+        { "label": "Home", "icon": "home", "location": "tabs" }
+      ],
+      "envVars": []
+    },
+    "settings": {
+      "enabled": true,
+      "files": [
+        "app/(tabs)/settings/index.tsx",
+        "app/(tabs)/settings/profile.tsx",
+        "app/(tabs)/settings/_layout.tsx",
+        "modules/settings/"
+      ],
+      "navItems": [
+        { "label": "Settings", "icon": "settings", "location": "tabs" }
+      ],
+      "envVars": []
+    },
+    "purchases": {
+      "enabled": true,
+      "files": [
+        "app/(tabs)/purchases/index.tsx",
+        "app/(tabs)/purchases/plans.tsx",
+        "app/(tabs)/purchases/_layout.tsx",
+        "modules/purchases/",
+        "hooks/use-purchases.ts",
+        "lib/revenuecat/"
+      ],
+      "navItems": [
+        { "label": "Premium", "icon": "star", "location": "tabs" }
+      ],
+      "envVars": [
+        "REVENUECAT_API_KEY"
+      ]
+    },
+    "aiChat": {
+      "enabled": false,
+      "files": [
+        "app/(tabs)/chat/index.tsx",
+        "app/(tabs)/chat/[conversationId].tsx",
+        "app/(tabs)/chat/_layout.tsx",
+        "modules/ai-chat/",
+        "hooks/use-chat.ts"
+      ],
+      "navItems": [
+        { "label": "Chat", "icon": "message-square", "location": "tabs" }
+      ],
+      "envVars": [
+        "OPENAI_API_KEY"
+      ]
+    },
+    "notifications": {
+      "enabled": false,
+      "files": [
+        "app/(tabs)/notifications/index.tsx",
+        "modules/notifications/",
+        "hooks/use-notifications.ts"
+      ],
+      "navItems": [
+        { "label": "Notifications", "icon": "bell", "location": "tabs" }
+      ],
+      "envVars": []
+    },
+    "errorStates": {
+      "enabled": true,
+      "files": [
+        "app/+not-found.tsx",
+        "components/error-states/"
+      ],
+      "navItems": [],
+      "envVars": []
+    }
+  },
+  "tabsConfig": {
+    "maxTabs": 5,
+    "defaultTabs": ["dashboard", "purchases", "settings"],
+    "optionalTabs": ["aiChat", "notifications"]
+  }
+}
+

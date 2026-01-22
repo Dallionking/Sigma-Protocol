@@ -1,0 +1,22 @@
+{
+  "$schema": "../../../schemas/boilerplate-provenance.schema.json",
+  "template": "expo-mobile",
+  "template_version": "1.0.0",
+  "origin_repo": "your-org/sss-expo-starter",
+  "created_at": "2025-12-20",
+  "project_name": "{{PROJECT_NAME}}",
+  "features": {
+    "auth": "supabase",
+    "payments": "revenuecat",
+    "database": "supabase",
+    "analytics": "posthog",
+    "push_notifications": "expo-notifications"
+  },
+  "commands_version": "2.0.0",
+  "customizations": {
+    "setup_completed_at": null,
+    "branded": false,
+    "theme_applied": null
+  }
+}
+

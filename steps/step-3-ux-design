@@ -1,7 +1,9 @@
 ---
-version: "2.2.0"
-last_updated: "2026-01-01"
+version: "2.4.0"
+last_updated: "2026-01-07"
 changelog:
+  - "2.4.0: Added Superdesign AI Design Agent reference for rapid UI exploration during UX design. References superdesign-integration.md foundation skill"
+  - "2.3.0: Added Data Flow Awareness to Phase B (User Journey Mapping) - documents data requirements per screen to bridge UX to backend"
   - "2.2.0: Added Apple HIG Native (SwiftUI) UI Profile option with SwiftUI-specific ui-profile.json, Framework 4b HIG reference"
   - "2.1.1: Added optional layout constraints to ui-profile.json (content max widths, responsive padding, sidebar widths, grid gutters) to prevent narrow centered app UIs"
   - "2.1.0: Added UI Profile selection (Cool Professional + Satin Dark) with UI-PROFILE artifacts; refined anti-AI-slop guidance to be restraint-first for professional profiles"
@@ -1119,7 +1121,52 @@ When creating the Design System (Step 6):
    - Drop-off points and friction analysis
    - Conversion optimization opportunities
 
-**HITL checkpoint →** Present user journeys with state coverage.  
+4) **Data Flow Awareness (NEW — Bridges UX to Backend)**:
+   
+   For each journey step, document the data requirements:
+
+   ```markdown
+   ### Journey: [Journey Name] — Data Flow
+   
+   | Step | Screen | Data Needed (READ) | Operations (WRITE) | Real-Time? |
+   |------|--------|-------------------|-------------------|------------|
+   | 1 | Login | None | Create session | No |
+   | 2 | Dashboard | User profile, Activity list | None | Yes - activity |
+   | 3 | Create Item | Categories, Templates | Create item | No |
+   | 4 | Success | Created item details | None | No |
+   ```
+
+   **For each screen, answer:**
+   - **What data must be displayed?** (entities, fields, relationships)
+   - **What can the user modify?** (forms, inline edits)
+   - **What validation is needed?** (client-side, server-side)
+   - **What triggers a mutation?** (button clicks, form submits)
+   - **Does it need real-time updates?** (WebSocket, polling)
+
+   **Data Flow Summary:**
+   ```markdown
+   ## Data Flow Summary for [Journey Name]
+   
+   ### Entities Touched
+   - [Entity 1]: READ at steps [X, Y], WRITE at step [Z]
+   - [Entity 2]: READ at steps [A], no writes
+   
+   ### Real-Time Requirements
+   - [Screen X]: Live updates needed for [data type]
+   - [Screen Y]: No real-time requirements
+   
+   ### Validation Points
+   - [Form 1]: Email format, password strength
+   - [Form 2]: Required fields, unique constraint
+   ```
+
+   **Why This Matters:**
+   - This data flows directly into Step 5's Backend Data Operations
+   - Prevents designing screens that need data that doesn't exist
+   - Ensures backend team knows what to build before UI is complete
+   - Makes Step 11 PRDs accurate from day one
+
+**HITL checkpoint →** Present user journeys with state coverage and data flow.  
 **Prompt:** "Approve user journeys? Reply `approve journeys` or `revise: …`."
 
 ---
@@ -1229,6 +1276,63 @@ When creating the Design System (Step 6):
 ---
 
 ## Phase G — Conversion Optimization
+
+### 0) Persuasion Layer Cues (Cialdini + NESB Integration)
+
+**Visual implementations of persuasion psychology throughout UX:**
+
+#### Commitment Micro-Interactions (Small Yes → Big Yes)
+
+Design progressive commitment into your conversion flows:
+
+| Step | Commitment Level | UX Implementation |
+|------|------------------|-------------------|
+| 1 | Micro | Scroll past hero, hover on CTA |
+| 2 | Small | Click CTA button (opens modal/form) |
+| 3 | Medium | Enter email only (2-step opt-in) |
+| 4 | Medium | Answer preference question |
+| 5 | Large | Complete full form / Start trial |
+
+**Design Patterns:**
+- [ ] **2-Step Opt-In**: CTA opens modal → then form (25-40% higher conversion)
+- [ ] **Quiz/Survey Start**: Low-friction entry → builds commitment
+- [ ] **Progress Indicators**: Show progress to create completion bias
+- [ ] **Checkbox Confirmation**: "Yes, I want [benefit]" before submit
+
+#### Trust Signal Placement (Authority + Social Proof)
+
+| Signal Type | Placement | Purpose |
+|-------------|-----------|---------|
+| **User Count** | Hero section, near primary CTA | Social proof at decision point |
+| **Star Ratings** | Hero section, pricing cards | Authority + social proof |
+| **Testimonials** | After each major section | Reinforce benefits with proof |
+| **Logos (As Seen In)** | Below hero, footer | Authority transfer |
+| **Security Badges** | Forms, checkout, footer | Risk reversal / SAFE trigger |
+| **Guarantees** | Pricing section, CTAs | Risk reversal / SAFE trigger |
+| **Real-Time Activity** | Floating notification | Social proof + urgency |
+
+**Placement Rule:** Trust signals should appear within 100px of every CTA.
+
+#### NESB Visual Cues
+
+| Trigger | UX Implementation |
+|---------|-------------------|
+| **NEW** | "New" badges, "Just launched" labels, mechanism diagrams |
+| **EASY** | Step counters ("3 simple steps"), time estimates ("15 min setup") |
+| **SAFE** | Guarantee badges, security icons, "Risk-free" labels, testimonials |
+| **BIG** | Large outcome numbers, progress visualizations, transformation imagery |
+
+#### Five Drivers in UX
+
+| Driver | UX Implementation |
+|--------|-------------------|
+| **Encourage Dreams** | Success state celebrations, achievement animations, future-state imagery |
+| **Justify Failures** | Onboarding copy: "If you've struggled with X, it wasn't your fault" |
+| **Allay Fears** | Inline reassurances, FAQ tooltips, guarantee prominence |
+| **Confirm Suspicions** | Comparison tables showing "what they told you" vs "reality" |
+| **Throw Rocks at Enemies** | "Unlike [old way]" messaging, competitor comparison |
+
+---
 
 ### 1) Outcome-Based CTA Design (Hormozi Method)
 **Primary Formula**: [Action Verb] + [Specific Outcome] + [Timeframe if true]

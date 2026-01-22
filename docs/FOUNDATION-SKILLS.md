@@ -1,6 +1,6 @@
 # Foundation Skills Reference
 
-SSS Protocol includes **24 pre-bundled Foundation Skills** that provide universal AI capabilities across all supported platforms.
+Sigma Protocol includes **39 pre-bundled Foundation Skills** that provide universal AI capabilities across all supported platforms.
 
 ---
 
@@ -28,7 +28,7 @@ Skills are installed as `.mdc` rules with glob/keyword auto-triggers:
 .cursor/rules/sss-*.mdc
 
 # Install command
-npx sss-protocol install-skills --platform cursor
+npx sigma-protocol install-skills --platform cursor
 ```
 
 ### Claude Code
@@ -40,7 +40,7 @@ Skills are installed as `SKILL.md` directories:
 .claude/skills/{skill-name}/SKILL.md
 
 # Install command
-npx sss-protocol install-skills --platform claude-code
+npx sigma-protocol install-skills --platform claude-code
 ```
 
 ### OpenCode
@@ -52,7 +52,7 @@ Skills are installed as `SKILL.md` directories:
 .opencode/skill/{skill-name}/SKILL.md
 
 # Install command
-npx sss-protocol install-skills --platform opencode
+npx sigma-protocol install-skills --platform opencode
 ```
 
 ---
@@ -115,16 +115,77 @@ Documents, presentations, and productivity tools.
 
 ---
 
-### Platform Tools (4 skills)
+### Platform Tools (5 skills)
 
 Create custom skills and agents for each platform.
 
-| Skill                         | Description               | Platform    | Auto-Triggers               |
-| ----------------------------- | ------------------------- | ----------- | --------------------------- |
-| **skill-creator**             | Create Claude Code skills | Claude Code | create skill, new skill     |
-| **agent-development**         | Create Claude Code agents | Claude Code | create agent, agent design  |
-| **opencode-agent-generator**  | Create OpenCode agents    | OpenCode    | opencode agent, swarm agent |
-| **creating-opencode-plugins** | Create OpenCode plugins   | OpenCode    | opencode plugin, event hook |
+| Skill | Description | Platform | Auto-Triggers |
+|-------|-------------|----------|---------------|
+| **skill-creator** | Create Claude Code skills | Claude Code | create skill, new skill |
+| **agent-development** | Create Claude Code agents | Claude Code | create agent, agent design |
+| **opencode-agent-generator** | Create OpenCode agents | OpenCode | opencode agent, swarm agent |
+| **creating-opencode-plugins** | Create OpenCode plugins | OpenCode | opencode plugin, event hook |
+| **agentic-coding** | AI-assisted coding patterns | All | agentic, ai coding, copilot |
+
+---
+
+### Content & Marketing (4 skills)
+
+Brand voice and content creation.
+
+| Skill | Description | Auto-Triggers | Used In Steps |
+|-------|-------------|---------------|---------------|
+| **brand-voice** | Define, extract, apply consistent brand voice | brand, voice, tone | Marketing |
+| **content-atomizer** | Transform pillar content into platform formats | atomize, repurpose, content | Marketing |
+| **direct-response-copy** | Conversion-focused copywriting frameworks | copy, conversion, sales | Marketing, Landing |
+| **video-hooks** | Video hook and script patterns | hook, video, script | Marketing |
+
+---
+
+### Document Generation (2 skills)
+
+Create and manipulate office documents.
+
+| Skill | Description | Auto-Triggers | Used In Steps |
+|-------|-------------|---------------|---------------|
+| **docx-generation** | Create Word documents programmatically | word, docx, document | Handoff |
+| **pdf-manipulation** | Generate, merge, split, extract PDFs | pdf, merge, split | Handoff |
+
+---
+
+### Browser & Verification (1 skill)
+
+Browser testing and UI verification.
+
+| Skill | Description | Auto-Triggers | Used In Steps |
+|-------|-------------|---------------|---------------|
+| **browser-verification** | Platform-adaptive browser testing | browser, test, verify ui | UI-Healer |
+
+---
+
+### Multi-Agent (2 skills)
+
+Orchestration and parallel execution.
+
+| Skill | Description | Auto-Triggers | Used In Steps |
+|-------|-------------|---------------|---------------|
+| **fork-worker** | PRD implementation specialist | fork, worker, implement | Orchestration |
+| **orchestrator-admin** | Multi-agent coordination | orchestrate, coordinate | Orchestration |
+
+---
+
+### Additional Skills (6 skills)
+
+Extended capabilities.
+
+| Skill | Description | Auto-Triggers | Used In Steps |
+|-------|-------------|---------------|---------------|
+| **memory-systems** | Persistent context and recall | memory, context, recall | All |
+| **react-performance** | React optimization patterns | react, performance, memo | Implementation |
+| **monorepo-architecture** | Monorepo setup and patterns | monorepo, turborepo, nx | Architecture |
+| **superdesign-integration** | Superdesign AI integration | superdesign, design ai | Design |
+| **specialized-validation** | Domain-specific validation | validate, schema | All |
+| **web-artifacts-builder** | Complex multi-component UIs | dashboard, complex ui | Implementation |
 
 ---
 
@@ -133,31 +194,46 @@ Create custom skills and agents for each platform.
 ### Source Files (Platform-Agnostic)
 
 ```
-src/foundation-skills/
-├── research.md
+src/skills/                          # 39 total
+├── research.md                      # Sigma Core
 ├── verification.md
 ├── bdd-scenarios.md
 ├── hormozi-frameworks.md
 ├── output-generation.md
 ├── frontend-design.md
-├── brainstorming.md
+├── brainstorming.md                 # Quality
 ├── systematic-debugging.md
-├── architecture-patterns.md
-├── api-design-principles.md
-├── prompt-engineering-patterns.md
 ├── quality-gates.md
-├── ux-designer.md
 ├── senior-qa.md
 ├── senior-architect.md
+├── specialized-validation.md
+├── architecture-patterns.md         # Design & Dev
+├── api-design-principles.md
+├── ux-designer.md
+├── web-artifacts-builder.md
+├── react-performance.md
+├── monorepo-architecture.md
+├── superdesign-integration.md
+├── prompt-engineering-patterns.md   # Productivity
 ├── xlsx.md
 ├── pptx.md
 ├── applying-brand-guidelines.md
-├── web-artifacts-builder.md
 ├── remembering-conversations.md
-├── skill-creator.md
+├── memory-systems.md
+├── skill-creator.md                 # Platform Tools
 ├── agent-development.md
 ├── opencode-agent-generator.md
-└── creating-opencode-plugins.md
+├── creating-opencode-plugins.md
+├── agentic-coding.md
+├── brand-voice.md                   # Content & Marketing
+├── content-atomizer.md
+├── direct-response-copy.md
+├── video-hooks.md
+├── docx-generation.md               # Document Generation
+├── pdf-manipulation.md
+├── browser-verification.md          # Browser & Verification
+├── fork-worker.md                   # Multi-Agent
+└── orchestrator-admin.md
 ```
 
 ### Platform-Specific Distributions
@@ -165,11 +241,11 @@ src/foundation-skills/
 ```
 platforms/
 ├── cursor/rules/
-│   └── sss-*.mdc           # 24 .mdc rules with globs/keywords
+│   └── sss-*.mdc           # 39 .mdc rules with globs/keywords
 ├── claude-code/skills/
-│   └── */SKILL.md          # 24 skill directories
+│   └── */SKILL.md          # 39 skill directories
 └── opencode/skill/
-    └── */SKILL.md          # 24 skill directories
+    └── */SKILL.md          # 39 skill directories
 ```
 
 ---
@@ -228,7 +304,7 @@ Create new skills following the same patterns:
 
 ## Relationship with Step 13
 
-**Step 0** installs these 24 Foundation Skills (universal).
+**Step 0** installs these 39 Foundation Skills (universal).
 
 **Step 13** (Skillpack Generator) creates **project-specific overlay skills**:
 

@@ -1,0 +1,44 @@
+{
+  "version": "1.0.0",
+  "command": "@gap-analysis",
+  "timestamp": "2026-01-21T14:55:00Z",
+  "tier": 2,
+  "spec": "Ralph Loop Tool-Level Observability Plan",
+  "confidence": {
+    "gapScore": 100,
+    "evidenceScore": 100,
+    "passed": true
+  },
+  "gaps": {
+    "critical": 0,
+    "criticalFixed": 0,
+    "high": 0,
+    "highFixed": 0,
+    "medium": 1,
+    "mediumFixed": 1,
+    "low": 0,
+    "lowFixed": 0
+  },
+  "evidence": [
+    {
+      "id": 1,
+      "claim": "Claude CLI uses nested JSON structure for tool_use",
+      "source": "Implementation testing",
+      "verified": true
+    },
+    {
+      "id": 2,
+      "claim": "--verbose required for stream-json",
+      "source": "Plan document",
+      "verified": true
+    }
+  ],
+  "uncertainties": {
+    "critical": [],
+    "nonCritical": ["Full integration test with live Claude CLI not performed"]
+  },
+  "filesModified": [
+    "scripts/ralph/activity-filter.sh",
+    "scripts/ralph/sigma-ralph.sh"
+  ]
+}

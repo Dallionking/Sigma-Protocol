@@ -1,7 +1,8 @@
 ---
-version: "2.3.0"
-last_updated: "2026-01-01"
+version: "2.4.0"
+last_updated: "2026-01-07"
 changelog:
+  - "2.4.0: Added Phase 0 - Import Step 1 Decisions (monorepo/polyrepo awareness, platform-specific architecture)"
   - "2.3.0: Added SwiftUI Architecture Patterns section (MVVM, TCA, @Observable) with state management reference"
   - "2.2.0: Added Boilerplate Selection Matrix (Phase C.0) for SSS boilerplate workflow"
   - "2.1.0: Added TanStack Start as web framework option, expanded framework decision guide, added icon library and styling options"
@@ -522,6 +523,65 @@ ADR GATE
 
 ---
 
+## Phase 0 — Import Step 1 Decisions (NEW)
+
+**Goal:** Acknowledge repo structure and platform decisions from Step 1 before designing architecture.
+
+### Import from Step 1
+
+```bash
+# Check Step 1 outputs
+cat /docs/specs/MASTER_PRD.md | grep -A 20 "Project Scope"
+```
+
+### Repo Structure Acknowledgment
+
+| Step 1 Decision | Architecture Implication |
+|-----------------|-------------------------|
+| **Single Repo** | Standard Next.js or Expo structure |
+| **Monorepo (Turborepo)** | `apps/` + `packages/` structure, shared types/UI |
+| **Monorepo (Nx)** | Nx workspace structure with libs |
+| **Polyrepo** | Separate repos, npm package sharing |
+
+### If Monorepo Selected:
+
+The architecture diagram MUST include:
+
+```mermaid
+graph TB
+    subgraph "Monorepo Structure"
+        subgraph "apps/"
+            Web[apps/web - Next.js]
+            Mobile[apps/mobile - Expo]
+            Admin[apps/admin - Optional]
+        end
+        subgraph "packages/"
+            UI[packages/ui - Shared Components]
+            API[packages/api - Types & Client]
+            Utils[packages/utils - Utilities]
+        end
+    end
+    
+    Web --> UI
+    Web --> API
+    Mobile --> UI
+    Mobile --> API
+    Admin --> UI
+```
+
+### Platform-Specific Architecture
+
+| Platform | Architecture Considerations |
+|----------|---------------------------|
+| **Web only** | Standard Next.js App Router, server components |
+| **Mobile only** | Expo Router, native modules |
+| **Web + Mobile (same features)** | Shared backend, shared types, platform-specific UI |
+| **Web + Mobile (companion)** | Web has full features, mobile subset |
+
+**Document in architecture:** Which packages are shared, which are platform-specific.
+
+---
+
 ## Phase A — Tech Stack Research (current-year aware)
 **Goal:** Ground architecture decisions in current best practices, performance benchmarks, and proven patterns.
 
@@ -580,7 +640,7 @@ Check for existing boilerplate provenance:
 
 ```bash
 # If this file exists, you're on a boilerplate
-cat .sss/boilerplate.json
+cat .sigma/boilerplate.json
 ```
 
 **If boilerplate detected:**

@@ -1,0 +1,72 @@
+{
+  "accounts": [
+    {
+      "id": "sss-protocol",
+      "name": "SSS Protocol Promotion",
+      "enabled": true,
+      "product": {
+        "name": "SSS Protocol",
+        "tagline": "FAANG-style AI development workflow for everyone",
+        "description": "A structured approach to AI-assisted development that replicates enterprise-level planning processes",
+        "githubUrl": "https://github.com/dallionking/sss-protocol",
+        "creator": "Dallion King",
+        "features": [
+          "BDD-first approach with structured scenarios",
+          "Reusable skills system for AI agents",
+          "Interactive CLI tutorial",
+          "Marketing command team with expert frameworks"
+        ]
+      },
+      "settings": {
+        "maxRepliesPerDay": 100,
+        "minIntervalMinutes": 5,
+        "toneWeights": {
+          "educational": 0.30,
+          "relatable": 0.25,
+          "valueFirst": 0.30,
+          "direct": 0.15
+        }
+      },
+      "keywords": [
+        "AI coding",
+        "agentic coding", 
+        "Claude Code",
+        "Cursor AI",
+        "AI workflow",
+        "vibe coding",
+        "AI development",
+        "OpenCode",
+        "AI agent",
+        "code generation",
+        "AI pair programming",
+        "software engineering AI",
+        "LLM coding",
+        "AI developer",
+        "cursor tips",
+        "claude tips"
+      ],
+      "excludeKeywords": [
+        "crypto",
+        "NFT",
+        "web3",
+        "blockchain",
+        "token"
+      ],
+      "targetAccounts": [
+        "IndyDevDan",
+        "AmanSanger",
+        "kaboris",
+        "karpathy"
+      ]
+    }
+  ],
+  "globalSettings": {
+    "schedulerIntervalMinutes": 5,
+    "globalDailyLimit": 300,
+    "avoidReplyingToSameUserWithinHours": 24,
+    "prioritizeRecentTweets": true,
+    "maxTweetAgeHours": 6
+  }
+}
+
+

@@ -2,12 +2,12 @@
 version: "3.1.0"
 last_updated: "2026-01-05"
 changelog:
-  - "3.1.0: Added Step 11.5 (PRD Swarm) conditional detection and swarm status display"
+  - "3.1.0: Added Step 11b (PRD Swarm) conditional detection and swarm status display"
   - "3.0.0: Added Epistemic Confidence tracking - parses confidence artifacts, shows warnings, and displays validation tasks"
   - "2.1.0: Added Step 1.5 (conditional), bulletproof gate checks, transition map back-compat"
   - "2.0.0: Updated for 13-step workflow (Steps 0-12)"
   - "1.0.0: Initial release for 10-step workflow"
-description: "Display SSS workflow progress - quick status check for all steps (0-12 including 1.5 and 11.5), PRDs, swarms, and Epistemic Confidence"
+description: "Display SSS workflow progress - quick status check for all steps (0-12 including 1.5 and 11b), PRDs, swarms, and Epistemic Confidence"
 allowed-tools:
   - read_file
   - list_dir
@@ -28,7 +28,7 @@ Quickly answer:
 - Which SSS steps are complete?
 - Which steps are in progress or missing?
 - Is Step 1.5 (Offer Architecture) needed and complete?
-- Is Step 11.5 (PRD Swarm) needed and complete?
+- Is Step 11b (PRD Swarm) needed and complete?
 - Are bulletproof gates (traceability, zero-omission, wireframe tracker) in place?
 - How many PRDs exist and their status?
 - Are PRDs organized into swarms for parallel implementation?
@@ -181,7 +181,7 @@ const sssSteps = [
     optional: false,
   },
   {
-    step: '11.5',
+    step: '11b',
     name: 'PRD Swarm',
     required: 'conditional', // Required only when 5+ PRDs exist
     checkPaths: ['docs/prds/SWARM-PLAN.md', 'docs/prds/swarm-1/'],
@@ -197,7 +197,7 @@ const sssSteps = [
   },
 ];
 
-// Multiple PRD detection for Step 11.5 conditional logic
+// Multiple PRD detection for Step 11b conditional logic
 async function hasMultiplePRDs(): Promise<boolean> {
   const prdFiles = await glob('docs/prds/F*.md');
   const flowPrds = await glob('docs/prds/flows/**/F*.md');
@@ -381,9 +381,9 @@ async function checkEpistemicStatus(): Promise<EpistemicStatus> {
   };
   
   // Check for confidence artifacts
-  const artifactDir = '.sss/confidence';
+  const artifactDir = '.sigma/confidence';
   if (await checkExists(artifactDir)) {
-    const artifacts = await glob('.sss/confidence/*.json');
+    const artifacts = await glob('.sigma/confidence/*.json');
     result.hasArtifacts = artifacts.length > 0;
     
     // Get most recent artifacts (within 24 hours)
@@ -406,7 +406,7 @@ async function checkEpistemicStatus(): Promise<EpistemicStatus> {
   }
   
   // Check for critical uncertainties in recent artifacts
-  const artifacts = await glob('.sss/confidence/*.json');
+  const artifacts = await glob('.sigma/confidence/*.json');
   for (const artifactPath of artifacts.slice(-5)) {
     const artifact = await readJSON(artifactPath);
     if (artifact.uncertainties?.critical?.length > 0) {
@@ -415,7 +415,7 @@ async function checkEpistemicStatus(): Promise<EpistemicStatus> {
   }
   
   // Check for validation tasks
-  const todoFile = '.sss/todos.json';
+  const todoFile = '.sigma/todos.json';
   if (await checkExists(todoFile)) {
     const todos = await readJSON(todoFile);
     result.validationTasks = todos
@@ -467,7 +467,7 @@ Step 8:   Technical Spec    ⬚ Not Started
 Step 9:   Landing Page      ⬚ Skipped (Optional)
 Step 10:  Feature Breakdown ⬚ Not Started
 Step 11:  PRDs              ⬚ Not Started
-Step 11.5:PRD Swarm         ⏭️ Skipped (< 5 PRDs)
+Step 11b: PRD Swarm         ⏭️ Skipped (< 5 PRDs)
 Step 12:  Cursor Rules      ⬚ Not Started
 ─────────────────────────────────────────────
 

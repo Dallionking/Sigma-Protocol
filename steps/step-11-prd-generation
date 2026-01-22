@@ -1,7 +1,8 @@
 ---
-version: "2.4.0"
-last_updated: "2026-01-01"
+version: "3.0.0"
+last_updated: "2026-01-07"
 changelog:
+  - "3.0.0: MAJOR - Bulletproof PRDs for full-stack coverage. Added 10 new frameworks (8-17): Vertical Slice Architecture, Google API Design, Railway-Oriented Programming, Zod Best Practices, OWASP API Security Top 10, Supabase RLS, Next.js Server Actions, Feature-Sliced Design, TanStack Patterns, Agentic PRD Specification. Added Section 0.5 (Full Stack Overview) and Section 15 (Agentic Implementation Guide). Added Gate 7 (Backend Completeness) and Gate 8 (Agentic Readiness). Added Anti-Patterns 11-14. Updated verification schema with backend and agentic quality checks."
   - "2.4.0: Added SwiftUI component templates (View, ViewModel, Row, Form/Sheet) in Section 8"
   - "2.3.2: Updated default page wrapper to App/Wide layout (no container mx-auto) to prevent narrow centered dashboards"
   - "2.3.1: Made UI Profile presence a blocking preflight requirement for Step 11 PRD generation"
@@ -54,11 +55,64 @@ Generate comprehensive, implementation-ready PRDs (600-1000 lines) that consume 
 **Context:** You are the **Chief Product Officer** and **Lead Architect**. You enforce a **"Deep Spec"** methodology where PRDs are technical blueprints validated against multiple quality frameworks.
 
 **Core Philosophy:**
-1. **Unified Document:** Single PRD contains frontend + backend + database + testing in one cohesive document.
-2. **No Hand-Waving:** Every statement must be actionable with actual code.
-3. **Code-First:** Include TypeScript interfaces, SQL DDL, Zod schemas, React component signatures.
-4. **MCP-Driven Research:** Use MCPs to validate syntax and find real-world patterns.
-5. **Auto-Verification:** Every PRD must pass `@verify-prd` with score 8+/10.
+1. **Unified Document:** Single PRD contains frontend + backend + database + testing in one cohesive document. No frontend-only PRDs.
+2. **No Hand-Waving:** Every statement must be actionable with actual code. No "TBD" or "to be determined."
+3. **Code-First:** Include TypeScript interfaces, SQL DDL, Zod schemas, React component signatures, and complete server actions.
+4. **Vertical Slice:** Each PRD specifies the complete feature: database schema → server actions → UI components → tests.
+5. **Security-First:** OWASP API Security, RLS policies, auth checks specified upfront—not as afterthoughts.
+6. **Agentic-Ready:** PRDs written so AI coding agents can implement without ambiguity. Explicit file paths, complete imports, typed return values.
+7. **MCP-Driven Research:** Use MCPs to validate syntax and find real-world patterns.
+8. **Auto-Verification:** Every PRD must pass `@verify-prd` with score 8+/10 (70+ points) including backend and agentic gates.
+
+---
+
+## 🔄 SELF-VALIDATING AGENT HOOKS (Closed Loop Pattern)
+
+**PRD files are automatically validated by PostToolUse hooks.**
+
+When you edit/write files in `docs/prds/`, the `prd-validator.py` hook runs automatically:
+
+```
+Agent writes PRD → Hook validates → Sees errors → Auto-fixes → Re-validates → Pass
+```
+
+### What the Validator Checks
+
+| Check | Required |
+|-------|----------|
+| Section 0: Metadata | ✅ |
+| Section 1-N structure | ✅ |
+| BDD Scenarios (Given/When/Then) | ✅ |
+| No TODO/TBD/FIXME | ✅ |
+| YAML frontmatter fields | ⚠️ Warning |
+| Acceptance criteria | ⚠️ Warning |
+
+### If Validation Fails
+
+The hook returns a JSON response with:
+- `agent_instruction`: Explicit fix instructions
+- `errors[]`: Each error with line number and `fix_suggestion`
+
+**You MUST fix all errors immediately.** The hook will re-validate on your next edit.
+
+### Example Validation Output
+
+```json
+{
+  "status": "fail",
+  "errors": [
+    {
+      "line": 0,
+      "code": "MISSING_SECTION",
+      "message": "Missing: ## BDD Scenarios",
+      "fix_suggestion": "Add '## BDD Scenarios' section with Given/When/Then"
+    }
+  ],
+  "agent_instruction": "VALIDATION FAILED: 1 error(s)..."
+}
+```
+
+**See @specialized-validation skill for details on the Closed Loop Prompt pattern.**
 
 ---
 
@@ -70,7 +124,7 @@ Generate comprehensive, implementation-ready PRDs (600-1000 lines) that consume 
 
 ```bash
 # Check for boilerplate
-cat .sss/boilerplate.json 2>/dev/null
+cat .sigma/boilerplate.json 2>/dev/null
 ```
 
 ### If Boilerplate Detected
@@ -371,6 +425,462 @@ Example:
 
 ---
 
+### Framework 8: Jimmy Bogard — Vertical Slice Architecture
+**Core Philosophy:** *"Organize code by feature, not by technical layer. Each feature owns its complete vertical slice."*
+
+**Vertical Slice Structure (Per Feature):**
+```
+VERTICAL SLICE (Per Feature)
+├─ Request/Command (DTO with validation)
+├─ Handler (Business logic)
+├─ Database query/mutation
+├─ Response (DTO)
+└─ Tests (unit + integration)
+```
+
+**Why This Matters for PRDs:**
+- Forces PRDs to specify the COMPLETE feature (not just UI or just API)
+- Ensures database, API, and UI are co-designed
+- Makes PRDs self-contained and independently implementable
+- Reduces coordination overhead between frontend/backend teams
+
+**Application Checklist:**
+- [ ] Is each feature self-contained (not spread across layers)?
+- [ ] Does the PRD define the complete slice (input → processing → output → storage)?
+- [ ] Are cross-cutting concerns (auth, logging) handled via middleware, not duplicated?
+- [ ] Can this feature be implemented without touching other feature slices?
+
+---
+
+### Framework 9: Google API Design Guide — Resource-Oriented Design
+**Core Philosophy:** *"Design APIs around resources (nouns), not actions (verbs). Use standard methods."*
+
+**Standard Methods:**
+| Method | HTTP Verb | URI Pattern | Description |
+|--------|-----------|-------------|-------------|
+| List | GET | /resources | Get collection (with pagination) |
+| Get | GET | /resources/{id} | Get single resource |
+| Create | POST | /resources | Create new resource |
+| Update | PUT/PATCH | /resources/{id} | Full or partial update |
+| Delete | DELETE | /resources/{id} | Remove resource |
+
+**Custom Methods (when standard methods don't fit):**
+```
+POST /resources/{id}:action
+Examples:
+  POST /documents/{id}:publish
+  POST /users/{id}:deactivate
+  POST /orders/{id}:cancel
+```
+
+**Application Checklist:**
+- [ ] Are resources clearly defined as nouns (not /getUser, but GET /users)?
+- [ ] Do endpoints follow REST conventions?
+- [ ] Is pagination specified for List methods (cursor or offset)?
+- [ ] Are error responses standardized (error code, message, details)?
+- [ ] Is API versioning strategy defined (/v1/ prefix or header)?
+
+---
+
+### Framework 10: Scott Wlaschin — Railway-Oriented Programming
+**Core Philosophy:** *"Make errors explicit in the type system. Functions return Result<Success, Error>, never throw."*
+
+**TypeScript Result Pattern:**
+```typescript
+// Define explicit Result type
+type Result<T, E> = 
+  | { success: true; data: T }
+  | { success: false; error: E };
+
+// Define specific error types (not just string)
+type CreateUserError = 
+  | { code: "VALIDATION_ERROR"; field: string; message: string }
+  | { code: "DUPLICATE_EMAIL"; email: string }
+  | { code: "DATABASE_ERROR"; details: string };
+
+// Every server action returns Result
+export async function createUser(
+  input: CreateUserInput
+): Promise<Result<User, CreateUserError>> {
+  // Validation → Processing → Storage
+  // Each step can fail, errors are typed
+  const validated = schema.safeParse(input);
+  if (!validated.success) {
+    return { 
+      success: false, 
+      error: { code: "VALIDATION_ERROR", field: "...", message: "..." }
+    };
+  }
+  // ... continue with typed error handling
+}
+```
+
+**Application Checklist:**
+- [ ] Are all server action return types explicit (success + error cases)?
+- [ ] Are error types enumerated (not just `string` or generic `Error`)?
+- [ ] Is error handling composable (chain operations without try/catch)?
+- [ ] Can the UI display specific error messages based on error codes?
+
+---
+
+### Framework 11: Zod Schema Design Best Practices
+**Core Philosophy:** *"Schema is the single source of truth for validation, types, and documentation."*
+
+**Best Practices (2025):**
+1. **Colocate schemas** with their usage (in the same action file, not separate)
+2. **Infer types** from schemas (`z.infer<typeof schema>`) — never duplicate types
+3. **Use `.transform()`** for data normalization (trim, lowercase email)
+4. **Use `.refine()`** for custom validation with clear error messages
+5. **Compose schemas** with `.merge()`, `.extend()`, `.pick()`, `.omit()`
+6. **Define error maps** for user-friendly messages
+
+**PRD Schema Template:**
+```typescript
+// actions/[feature]/create-[entity].ts
+import { z } from "zod";
+
+export const createEntitySchema = z.object({
+  name: z.string()
+    .min(1, "Name is required")
+    .max(100, "Name must be less than 100 characters")
+    .transform(s => s.trim()),
+  email: z.string()
+    .email("Please enter a valid email address")
+    .transform(s => s.toLowerCase().trim()),
+  role: z.enum(["admin", "member", "viewer"], {
+    errorMap: () => ({ message: "Please select a valid role" })
+  }),
+  metadata: z.object({
+    source: z.string().optional(),
+  }).optional(),
+});
+
+// Infer type from schema (single source of truth)
+export type CreateEntityInput = z.infer<typeof createEntitySchema>;
+```
+
+**Application Checklist:**
+- [ ] Does every server action have a Zod schema for input validation?
+- [ ] Are error messages user-friendly (not "Invalid input")?
+- [ ] Are types inferred from schemas (single source of truth)?
+- [ ] Are transforms applied for data normalization?
+
+---
+
+### Framework 12: OWASP API Security Top 10 (2023)
+**Core Philosophy:** *"APIs are the #1 attack vector. Secure by design, not afterthought."*
+
+**Top 10 Risks (PRD must address):**
+
+| Risk | Description | PRD Requirement |
+|------|-------------|-----------------|
+| API1:2023 | Broken Object Level Authorization | Verify user owns resource before access |
+| API2:2023 | Broken Authentication | JWT best practices, refresh tokens, secure storage |
+| API3:2023 | Broken Object Property Level Authorization | Only expose needed fields in responses |
+| API4:2023 | Unrestricted Resource Consumption | Rate limiting, pagination limits, payload size limits |
+| API5:2023 | Broken Function Level Authorization | RBAC on every endpoint, admin routes protected |
+| API6:2023 | Unrestricted Access to Sensitive Business Flows | Abuse prevention (captcha, rate limits on sensitive ops) |
+| API7:2023 | Server Side Request Forgery | URL validation, allowlisting for external requests |
+| API8:2023 | Security Misconfiguration | Secure headers, CORS policy, minimal error exposure |
+| API9:2023 | Improper Inventory Management | API versioning, deprecation notices, documentation |
+| API10:2023 | Unsafe Consumption of APIs | Validate all external API responses |
+
+**PRD Security Section Template:**
+```markdown
+### Security Considerations (OWASP API Top 10)
+
+| Risk | Mitigation | Implementation |
+|------|------------|----------------|
+| BOLA (API1) | Ownership check | `WHERE user_id = auth.uid()` in all queries |
+| Auth (API2) | JWT + Refresh | Access token 15min, refresh 30 days, httpOnly |
+| Property Auth (API3) | Field filtering | Return only `id, name, email` not `password_hash` |
+| Resource (API4) | Rate limiting | 100 req/min/user, 10 req/min for auth endpoints |
+| Function Auth (API5) | RBAC | Admin routes require `role = 'admin'` |
+```
+
+**Application Checklist:**
+- [ ] Does every endpoint check user owns resource (BOLA)?
+- [ ] Are sensitive fields excluded from API responses?
+- [ ] Is rate limiting specified for all endpoints?
+- [ ] Are RBAC permissions defined per endpoint?
+- [ ] Are external API responses validated before use?
+
+---
+
+### Framework 13: Supabase RLS Best Practices
+**Core Philosophy:** *"Security at the database layer. Policies enforce access even if application code has bugs."*
+
+**RLS Policy Patterns:**
+
+**Pattern 1: User Owns Row**
+```sql
+-- Users can only access their own data
+CREATE POLICY "Users own their data"
+  ON table_name FOR ALL
+  USING (user_id = auth.uid());
+```
+
+**Pattern 2: Organization Membership**
+```sql
+-- Users can access data belonging to their organization
+CREATE POLICY "Org members can access org data"
+  ON table_name FOR SELECT
+  USING (
+    org_id IN (
+      SELECT org_id FROM org_members 
+      WHERE user_id = auth.uid()
+    )
+  );
+```
+
+**Pattern 3: Role-Based Access**
+```sql
+-- Only admins can delete
+CREATE POLICY "Admins can delete"
+  ON table_name FOR DELETE
+  USING (
+    EXISTS (
+      SELECT 1 FROM user_roles
+      WHERE user_id = auth.uid() 
+      AND role IN ('admin', 'super_admin')
+    )
+  );
+```
+
+**Pattern 4: Service Role Bypass (for server-side operations)**
+```sql
+-- Server-side operations bypass RLS
+CREATE POLICY "Service role has full access"
+  ON table_name FOR ALL
+  USING (auth.role() = 'service_role');
+```
+
+**Performance Optimization:**
+```sql
+-- Always create indexes on columns used in RLS policies
+CREATE INDEX idx_table_user_id ON table_name(user_id);
+CREATE INDEX idx_org_members_user_id ON org_members(user_id);
+```
+
+**Application Checklist:**
+- [ ] Does every new table have RLS enabled?
+- [ ] Are SELECT, INSERT, UPDATE, DELETE policies explicit?
+- [ ] Are indexes created for RLS policy columns (performance)?
+- [ ] Is service role access documented for server-side operations?
+
+---
+
+### Framework 14: Next.js Server Actions Best Practices (2025)
+**Core Philosophy:** *"Server Actions are the new backend. Treat them with the same rigor as API endpoints."*
+
+**Best Practices:**
+1. **Always validate input** with Zod before any processing
+2. **Return structured responses** (Result pattern, not throw)
+3. **Revalidate paths** after mutations
+4. **Handle optimistic updates** in UI for instant feedback
+5. **Use `useActionState`** for form state management (React 19+)
+
+**Server Action Template:**
+```typescript
+"use server"
+
+import { z } from "zod"
+import { revalidatePath } from "next/cache"
+import { auth } from "@/lib/auth"
+import { db } from "@/db"
+
+const schema = z.object({
+  name: z.string().min(1).max(100),
+  // ... validation rules
+});
+
+type ActionState = 
+  | { success: true; data: { id: string } }
+  | { success: false; error: string; fieldErrors?: Record<string, string[]> };
+
+export async function createEntity(
+  prevState: ActionState,
+  formData: FormData
+): Promise<ActionState> {
+  // 1. Parse and validate input
+  const parsed = schema.safeParse(Object.fromEntries(formData));
+  if (!parsed.success) {
+    return { 
+      success: false, 
+      error: "Validation failed",
+      fieldErrors: parsed.error.flatten().fieldErrors 
+    };
+  }
+  
+  // 2. Auth check
+  const { user } = await auth();
+  if (!user) {
+    return { success: false, error: "Unauthorized" };
+  }
+  
+  // 3. Business logic + Database operation
+  try {
+    const result = await db.insert(entities).values({
+      ...parsed.data,
+      userId: user.id,
+    }).returning({ id: entities.id });
+    
+    // 4. Revalidate affected paths
+    revalidatePath('/entities');
+    
+    return { success: true, data: { id: result[0].id } };
+  } catch (error) {
+    return { success: false, error: "Failed to create entity" };
+  }
+}
+```
+
+**Application Checklist:**
+- [ ] Does every server action validate input with Zod first?
+- [ ] Does every server action check authentication?
+- [ ] Are return types explicit (success + error cases)?
+- [ ] Is `revalidatePath` called after mutations?
+- [ ] Are field-level errors returned for form validation?
+
+---
+
+### Framework 15: Feature-Sliced Design (FSD)
+**Core Philosophy:** *"Organize frontend by layers and slices, with explicit boundaries and dependencies."*
+
+**Layer Structure:**
+```
+src/
+├─ app/          # App initialization, providers, routing, global styles
+├─ pages/        # Page components that compose features (thin wrappers)
+├─ widgets/      # Complex UI blocks (header, sidebar, footer)
+├─ features/     # User interactions (auth-form, checkout, search)
+├─ entities/     # Business entities (user, product, order)
+├─ shared/       # Reusable utilities, UI kit, config
+```
+
+**Dependency Rule:** Each layer can only import from layers BELOW it.
+```
+app → pages → widgets → features → entities → shared
+```
+
+**Slice Structure (within features/):**
+```
+features/
+├─ auth/
+│   ├─ ui/           # React components
+│   ├─ model/        # State management (Zustand store)
+│   ├─ api/          # API calls / server actions
+│   └─ index.ts      # Public API (what's exported)
+├─ checkout/
+│   └─ ...
+```
+
+**Application Checklist:**
+- [ ] Is the component clearly assigned to a layer (feature vs entity vs shared)?
+- [ ] Does it only depend on lower layers?
+- [ ] Are shared utilities in `shared/`, not duplicated?
+- [ ] Is each feature's public API explicitly exported via index.ts?
+
+---
+
+### Framework 16: TanStack Patterns (Tanner Linsley)
+**Core Philosophy:** *"Type-safety from database to UI. If TypeScript can't catch it, it's a bug waiting to happen."*
+
+**Key Patterns:**
+1. **Queries are separate from mutations** (clear read vs write semantics)
+2. **Optimistic updates** with rollback on failure
+3. **Stale-while-revalidate** for instant UX
+4. **Query invalidation** after mutations (not manual refetch)
+5. **Query keys are structured** for granular invalidation
+
+**TanStack Query Pattern:**
+```typescript
+// Query: Declarative data fetching with caching
+const { data, isLoading, error } = useQuery({
+  queryKey: ['entities', { filters, page }], // Structured key
+  queryFn: () => getEntities({ filters, page }),
+  staleTime: 5 * 60 * 1000, // 5 minutes
+});
+
+// Mutation: Imperative with optimistic updates
+const createMutation = useMutation({
+  mutationFn: createEntity,
+  onMutate: async (newEntity) => {
+    // Cancel in-flight queries
+    await queryClient.cancelQueries({ queryKey: ['entities'] });
+    
+    // Snapshot previous value
+    const previous = queryClient.getQueryData(['entities']);
+    
+    // Optimistic update
+    queryClient.setQueryData(['entities'], (old) => [...old, newEntity]);
+    
+    return { previous };
+  },
+  onError: (err, variables, context) => {
+    // Rollback on error
+    queryClient.setQueryData(['entities'], context.previous);
+  },
+  onSettled: () => {
+    // Always refetch after mutation
+    queryClient.invalidateQueries({ queryKey: ['entities'] });
+  },
+});
+```
+
+**Application Checklist:**
+- [ ] Are query keys structured and consistent?
+- [ ] Is staleTime configured appropriately?
+- [ ] Do mutations invalidate related queries?
+- [ ] Are optimistic updates implemented for critical interactions?
+
+---
+
+### Framework 17: Agentic PRD Specification (Cursor/Claude Best Practices)
+**Core Philosophy:** *"PRDs should be written for AI agents, not just humans. Explicit is better than implicit."*
+
+**Agentic PRD Requirements:**
+1. **File paths explicit** — Don't say "create a component", say "create `components/feature/ComponentName.tsx`"
+2. **Code examples complete** — Include imports, types, full implementations (not snippets)
+3. **Dependencies declared** — List npm packages with versions
+4. **Test files specified** — Include test file paths and example tests
+5. **No ambiguity** — If AI could interpret multiple ways, be more specific
+6. **Implementation order** — Specify what to build first (database → API → UI)
+
+**File Manifest Template:**
+```markdown
+### File Manifest
+| File | Action | Description |
+|------|--------|-------------|
+| `db/schema/feature.ts` | CREATE | Drizzle schema for feature tables |
+| `actions/feature/create.ts` | CREATE | Server action for creating entity |
+| `actions/feature/get.ts` | CREATE | Server action for fetching entities |
+| `components/feature/CreateForm.tsx` | CREATE | Form component with validation |
+| `components/feature/List.tsx` | CREATE | List component with data fetching |
+| `app/feature/page.tsx` | CREATE | Page component composing above |
+| `__tests__/feature/create.test.ts` | CREATE | Unit tests for create action |
+```
+
+**Implementation Order Template:**
+```markdown
+### Implementation Order
+1. **Database schema** (Section 6) — Enables type generation
+2. **Server actions** (Section 7) — Backend complete before UI
+3. **UI components** (Section 8) — Uses generated types from schema
+4. **Tests** (Section 10) — Validates implementation
+5. **Integration** — Wire everything together
+```
+
+**Application Checklist:**
+- [ ] Are all file paths explicit (not "create a component")?
+- [ ] Do code examples include all imports?
+- [ ] Are npm dependencies listed with versions?
+- [ ] Is implementation order specified?
+- [ ] Are test file paths included?
+- [ ] Are environment variables documented?
+
+---
+
 ## ANTI-PATTERNS TO AVOID (MANDATORY REVIEW)
 
 **Before finalizing ANY PRD, check for these failures:**
@@ -414,6 +924,30 @@ Example:
 ### Anti-Pattern 10: Untestable Criteria
 ❌ **Bad:** "Should be user-friendly"
 ✅ **Good:** Given/When/Then with specific observable outcomes
+
+### Anti-Pattern 11: Frontend-Only PRD
+❌ **Bad:** PRD specifies UI components but backend is "TBD" or "to be designed later"
+✅ **Good:** Full vertical slice (Database + API + UI) in one cohesive PRD
+
+**Why it fails:** Creates orphan UI components that can't function. Frontend team blocks on backend. Integration issues discovered late.
+
+### Anti-Pattern 12: Orphan UI Components
+❌ **Bad:** UI component fetches/mutates data but no corresponding server action or API endpoint is defined
+✅ **Good:** Every data-fetching UI component has a matching server action in Section 7
+
+**Why it fails:** UI developers implement against imaginary APIs. Type safety breaks. Runtime errors in production.
+
+### Anti-Pattern 13: Security as Afterthought
+❌ **Bad:** "Add authentication later" or "We'll handle authorization in phase 2"
+✅ **Good:** Auth, RLS policies, and input validation specified upfront in the PRD
+
+**Why it fails:** Retrofitting security is expensive and error-prone. OWASP vulnerabilities baked into architecture. Data breaches.
+
+### Anti-Pattern 14: Ambiguous for AI Agents
+❌ **Bad:** "Create a form component for user input"
+✅ **Good:** "Create `components/users/CreateUserForm.tsx` with the following props interface, validation schema, and server action integration..."
+
+**Why it fails:** AI agents interpret vague instructions inconsistently. Multiple implementations required. Code review overhead increases.
 
 ---
 
@@ -495,7 +1029,7 @@ Example:
 
 ---
 
-## PRD TEMPLATE (MANDATORY - 15 Sections: 0-14)
+## PRD TEMPLATE (MANDATORY - 17 Sections: 0-16)
 
 **File:** `docs/prds/F[N]-[FEATURE-NAME].md`
 
@@ -531,6 +1065,70 @@ Example:
 - [ ] Vertical Slice: Confirmed (DB + API + UI)
 - [ ] Boundaries Defined: IN/OUT scope clear
 - [ ] Rabbit Holes: Identified and documented
+
+---
+
+## SECTION 0.5: FULL STACK OVERVIEW (MANDATORY)
+
+**Purpose:** Force early consideration of both frontend AND backend requirements. Prevents frontend-only PRDs.
+
+### Scope Matrix
+
+| Layer | Count | Files/Resources |
+|-------|-------|-----------------|
+| Database Tables | [N] | [list table names] |
+| Server Actions/API | [N] | [list action/endpoint names] |
+| UI Pages | [N] | [list route paths] |
+| UI Components | [N] | [list component names] |
+
+### Backend Requirements
+
+| Requirement | Details |
+|-------------|---------|
+| **New database tables** | [list or "None"] |
+| **Modified tables** | [list tables and changes, or "None"] |
+| **New server actions** | [list action names with purposes] |
+| **New API routes** | [list routes or "None - using server actions only"] |
+| **Background jobs** | [list or "None"] |
+| **External integrations** | [list services (Stripe, email, etc.) or "None"] |
+| **Webhooks** | [list webhook endpoints or "None"] |
+
+### Frontend Requirements
+
+| Requirement | Details |
+|-------------|---------|
+| **New pages** | [list routes: `/feature`, `/feature/[id]`] |
+| **New components** | [list: `FeatureForm`, `FeatureList`, `FeatureCard`] |
+| **State management** | [Zustand stores needed, or "Server state only via TanStack Query"] |
+| **Data fetching strategy** | [Server Components / TanStack Query / Server Actions] |
+| **Form handling** | [react-hook-form + zod / useActionState] |
+
+### Security Requirements
+
+| Requirement | Details |
+|-------------|---------|
+| **Auth required** | [Yes/No - list which endpoints/pages] |
+| **RBAC roles** | [list roles and their permissions] |
+| **RLS policies needed** | [list tables requiring RLS] |
+| **Input validation** | [list Zod schemas to create] |
+| **Rate limiting** | [specify limits per endpoint] |
+
+### Dependencies
+
+| Type | Package | Version | Purpose |
+|------|---------|---------|---------|
+| npm | [package] | [version] | [purpose] |
+
+### Environment Variables
+
+| Variable | Description | Required |
+|----------|-------------|----------|
+| [VAR_NAME] | [description] | Yes/No |
+
+**Completeness Check:**
+- [ ] Backend scope is non-empty (tables OR actions OR integrations defined)
+- [ ] Every UI component that fetches data has a corresponding server action
+- [ ] Security requirements are explicitly stated (not "TBD")
 
 ---
 
@@ -1841,9 +2439,261 @@ test.describe('[Feature] E2E', () => {
 
 ---
 
-**Document Owner:** [Owner Name]  
-**Last Updated:** [Date]  
-**Estimated Effort:** [Appetite from Section 0]  
+## SECTION 15: AGENTIC IMPLEMENTATION GUIDE
+
+**Purpose:** Make this PRD fully actionable for AI coding agents (Cursor, Claude, Copilot). Eliminate ambiguity.
+
+### File Manifest
+
+| File | Action | Layer | Description |
+|------|--------|-------|-------------|
+| `db/schema/[feature].ts` | CREATE | Database | Drizzle schema definitions |
+| `db/migrations/XXXX_[feature].sql` | CREATE | Database | SQL migration file |
+| `actions/[feature]/create.ts` | CREATE | API | Server action for create operation |
+| `actions/[feature]/get.ts` | CREATE | API | Server action for read operations |
+| `actions/[feature]/update.ts` | CREATE | API | Server action for update operation |
+| `actions/[feature]/delete.ts` | CREATE | API | Server action for delete operation |
+| `components/[feature]/[Name]Form.tsx` | CREATE | UI | Form component with validation |
+| `components/[feature]/[Name]List.tsx` | CREATE | UI | List component with data fetching |
+| `components/[feature]/[Name]Card.tsx` | CREATE | UI | Card component for display |
+| `app/[feature]/page.tsx` | CREATE | UI | Page component (route handler) |
+| `__tests__/[feature]/[action].test.ts` | CREATE | Test | Unit tests for server actions |
+
+### Implementation Order
+
+**Phase 1: Database (enables type generation)**
+1. Create Drizzle schema (`db/schema/[feature].ts`)
+2. Run `npx drizzle-kit generate` to create migration
+3. Run `npx drizzle-kit push` to apply migration
+4. Enable RLS and create policies
+
+**Phase 2: Server Actions (backend complete before UI)**
+1. Create Zod validation schemas
+2. Implement CRUD server actions
+3. Test actions with Postman/Thunder Client
+4. Verify RLS policies work correctly
+
+**Phase 3: UI Components (uses generated types)**
+1. Create form components (uses Zod schema for validation)
+2. Create list/display components
+3. Create page components that compose above
+4. Wire up data fetching (TanStack Query or Server Components)
+
+**Phase 4: Testing & Integration**
+1. Write unit tests for server actions
+2. Write integration tests for key flows
+3. Manual testing of complete feature
+4. Performance testing if needed
+
+### Dependencies to Install
+
+```bash
+# List exact packages needed for this feature
+npm install [package]@[version]
+```
+
+| Package | Version | Purpose |
+|---------|---------|---------|
+| [package] | [version] | [purpose] |
+
+### Environment Variables Required
+
+```env
+# Add to .env.local (required for this feature)
+[VARIABLE_NAME]=[description_or_example]
+```
+
+| Variable | Description | Required | Example |
+|----------|-------------|----------|---------|
+| [VAR] | [description] | Yes/No | [example value] |
+
+### Code Examples (Complete with Imports)
+
+**Example Server Action:**
+```typescript
+// actions/[feature]/create.ts
+"use server"
+
+import { z } from "zod"
+import { revalidatePath } from "next/cache"
+import { auth } from "@/lib/auth"
+import { db } from "@/db"
+import { featureTable } from "@/db/schema/feature"
+
+const schema = z.object({
+  // ... validation schema
+});
+
+type ActionState = 
+  | { success: true; data: { id: string } }
+  | { success: false; error: string; fieldErrors?: Record<string, string[]> };
+
+export async function create[Feature](
+  prevState: ActionState,
+  formData: FormData
+): Promise<ActionState> {
+  // Implementation per Section 7
+}
+```
+
+### Agent Instructions
+
+**For AI Coding Agents:**
+1. Follow the Implementation Order exactly
+2. Use exact file paths from File Manifest
+3. Include all imports shown in code examples
+4. Run type-check after each file: `npx tsc --noEmit`
+5. Test each layer before moving to next
+6. Commit after completing each phase
+
+**Verification Commands:**
+```bash
+# After Phase 1 (Database)
+npx drizzle-kit studio  # Verify tables created
+
+# After Phase 2 (Server Actions)
+npm run test:actions    # Run action tests
+
+# After Phase 3 (UI)
+npm run dev             # Visual verification
+npm run lint            # No lint errors
+
+# After Phase 4 (Complete)
+npm run test            # All tests pass
+npm run build           # Build succeeds
+```
+
+---
+
+## SECTION 16: RALPH LOOP TASKS (Auto-Generated Checklist)
+
+**Purpose:** Machine-readable task checklist for Ralph Loop autonomous implementation. Each task maps to a story in `ralph-backlog.json`.
+
+### Task ID Format
+
+| Prefix | Category | Example | Description |
+|--------|----------|---------|-------------|
+| `DB-` | Database | DB-001 | Schema creation, migrations, RLS policies |
+| `API-` | Server Actions | API-001 | Server actions, API routes, backend logic |
+| `UI-` | UI Components | UI-001 | React components, forms, lists, cards |
+| `PAGE-` | Page Routes | PAGE-001 | App router pages, layouts, loading states |
+| `TEST-` | Testing | TEST-001 | Unit tests, integration tests, E2E tests |
+| `VERIFY-` | Verification | VERIFY-001 | Type checks, lint, build verification |
+| `UI-VAL-` | UI Validation | UI-VAL-001 | Browser-based UI validation, visual checks |
+
+### Task Checklist (22 Tasks Across 6 Phases)
+
+<!-- Auto-generated by Step 11.25 PRD-to-JSON conversion. Each checkbox = one Ralph Loop story. -->
+
+**Phase 1: Database Layer**
+- [ ] **DB-001:** Create database schema (`db/schema/[feature].ts`)
+- [ ] **DB-002:** Run migration (`npx drizzle-kit push`)
+- [ ] **DB-003:** Configure RLS policies (Supabase dashboard or SQL)
+- [ ] **DB-004:** Add database indexes for query optimization
+
+**Phase 2: Server Actions (API Layer)**
+- [ ] **API-001:** Create server action: `create[Feature]` (`actions/[feature]/create.ts`)
+- [ ] **API-002:** Create server action: `get[Feature]s` (`actions/[feature]/get.ts`)
+- [ ] **API-003:** Create server action: `get[Feature]ById` (`actions/[feature]/get-by-id.ts`)
+- [ ] **API-004:** Create server action: `update[Feature]` (`actions/[feature]/update.ts`)
+- [ ] **API-005:** Create server action: `delete[Feature]` (`actions/[feature]/delete.ts`)
+
+**Phase 3: UI Components**
+- [ ] **UI-001:** Create form component (`components/[feature]/[Name]Form.tsx`)
+- [ ] **UI-002:** Create list component (`components/[feature]/[Name]List.tsx`)
+- [ ] **UI-003:** Create card/item component (`components/[feature]/[Name]Card.tsx`)
+- [ ] **UI-004:** Create detail view component (`components/[feature]/[Name]Detail.tsx`)
+- [ ] **UI-005:** Create loading skeleton (`components/[feature]/[Name]Skeleton.tsx`)
+
+**Phase 4: Page Routes**
+- [ ] **PAGE-001:** Create page route (`app/[feature]/page.tsx`)
+- [ ] **PAGE-002:** Create detail page route (`app/[feature]/[id]/page.tsx`)
+- [ ] **PAGE-003:** Create loading state (`app/[feature]/loading.tsx`)
+- [ ] **PAGE-004:** Update navigation/sidebar if needed
+
+**Phase 5: Testing**
+- [ ] **TEST-001:** Write server action tests (`__tests__/[feature]/actions.test.ts`)
+- [ ] **TEST-002:** Write component tests (`__tests__/[feature]/components.test.tsx`)
+
+**Phase 6: Verification & Validation**
+- [ ] **VERIFY-001:** Run type check (`npx tsc --noEmit`) - passes
+- [ ] **VERIFY-002:** Run lint (`npm run lint`) - no errors
+- [ ] **VERIFY-003:** Run tests (`npm run test`) - passes
+- [ ] **VERIFY-004:** Run build (`npm run build`) - succeeds
+- [ ] **UI-VAL-001:** Validate UI renders at `/[feature]` route
+- [ ] **UI-VAL-002:** Validate interactive elements respond correctly
+
+### Acceptance Criteria Mapping
+
+| Task ID | Story ID | AC Type | Verification Command |
+|---------|----------|---------|---------------------|
+| DB-001 | f[n]-db-schema | file-exists | `ls db/schema/[feature].ts` |
+| DB-002 | f[n]-db-migration | command | `npx drizzle-kit push --dry-run` |
+| DB-003 | f[n]-db-rls | file-contains | `grep "POLICY" db/schema/[feature].ts` |
+| API-001 | f[n]-api-create | file-contains | `grep "use server" actions/[feature]/create.ts` |
+| API-002 | f[n]-api-get | file-exists | `ls actions/[feature]/get.ts` |
+| UI-001 | f[n]-ui-form | file-exists | `ls components/[feature]/[Name]Form.tsx` |
+| PAGE-001 | f[n]-page-main | file-exists | `ls app/[feature]/page.tsx` |
+| TEST-001 | f[n]-test-actions | file-exists | `ls __tests__/[feature]/actions.test.ts` |
+| VERIFY-001 | f[n]-typecheck | command | `npx tsc --noEmit` |
+| VERIFY-004 | f[n]-build | command | `npm run build` |
+| UI-VAL-001 | f[n]-ui-validation | ui-validation | `agent-browser validate /[feature]` |
+
+### Ralph Loop Configuration
+
+```json
+{
+  "featureId": "F[N]",
+  "featureName": "[Feature Name]",
+  "totalTasks": 22,
+  "phases": [
+    { "name": "Database Layer", "tasks": ["DB-001", "DB-002", "DB-003", "DB-004"] },
+    { "name": "Server Actions", "tasks": ["API-001", "API-002", "API-003", "API-004", "API-005"] },
+    { "name": "UI Components", "tasks": ["UI-001", "UI-002", "UI-003", "UI-004", "UI-005"] },
+    { "name": "Page Routes", "tasks": ["PAGE-001", "PAGE-002", "PAGE-003", "PAGE-004"] },
+    { "name": "Testing", "tasks": ["TEST-001", "TEST-002"] },
+    { "name": "Verification", "tasks": ["VERIFY-001", "VERIFY-002", "VERIFY-003", "VERIFY-004", "UI-VAL-001", "UI-VAL-002"] }
+  ],
+  "estimatedIterations": 6,
+  "uiValidation": {
+    "mode": "agent-browser",
+    "route": "/[feature]",
+    "detailRoute": "/[feature]/[id]",
+    "checks": ["renders", "interactive-elements", "no-console-errors", "responsive"]
+  },
+  "dependencies": {
+    "API-*": ["DB-001", "DB-002"],
+    "UI-*": ["API-001", "API-002"],
+    "PAGE-*": ["UI-001", "UI-002"],
+    "TEST-*": ["API-*"],
+    "VERIFY-*": ["PAGE-001"],
+    "UI-VAL-*": ["PAGE-001", "VERIFY-004"]
+  }
+}
+```
+
+### Instructions for Creating Ralph-Compatible Task Lists
+
+1. **Use Task ID Prefixes:** Every task must have a prefix from the table above (DB-, API-, UI-, PAGE-, TEST-, VERIFY-, UI-VAL-)
+
+2. **Include File Paths:** Each task should specify the exact file path in parentheses: `Create component (components/feature/Name.tsx)`
+
+3. **Map to Acceptance Criteria:** Every task should have at least one AC entry in the mapping table
+
+4. **Define Dependencies:** Tasks should respect the dependency order:
+   - Database → Server Actions → UI Components → Pages → Tests → Verification → UI Validation
+
+5. **Keep Tasks Atomic:** Each task should produce exactly one file or run one command. Split large tasks.
+
+6. **Verify Command Format:** Verification commands must be executable and return exit code 0 on success
+
+**Note:** This section is consumed by Step 11.25 (PRD-to-JSON) to generate the `ralph-backlog.json` file. Task IDs must be unique within the PRD.
+
+---
+
+**Document Owner:** [Owner Name]
+**Last Updated:** [Date]
+**Estimated Effort:** [Appetite from Section 0]
 **Dependencies:** [List from Section 0]
 ```
 
@@ -1852,7 +2702,7 @@ test.describe('[Feature] E2E', () => {
 ## QUALITY GATES (Must Pass Before Implementation)
 
 ### Gate 1: Completeness Gate
-- [ ] All 14 sections have concrete content (no TBDs)
+- [ ] All 17 sections have concrete content (no TBDs)
 - [ ] Section 0 metadata imported from Step 10 Betting Table
 - [ ] Press Release (Section 1) written and compelling
 - [ ] Outcome linkage documented (Section 2)
@@ -1886,6 +2736,49 @@ test.describe('[Feature] E2E', () => {
 - [ ] No missing edge cases (BDD covers all scenarios)
 - [ ] No over-specification (WHAT not HOW)
 - [ ] No disconnected features (all linked to outcomes)
+
+### Gate 7: Backend Completeness Gate (NEW)
+**Purpose:** Ensure backend is fully specified, not "TBD" or deferred.
+
+- [ ] **Database Schema:** Includes actual Drizzle ORM code (not just descriptions)
+- [ ] **Database RLS:** Policies defined for all new tables with actual SQL
+- [ ] **Database Indexes:** Indexes specified for query patterns and RLS columns
+- [ ] **Server Actions:** At least one server action with full implementation code
+- [ ] **Zod Schemas:** Every server action input has a Zod validation schema
+- [ ] **Result Types:** Return types are explicit (success + typed error cases)
+- [ ] **OWASP Security:** API Security Top 10 considerations documented in PRD
+- [ ] **Auth Per-Endpoint:** Authentication requirements specified for each endpoint
+- [ ] **No Orphan UIs:** If UI component fetches/mutates data, corresponding server action exists
+- [ ] **Section 0.5 Complete:** Full Stack Overview filled in with concrete values (not "TBD")
+
+**Blocking:** PRD fails this gate if any UI component references a server action that isn't fully specified.
+
+### Gate 8: Agentic Readiness Gate (NEW)
+**Purpose:** Ensure PRD can be implemented by AI coding agents without ambiguity.
+
+- [ ] **File Paths Explicit:** All files use exact paths (`components/feature/Name.tsx` not "create a component")
+- [ ] **Imports Included:** Code examples include all import statements
+- [ ] **Dependencies Listed:** npm packages listed with exact versions
+- [ ] **Implementation Order:** Section 15 specifies exact build sequence
+- [ ] **Test Paths Included:** Test file locations specified
+- [ ] **Environment Variables:** All required env vars documented with examples
+- [ ] **Verification Commands:** Commands provided to verify each implementation phase
+- [ ] **No Ambiguous Instructions:** Every instruction has exactly one interpretation
+
+**Test:** Have an AI agent read just this PRD and list the files it would create. If the list doesn't match Section 15 File Manifest exactly, the PRD fails this gate.
+
+### Gate 9: Ralph Loop Readiness Gate (NEW)
+**Purpose:** Ensure PRD is optimized for autonomous Ralph Loop execution.
+
+- [ ] **Section 16 Present:** Ralph Loop Tasks section exists with task checklist
+- [ ] **Task IDs Unique:** Each task has a unique ID (e.g., DB-001, API-001, UI-001)
+- [ ] **Acceptance Criteria Mapping:** Each task maps to an AC type (file-exists, command, ui-validation)
+- [ ] **Verification Commands:** Each task has a shell command to verify completion
+- [ ] **UI Validation Config:** If feature has UI, includes agent-browser validation configuration
+- [ ] **Estimated Iterations:** Ralph Loop iteration estimate is provided
+- [ ] **No Manual-Only Tasks:** Minimize tasks requiring human signoff (prefer machine-verifiable)
+
+**Test:** Run `sigma ralph --dry-run --prd F[N]-[feature].md` and verify tasks parse correctly into stories.
 
 ---
 
@@ -1967,16 +2860,55 @@ test.describe('[Feature] E2E', () => {
 | F*-*.md | ## Acceptance Criteria | 5 |
 | F*-*.md | ## Rabbit Holes | 3 |
 
-### Content Quality (30 points)
+### Content Quality (20 points)
 
 | Check | Description | Points |
 |-------|-------------|--------|
-| has_pattern:F*-*.md:Given.*When.*Then | BDD acceptance criteria | 8 |
-| has_pattern:F*-*.md:interface\|type.*= | TypeScript interfaces present | 6 |
-| has_pattern:F*-*.md:Appetite.*Small\|Big | Appetite defined per Shape Up | 5 |
-| word_count:F*-*.md:1500 | PRD has substantial content (1500+ words) | 5 |
-| json_valid:.prd-status.json | Valid PRD status tracking | 3 |
-| has_table:F*-*.md | Feature tables present | 3 |
+| has_pattern:F*-*.md:Given.*When.*Then | BDD acceptance criteria | 5 |
+| has_pattern:F*-*.md:interface\|type.*= | TypeScript interfaces present | 4 |
+| has_pattern:F*-*.md:Appetite.*Small\|Big | Appetite defined per Shape Up | 3 |
+| word_count:F*-*.md:1500 | PRD has substantial content (1500+ words) | 4 |
+| json_valid:.prd-status.json | Valid PRD status tracking | 2 |
+| has_table:F*-*.md | Feature tables present | 2 |
+
+### Backend Completeness (15 points) — NEW
+
+| Check | Description | Points |
+|-------|-------------|--------|
+| has_section:F*-*.md:SECTION 0.5.*FULL STACK OVERVIEW | Full Stack Overview present | 3 |
+| has_pattern:F*-*.md:CREATE TABLE\|export const.*=.*pgTable | Database schema code present | 3 |
+| has_pattern:F*-*.md:CREATE POLICY\|ENABLE ROW LEVEL SECURITY | RLS policies defined | 2 |
+| has_pattern:F*-*.md:z\.object\|z\.string\|z\.number | Zod validation schemas | 2 |
+| has_pattern:F*-*.md:"use server"\|export async function.*Action | Server actions present | 3 |
+| has_pattern:F*-*.md:success: true\|success: false | Result pattern return types | 2 |
+
+### Agentic Readiness (10 points) — NEW
+
+| Check | Description | Points |
+|-------|-------------|--------|
+| has_section:F*-*.md:SECTION 15.*AGENTIC | Agentic Implementation Guide present | 2 |
+| has_pattern:F*-*.md:File Manifest | File Manifest table present | 2 |
+| has_pattern:F*-*.md:Implementation Order | Implementation Order specified | 2 |
+| has_pattern:F*-*.md:components/\|actions/\|db/\|app/ | Explicit file paths (not generic) | 2 |
+| has_pattern:F*-*.md:npm install\|pnpm add | Dependencies listed | 2 |
+
+### Ralph Loop Readiness (10 points) — NEW
+
+| Check | Description | Points |
+|-------|-------------|--------|
+| has_section:F*-*.md:SECTION 16.*RALPH LOOP | Ralph Loop Tasks section present | 2 |
+| has_pattern:F*-*.md:Task Checklist | Task checklist with checkboxes | 2 |
+| has_pattern:F*-*.md:DB-\d+\|API-\d+\|UI-\d+ | Unique task IDs present | 2 |
+| has_pattern:F*-*.md:Acceptance Criteria Mapping | AC mapping table present | 2 |
+| has_pattern:F*-*.md:agent-browser\|ui-validation | UI validation configured | 2 |
+
+### Security (5 points) — NEW
+
+| Check | Description | Points |
+|-------|-------------|--------|
+| has_pattern:F*-*.md:OWASP\|BOLA\|API Security | OWASP considerations documented | 2 |
+| has_pattern:F*-*.md:auth\(\)\|auth\.uid\(\)\|getUser | Auth checks in server actions | 2 |
+| has_pattern:F*-*.md:rate limit\|Rate Limit | Rate limiting specified | 1 |
 
 ### Checkpoints (10 points)
 
@@ -1989,8 +2921,18 @@ test.describe('[Feature] E2E', () => {
 
 | Criterion | Check | Points |
 |-----------|-------|--------|
-| Implementation Ready | No TBDs, all sections complete | 4 |
+| Implementation Ready | No TBDs in Sections 0.5, 6, 7, 15 | 4 |
 | Testable | BDD scenarios are executable | 3 |
 | Scoped | Boundaries and rabbit holes documented | 3 |
+
+### Gate Summary (Pass/Fail)
+
+| Gate | Requirement | Auto-Check |
+|------|-------------|------------|
+| Gate 7 | Backend Completeness | Backend score >= 12/15 |
+| Gate 8 | Agentic Readiness | Agentic score >= 8/10 |
+
+**Minimum Passing Score:** 100/100 — No room for incomplete PRDs
+**Blocking:** PRDs scoring below 100 MUST be revised before proceeding to Step 12
 
 </verification>

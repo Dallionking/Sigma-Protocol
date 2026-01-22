@@ -1,0 +1,443 @@
+# Product Requirements Document: HostHub
+## Property Management for Short-Term Rentals
+
+### 1. Executive Summary
+
+HostHub is a property management platform for short-term rental hosts. Manage multiple properties, track bookings, communicate with guests, and monitor financial performance all in one place.
+
+### 2. Problem Statement
+
+Hosts managing multiple properties struggle with spreadsheets, multiple platforms, and manual processes. They need a centralized dashboard to manage listings, avoid double bookings, and track profitability.
+
+### 3. Target Users
+
+**Primary**: Short-term rental hosts with 2+ properties
+**Secondary**: Property managers handling client properties
+
+### 4. Core Features
+
+#### 4.1 Property Management
+- Add property:
+  - Name and type (house, apartment, room)
+  - Address
+  - Bedrooms, bathrooms, guests capacity
+  - Amenities checklist
+  - House rules
+  - Check-in/out instructions
+- Photo gallery upload
+- Pricing:
+  - Base nightly rate
+  - Weekend premium
+  - Cleaning fee
+  - Security deposit
+- Status: active, inactive, maintenance
+
+#### 4.2 Availability Calendar
+- Monthly calendar view
+- Per-property or multi-property view
+- Block dates manually
+- Set minimum stay
+- Seasonal pricing rules
+- iCal import/export
+
+#### 4.3 Booking Management
+- All bookings list
+- Booking details:
+  - Guest name and contact
+  - Check-in/out dates
+  - Number of guests
+  - Total price breakdown
+  - Source (Airbnb, VRBO, direct)
+  - Status (upcoming, in-progress, completed, cancelled)
+- Manual booking entry
+- Modify bookings
+- Cancel with refund options
+
+#### 4.4 Guest Communication
+- Conversation per booking
+- Message templates:
+  - Booking confirmation
+  - Pre-arrival info
+  - Check-in instructions
+  - Post-stay thank you
+  - Review request
+- Scheduled messages
+- Quick replies
+
+#### 4.5 Financial Dashboard
+- Revenue overview:
+  - This month
+  - Last month
+  - YTD
+  - By property
+- Expense tracking:
+  - Cleaning
+  - Maintenance
+  - Utilities
+  - Platform fees
+- Payout tracking
+- Profit calculation
+- Export reports
+
+#### 4.6 Maintenance Tracking
+- Log issues
+- Assign to vendors
+- Track resolution
+- Cost tracking
+- Recurring tasks (e.g., HVAC filter)
+
+#### 4.7 Analytics
+- Occupancy rate by property
+- Average daily rate (ADR)
+- Revenue per available night (RevPAN)
+- Booking source breakdown
+- Seasonal trends
+
+### 5. Technical Requirements
+
+#### 5.1 Frontend
+- Next.js 14+ with App Router
+- TailwindCSS + shadcn/ui
+- FullCalendar (calendar component)
+- Recharts (analytics)
+- React Hook Form + Zod
+
+#### 5.2 Backend
+- Supabase Auth
+- Supabase Database
+- Supabase Storage (photos)
+- iCal parsing library
+
+#### 5.3 Database Schema
+
+```sql
+-- Property owners/managers
+users (
+  id uuid PRIMARY KEY REFERENCES auth.users,
+  email text NOT NULL,
+  name text NOT NULL,
+  company_name text,
+  phone text,
+  timezone text DEFAULT 'UTC',
+  currency text DEFAULT 'USD',
+  created_at timestamptz DEFAULT now()
+)
+
+-- Properties
+properties (
+  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id uuid REFERENCES users(id) ON DELETE CASCADE,
+  name text NOT NULL,
+  slug text NOT NULL,
+  property_type text NOT NULL, -- 'house', 'apartment', 'room', 'villa'
+  address_line1 text,
+  address_line2 text,
+  city text,
+  state text,
+  postal_code text,
+  country text,
+  latitude decimal(10, 8),
+  longitude decimal(11, 8),
+  bedrooms integer DEFAULT 1,
+  bathrooms decimal(3, 1) DEFAULT 1,
+  max_guests integer DEFAULT 2,
+  description text,
+  amenities text[],
+  house_rules text,
+  checkin_instructions text,
+  checkin_time time DEFAULT '15:00',
+  checkout_time time DEFAULT '11:00',
+  base_rate decimal(10, 2),
+  weekend_rate decimal(10, 2),
+  cleaning_fee decimal(10, 2),
+  security_deposit decimal(10, 2),
+  minimum_stay integer DEFAULT 1,
+  status text DEFAULT 'active', -- 'active', 'inactive', 'maintenance'
+  ical_url text, -- For import
+  created_at timestamptz DEFAULT now()
+)
+
+-- Property photos
+property_photos (
+  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  property_id uuid REFERENCES properties(id) ON DELETE CASCADE,
+  url text NOT NULL,
+  caption text,
+  position integer NOT NULL,
+  created_at timestamptz DEFAULT now()
+)
+
+-- Guests
+guests (
+  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id uuid REFERENCES users(id) ON DELETE CASCADE,
+  email text NOT NULL,
+  name text NOT NULL,
+  phone text,
+  notes text,
+  total_bookings integer DEFAULT 0,
+  created_at timestamptz DEFAULT now(),
+  UNIQUE(user_id, email)
+)
+
+-- Bookings
+bookings (
+  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  property_id uuid REFERENCES properties(id) ON DELETE CASCADE,
+  guest_id uuid REFERENCES guests(id),
+  check_in date NOT NULL,
+  check_out date NOT NULL,
+  guests_count integer DEFAULT 1,
+  source text NOT NULL, -- 'airbnb', 'vrbo', 'booking.com', 'direct', 'other'
+  external_id text, -- ID from source platform
+  status text DEFAULT 'confirmed', -- 'pending', 'confirmed', 'in-progress', 'completed', 'cancelled'
+  nightly_rate decimal(10, 2),
+  nights integer,
+  subtotal decimal(10, 2),
+  cleaning_fee decimal(10, 2),
+  service_fee decimal(10, 2),
+  taxes decimal(10, 2),
+  total decimal(10, 2),
+  payout_amount decimal(10, 2),
+  payout_date date,
+  guest_notes text,
+  internal_notes text,
+  created_at timestamptz DEFAULT now()
+)
+
+-- Blocked dates (not bookable)
+blocked_dates (
+  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  property_id uuid REFERENCES properties(id) ON DELETE CASCADE,
+  start_date date NOT NULL,
+  end_date date NOT NULL,
+  reason text,
+  created_at timestamptz DEFAULT now()
+)
+
+-- Messages
+messages (
+  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  booking_id uuid REFERENCES bookings(id) ON DELETE CASCADE,
+  sender_type text NOT NULL, -- 'host', 'guest'
+  content text NOT NULL,
+  is_automated boolean DEFAULT false,
+  sent_at timestamptz DEFAULT now(),
+  created_at timestamptz DEFAULT now()
+)
+
+-- Message templates
+message_templates (
+  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id uuid REFERENCES users(id) ON DELETE CASCADE,
+  name text NOT NULL,
+  trigger_type text, -- 'booking_confirmed', 'check_in_day', 'checkout_day', 'manual'
+  trigger_offset_hours integer, -- Hours before/after event
+  subject text,
+  content text NOT NULL,
+  is_active boolean DEFAULT true,
+  created_at timestamptz DEFAULT now()
+)
+
+-- Expenses
+expenses (
+  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  property_id uuid REFERENCES properties(id) ON DELETE CASCADE,
+  booking_id uuid REFERENCES bookings(id), -- If related to booking
+  category text NOT NULL, -- 'cleaning', 'maintenance', 'utilities', 'supplies', 'fees', 'other'
+  description text NOT NULL,
+  amount decimal(10, 2) NOT NULL,
+  date date NOT NULL,
+  vendor text,
+  receipt_url text,
+  created_at timestamptz DEFAULT now()
+)
+
+-- Maintenance tasks
+maintenance_tasks (
+  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  property_id uuid REFERENCES properties(id) ON DELETE CASCADE,
+  title text NOT NULL,
+  description text,
+  priority text DEFAULT 'medium', -- 'low', 'medium', 'high', 'urgent'
+  status text DEFAULT 'open', -- 'open', 'in-progress', 'completed'
+  assigned_to text, -- Vendor name
+  estimated_cost decimal(10, 2),
+  actual_cost decimal(10, 2),
+  due_date date,
+  completed_at timestamptz,
+  created_at timestamptz DEFAULT now()
+)
+```
+
+### 6. User Flows
+
+#### 6.1 Add New Property
+1. Click "Add Property"
+2. Enter basic info
+3. Add address
+4. Set capacity
+5. Select amenities
+6. Upload photos
+7. Set pricing
+8. Property created
+
+#### 6.2 Log New Booking
+1. Select property
+2. Click date on calendar
+3. Enter guest info
+4. Set dates and pricing
+5. Save booking
+6. Calendar updates
+
+#### 6.3 Check-in Process
+1. See upcoming check-ins
+2. Send check-in message
+3. Guest arrives
+4. Mark as checked-in
+5. Booking status updates
+
+### 7. Design Requirements
+
+#### Dashboard Layout
+```
+┌─────────────────────────────────────────────────────────────┐
+│  HostHub                            [+ Add Property]        │
+├─────────────────────────────────────────────────────────────┤
+│  Good morning, Sarah!                                       │
+│                                                             │
+│  ┌──────────┐ ┌──────────┐ ┌──────────┐ ┌──────────┐      │
+│  │ 4        │ │ 2        │ │ $12,450  │ │ 78%      │      │
+│  │ Properties│ │ Check-ins│ │ This Mo  │ │ Occupied │      │
+│  │          │ │ Today    │ │          │ │          │      │
+│  └──────────┘ └──────────┘ └──────────┘ └──────────┘      │
+├─────────────────────────────────────────────────────────────┤
+│  Today's Activity                                           │
+│  ┌─────────────────────────────────────────────────────┐   │
+│  │ 🏠 Beach House     Check-in: John D.    3:00 PM    │   │
+│  │ 🏠 Mountain Cabin  Check-out: Sarah M.  11:00 AM   │   │
+│  │ ⚠️ City Apartment  Maintenance: Plumber   Today    │   │
+│  └─────────────────────────────────────────────────────┘   │
+├─────────────────────────────────────────────────────────────┤
+│  Properties Overview                               [View All]│
+│  ┌───────────────────────┐ ┌───────────────────────┐       │
+│  │ [Photo]               │ │ [Photo]               │       │
+│  │ Beach House           │ │ Mountain Cabin        │       │
+│  │ $250/night   ⭐ 4.9   │ │ $180/night   ⭐ 4.7   │       │
+│  │ Next: Jan 15-18       │ │ Next: Jan 20-25       │       │
+│  └───────────────────────┘ └───────────────────────┘       │
+└─────────────────────────────────────────────────────────────┘
+```
+
+#### Multi-Property Calendar
+```
+┌─────────────────────────────────────────────────────────────┐
+│  Calendar                    ◀ January 2025 ▶              │
+├─────────────────────────────────────────────────────────────┤
+│              Mon  Tue  Wed  Thu  Fri  Sat  Sun             │
+│  Beach       13   14   15   16   17   18   19              │
+│  House       ░░░  ░░░  ███  ███  ███  ███  ░░░             │
+│                                                             │
+│  Mountain    13   14   15   16   17   18   19              │
+│  Cabin       ███  ███  ░░░  ░░░  ░░░  ███  ███             │
+│                                                             │
+│  City        13   14   15   16   17   18   19              │
+│  Apartment   ░░░  ░░░  ░░░  ███  ███  ███  ███             │
+│                                                             │
+│  Legend: ███ Booked  ░░░ Available  ▓▓▓ Blocked            │
+└─────────────────────────────────────────────────────────────┘
+```
+
+### 8. iCal Sync
+
+Import external calendars:
+
+```typescript
+import ical from 'node-ical';
+
+async function syncICalendar(property: Property) {
+  if (!property.ical_url) return;
+
+  const events = await ical.async.fromURL(property.ical_url);
+  
+  for (const [uid, event] of Object.entries(events)) {
+    if (event.type !== 'VEVENT') continue;
+    
+    // Check if already exists
+    const existing = await supabase
+      .from('bookings')
+      .select('id')
+      .eq('property_id', property.id)
+      .eq('external_id', uid)
+      .single();
+
+    if (!existing.data) {
+      // Create new booking
+      await supabase.from('bookings').insert({
+        property_id: property.id,
+        check_in: event.start,
+        check_out: event.end,
+        source: 'ical',
+        external_id: uid,
+        status: 'confirmed',
+        guest_notes: event.summary,
+      });
+    }
+  }
+}
+
+// Export calendar
+function generateICalFeed(bookings: Booking[]): string {
+  let ical = `BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//HostHub//Calendar//EN
+`;
+
+  for (const booking of bookings) {
+    ical += `BEGIN:VEVENT
+UID:${booking.id}@hosthub.app
+DTSTART:${formatICalDate(booking.check_in)}
+DTEND:${formatICalDate(booking.check_out)}
+SUMMARY:Reserved
+END:VEVENT
+`;
+  }
+
+  ical += 'END:VCALENDAR';
+  return ical;
+}
+```
+
+### 9. Non-Functional Requirements
+
+- Calendar updates in < 1 second
+- Support 100+ properties
+- Photo uploads < 10 seconds
+- Mobile responsive
+
+### 10. Out of Scope (V1)
+
+- Direct booking website
+- Dynamic pricing engine
+- Payment processing
+- Channel manager API
+- Multi-user teams
+- Guest portal
+- Smart lock integration
+
+### 11. Success Criteria
+
+- Property added in < 10 minutes
+- No double bookings
+- Clear financial overview
+
+### 12. Timeline
+
+**Full Demo Build**: 1 week+ (50+ hours)
+- Days 1-2: Auth, property CRUD, photos
+- Days 3-4: Calendar, availability
+- Days 5-6: Bookings, guests
+- Days 7-8: Messaging, expenses
+- Days 9-10: Dashboard, analytics, polish
+
+

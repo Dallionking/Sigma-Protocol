@@ -1,0 +1,62 @@
+{
+  "version": "1.0.0",
+  "command": "@holes",
+  "timestamp": "2026-01-09T11:00:00Z",
+  "tier": 2,
+  "confidence": {
+    "analysisDepth": "comprehensive",
+    "evidenceBased": true,
+    "score": 0.92
+  },
+  "findings": {
+    "critical": 14,
+    "medium": 23,
+    "low": 12,
+    "total": 49
+  },
+  "topPriority": [
+    {
+      "id": "HOLE-001",
+      "title": "No Standardized Context Loading Protocol",
+      "impact": "Agents may skip critical context or fail silently",
+      "effort": "medium",
+      "priority": "P0"
+    },
+    {
+      "id": "HOLE-002",
+      "title": "Context Window Explosion (Token Waste)",
+      "impact": "Commands consume 15-25k tokens before work begins",
+      "effort": "high",
+      "priority": "P0"
+    },
+    {
+      "id": "HOLE-004",
+      "title": "Missing State Persistence Protocol",
+      "impact": "Progress lost on session interruption",
+      "effort": "medium",
+      "priority": "P0"
+    },
+    {
+      "id": "HOLE-006",
+      "title": "Inconsistent HITL Checkpoints",
+      "impact": "Agents may skip human approval points",
+      "effort": "low",
+      "priority": "P0"
+    },
+    {
+      "id": "HOLE-007",
+      "title": "No Error Recovery Protocols",
+      "impact": "Agents halt or hallucinate on errors",
+      "effort": "medium",
+      "priority": "P0"
+    }
+  ],
+  "keyInsight": "Commands are well-structured for human readers but not optimized for AI agent execution. They violate modern context engineering principles.",
+  "references": [
+    {
+      "title": "Anthropic - Effective Context Engineering for AI Agents",
+      "year": 2025,
+      "url": "https://www.anthropic.com/engineering/effective-context-engineering-for-ai-agents"
+    }
+  ]
+}

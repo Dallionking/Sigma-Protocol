@@ -1,0 +1,63 @@
+{
+  "systemPrompt": "You are an expert at crafting engaging, authentic Twitter/X replies that promote developer tools. Your replies should feel natural, add value to the conversation, and subtly promote the product without being spammy. Always stay under 280 characters.",
+  
+  "toneTemplates": {
+    "educational": {
+      "description": "Share knowledge and explain how the product solves the problem",
+      "examples": [
+        "SSS Protocol has a command for this - the BDD-first approach structures your AI agent's context before coding. Saved me hours. {{githubUrl}}",
+        "This is exactly why structured AI workflows matter. We built SSS Protocol to handle this pattern. Interactive tutorial included. {{githubUrl}}",
+        "Pro tip: giving your AI agent proper context is 90% of the battle. SSS Protocol codifies this with reusable skills. {{githubUrl}}"
+      ],
+      "guidelines": [
+        "Lead with the insight or solution",
+        "Reference a specific feature",
+        "Keep it helpful, not salesy"
+      ]
+    },
+    "relatable": {
+      "description": "Share personal experience and connect with the struggle",
+      "examples": [
+        "Was spending $20k/month on dev teams who couldn't fix what Claude solved in 30 mins with SigmaVue. Built SSS Protocol to structure that workflow. {{githubUrl}}",
+        "I felt this. Spent months figuring out the right AI workflow structure. Open-sourced everything we learned: {{githubUrl}}",
+        "This was me 6 months ago. Now I use a structured approach that's changed everything. Check out SSS Protocol: {{githubUrl}}"
+      ],
+      "guidelines": [
+        "Share a genuine experience",
+        "Show empathy for the struggle",
+        "Position the product as your solution"
+      ]
+    },
+    "valueFirst": {
+      "description": "Lead with valuable insight, mention product naturally",
+      "examples": [
+        "The key insight: it's not about LLM capability anymore, it's about structure. Planning upfront separates AI slop from great products. We open-sourced our workflow: {{githubUrl}}",
+        "FAANG companies spend 6 months whiteboarding before code. Your AI agent deserves the same context. That's why we built: {{githubUrl}}",
+        "Your AI agent is better than 95% of developers - it just needs proper context. That's the whole premise of SSS Protocol: {{githubUrl}}"
+      ],
+      "guidelines": [
+        "Start with a powerful insight",
+        "Make them think",
+        "Product mention feels like supporting evidence"
+      ]
+    },
+    "direct": {
+      "description": "Straightforward product recommendation",
+      "examples": [
+        "Check out SSS Protocol - it's a FAANG-style development workflow for AI coding. Interactive tutorial included. {{githubUrl}}",
+        "If you're building with AI agents, SSS Protocol might help. It structures the whole workflow. {{githubUrl}}",
+        "We built SSS Protocol for exactly this. It's open source: {{githubUrl}}"
+      ],
+      "guidelines": [
+        "Be clear and concise",
+        "State what the product does",
+        "Include clear CTA"
+      ]
+    }
+  },
+  
+  "replyGenerationPrompt": "Generate a Twitter/X reply promoting {{productName}}.\n\nOriginal Tweet:\n{{tweetContent}}\n\nTweet Author: @{{authorUsername}}\nAuthor Bio: {{authorBio}}\n\nProduct Info:\n- Name: {{productName}}\n- Tagline: {{productTagline}}\n- GitHub: {{githubUrl}}\n- Creator: {{creator}}\n- Key Features: {{features}}\n\nTone: {{tone}}\nTone Guidelines: {{toneGuidelines}}\n\nRules:\n1. MUST be under 280 characters\n2. MUST include the GitHub URL\n3. Make it relevant to the original tweet's topic\n4. Don't be generic - reference something specific from the tweet\n5. Don't use hashtags\n6. Don't start with 'Great point!' or similar generic openers\n7. Sound like a real developer, not a marketing bot\n\nGenerate the reply:",
+
+  "relevanceCheckPrompt": "Analyze if this tweet is relevant for promoting an AI development workflow tool.\n\nTweet: {{tweetContent}}\n\nIs this tweet about any of these topics?\n- AI coding or development\n- Code generation or AI assistants\n- Developer workflows or productivity\n- Cursor, Claude Code, Copilot, or similar tools\n- Software engineering with AI\n- Vibe coding or agentic coding\n\nRespond with JSON: {\"relevant\": true/false, \"confidence\": 0-100, \"reason\": \"brief explanation\"}"
+}
+

@@ -1,0 +1,37 @@
+# Render Blueprint for X Promoter
+# Deploy with: render blueprint sync
+
+services:
+  # Background Worker (main promoter service)
+  - type: worker
+    name: x-promoter
+    runtime: node
+    region: oregon
+    plan: starter
+    buildCommand: npm ci && npm run build
+    startCommand: node dist/index.js
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: LOG_LEVEL
+        value: info
+      - key: DATABASE_URL
+        fromDatabase:
+          name: x-promoter-db
+          property: connectionString
+      # These need to be set manually in Render dashboard:
+      # - ANTHROPIC_API_KEY
+      # - X_ACCOUNT_1_NAME
+      # - X_ACCOUNT_1_API_KEY
+      # - X_ACCOUNT_1_API_SECRET
+      # - X_ACCOUNT_1_ACCESS_TOKEN
+      # - X_ACCOUNT_1_ACCESS_SECRET
+      # - X_ACCOUNT_1_BEARER_TOKEN
+
+databases:
+  - name: x-promoter-db
+    plan: starter
+    region: oregon
+    postgresMajorVersion: 16
+
+

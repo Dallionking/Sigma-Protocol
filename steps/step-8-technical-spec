@@ -1,7 +1,8 @@
 ---
-version: "2.2.0"
-last_updated: "2025-12-20"
+version: "2.3.0"
+last_updated: "2026-01-07"
 changelog:
+  - "2.3.0: Added Step 11 PRD Framework Alignment section in Phase H - ensures technical specs align with Step 11's new backend frameworks (OWASP, RLS, Result Pattern, etc.)"
   - "2.2.0: Added Boilerplate Foundation section for documenting extensions vs full system specs"
   - "2.1.0: Added TanStack Start as web framework option, added icon library recommendations (Lucide, Phosphor), expanded framework decision guide"
   - "2.0.0: Renumbered from Step 6 to Step 8 in 13-step workflow"
@@ -59,7 +60,7 @@ This command:
 
 ```bash
 # Check for boilerplate
-cat .sss/boilerplate.json 2>/dev/null
+cat .sigma/boilerplate.json 2>/dev/null
 ```
 
 ### If Boilerplate Detected
@@ -954,6 +955,27 @@ Reference Step 2 Architecture decisions. The technologies below are **templates*
    - Worker processes
    - Job scheduling (cron)
    - Retry logic and dead letter queue
+
+6) **Step 11 PRD Framework Alignment** (Cross-Reference):
+
+   **Technical specs in Step 8 MUST align with these Step 11 frameworks:**
+
+   | Framework | Step 8 Responsibility | Step 11 PRD Will Expect |
+   |-----------|----------------------|------------------------|
+   | **Vertical Slice (Bogard)** | Establish feature boundaries | Each PRD = complete slice (DB + API + UI) |
+   | **Google API Design** | Define resource naming conventions | Endpoints follow `GET /resources`, `POST /resources` |
+   | **Railway-Oriented (Wlaschin)** | Define Result type pattern | Server actions return `Result<T, E>`, not throw |
+   | **Zod Best Practices** | Specify validation approach | Schemas colocated with actions, types inferred |
+   | **OWASP API Security Top 10** | Document security baseline | Each PRD addresses BOLA, auth, rate limiting |
+   | **Supabase RLS** | Define RLS policy patterns | Each new table has explicit RLS policies |
+   | **Server Actions (Next.js)** | Specify action patterns | Actions validate input, check auth, return Result |
+   | **Feature-Sliced Design** | Define folder structure | Components organized by layer (features/entities/shared) |
+
+   **Consistency Checks:**
+   - [ ] Result type pattern defined in Tech Spec → Used in all PRD server actions
+   - [ ] RLS policy patterns established → PRDs reference patterns by name
+   - [ ] API conventions defined → PRDs follow conventions
+   - [ ] Security baseline documented → PRDs inherit baseline + add feature-specific
 
 **HITL checkpoint →** Confirm backend architecture.  
 **Prompt:** "Approve backend spec? Reply `approve backend` or `revise: …`."

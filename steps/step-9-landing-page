@@ -1,7 +1,9 @@
 ---
-version: "2.1.0"
-last_updated: "2025-12-07"
+version: "2.3.0"
+last_updated: "2026-01-07"
 changelog:
+  - "2.3.0: Added Superdesign AI Design Agent for rapid landing page mockup generation. References superdesign-integration.md foundation skill"
+  - "2.2.0: Added Monorepo Deployment Note in Phase E for Turborepo/Nx projects, references monorepo-architecture.md"
   - "2.1.0: Added icon library recommendations (Lucide React) for landing page consistency, added quality gates"
   - "2.0.0: Renumbered from Step 7 to Step 9 in 13-step workflow"
   - "1.0.0: Initial release as Step 7"
@@ -55,6 +57,52 @@ This command:
 
 **Note on Wireframe Integration:**
 While this step uses Magic UI templates for landing page scaffolding, you can also use Step 5 (Wireframe Prototypes) for landing page design if you prefer building wireframes first. If Step 5 was completed, reference `/wireframes/` for the landing page prototype and `/docs/wireframes/screenshots/` for visual references.
+
+---
+
+## SUPERDESIGN RAPID LANDING PAGE DESIGN (OPTIONAL — RECOMMENDED)
+
+**[Superdesign](https://superdesign.dev)** accelerates landing page design by generating multiple mockup variations from natural language. Use it **before template selection** to explore design options.
+
+### Superdesign Prompts for Landing Pages
+
+| Section | Superdesign Prompt |
+|---------|-------------------|
+| **Hero** | "Design 5 hero section variations with headline, subheadline, CTA button, and product screenshot placeholder. Style: Premium SaaS, dark theme" |
+| **Features** | "Create a features section with 3 feature cards, icons, and descriptions. Style: Bento grid layout" |
+| **Pricing** | "Design a pricing section with 3 tiers, toggle for monthly/annual, and highlighted recommended plan" |
+| **Testimonials** | "Generate a testimonials section with 3 customer quotes, avatars, and company logos" |
+| **CTA** | "Design a final CTA section with urgency copy and email capture form" |
+
+### Workflow Integration
+
+```
+1. Complete Part 3 (Landing Page Copy) first
+2. Open Superdesign sidebar
+3. Prompt: "Design landing page hero for [PRODUCT]: [HEADLINE]. Style: [REFERENCE]"
+4. Generate 3-5 variations
+5. Fork best option, iterate
+6. Use output to inform Magic UI template selection
+7. Extract design tokens with superdesign_extract_system
+```
+
+### Style Transfer Examples
+
+```
+"Design a landing page hero in the style of Linear.app:
+- Dark theme with subtle gradients
+- Large bold headline
+- Product screenshot with glow effect
+- Minimal, premium feel"
+
+"Design a landing page hero in the style of Stripe:
+- Clean white background
+- Colorful gradient accents
+- Product demo animation placeholder
+- Trust badges"
+```
+
+> **📚 Reference:** See `/src/foundation-skills/superdesign-integration.md` for detailed prompt patterns.
 
 ---
 
@@ -806,6 +854,20 @@ When designing landing page interactions, reference these frameworks:
 ### Phase A2 — Create Customer Avatars (5 Stages of Market Awareness)
 Based on **Eugene Schwartz's Breakthrough Advertising** framework, create **one detailed avatar** for the **Problem Aware** stage (most important for SaaS conversions):
 
+**IMPORTANT — Market Sophistication Assessment (Schwartz):**
+
+Before writing copy, also determine your market's sophistication level:
+
+| Level | Indicators | Positioning Strategy |
+|-------|------------|---------------------|
+| **1 - First** | Virgin market, no competitors | Direct claim: "Get [result]" |
+| **2 - Second** | Claims exist but not maximized | Enlarged claim: "Get [specific result] in [timeframe]" |
+| **3 - Third** | Claims saturated, need differentiation | Introduce mechanism: "The [Name] Protocol" |
+| **4 - Fourth** | Mechanisms used by competitors | Super-mechanism: "The ONLY [type] that..." |
+| **5 - Fifth** | Everything done, claims exhausted | Identity: "For [specific identity] who..." |
+
+**Your Market Sophistication Level**: _____ (impacts all headline and claim strategies)
+
 **Problem Aware Avatar** (1000+ words):
 - **Demographics**: Name, age, job, income, location, education
 - **Psychographics**: Personality traits, values, life victories/failures
@@ -857,11 +919,48 @@ Each entry should:
 - Use their specific language patterns
 - Be psychologically authentic
 
+### Five Drivers Integration (Blair Warren Framework)
+
+**For each diary entry, capture these emotional elements:**
+
+| Diary Entry | Primary Five Driver | What to Extract |
+|-------------|--------------------|-----------------| 
+| **Entry 1: The Awakening** | Confirm Suspicions | What did they suspect was wrong? When did they realize it? |
+| **Entry 2: The Struggle** | Justify Failures | What have they tried? Why do they blame themselves? |
+| **Entry 3: The Search** | Throw Rocks at Enemies | Who/what frustrated them in their search? What felt like a scam? |
+| **Entry 4: The Doubt** | Allay Fears | What specific fears hold them back? What keeps them up at night? |
+| **Entry 5: The Hope** | Encourage Dreams | What dream are they starting to believe again? What would success look like? |
+
+**Five Drivers Extraction Template:**
+
+```markdown
+## Five Drivers Analysis (from Diary Entries)
+
+### Dreams to Encourage
+[What dream emerged in Entry 5? Quote their language.]
+
+### Failures to Justify
+[What failed attempts from Entry 2/3? What external reason explains the failure?]
+
+### Fears to Allay
+[What specific fears from Entry 4? List top 3.]
+1. 
+2. 
+3. 
+
+### Suspicions to Confirm
+[What did they suspect was wrong from Entry 1? What evidence confirms it?]
+
+### Enemies to Fight
+[Who/what frustrated them from Entry 3? What's the common enemy?]
+```
+
 Extract from diaries:
 - **Dominant emotions** (pain points)
 - **Key language patterns** (how they talk about the problem)
 - **Emotional triggers** (what drives decisions)
 - **Conversion opportunities** (hooks for landing page copy)
+- **Five Drivers mapping** (for messaging strategy)
 
 **HITL checkpoint →** Show diary entries and emotional insights.  
 **Prompt:** "Approve diaries? Reply `approve diaries` or `revise: …`."
@@ -1223,6 +1322,62 @@ Even 1 hour saved/week at $100/hr = $400/mo value.
 
 ---
 
+#### Section 12.5: NESB Landing Page Audit (Kyle Milligan Framework)
+
+**Before finalizing, validate your landing page triggers all four emotional responses:**
+
+The NESB Framework ensures your copy makes prospects feel the offer is **N**ew, **E**asy, **S**afe, and **B**ig.
+
+**Score each section 1-10 (aim for 7+ on each):**
+
+### Above the Fold Audit
+| Trigger | Question | Score |
+|---------|----------|-------|
+| **NEW** | Does headline signal a novel mechanism/discovery? | ___/10 |
+| **EASY** | Does subhead/visual suggest simplicity? | ___/10 |
+| **SAFE** | Is there a trust signal (social proof, guarantee)? | ___/10 |
+| **BIG** | Does the promise feel transformational? | ___/10 |
+
+### Body Copy Audit
+| Trigger | Implementation | Present? |
+|---------|----------------|----------|
+| **NEW** | Mechanism named? Discovery narrative? | [ ] |
+| **EASY** | Steps numbered (3-5)? Time stated? Skills NOT needed mentioned? | [ ] |
+| **SAFE** | Similar-person testimonials? Performance anxiety addressed? | [ ] |
+| **BIG** | Specific numbers? Timeline? Identity transformation? | [ ] |
+
+### Offer Section Audit
+| Trigger | Implementation | Present? |
+|---------|----------------|----------|
+| **NEW** | Urgency/scarcity creates "limited opportunity" feeling? | [ ] |
+| **EASY** | CTA implies simple next step (not intimidating)? | [ ] |
+| **SAFE** | Guarantee stacking maximizes risk reversal? | [ ] |
+| **BIG** | Value presentation amplifies transformation? | [ ] |
+
+**NESB Total Score**: N___/10 E___/10 S___/10 B___/10 = ___/40
+
+**Minimum passing**: 28/40 (7 avg) | **Strong**: 32/40 (8 avg)
+
+**If any trigger scores below 7, strengthen before launching.**
+
+---
+
+#### Section 12.6: Five Drivers Audit (Blair Warren Framework)
+
+**Verify all five psychological drivers are addressed somewhere on the page:**
+
+| Driver | Present? | Location | Strength (1-10) |
+|--------|----------|----------|-----------------|
+| **Encourage Dreams** | [ ] Yes [ ] No | _____________ | ___ |
+| **Justify Failures** | [ ] Yes [ ] No | _____________ | ___ |
+| **Allay Fears** | [ ] Yes [ ] No | _____________ | ___ |
+| **Confirm Suspicions** | [ ] Yes [ ] No | _____________ | ___ |
+| **Throw Rocks at Enemies** | [ ] Yes [ ] No | _____________ | ___ |
+
+**Five Drivers Minimum**: At least 4 of 5 drivers should be present.
+
+---
+
 #### Section 13: Design System Implementation
 **Visual Design**:
 - **Color Palette**: Primary colors for CTAs, semantic colors for trust badges
@@ -1318,6 +1473,26 @@ Even 1 hour saved/week at $100/hr = $400/mo value.
 
 **HITL checkpoint →** Confirm scaffolding plan.  
 **Prompt:** "Ready to scaffold [Template] components into your project? Reply `approve scaffold`."
+
+### Monorepo Deployment Note (If Applicable)
+
+If Step 1 selected a **monorepo structure**, the landing page should be deployed from the correct app:
+
+| Structure | Landing Page Location | Deployment |
+|-----------|----------------------|------------|
+| **Single repo** | `src/app/(marketing)/` | Standard Vercel deploy |
+| **Monorepo (Turborepo)** | `apps/web/app/(marketing)/` | Vercel with `apps/web` as root |
+| **Monorepo (Nx)** | `apps/marketing/` or `apps/web/` | Vercel or Nx Cloud |
+
+**Vercel Monorepo Config** (`apps/web/vercel.json`):
+```json
+{
+  "installCommand": "pnpm install --filter=web...",
+  "buildCommand": "cd ../.. && pnpm turbo build --filter=web"
+}
+```
+
+> **📚 Monorepo Reference:** See `/src/foundation-skills/monorepo-architecture.md` for detailed deployment patterns.
 
 ---
 

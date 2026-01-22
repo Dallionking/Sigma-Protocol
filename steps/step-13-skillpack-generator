@@ -1,9 +1,10 @@
 ---
-version: "1.4.0"
-last_updated: "2026-01-05"
+version: "1.5.0"
+last_updated: "2026-01-07"
 changelog:
+  - "1.5.0: Added Full-Stack Enforcement skills (full-stack-enforcement, api-security, server-actions-patterns, agentic-prd-compliance) to align with Step 11 v3.0.0 requirements"
   - "1.4.0: Clarified relationship with Foundation Skills (Step 0) — Step 13 creates project overlays, not foundation skills"
-  - "1.3.0: Added interactive platform selection (HITL) with .sss/config.json persistence"
+  - "1.3.0: Added interactive platform selection (HITL) with .sigma/config.json persistence"
   - "1.2.0: Added OpenCode skill generation (.opencode/skill/*) + optional OpenCode agents"
   - "1.1.0: Added multi-root workspace mode — centralize skills/rules in docs/.cursor/ with fan-out pattern"
   - "1.0.0: Initial release — Step 13 Skillpack Generator (Cursor + Claude Code)"
@@ -26,7 +27,7 @@ parameters:
 Generate a **project-tailored Skillpack** that makes the right “expert mode” auto-trigger for both:
 
 - **Cursor IDE** (rule modules): `.cursor/rules/*.mdc` + router updates in `.cursorrules`
-- **Claude Code** (skills): `.claude/skills/*/SKILL.md` + a reusable plugin scaffold (`claude-code/plugins/sss-skillpack/`)
+- **Claude Code** (skills): `.claude/skills/*/SKILL.md` + a reusable plugin scaffold (`claude-code/plugins/sigma-skillpack/`)
 
 **Context:** You are the **Skillpack Architect**. You do not write generic prompts; you produce *auto-triggering, project-constrained* skill modules that build on the Foundation Skills installed in Step 0.
 
@@ -80,6 +81,45 @@ Preserve proven popular skill prompting styles (ex: `frontend-design`) and add a
 
 ## Preflight
 
+### 0) Check Foundation Skills (NEW)
+
+**Before generating project overlays, ensure Foundation Skills are installed:**
+
+```bash
+# Check if foundation skills exist
+# Cursor
+ls .cursor/rules/*.mdc 2>/dev/null | wc -l
+
+# Claude Code
+ls .claude/skills/*/SKILL.md 2>/dev/null | wc -l
+
+# OpenCode
+ls .opencode/skill/*/SKILL.md 2>/dev/null | wc -l
+```
+
+**If foundation skills are missing:**
+
+```markdown
+## ⚠️ Foundation Skills Not Found
+
+Step 13 generates project-specific overlays that build ON TOP of Foundation Skills.
+However, I couldn't find the base Foundation Skills installed.
+
+**To install Foundation Skills, run:**
+```bash
+npx sigma-protocol install
+```
+
+Or install skills only:
+```bash
+npx sigma-protocol install-skills --platform [cursor|claude-code|opencode|all]
+```
+
+> ⏸️ Reply `installed` after running the command, or `skip` to generate overlays without foundation skills (not recommended).
+```
+
+**If skills are found:** Proceed to Platform Selection.
+
 ### 1) Interactive Platform Selection (HITL)
 
 **Instead of auto-detecting, ASK the user which platforms to generate for:**
@@ -105,11 +145,11 @@ Detection hints:
 > ⏸️ Awaiting your response before continuing...
 ```
 
-**After selection, persist to `.sss/config.json`:**
+**After selection, persist to `.sigma/config.json`:**
 
 ```json
 {
-  "$schema": "./schemas/sss-config.schema.json",
+  "$schema": "./schemas/sigma-config.schema.json",
   "version": "1.0.0",
   "platforms": {
     "cursor": true,
@@ -121,7 +161,7 @@ Detection hints:
 ```
 
 **On subsequent runs:**
-- If `.sss/config.json` exists, load saved preferences
+- If `.sigma/config.json` exists, load saved preferences
 - Show: "Using saved platform selection. Override? [y/N]"
 - If user types "y", re-prompt; otherwise use saved config
 
@@ -187,6 +227,10 @@ Detect which domains to generate based on evidence:
 | Backend/API | repo has `app/api/**` or `actions/**` OR PRDs mention endpoints/actions | `backend-engineering` |
 | Database | stack mentions `supabase|drizzle|prisma|postgres` OR migrations/schema folders exist | `database-modeling` |
 | Payments (conditional) | PRDs/code mention `stripe|billing|subscription|credits` | `payments-subscriptions` |
+| **Full-Stack (NEW)** | PRDs contain `SECTION 0.5` or `FULL STACK OVERVIEW` OR `actions/**/*.ts` exist | `full-stack-enforcement` |
+| **API Security (NEW)** | PRDs mention `OWASP` or `RLS` OR `supabase` in stack | `api-security` |
+| **Server Actions (NEW)** | repo has `actions/**` OR PRDs contain `use server` patterns | `server-actions-patterns` |
+| **Agentic PRD (NEW)** | PRDs contain `SECTION 15` or `File Manifest` or `Implementation Order` | `agentic-prd-compliance` |
 
 Keep the initial set small; prioritize quality over breadth.
 
@@ -219,6 +263,32 @@ Create/update rule modules with strong metadata (`globs`, `keywords`).
 
 - `.cursor/rules/database-modeling.mdc` (if DB detected)
 - `.cursor/rules/payments-subscriptions.mdc` (if payments detected)
+
+### Full-Stack Enforcement (NEW — from Step 11 v3.0.0)
+
+3) `.cursor/rules/full-stack-enforcement.mdc` (if full-stack detected)
+- Enforces: PRDs must include Section 0.5 (Full Stack Overview), no orphan UIs, every data-fetching component has server action
+- Metadata:
+  - `globs: ["docs/prds/**/*.md", "actions/**/*", "components/**/*"]`
+  - `keywords: ["prd", "full-stack", "backend", "server action", "vertical slice"]`
+
+4) `.cursor/rules/api-security.mdc` (if API/Supabase detected)
+- Enforces: OWASP API Security Top 10, RLS policies, auth checks, rate limiting, Result pattern
+- Metadata:
+  - `globs: ["actions/**/*", "app/api/**/*", "db/**/*", "supabase/**/*"]`
+  - `keywords: ["security", "auth", "rls", "owasp", "validation", "rate limit"]`
+
+5) `.cursor/rules/server-actions-patterns.mdc` (if server actions detected)
+- Enforces: Zod validation first, auth check second, Result pattern return, revalidatePath after mutations
+- Metadata:
+  - `globs: ["actions/**/*", "app/**/*.ts", "app/**/*.tsx"]`
+  - `keywords: ["server action", "use server", "zod", "validation", "mutation"]`
+
+6) `.cursor/rules/agentic-prd-compliance.mdc` (if agentic PRD patterns detected)
+- Enforces: Explicit file paths, complete imports, implementation order, test paths, no ambiguity
+- Metadata:
+  - `globs: ["docs/prds/**/*.md"]`
+  - `keywords: ["prd", "file manifest", "implementation order", "agentic", "cursor", "claude"]`
 
 ### Router update
 
@@ -355,6 +425,391 @@ The plugin skills should match the project-local skills (same overlay + same tri
 
 ---
 
+## Phase 6: Generate @invokes Metadata (Ralph Loop Integration)
+
+**Purpose:** Enable Ralph Loop to automatically select the right agent/skill based on task type and acceptance criteria.
+
+**Location:** Add to CLAUDE.md or AGENTS.md (depending on platform)
+
+### 6.1 Generate Agent Invocation Map
+
+Create a machine-readable section that maps file patterns to agents:
+
+```markdown
+## Agent & Skill Invocation Map
+
+<!-- Machine-readable section for Ralph Loop agent selection -->
+
+### By Task Pattern
+
+| Task Pattern | Invoke | Fallback |
+|--------------|--------|----------|
+| `**/components/**` | `@frontend-engineer` | `@senior-architect` |
+| `**/app/**/page.tsx` | `@frontend-engineer` | `@ux-director` |
+| `**/api/**`, `**/routes/**` | `@lead-architect` | `@senior-architect` |
+| `**/actions/**` | `@lead-architect` | `@backend-engineering` |
+| `**/*.test.*`, `**/*.spec.*` | `@qa-engineer` | `@senior-qa` |
+| `**/styles/**`, `**/design/**` | `@design-systems-architect` | `@ux-director` |
+| `**/db/**`, `**/schema/**` | `@lead-architect` | `@senior-architect` |
+| `**/hooks/**` | `@frontend-engineer` | `@senior-architect` |
+| `docs/prds/**` | `@product-owner` | `@senior-architect` |
+
+### By Acceptance Criteria Type
+
+| Criteria Type | Validator Hook | Primary Agent |
+|---------------|----------------|---------------|
+| `ui-validation` | `ui-validation.sh` | `@frontend-engineer` + Agent Browser |
+| `command` | `typescript-validator.sh` | `@qa-engineer` |
+| `file-exists` | `prd-validator.py` | (Story assignee) |
+| `file-contains` | `prd-validator.py` | (Story assignee) |
+| `artifact-check` | `design-tokens-validator.py` | `@design-systems-architect` |
+| `manual` | (none) | HITL required |
+
+### Skills Auto-Loaded
+
+Based on this project's stack, these skills are pre-loaded for all Ralph Loop sessions:
+
+<!-- Auto-generated from stack-profile.json -->
+- `@frontend-design` (React/Next.js detected)
+- `@api-design-principles` (API routes detected)
+- `@quality-gates` (CI/CD present)
+- `@systematic-debugging` (Always loaded for error recovery)
+```
+
+### 6.2 Skill Invocation Rules
+
+Add to each generated skill/rule:
+
+**In Cursor rules (`.mdc` files), add metadata block:**
+
+```yaml
+---
+globs: ["**/components/**/*.tsx"]
+keywords: ["ui", "component", "tailwind"]
+# Ralph Loop Integration
+ralph_invokes:
+  agents: ["frontend-engineer", "ux-director"]
+  validators: ["ui-validation.sh", "typescript-validator.sh"]
+  ac_types: ["ui-validation", "file-exists"]
+---
+```
+
+**In Claude Code skills (`SKILL.md`), add frontmatter:**
+
+```yaml
+---
+name: frontend-aesthetics
+description: "..."
+version: "1.0.0"
+# Ralph Loop Integration
+invokes:
+  agents:
+    primary: "@frontend-engineer"
+    fallback: "@senior-architect"
+  validators:
+    - name: "ui-validation"
+      hook: ".claude/hooks/validators/ui-validation.sh"
+      triggers: ["component", "page"]
+    - name: "typescript"
+      hook: ".claude/hooks/validators/typescript-validator.sh"
+      triggers: ["*.ts", "*.tsx"]
+  acceptance_criteria_types:
+    - ui-validation
+    - file-exists
+    - file-contains
+---
+```
+
+### 6.3 Generate Invocation Index (AUTO-GENERATED)
+
+**IMPORTANT:** This file MUST be auto-generated during Step 13 execution.
+
+```typescript
+async function generateInvokesJson(
+  targetDir: string,
+  stackProfile: object,
+  generatedSkills: string[]
+): Promise<void> {
+  const timestamp = new Date().toISOString();
+
+  // Detect stack from stack-profile.json
+  const hasReact = stackProfile?.frontend?.includes('react') || stackProfile?.framework?.includes('next');
+  const hasSupabase = stackProfile?.database?.includes('supabase') || stackProfile?.backend?.includes('supabase');
+  const hasStripe = stackProfile?.payments?.includes('stripe') || stackProfile?.integrations?.includes('stripe');
+  const hasServerActions = await glob('**/actions/**/*.ts').length > 0;
+
+  // Build task type patterns from detected evidence
+  const taskTypePatterns: Record<string, string> = {};
+  if (hasReact) {
+    taskTypePatterns['UI-*'] = '@frontend-engineer';
+  }
+  if (hasServerActions || hasSupabase) {
+    taskTypePatterns['API-*'] = '@senior-architect';
+    taskTypePatterns['DB-*'] = '@senior-architect';
+  }
+  taskTypePatterns['TEST-*'] = '@qa-engineer';
+  taskTypePatterns['VERIFY-*'] = '@qa-engineer';
+
+  // Build stack-based skills
+  const stackBasedSkills: string[] = [];
+  if (hasReact) stackBasedSkills.push('frontend-design', 'react-performance');
+  if (hasSupabase) stackBasedSkills.push('api-security', 'database-modeling');
+  if (hasStripe) stackBasedSkills.push('payments-subscriptions');
+
+  const invokesJson = {
+    "$schema": "../schemas/invokes.schema.json",
+    "version": "1.0.0",
+    "generatedAt": timestamp,
+    "generatedBy": "step-13-skillpack-generator",
+    "patterns": {
+      "**/components/**": {
+        "primary": "@frontend-engineer",
+        "fallback": "@senior-architect",
+        "validators": ["ui-validation.sh", "typescript-validator.sh"],
+        "skills": generatedSkills.filter(s => s.includes('frontend') || s.includes('design'))
+      },
+      "**/app/**/page.tsx": {
+        "primary": "@frontend-engineer",
+        "fallback": "@ux-director",
+        "validators": ["ui-validation.sh"],
+        "skills": ["frontend-aesthetics"]
+      },
+      "**/api/**": {
+        "primary": "@lead-architect",
+        "fallback": "@senior-architect",
+        "validators": ["typescript-validator.sh"],
+        "skills": ["backend-engineering", "api-security"]
+      },
+      "**/actions/**": {
+        "primary": "@lead-architect",
+        "fallback": "@backend-engineering",
+        "validators": ["typescript-validator.sh"],
+        "skills": ["server-actions-patterns", "backend-engineering"]
+      },
+      "**/db/**": {
+        "primary": "@senior-architect",
+        "fallback": "@lead-architect",
+        "validators": ["typescript-validator.sh"],
+        "skills": ["database-modeling"]
+      },
+      "**/*.test.*": {
+        "primary": "@qa-engineer",
+        "fallback": "@senior-qa",
+        "validators": ["typescript-validator.sh"],
+        "skills": ["quality-gates", "senior-qa"]
+      },
+      "**/styles/**": {
+        "primary": "@design-systems-architect",
+        "fallback": "@frontend-engineer",
+        "validators": ["design-tokens-validator.py"],
+        "skills": ["frontend-aesthetics"]
+      }
+    },
+    "taskTypes": taskTypePatterns,
+    "acceptanceCriteriaTypes": {
+      "ui-validation": {
+        "validator": "ui-validation.sh",
+        "agent": "@frontend-engineer",
+        "requiresBrowser": true,
+        "browserTool": "agent-browser"
+      },
+      "command": {
+        "validator": null,
+        "agent": "@qa-engineer",
+        "requiresBrowser": false
+      },
+      "file-exists": {
+        "validator": "prd-validator.py",
+        "agent": null,
+        "requiresBrowser": false
+      },
+      "file-contains": {
+        "validator": "prd-validator.py",
+        "agent": null,
+        "requiresBrowser": false
+      },
+      "artifact-check": {
+        "validator": "design-tokens-validator.py",
+        "agent": "@design-systems-architect",
+        "requiresBrowser": false
+      },
+      "manual": {
+        "validator": null,
+        "agent": null,
+        "requiresBrowser": false,
+        "requiresHITL": true
+      }
+    },
+    "defaultSkills": [
+      "systematic-debugging",
+      "quality-gates"
+    ],
+    "stackBasedSkills": {
+      "detected": stackBasedSkills,
+      "all": {
+        "react": ["frontend-design", "react-performance"],
+        "next": ["frontend-design", "api-design-principles"],
+        "supabase": ["api-security", "database-modeling"],
+        "stripe": ["payments-subscriptions"]
+      }
+    },
+    "designSystemEnforcement": {
+      "uiProfilePath": "docs/design/ui-profile.json",
+      "enforcedForTasks": ["UI-*"],
+      "validators": ["design-tokens-validator.py", "ui-healer"]
+    }
+  };
+
+  // Ensure .sss directory exists
+  await fs.ensureDir(path.join(targetDir, '.sss'));
+
+  // Write invokes.json
+  await fs.writeFile(
+    path.join(targetDir, '.sss', 'invokes.json'),
+    JSON.stringify(invokesJson, null, 2)
+  );
+
+  console.log(`✅ Generated .sss/invokes.json (skill routing for Ralph loop)`);
+}
+```
+
+**Example output `.sss/invokes.json`:**
+
+```json
+{
+  "$schema": "../schemas/invokes.schema.json",
+  "version": "1.0.0",
+  "generatedAt": "2026-01-21T00:00:00Z",
+  "generatedBy": "step-13-skillpack-generator",
+  "patterns": {
+    "**/components/**": {
+      "primary": "@frontend-engineer",
+      "fallback": "@senior-architect",
+      "validators": ["ui-validation.sh", "typescript-validator.sh"],
+      "skills": ["frontend-aesthetics"]
+    },
+    "**/api/**": {
+      "primary": "@lead-architect",
+      "fallback": "@senior-architect",
+      "validators": ["typescript-validator.sh"],
+      "skills": ["backend-engineering", "api-security"]
+    },
+    "**/actions/**": {
+      "primary": "@lead-architect",
+      "fallback": "@backend-engineering",
+      "validators": ["typescript-validator.sh"],
+      "skills": ["server-actions-patterns", "backend-engineering"]
+    },
+    "**/*.test.*": {
+      "primary": "@qa-engineer",
+      "fallback": "@senior-qa",
+      "validators": ["typescript-validator.sh"],
+      "skills": ["quality-gates"]
+    }
+  },
+  "taskTypes": {
+    "UI-*": "@frontend-engineer",
+    "API-*": "@senior-architect",
+    "DB-*": "@senior-architect",
+    "TEST-*": "@qa-engineer"
+  },
+  "acceptanceCriteriaTypes": {
+    "ui-validation": {
+      "validator": "ui-validation.sh",
+      "agent": "@frontend-engineer",
+      "requiresBrowser": true,
+      "browserTool": "agent-browser"
+    },
+    "command": {
+      "validator": null,
+      "agent": "@qa-engineer",
+      "requiresBrowser": false
+    },
+    "file-exists": {
+      "validator": "prd-validator.py",
+      "agent": null,
+      "requiresBrowser": false
+    },
+    "file-contains": {
+      "validator": "prd-validator.py",
+      "agent": null,
+      "requiresBrowser": false
+    },
+    "artifact-check": {
+      "validator": "design-tokens-validator.py",
+      "agent": "@design-systems-architect",
+      "requiresBrowser": false
+    },
+    "manual": {
+      "validator": null,
+      "agent": null,
+      "requiresBrowser": false,
+      "requiresHITL": true
+    }
+  },
+  "defaultSkills": [
+    "systematic-debugging",
+    "quality-gates"
+  ],
+  "stackBasedSkills": {
+    "react": ["frontend-design", "react-performance"],
+    "next": ["frontend-design", "api-design-principles"],
+    "supabase": ["api-security", "database-modeling"],
+    "stripe": ["payments-subscriptions"]
+  },
+  "designSystemEnforcement": {
+    "uiProfilePath": "docs/design/ui-profile.json",
+    "enforcedForTasks": ["UI-*"],
+    "validators": ["design-tokens-validator.py", "ui-healer"]
+  }
+}
+```
+
+### 6.4 Update CLAUDE.md / AGENTS.md
+
+After generating skills, append the invocation map to the orchestrator file:
+
+**For Claude Code (CLAUDE.md):**
+
+```markdown
+## Ralph Loop Integration
+
+This project is configured for autonomous Ralph Loop execution.
+
+### Quick Start
+\`\`\`bash
+# Run Ralph Loop on all pending stories
+npx sigma ralph
+
+# Run specific PRD
+npx sigma ralph --prd feature-auth
+
+# Dry run (preview only)
+npx sigma ralph --dry-run
+\`\`\`
+
+### Agent Selection
+
+Ralph Loop automatically selects agents based on:
+1. File patterns in the story tasks
+2. Acceptance criteria types
+3. Stack-specific skills
+
+See `.sss/invokes.json` for the full mapping.
+
+### Validator Hooks
+
+Active PostToolUse validators:
+- `ui-validation.sh` - Agent Browser UI checks
+- `typescript-validator.sh` - Type/lint checks
+- `prd-validator.py` - PRD structure validation
+- `design-tokens-validator.py` - Design token checks
+
+These validators enable "Closed Loop Prompt" pattern where agents auto-fix failures.
+```
+
+---
+
 ## Final report
 
 Return:
@@ -364,12 +819,19 @@ Return:
 - Claude skills created/updated (with location)
 - Fan-out script status (if multi-root)
 - Plugin scaffold created/updated
+- **@invokes metadata generated** (patterns, AC types, skills)
+- **`.sss/invokes.json` created**
 - Skipped outputs (and why)
 
 **For multi-root workspaces, also report:**
 - Canonical locations (`docs/.cursor/rules/`, `docs/.claude/skills/`)
 - Repos that will receive synced rules
 - Next steps: Run `scripts/sync-ai-config.sh` to fan out
+
+**For Ralph Loop integration, also report:**
+- Agent invocation patterns detected
+- Validators configured
+- Skills auto-loaded based on stack
 
 ---
 
@@ -413,5 +875,15 @@ If OpenCode is detected, also require:
 | has_pattern:frontend-aesthetics:(Project Anchors|Non-negotiables|Precedence) | Overlay present in frontend skill/module | 10 |
 | has_pattern:backend-engineering:(Project Anchors|Non-negotiables|Precedence) | Overlay present in backend skill/module | 10 |
 | has_pattern:.cursorrules:@import | Router imports present | 10 |
+
+### Ralph Loop Integration (Bonus — 20 points)
+
+| Check | Description | Points |
+|------|-------------|--------|
+| file_exists:.sss/invokes.json | Invokes index generated | 6 |
+| has_pattern:invokes.json:patterns | Pattern-to-agent mapping present | 4 |
+| has_pattern:invokes.json:acceptanceCriteriaTypes | AC type handlers defined | 4 |
+| has_pattern:CLAUDE.md\|AGENTS.md:Ralph Loop Integration | Orchestrator has Ralph section | 3 |
+| has_pattern:SKILL.md:invokes: | At least one skill has invokes metadata | 3 |
 
 </verification>

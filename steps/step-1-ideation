@@ -1,7 +1,9 @@
 ---
-version: "2.0.0"
-last_updated: "2025-12-04"
+version: "2.2.0"
+last_updated: "2026-01-07"
 changelog:
+  - "2.2.0: Added Section 1.2 Project Scope Discovery - determines platform (web/mobile/both), repository structure (monorepo/polyrepo), and team context BEFORE features. Includes Turborepo monorepo structure preview."
+  - "2.1.0: Added Phase 1.75 Technical Feasibility Preview - forces early backend consideration (data entities, integrations, complexity assessment) before feature specification"
   - "2.0.0: SSS 13-step workflow, enhanced MCP research integration"
   - "1.0.0: Initial release"
 description: "Step 1: Ideation → PRD - Interactive research-backed product requirements with specialist personas and HITL review"
@@ -255,7 +257,121 @@ Ask the user for:
 [CONTEXT] - Any existing research, constraints, or prior art?
 ```
 
-### 1.2 Probing Questions (REQUIRED - Do Not Skip)
+### 1.2 Project Scope Discovery (REQUIRED - Determines Entire Architecture)
+
+**Ask these questions BEFORE any other probing. Answers fundamentally change the project structure.**
+
+```markdown
+## 🎯 PROJECT SCOPE QUESTIONNAIRE
+
+### Platform Scope
+
+1. **Primary Platform:** Is this a web app, mobile app, or both?
+
+   > **Quick guide:**
+   > - **Web only**: Runs in browsers (Chrome, Safari, etc.). Users access via URL.
+   > - **Mobile only**: Downloaded from App Store / Play Store. Lives on phone's home screen.
+   > - **Web + Mobile**: Both a website AND a phone app. Common for SaaS products.
+
+   - [ ] Web only (Next.js / TanStack) — *Browser-based, responsive*
+   - [ ] Mobile only (React Native / Expo) — *App Store / Play Store*
+   - [ ] iOS Native only (SwiftUI) — *Apple devices only, best performance*
+   - [ ] Web + Mobile companion app — *Full web app + mobile version*
+   - [ ] Web + Multiple mobile apps (iOS + Android separate)
+
+2. **If Mobile:** Which platforms do you need to support?
+
+   > **Considerations:**
+   > - **iOS only**: ~55% US market, higher spending users, App Store approval process
+   > - **Android only**: ~45% US, ~70% global, more device fragmentation
+   > - **Both**: Maximum reach, but more testing needed. Expo/React Native lets you write once, deploy to both.
+
+   - [ ] iOS only (App Store) — *Higher revenue per user, simpler testing*
+   - [ ] Android only (Play Store) — *Larger global market*
+   - [ ] Both iOS and Android (cross-platform) — *Maximum reach, recommended for most*
+
+3. **If Web + Mobile:** How related are they?
+
+   > **This determines how much code you can share:**
+   > - **Same features**: User can do everything on web OR mobile. Maximum code sharing (~60-80%).
+   > - **Companion app**: Mobile is for on-the-go (notifications, quick actions). Web has full features.
+   > - **Separate products**: Different user bases or use cases. Minimal sharing.
+
+   - [ ] Same features, different interfaces — *Shared backend, shared business logic*
+   - [ ] Mobile is a companion — *Subset of web features, notifications, quick actions*
+   - [ ] Completely separate products — *Different features, different users*
+
+### Repository Architecture
+
+4. **Repository Structure:** (Based on platform answers)
+
+   > **What's the difference?**
+   > - **Single Repo**: One codebase, one project. Simple and straightforward.
+   > - **Monorepo**: Multiple apps (web, mobile, admin) in ONE repository, sharing code. Like how Google and Facebook organize their code. Benefits: shared utilities, consistent versioning, atomic changes across apps.
+   > - **Polyrepo**: Separate repositories for each app, sharing code via published npm packages. Benefits: independent deployments, team autonomy. Downside: harder to keep in sync.
+
+   - [ ] Single repo (web OR mobile only)
+   - [ ] Monorepo (web + mobile + shared packages) — *Recommended for most web+mobile projects*
+   - [ ] Polyrepo (separate repos, shared via npm packages)
+
+5. **If Monorepo:** Which tool?
+
+   > **What's the difference?**
+   > - **Turborepo**: Made by Vercel (creators of Next.js). Simpler to set up, great caching, perfect for Next.js + Expo projects. Think of it as "smart npm scripts" that know which packages changed.
+   > - **Nx**: More powerful, more complex. Has plugins for many frameworks, advanced dependency graph visualization, code generators. Better for large enterprise teams (10+ devs).
+   > - **pnpm workspaces only**: Just the basics—shared node_modules, no build orchestration. Fine for tiny projects, but you'll miss caching benefits.
+
+   - [ ] Turborepo — *Recommended for most projects* (simpler, Vercel ecosystem)
+   - [ ] Nx — *For enterprise/large teams* (more features, steeper learning curve)
+   - [ ] pnpm workspaces only — *For minimal setups* (no caching/orchestration)
+
+### Team & Timeline
+6. **Team Size:** How many developers will work on this?
+   - [ ] Solo developer
+   - [ ] Small team (2-5)
+   - [ ] Larger team (5+)
+
+7. **Timeline:** What's the target MVP launch?
+   - [ ] < 1 month (aggressive)
+   - [ ] 1-3 months (standard)
+   - [ ] 3-6 months (comprehensive)
+   - [ ] 6+ months (enterprise)
+```
+
+**SCOPE IMPACT MATRIX:**
+
+| Scope | Repo Structure | Recommended Stack | Complexity |
+|-------|----------------|-------------------|------------|
+| Web only | Single repo | Next.js + Supabase | Low |
+| Mobile only (cross) | Single repo | Expo + Supabase | Low |
+| iOS only | Single repo | SwiftUI + Supabase | Low |
+| Web + Mobile (shared) | **Monorepo** | Turborepo + Next.js + Expo + shared/ | **Medium** |
+| Web + Mobile (separate) | Polyrepo | Separate repos, npm packages | Medium |
+| Enterprise multi-app | Nx Monorepo | Full Nx with plugins | High |
+
+**Monorepo Structure Preview (if applicable):**
+```
+project/
+├── apps/
+│   ├── web/              # Next.js app
+│   ├── mobile/           # Expo app
+│   └── admin/            # Optional admin dashboard
+├── packages/
+│   ├── ui/               # Shared UI components
+│   ├── utils/            # Shared utilities
+│   ├── api/              # Shared API client / types
+│   └── config/           # Shared ESLint, TypeScript configs
+├── turbo.json            # Turborepo config
+├── pnpm-workspace.yaml   # Workspace definition
+└── package.json          # Root package
+```
+
+**HITL checkpoint →** Confirm project scope before proceeding.
+**Prompt:** "Based on your answers, I recommend: [STRUCTURE]. This affects everything downstream. Confirm or modify?"
+
+---
+
+### 1.3 Probing Questions (REQUIRED - Do Not Skip)
 Before any research, ask **targeted probing questions** to uncover:
 
 **Problem Validation:**
@@ -302,6 +418,60 @@ Based on research, identify and document:
 - **Positioning Gaps:** What positioning angle is unclaimed?
 
 **CHECKPOINT 1:** Present findings to user. Ask: "Based on this research, do you want to proceed, pivot, or refine the idea?"
+
+### 1.4.5 Market Sophistication Assessment (Schwartz Framework)
+
+**Purpose:** Determine how to position your claims based on market maturity.
+
+```markdown
+## Market Sophistication Assessment
+
+### Research Questions
+
+1. **Competitor Claims Audit**
+   - How many competitors make similar direct outcome claims?
+   - Have unique mechanisms been introduced in this market?
+   - Are competitors leading with identity/tribe positioning?
+
+2. **Promise Saturation Check**
+   - What's the default promise in this market?
+   - How specific are existing claims?
+   - What's the most aggressive claim you've seen?
+
+3. **Customer Sophistication**
+   - How many solutions has your target tried?
+   - How skeptical are they of claims?
+   - What language triggers eye-rolls vs. interest?
+
+### Determine Your Market's Level
+
+| Level | Indicators | Positioning Strategy |
+|-------|------------|---------------------|
+| **1 - First** | Virgin market, no competitors | Direct claim: "Get [result]" |
+| **2 - Second** | Claims exist but not maximized | Enlarged claim: "Get [specific result] in [timeframe]" |
+| **3 - Third** | Claims saturated, need differentiation | Introduce unique mechanism: "The [Name] Protocol" |
+| **4 - Fourth** | Mechanisms used by competitors | Super-mechanism: "The ONLY [type] that [unique advantage]" |
+| **5 - Fifth** | Everything done, claims exhausted | Identity/tribe: "For [specific identity] who [qualifier]" |
+
+**Your Market Sophistication Level**: _____
+
+### Positioning Strategy Based on Level
+
+**Level 1-2**: Lead with direct, specific outcome claims
+- "Get [specific result] in [timeframe]"
+
+**Level 3**: Introduce your unique mechanism
+- "The [Mechanism Name] that delivers [result]"
+- Name your methodology (e.g., "The 3-Layer Protocol")
+
+**Level 4**: Position your mechanism as superior
+- "The ONLY [mechanism] that [unique advantage]"
+- "Unlike [other approaches], this [differentiator]"
+
+**Level 5**: Lead with identity and tribe
+- "For [specific identity] who want [result] without [sacrifice]"
+- Build movement, not just product
+```
 
 ---
 
@@ -404,6 +574,88 @@ Run Exa searches for the chosen categories:
 
 **CHECKPOINT 1.5:** Present stack recommendation to user.
 **Prompt:** "Based on your project, I recommend: [STACK]. MCP compatibility: X/10. Approve or modify?"
+
+---
+
+## Phase 1.75: Technical Feasibility Preview (NEW — Prevents Frontend-Only Thinking)
+
+**Purpose:** Before writing features, preview the backend complexity to ensure feasibility and prevent "we'll figure out the backend later" syndrome.
+
+### 1.75.1 Core Data Entities Preview
+
+Identify the primary entities (database tables) this product will need:
+
+```markdown
+## Data Entity Preview
+
+| Entity | Description | Relationships | Complexity |
+|--------|-------------|---------------|------------|
+| users | User accounts | Has many [entities] | Standard |
+| [entity2] | [description] | Belongs to users | [Simple/Medium/Complex] |
+| [entity3] | [description] | [relationships] | [rating] |
+
+**Entity Complexity Ratings:**
+- **Simple**: CRUD only, no real-time, no complex queries
+- **Medium**: Some computed fields, joins, filtering/sorting
+- **Complex**: Real-time sync, aggregations, ML/AI integration, time-series
+```
+
+### 1.75.2 Backend Complexity Assessment
+
+For each major feature area, rate the backend complexity:
+
+| Feature Area | Data Operations | External APIs | Real-Time | Background Jobs | Complexity |
+|--------------|-----------------|---------------|-----------|-----------------|------------|
+| Authentication | CRUD, sessions | OAuth providers | No | Email verification | Medium |
+| [Feature 1] | [operations] | [integrations] | [Yes/No] | [jobs needed] | [rating] |
+| [Feature 2] | [operations] | [integrations] | [Yes/No] | [jobs needed] | [rating] |
+
+**Overall Backend Complexity:** [Simple / Medium / Complex / Very Complex]
+
+### 1.75.3 External Integration Inventory
+
+List ALL external services this product will need:
+
+| Service | Purpose | Required For | SDK/API | Pricing Impact |
+|---------|---------|--------------|---------|----------------|
+| Stripe | Payments | Monetization | @stripe/stripe-js | Transaction fees |
+| Resend | Email | Notifications | @resend/node | Volume-based |
+| [Service] | [purpose] | [feature] | [library] | [cost model] |
+
+### 1.75.4 Technical Risk Flags
+
+Identify any technical risks that could impact the PRD:
+
+| Risk | Impact | Mitigation | Affects Features |
+|------|--------|------------|------------------|
+| [e.g., Rate limiting on external API] | [High/Medium/Low] | [mitigation] | [which features] |
+| [e.g., Complex data aggregations] | [impact] | [mitigation] | [features] |
+
+**HITL checkpoint →** Review technical feasibility.
+**Prompt:** "Technical preview shows [complexity rating] backend. Key entities: [list]. External integrations: [count]. Any concerns before proceeding to feature specification?"
+
+### 1.75.5 Backend Scope Summary (Flows into Steps 5/10/11)
+
+```markdown
+## Backend Scope Summary (Reference for downstream steps)
+
+### Database Tables Anticipated: [N]
+[List with brief purpose]
+
+### Server Actions/API Endpoints Anticipated: [N]
+[Grouped by feature area]
+
+### External Integrations: [N]
+[List with purpose]
+
+### Background Jobs: [N]
+[List with purpose]
+
+### Real-Time Requirements: [Yes/No]
+[If yes, what data needs real-time sync]
+```
+
+**Note to downstream steps:** This preview informs Step 5's Backend Data Operations, Step 10's Backend Scope, and Step 11's Section 0.5 (Full Stack Overview).
 
 ---
 
@@ -734,6 +986,63 @@ Steps 3-12 (Continue normally)
 ```
 
 **HITL Note:** For technical/developer tools, you may skip marketing commands entirely. For B2C SaaS or info products, marketing commands significantly improve conversion.
+
+---
+
+## NESB Offer Validation Checkpoint (Before Handoff)
+
+**Before finalizing your PRD, validate your offer against Kyle Milligan's NESB Framework.**
+
+The most powerful offers trigger four primal emotional responses: **N**ew, **E**asy, **S**afe, **B**ig.
+
+```markdown
+## NESB Validation
+
+### Score Your Offer (1-10 each)
+
+| Trigger | Question | Score |
+|---------|----------|-------|
+| **NEW** | Does this feel genuinely novel? Will they say "I haven't seen this before"? | ___/10 |
+| **EASY** | Does this feel achievable? Will they say "I can actually do this"? | ___/10 |
+| **SAFE** | Have I removed risk? Will they say "I have nothing to lose"? | ___/10 |
+| **BIG** | Is the outcome transformational? Will they say "This is worth it"? | ___/10 |
+
+**Total NESB Score**: ___/40
+
+### Validation Thresholds
+- **32+ (8 avg)**: Strong offer, proceed confidently
+- **28-31 (7 avg)**: Acceptable, minor improvements optional
+- **Below 28**: Strengthen weak triggers before proceeding
+
+### Strengthening Weak Triggers
+
+**If NEW is low (<7)**:
+- Create a proprietary name for your method
+- Add a discovery/origin story
+- Highlight what's different from what they've tried
+
+**If EASY is low (<7)**:
+- Reduce number of steps
+- Add templates/tools/done-for-you elements
+- Specify time commitment clearly
+
+**If SAFE is low (<7)**:
+- Add/strengthen guarantee
+- Include more social proof from similar people
+- Address specific fears explicitly
+
+**If BIG is low (<7)**:
+- Make outcome more specific and measurable
+- Add transformation timeline
+- Paint the after-state more vividly
+
+### NESB Statement
+
+- **NEW**: What makes this genuinely novel? _________________
+- **EASY**: What makes this achievable? _________________
+- **SAFE**: How is risk reversed? _________________
+- **BIG**: What's the specific transformation? _________________
+```
 
 ---
 

@@ -1,0 +1,151 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://sss.dev/schemas/invokes.schema.json",
+  "title": "SSS Invokes Manifest",
+  "description": "Machine-readable manifest for Ralph loop skill/agent routing based on file patterns and task types.",
+  "type": "object",
+  "required": ["$schema", "version", "generatedAt", "generatedBy", "patterns", "acceptanceCriteriaTypes"],
+  "additionalProperties": false,
+  "properties": {
+    "$schema": {
+      "type": "string",
+      "description": "Schema reference"
+    },
+    "version": {
+      "type": "string",
+      "pattern": "^\\d+\\.\\d+\\.\\d+$",
+      "description": "Manifest version (semver)"
+    },
+    "generatedAt": {
+      "type": "string",
+      "format": "date-time",
+      "description": "ISO timestamp when manifest was generated"
+    },
+    "generatedBy": {
+      "type": "string",
+      "description": "Step/tool that generated this manifest"
+    },
+    "patterns": {
+      "type": "object",
+      "description": "File glob patterns mapped to agent/skill configuration",
+      "additionalProperties": {
+        "$ref": "#/definitions/PatternConfig"
+      }
+    },
+    "taskTypes": {
+      "type": "object",
+      "description": "Task ID prefixes (e.g., 'UI-*') mapped to primary agents",
+      "additionalProperties": {
+        "type": "string",
+        "description": "Primary agent for this task type (e.g., '@frontend-engineer')"
+      }
+    },
+    "acceptanceCriteriaTypes": {
+      "type": "object",
+      "description": "Acceptance criteria types mapped to validation configuration",
+      "additionalProperties": {
+        "$ref": "#/definitions/ACTypeConfig"
+      }
+    },
+    "defaultSkills": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Skills always loaded for all Ralph loop sessions"
+    },
+    "stackBasedSkills": {
+      "type": "object",
+      "description": "Stack technology mapped to recommended skills",
+      "properties": {
+        "detected": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Skills detected based on this project's stack"
+        },
+        "all": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "array",
+            "items": { "type": "string" }
+          },
+          "description": "All possible stack-to-skills mappings"
+        }
+      }
+    },
+    "designSystemEnforcement": {
+      "type": "object",
+      "description": "Design system enforcement configuration",
+      "properties": {
+        "uiProfilePath": {
+          "type": "string",
+          "description": "Path to UI profile JSON"
+        },
+        "enforcedForTasks": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Task patterns that require design system compliance (e.g., 'UI-*')"
+        },
+        "validators": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Validator hooks for design compliance"
+        }
+      }
+    }
+  },
+  "definitions": {
+    "PatternConfig": {
+      "type": "object",
+      "required": ["primary"],
+      "description": "Configuration for a file pattern",
+      "properties": {
+        "primary": {
+          "type": "string",
+          "description": "Primary agent for this pattern (e.g., '@frontend-engineer')"
+        },
+        "fallback": {
+          "type": "string",
+          "description": "Fallback agent if primary is unavailable"
+        },
+        "validators": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Validator hooks to run for files matching this pattern"
+        },
+        "skills": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Skills to load for files matching this pattern"
+        }
+      }
+    },
+    "ACTypeConfig": {
+      "type": "object",
+      "description": "Configuration for an acceptance criteria type",
+      "properties": {
+        "validator": {
+          "type": ["string", "null"],
+          "description": "Validator hook script (null if no automated validation)"
+        },
+        "agent": {
+          "type": ["string", "null"],
+          "description": "Agent responsible for this AC type (null if story assignee)"
+        },
+        "requiresBrowser": {
+          "type": "boolean",
+          "default": false,
+          "description": "Whether this AC type requires browser automation"
+        },
+        "browserTool": {
+          "type": "string",
+          "enum": ["agent-browser", "playwright", "any"],
+          "description": "Preferred browser tool (agent-browser is default for Ralph)"
+        },
+        "requiresHITL": {
+          "type": "boolean",
+          "default": false,
+          "description": "Whether this AC type requires human-in-the-loop signoff"
+        }
+      }
+    }
+  }
+}

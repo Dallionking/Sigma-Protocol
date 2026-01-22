@@ -1,0 +1,78 @@
+---
+description: Spawn terminal windows to monitor Ralph loop logs
+globs:
+alwaysApply: false
+---
+
+# /tail - Ralph Log Observability
+
+When the user types `/tail`, spawn terminal windows showing live Ralph loop output.
+
+## Trigger Patterns
+- `/tail`
+- `/tail ios`
+- `/tail web`
+- `/tail --list`
+- `@ralph-tail`
+
+## Implementation
+
+### Step 1: Find Active Logs
+
+```bash
+# Find most recent Ralph logs
+IOS_LOG=$(ls -t /tmp/ralph-ios-*.log 2>/dev/null | head -1)
+WEB_LOG=$(ls -t /tmp/ralph-web-*.log 2>/dev/null | head -1)
+```
+
+### Step 2: Spawn Terminals (macOS)
+
+**For iTerm2:**
+```bash
+osascript -e 'tell application "iTerm"
+  activate
+  create window with default profile
+  tell current session of current window
+    write text "tail -f '"$IOS_LOG"'"
+  end tell
+  create tab with default profile
+  tell current session of current window
+    write text "tail -f '"$WEB_LOG"'"
+  end tell
+end tell'
+```
+
+**For Terminal.app:**
+```bash
+osascript -e 'tell application "Terminal"
+  activate
+  do script "tail -f '"$IOS_LOG"'"
+  do script "tail -f '"$WEB_LOG"'"
+end tell'
+```
+
+### Step 3: Report Status
+
+Tell the user:
+- Which logs were found
+- Which terminal was used
+- Full paths for reference
+
+## Arguments
+
+| Arg | Description |
+|-----|-------------|
+| (none) | Open all active Ralph logs |
+| `ios` | Open only iOS log |
+| `web` | Open only Web log |
+| `--list` | Just show paths, don't spawn terminals |
+
+## Script Location
+
+The full implementation is available at:
+`/Users/dallionking/SSS Projects/SSS-Protocol/scripts/ralph/tail-logs.sh`
+
+Run it directly:
+```bash
+/Users/dallionking/SSS\ Projects/SSS-Protocol/scripts/ralph/tail-logs.sh
+```

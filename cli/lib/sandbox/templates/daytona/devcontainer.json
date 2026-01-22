@@ -1,0 +1,68 @@
+{
+  "name": "Sigma Protocol Sandbox",
+  "image": "node:20",
+  
+  "features": {
+    "ghcr.io/devcontainers/features/python:1": {
+      "version": "3.11"
+    },
+    "ghcr.io/devcontainers/features/git:1": {},
+    "ghcr.io/devcontainers/features/github-cli:1": {}
+  },
+  
+  "postCreateCommand": "bash -c 'npm install -g @anthropic-ai/claude-code agent-hub-mcp sigma-protocol 2>/dev/null || true && mkdir -p .sigma/orchestration ~/.agent-hub && echo \"Sigma sandbox ready\"'",
+  
+  "postStartCommand": "bash -c 'mkdir -p ~/.claude && echo \"{\\\"mcpServers\\\":{\\\"agent-hub\\\":{\\\"command\\\":\\\"npx\\\",\\\"args\\\":[\\\"-y\\\",\\\"agent-hub-mcp@latest\\\"]}}}\" > ~/.claude/mcp.json'",
+  
+  "containerEnv": {
+    "CLAUDE_HEADLESS": "1",
+    "SIGMA_SANDBOX": "daytona"
+  },
+  
+  "remoteEnv": {
+    "ANTHROPIC_API_KEY": "${localEnv:ANTHROPIC_API_KEY}",
+    "SIGMA_ROLE": "${localEnv:SIGMA_ROLE}",
+    "SIGMA_STREAM": "${localEnv:SIGMA_STREAM}",
+    "SIGMA_PRDS": "${localEnv:SIGMA_PRDS}"
+  },
+  
+  "mounts": [
+    "source=${localEnv:HOME}/.gitconfig,target=/home/vscode/.gitconfig,type=bind,consistency=cached"
+  ],
+  
+  "customizations": {
+    "vscode": {
+      "settings": {
+        "terminal.integrated.defaultProfile.linux": "bash",
+        "editor.formatOnSave": true,
+        "files.autoSave": "afterDelay"
+      },
+      "extensions": [
+        "anthropics.claude-code",
+        "dbaeumer.vscode-eslint",
+        "esbenp.prettier-vscode",
+        "bradlc.vscode-tailwindcss"
+      ]
+    }
+  },
+  
+  "forwardPorts": [3000, 3001, 5173, 8080],
+  
+  "portsAttributes": {
+    "3000": {
+      "label": "Application",
+      "onAutoForward": "notify"
+    },
+    "3001": {
+      "label": "API Server",
+      "onAutoForward": "silent"
+    }
+  },
+  
+  "hostRequirements": {
+    "cpus": 2,
+    "memory": "4gb",
+    "storage": "32gb"
+  }
+}
+

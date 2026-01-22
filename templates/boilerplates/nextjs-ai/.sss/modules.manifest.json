@@ -1,0 +1,153 @@
+{
+  "$schema": "../../../schemas/modules-manifest.schema.json",
+  "template": "nextjs-ai",
+  "platform": "web",
+  "framework": "nextjs",
+  "backend": "convex",
+  "modules": {
+    "marketing": {
+      "enabled": true,
+      "files": [
+        "src/app/(marketing)/page.tsx",
+        "src/app/(marketing)/pricing/page.tsx",
+        "src/app/(marketing)/layout.tsx",
+        "src/modules/marketing/"
+      ],
+      "navItems": [
+        { "label": "Pricing", "href": "/pricing", "location": "header" }
+      ],
+      "envVars": []
+    },
+    "auth": {
+      "enabled": true,
+      "files": [
+        "src/app/(auth)/login/page.tsx",
+        "src/app/(auth)/signup/page.tsx",
+        "src/app/(auth)/layout.tsx",
+        "src/modules/auth/",
+        "src/hooks/use-convex-auth.ts",
+        "convex/users.ts"
+      ],
+      "navItems": [
+        { "label": "Login", "href": "/login", "location": "header-right" }
+      ],
+      "envVars": [
+        "CONVEX_DEPLOYMENT",
+        "NEXT_PUBLIC_CONVEX_URL"
+      ]
+    },
+    "dashboard": {
+      "enabled": true,
+      "files": [
+        "src/app/(app)/layout.tsx",
+        "src/app/(app)/page.tsx",
+        "src/modules/dashboard/",
+        "src/components/dashboard/"
+      ],
+      "navItems": [
+        { "label": "Dashboard", "href": "/app", "location": "sidebar", "icon": "home" }
+      ],
+      "envVars": []
+    },
+    "settings": {
+      "enabled": true,
+      "files": [
+        "src/app/(app)/settings/page.tsx",
+        "src/app/(app)/settings/layout.tsx",
+        "src/modules/settings/"
+      ],
+      "navItems": [
+        { "label": "Settings", "href": "/app/settings", "location": "sidebar", "icon": "settings" }
+      ],
+      "envVars": []
+    },
+    "billing": {
+      "enabled": true,
+      "files": [
+        "src/app/(app)/billing/page.tsx",
+        "src/app/(app)/billing/layout.tsx",
+        "src/modules/billing/",
+        "convex/subscriptions.ts"
+      ],
+      "navItems": [
+        { "label": "Billing", "href": "/app/billing", "location": "sidebar", "icon": "credit-card" }
+      ],
+      "envVars": [
+        "STRIPE_SECRET_KEY"
+      ]
+    },
+    "admin": {
+      "enabled": true,
+      "files": [
+        "src/app/(app)/admin/page.tsx",
+        "src/app/(app)/admin/layout.tsx",
+        "src/modules/admin/",
+        "convex/admin.ts"
+      ],
+      "navItems": [
+        { "label": "Admin", "href": "/app/admin", "location": "sidebar", "icon": "shield", "roleRequired": "admin" }
+      ],
+      "envVars": []
+    },
+    "aiChat": {
+      "enabled": true,
+      "files": [
+        "src/app/(app)/chat/page.tsx",
+        "src/app/(app)/chat/[conversationId]/page.tsx",
+        "src/app/(app)/chat/layout.tsx",
+        "src/modules/ai-chat/",
+        "src/hooks/use-chat.ts",
+        "convex/messages.ts",
+        "convex/conversations.ts"
+      ],
+      "navItems": [
+        { "label": "AI Chat", "href": "/app/chat", "location": "sidebar", "icon": "message-square" }
+      ],
+      "envVars": [
+        "OPENAI_API_KEY"
+      ]
+    },
+    "crudExample": {
+      "enabled": false,
+      "files": [
+        "src/app/(app)/items/page.tsx",
+        "src/app/(app)/items/[id]/page.tsx",
+        "src/modules/crud-example/",
+        "convex/items.ts"
+      ],
+      "navItems": [
+        { "label": "Items", "href": "/app/items", "location": "sidebar", "icon": "list" }
+      ],
+      "envVars": []
+    },
+    "errorStates": {
+      "enabled": true,
+      "files": [
+        "src/app/not-found.tsx",
+        "src/app/error.tsx",
+        "src/components/error-states/"
+      ],
+      "navItems": [],
+      "envVars": []
+    }
+  },
+  "sidebarConfig": {
+    "location": "left",
+    "collapsible": true,
+    "sections": [
+      {
+        "title": null,
+        "items": ["dashboard", "aiChat"]
+      },
+      {
+        "title": "Account",
+        "items": ["settings", "billing"]
+      },
+      {
+        "title": "System",
+        "items": ["admin"]
+      }
+    ]
+  }
+}
+

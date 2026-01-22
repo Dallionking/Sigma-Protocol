@@ -1,0 +1,232 @@
+# SigmaTrade - Product Requirements Document
+
+## Executive Summary
+
+SigmaTrade is a modern stock trading platform that enables users to manage their investment portfolio, execute trades, and track market data in real-time. The platform prioritizes simplicity, transparency, and education to make investing accessible to everyone.
+
+## Target Users
+
+### Primary: New Investors (25-40 years old)
+- First-time investors looking to start building wealth
+- Comfortable with mobile apps but may be intimidated by complex trading interfaces
+- Values simplicity and educational content
+- Wants to understand what they're investing in
+
+### Secondary: Active Retail Traders
+- Experienced with stock trading
+- Looking for a clean, fast interface
+- Needs real-time data and quick execution
+- May use multiple platforms
+
+## Core Features
+
+### 1. Portfolio Dashboard
+
+The main screen users see after logging in. Shows a clear picture of their financial status.
+
+**Requirements:**
+- Display total portfolio value prominently
+- Show day change ($ and %) with clear positive/negative indicators
+- Performance chart with selectable time ranges (1D, 1W, 1M, 3M, 1Y, ALL)
+- Holdings list with current value, cost basis, and gain/loss per position
+- Quick action buttons (Trade, Deposit)
+
+**UX Notes:**
+- Use green/red colors consistently for gains/losses
+- Large, easily readable numbers
+- Touch-friendly tap targets (min 44px)
+- Pull-to-refresh for manual data update
+
+### 2. Trading Interface
+
+Where users buy and sell stocks. Must feel simple yet powerful.
+
+**Requirements:**
+- Support market orders (execute immediately at current price)
+- Support limit orders (execute when price reaches target)
+- Real-time price display while order entry
+- Clear order preview showing total cost including fees
+- Order confirmation with biometric/PIN verification
+- Order success/failure feedback
+
+**Order Flow:**
+1. User selects stock (from search or watchlist)
+2. User chooses Buy or Sell
+3. User selects order type (Market/Limit)
+4. User enters quantity (shares or dollar amount)
+5. System shows order preview with cost breakdown
+6. User confirms with security verification
+7. System executes order and shows result
+
+**Validation Rules:**
+- Cannot sell more shares than owned
+- Cannot buy more than available cash
+- Limit price must be reasonable (within 10% of current)
+- Minimum order amount: $1.00
+
+### 3. Stock Detail / Research
+
+Individual stock page for research and trading.
+
+**Requirements:**
+- Real-time price with change indicator
+- Interactive price chart (candlestick and line options)
+- Key statistics (Market cap, P/E, Volume, 52-week range)
+- Company description
+- Trade button prominently placed
+- Add to watchlist option
+
+**Chart Requirements:**
+- Time intervals: 1D, 1W, 1M, 3M, 1Y, ALL
+- Crosshair showing price at any point
+- Volume overlay
+- Smooth performance on mobile
+
+### 4. Market Discovery
+
+Help users find stocks to invest in.
+
+**Requirements:**
+- Search by ticker symbol or company name
+- Recent searches saved locally
+- Market movers section (top gainers, top losers, most active)
+- Sector browsing
+- Trending stocks
+
+### 5. Watchlist
+
+User's curated list of stocks they're interested in.
+
+**Requirements:**
+- Add/remove stocks
+- See current price and day change
+- Quick access to stock detail
+- Reorder items (optional)
+
+### 6. Order History & Activity
+
+Complete record of user's trading activity.
+
+**Requirements:**
+- List of all orders (completed, pending, cancelled)
+- Order status indicators
+- Filter by status, date range, symbol
+- Order detail view with execution info
+- Cancel pending orders
+
+### 7. Account Management
+
+User profile and account settings.
+
+**Requirements:**
+- Profile information (name, email)
+- Account balance and buying power
+- Linked bank accounts (placeholder for Plaid integration)
+- Deposit/withdraw funds (simulated for demo)
+- Notification preferences
+- Security settings (change password, enable 2FA placeholder)
+- Sign out
+
+## Technical Requirements
+
+### Authentication
+- Email/password authentication via Supabase Auth
+- Magic link option for passwordless login
+- Session management with automatic refresh
+- Protected routes requiring authentication
+
+### Data & State Management
+- Real-time price updates via WebSocket (simulated for demo)
+- Portfolio data cached locally with React Query
+- Global state for user session and preferences
+- Optimistic updates for better UX
+
+### Performance
+- Target: First Contentful Paint < 1.5s
+- Target: Time to Interactive < 3s
+- Lazy load non-critical components
+- Image optimization
+- Code splitting by route
+
+### Security
+- All API routes protected
+- Input validation on client and server
+- Row-level security in database
+- Sensitive data encryption
+- Rate limiting on trading endpoints
+
+### Accessibility
+- WCAG 2.1 AA compliance
+- Keyboard navigation
+- Screen reader support
+- Color contrast requirements
+- Reduced motion support
+
+## Database Schema Overview
+
+### Core Tables
+- `users` - User profiles and preferences
+- `portfolios` - User portfolio summaries
+- `holdings` - Individual stock positions
+- `orders` - Trade orders (pending, completed, cancelled)
+- `transactions` - Fund deposits/withdrawals
+- `watchlists` - User watchlists
+- `watchlist_items` - Stocks in watchlists
+
+### Market Data (Mock)
+- `stocks` - Stock information (symbol, name, sector)
+- `quotes` - Current price data (simulated updates)
+
+## API Endpoints Overview
+
+### Portfolio
+- `GET /api/portfolio` - Get portfolio summary
+- `GET /api/portfolio/holdings` - Get all holdings
+- `GET /api/portfolio/performance` - Get historical performance
+
+### Trading
+- `POST /api/orders` - Place an order
+- `GET /api/orders` - List orders
+- `GET /api/orders/:id` - Get order details
+- `DELETE /api/orders/:id` - Cancel order
+
+### Market Data
+- `GET /api/quotes/:symbol` - Get stock quote
+- `GET /api/stocks/search` - Search stocks
+- `GET /api/stocks/movers` - Get market movers
+
+### Watchlist
+- `GET /api/watchlist` - Get user's watchlist
+- `POST /api/watchlist` - Add to watchlist
+- `DELETE /api/watchlist/:symbol` - Remove from watchlist
+
+### Account
+- `GET /api/account` - Get account info
+- `POST /api/account/deposit` - Simulate deposit
+- `POST /api/account/withdraw` - Simulate withdrawal
+
+## Out of Scope (V1)
+
+- Real broker integration (paper trading only)
+- Options trading
+- Cryptocurrency
+- Margin trading
+- Social features
+- Mobile native apps
+- Advanced charting (technical indicators)
+
+## Success Metrics
+
+- User can complete first trade within 2 minutes of signing up
+- Portfolio loads within 1 second
+- Trade execution feedback within 500ms
+- 0 critical security vulnerabilities
+- Lighthouse performance score > 90
+
+## Design References
+
+- Robinhood (simplicity, green/red color scheme)
+- Fidelity (information density, professionalism)
+- Cash App Investing (modern feel, accessibility)
+
+

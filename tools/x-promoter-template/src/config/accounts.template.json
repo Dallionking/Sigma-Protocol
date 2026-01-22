@@ -1,0 +1,57 @@
+{
+  "accounts": [
+    {
+      "id": "your-project-id",
+      "name": "Your Project Promotion",
+      "enabled": true,
+      "product": {
+        "name": "YOUR PROJECT NAME",
+        "tagline": "Your compelling one-line tagline",
+        "description": "A brief description of what your project does and why it's valuable",
+        "githubUrl": "https://github.com/YOUR_USERNAME/YOUR_REPO",
+        "creator": "Your Name",
+        "features": [
+          "Key feature 1 - what makes your project special",
+          "Key feature 2 - another compelling benefit",
+          "Key feature 3 - why people should check it out"
+        ]
+      },
+      "settings": {
+        "maxRepliesPerDay": 50,
+        "minIntervalMinutes": 10,
+        "toneWeights": {
+          "educational": 0.30,
+          "relatable": 0.25,
+          "valueFirst": 0.30,
+          "direct": 0.15
+        }
+      },
+      "keywords": [
+        "REPLACE_WITH_YOUR_NICHE_KEYWORD_1",
+        "REPLACE_WITH_YOUR_NICHE_KEYWORD_2",
+        "REPLACE_WITH_YOUR_NICHE_KEYWORD_3",
+        "problems your project solves",
+        "tools similar to yours"
+      ],
+      "excludeKeywords": [
+        "spam",
+        "scam",
+        "TOPICS_TO_AVOID"
+      ],
+      "targetAccounts": [
+        "INFLUENCER_IN_YOUR_NICHE_1",
+        "INFLUENCER_IN_YOUR_NICHE_2",
+        "THOUGHT_LEADER_USERNAME"
+      ]
+    }
+  ],
+  "globalSettings": {
+    "schedulerIntervalMinutes": 10,
+    "globalDailyLimit": 100,
+    "avoidReplyingToSameUserWithinHours": 48,
+    "prioritizeRecentTweets": true,
+    "maxTweetAgeHours": 6
+  }
+}
+
+

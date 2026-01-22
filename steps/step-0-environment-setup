@@ -1,7 +1,9 @@
 ---
-version: "2.4.0"
-last_updated: "2026-01-01"
+version: "2.6.0"
+last_updated: "2026-01-07"
 changelog:
+  - "2.6.0: Added Superdesign AI Design Agent - IDE extension + MCP for rapid UI mockups, wireframes, components. References superdesign-integration.md foundation skill"
+  - "2.5.0: Added Memory MCP Server (Persistent Context) - enables knowledge graph-based memory across sessions, references memory-systems.md foundation skill"
   - "2.4.0: Added iOS Simulator MCP, InjectionIII hot reload, CodeLLDB extension, and SWIFTUI-CURSOR-WORKFLOW.md reference"
   - "2.3.0: Added Native iOS/SwiftUI Development Setup section (Xcode, SweetPad, xcode-build-server, xcbeautify, swiftformat)"
   - "2.2.0: Added Boilerplate Prerequisites section for SSS boilerplate workflow"
@@ -56,7 +58,7 @@ Ensure your development environment is properly configured with all required too
 
 ## Boilerplate Prerequisites (NEW)
 
-**If using SSS boilerplate templates, ensure these additional prerequisites:**
+**If using Sigma boilerplate templates, ensure these additional prerequisites:**
 
 ### GitHub Access Check
 
@@ -83,8 +85,8 @@ ssh -T git@github.com
 If you're starting from a boilerplate, you can skip much of the manual setup:
 
 ```bash
-# Clone the boilerplate (includes SSS commands!)
-git clone https://github.com/your-org/sss-nextjs-starter.git my-app
+# Clone the boilerplate (includes Sigma commands!)
+git clone https://github.com/your-org/sigma-nextjs-starter.git my-app
 cd my-app
 
 # Run the interactive setup wizard
@@ -94,14 +96,14 @@ npm run setup
 # ✅ Rename the project
 # ✅ Configure environment variables
 # ✅ Initialize fresh git history
-# ✅ Bundle all SSS commands in .cursor/commands/
+# ✅ Bundle all Sigma commands in .cursor/commands/
 
 # Then start developing
 npm install
 npm run dev
 ```
 
-**Detection**: If `.sss/boilerplate.json` exists in your project, you're using a boilerplate and can proceed directly to Step 3 (UX Design) after running setup.
+**Detection**: If `.sigma/boilerplate.json` exists in your project, you're using a boilerplate and can proceed directly to Step 3 (UX Design) after running setup.
 
 ---
 
@@ -875,7 +877,54 @@ Add to `~/.cursor/mcp.json`:
 
 ---
 
-#### **5. Expo MCP (Mobile)**
+#### **5. Memory MCP Server (Persistent Context) — NEW RECOMMENDED**
+
+**When you need it:**
+- Long-running projects (multi-session development)
+- Persistent context across conversations
+- Storing architectural decisions, patterns, learnings
+- Team knowledge that persists beyond individuals
+
+**Why it matters:**
+Without persistent memory, AI forgets project context between sessions. This MCP provides a knowledge graph for storing entities (projects, decisions, patterns) and their relationships.
+
+**Installation:**
+
+Add to `~/.cursor/mcp.json`:
+```json
+{
+  "mcpServers": {
+    "memory": {
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-memory"]
+    }
+  }
+}
+```
+
+**No API key required** — runs locally.
+
+**Available Operations:**
+| Tool | Purpose |
+|------|---------|
+| `create_entities` | Store project, decisions, patterns |
+| `create_relations` | Link entities (decision → project) |
+| `add_observations` | Add facts to entities |
+| `search_nodes` | Find relevant memories |
+| `read_graph` | Load all context |
+
+**Recommended Usage:**
+- At session start: "Load project context for [PROJECT]"
+- After decisions: "Store this decision in memory"
+- After learnings: "Remember this pattern"
+
+> **📚 Reference:** See `/src/skills/memory-systems.md` for detailed memory patterns.
+
+**Step 2: Restart Cursor**
+
+---
+
+#### **6. Expo MCP (Mobile)**
 
 **When you need it:**
 - Mobile app development
@@ -990,6 +1039,79 @@ Add to `~/.cursor/mcp.json`:
 
 ---
 
+#### **9. Superdesign AI Design Agent — NEW RECOMMENDED**
+
+**When you need it:**
+- Rapid UI mockup generation from natural language
+- Wireframe prototyping (Step 5)
+- Component design exploration
+- Landing page design (Step 9)
+- Design system extraction
+
+**Why it matters:**
+Superdesign is the first **open-source AI Design Agent** that lives inside your IDE. Generate 10 design variations instead of 1, iterate rapidly, and implement the best. Created by [AI Jason](https://x.com/jasonzhou1993).
+
+**GitHub:** [superdesigndev/superdesign](https://github.com/superdesigndev/superdesign) (5.5k+ stars)
+
+**Installation Option 1: Cursor/VSCode Extension (Recommended)**
+
+1. Open Cursor Extensions (`Cmd+Shift+X`)
+2. Search "Superdesign"
+3. Install the extension
+4. Open Superdesign sidebar panel
+5. Start prompting!
+
+**Installation Option 2: MCP Server (Claude Code/Advanced)**
+
+For deeper integration with Claude Code:
+
+```bash
+# Clone the MCP server
+git clone https://github.com/jonthebeef/superdesign-mcp-claude-code
+cd superdesign-mcp-claude-code
+npm install
+npm run build
+```
+
+Add to `~/.cursor/mcp.json`:
+```json
+{
+  "mcpServers": {
+    "superdesign": {
+      "command": "node",
+      "args": ["/path/to/superdesign-mcp-claude-code/dist/index.js"]
+    }
+  }
+}
+```
+
+**MCP Tools Available:**
+| Tool | Purpose |
+|------|---------|
+| `superdesign_generate` | Generate UI, wireframes, components, logos, icons |
+| `superdesign_iterate` | Improve existing designs with feedback |
+| `superdesign_extract_system` | Extract design systems from screenshots |
+| `superdesign_list` | List all created designs |
+| `superdesign_gallery` | Generate interactive HTML gallery |
+
+**Installation Option 3: Chrome Extension**
+
+[Superdesign Chrome Extension](https://chromewebstore.google.com/detail/obpjaonipoaomjnokbimppohbpjibflm) — Clone any website UI
+
+**Prompt Library:** [app.superdesign.dev/library](https://app.superdesign.dev/library)
+
+**File Organization:**
+Designs are saved locally in `.superdesign/`:
+```
+.superdesign/
+├── design_iterations/   # Generated designs
+└── design_system/       # Extracted design systems
+```
+
+> **📚 Reference:** See `/src/skills/superdesign-integration.md` for detailed usage patterns.
+
+---
+
 ### Complete MCP Configuration Example
 
 **Full `~/.cursor/mcp.json` with all MCPs:**
@@ -1071,7 +1193,7 @@ Add to `~/.cursor/mcp.json`:
 
 ## Phase D — Foundation Skills Installation
 
-**Goal:** Install SSS Foundation Skills for the selected platform(s).
+**Goal:** Install Sigma Foundation Skills for the selected platform(s).
 
 ### 1. Platform Selection
 
@@ -1084,7 +1206,7 @@ Add to `~/.cursor/mcp.json`:
 > 
 > Reply with your selection (e.g., `cursor`, `claude`, `opencode`, or `all`)"
 
-**Save selection to `.sss/config.json`:**
+**Save selection to `.sigma/config.json`:**
 ```json
 {
   "version": "1.0.0",
@@ -1100,11 +1222,11 @@ Add to `~/.cursor/mcp.json`:
 
 ### 2. Install Foundation Skills
 
-**Foundation Skills provide universal capabilities for the SSS workflow:**
+**Foundation Skills provide universal capabilities for the Sigma workflow:**
 
 | Category | Skills | Used In |
 |----------|--------|---------|
-| **SSS Core** | research, verification, bdd-scenarios, hormozi-frameworks, output-generation, frontend-design | Steps 1-13 |
+| **Sigma Core** | research, verification, bdd-scenarios, hormozi-frameworks, output-generation, frontend-design | Steps 1-13 |
 | **Design & Dev** | ux-designer, architecture-patterns, api-design-principles, web-artifacts-builder | Steps 2-9 |
 | **Quality** | brainstorming, systematic-debugging, quality-gates, senior-qa, senior-architect | All steps |
 | **Productivity** | prompt-engineering-patterns, xlsx, pptx, applying-brand-guidelines, remembering-conversations | As needed |
@@ -1114,42 +1236,33 @@ Add to `~/.cursor/mcp.json`:
 
 #### Cursor Installation
 ```bash
-# Copy SSS foundation rules to project
+# Copy Sigma foundation rules to project
 mkdir -p .cursor/rules
 
-# The SSS CLI installs these automatically:
-# - sss-frontend-design.mdc
-# - sss-brainstorming.mdc
-# - sss-systematic-debugging.mdc
-# - sss-architecture-patterns.mdc
-# - sss-api-design.mdc
-# - sss-quality-gates.mdc
-# - sss-ux-designer.mdc
-# - sss-research.mdc
-# - sss-senior-architect.mdc
-# - sss-senior-qa.mdc
-# - sss-prompt-engineering.mdc
-# + additional skills...
+# The Sigma CLI installs these automatically
+# Run the interactive installer:
+npx sigma-protocol install
 
-npx sss-protocol install-skills --platform cursor
+# Or install skills separately:
+npx sigma-protocol install-skills --platform cursor
 ```
 
 #### Claude Code Installation
 ```bash
-# Copy SSS foundation skills to project
+# Copy Sigma foundation skills to project
 mkdir -p .claude/skills
 
-# The SSS CLI installs these automatically:
-npx sss-protocol install-skills --platform claude-code
+# The Sigma CLI installs these automatically:
+npx sigma-protocol install-skills --platform claude-code
 ```
 
 #### OpenCode Installation
 ```bash
-# Copy SSS foundation skills to project
+# Copy Sigma foundation skills to project
 mkdir -p .opencode/skill
 
-# The SSS CLI installs these automatically:
-npx sss-protocol install-skills --platform opencode
+# The Sigma CLI installs these automatically:
+npx sigma-protocol install-skills --platform opencode
 ```
 
 ### 3. Verify Skills Installation
@@ -1158,7 +1271,7 @@ npx sss-protocol install-skills --platform opencode
 
 ```bash
 # Cursor
-ls -la .cursor/rules/sss-*.mdc
+ls -la .cursor/rules/*.mdc
 
 # Claude Code
 ls -la .claude/skills/*/SKILL.md
@@ -1209,7 +1322,7 @@ ls -la .opencode/skill/*/SKILL.md
 **Prompt:**
 > "## 🎯 Foundation Skills Installation
 > 
-> I've installed the SSS Foundation Skills for your selected platform(s).
+> I've installed the Sigma Foundation Skills for your selected platform(s).
 > 
 > ### Installed:
 > - [X] 24 Foundation Skills
@@ -1217,7 +1330,7 @@ ls -la .opencode/skill/*/SKILL.md
 > - [X] Auto-trigger configuration
 > 
 > ### Skills Categories:
-> - SSS Core (6 skills)
+> - Sigma Core (6 skills)
 > - Design & Development (4 skills)
 > - Quality & Process (5 skills)
 > - Productivity (5 skills)

@@ -1,0 +1,46 @@
+---
+version: "1.1.0"
+last_updated: "2026-01-12"
+changelog:
+  - "1.1.0: DEPRECATED - Renamed to @orchestrate. This file provides backward compatibility."
+description: "DEPRECATED: This command has been renamed to @orchestrate. All functionality preserved."
+allowed-tools:
+  - read_file
+---
+
+# @sigma-orchestrate — DEPRECATED
+
+> **This command has been renamed to `@orchestrate`**
+>
+> All functionality has been preserved. Please use `@orchestrate` going forward.
+
+---
+
+## Migration
+
+The `@sigma-orchestrate` command is now `@orchestrate`:
+
+| Old Command | New Command |
+|-------------|-------------|
+| `@sigma-orchestrate` | `@orchestrate` |
+| `@sigma-orchestrate --mode=semi-auto` | `@orchestrate --mode=semi-auto` |
+| `@sigma-orchestrate --auto-merge=true` | `@orchestrate --auto-merge=true` |
+
+---
+
+## Why the Change?
+
+We're standardizing command names to be more direct and intuitive:
+
+- The command orchestrates multi-agent workflows, so it's called `@orchestrate`
+- No need for the "sigma-" prefix on operation commands
+
+This makes commands easier to remember and type.
+
+---
+
+## Action
+
+**Please run `@orchestrate` instead.**
+
+The new command has identical functionality with improved documentation.

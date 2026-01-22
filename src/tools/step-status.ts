@@ -32,7 +32,7 @@ interface StatusResult {
 
 // Step definitions with primary outputs
 const STEPS: { step: number; name: string; output: string; optional?: boolean }[] = [
-  { step: 0, name: "Environment Setup", output: ".sss/config.json" },
+  { step: 0, name: "Environment Setup", output: ".sigma/config.json" },
   { step: 1, name: "Product Ideation", output: "docs/specs/MASTER_PRD.md" },
   { step: 2, name: "Architecture Design", output: "docs/architecture/ARCHITECTURE.md" },
   { step: 3, name: "UX Design", output: "docs/ux/UX-DESIGN.md" },

@@ -1,0 +1,593 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://sss.dev/schemas/ralph-backlog.schema.json",
+  "title": "SSS-Ralph Backlog",
+  "description": "Machine-readable backlog for Ralph-style autonomous implementation loops. Each story must have verifiable acceptance criteria so the agent knows when it is done without asking.",
+  "type": "object",
+  "required": ["$schema", "meta", "stories"],
+  "properties": {
+    "$schema": {
+      "type": "string",
+      "description": "Schema reference"
+    },
+    "meta": {
+      "type": "object",
+      "required": ["projectName", "mode", "generatedAt", "generatedBy"],
+      "properties": {
+        "projectName": {
+          "type": "string",
+          "description": "Target project name"
+        },
+        "mode": {
+          "type": "string",
+          "enum": ["prototype", "implementation"],
+          "description": "Backlog mode: prototype (Step 5b) or implementation (Step 11a)"
+        },
+        "generatedAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "ISO timestamp when backlog was generated"
+        },
+        "generatedBy": {
+          "type": "string",
+          "description": "SSS step that generated this backlog (e.g., step-5b, step-11a)"
+        },
+        "sourcePRDCount": {
+          "type": "integer",
+          "minimum": 1,
+          "description": "Number of source PRD files converted"
+        },
+        "totalStories": {
+          "type": "integer",
+          "minimum": 1,
+          "description": "Total story count in this backlog"
+        },
+        "passedStories": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Count of stories with passes:true"
+        },
+        "workspacePath": {
+          "type": "string",
+          "description": "Absolute path to target workspace (set by runner)"
+        },
+        "lastRunAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "ISO timestamp of last Ralph loop run"
+        },
+        "lastRunEngine": {
+          "type": "string",
+          "enum": ["claude", "opencode", "cursor"],
+          "description": "Engine used in last run"
+        }
+      }
+    },
+    "stories": {
+      "type": "array",
+      "description": "Ordered list of implementation stories. Each story must be completable in a single agent context window.",
+      "minItems": 1,
+      "items": {
+        "$ref": "#/definitions/Story"
+      }
+    },
+    "streams": {
+      "type": "array",
+      "description": "Optional stream definitions for parallel execution (from Step 11b)",
+      "items": {
+        "$ref": "#/definitions/Stream"
+      }
+    },
+    "journeys": {
+      "type": "array",
+      "description": "Optional user journey definitions for journey-oriented execution",
+      "items": {
+        "$ref": "#/definitions/Journey"
+      }
+    }
+  },
+  "definitions": {
+    "Story": {
+      "type": "object",
+      "required": ["id", "title", "priority", "passes", "source", "acceptanceCriteria"],
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^[a-z0-9-]+$",
+          "description": "Unique story identifier (kebab-case)"
+        },
+        "title": {
+          "type": "string",
+          "minLength": 5,
+          "description": "Clear, actionable story title"
+        },
+        "description": {
+          "type": "string",
+          "description": "Optional longer description of what this story accomplishes"
+        },
+        "priority": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 100,
+          "description": "Execution priority (1 = highest). Stories execute in priority order."
+        },
+        "passes": {
+          "type": "boolean",
+          "description": "Whether this story has passed all acceptance criteria. Set to true only by the Ralph loop after verification."
+        },
+        "source": {
+          "$ref": "#/definitions/StorySource"
+        },
+        "acceptanceCriteria": {
+          "type": "array",
+          "minItems": 1,
+          "description": "List of verifiable acceptance criteria. EVERY criterion must be machine-checkable or explicitly marked as manual.",
+          "items": {
+            "$ref": "#/definitions/AcceptanceCriterion"
+          }
+        },
+        "agentInstructions": {
+          "type": "string",
+          "description": "Optional additional instructions for the agent (paths, constraints, stop conditions)"
+        },
+        "dependsOn": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Story IDs that must pass before this story can be attempted"
+        },
+        "tags": {
+          "$ref": "#/definitions/StoryTags"
+        },
+        "estimatedIterations": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 5,
+          "default": 1,
+          "description": "Expected number of loop iterations to complete (1 = simple, 5 = complex)"
+        },
+        "lastAttempt": {
+          "$ref": "#/definitions/AttemptRecord"
+        },
+        "attempts": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/AttemptRecord"
+          },
+          "description": "History of all attempts on this story"
+        },
+        "tasks": {
+          "type": "array",
+          "description": "Task checklist from PRD Section 16. Each task is a granular implementation step.",
+          "items": {
+            "$ref": "#/definitions/Task"
+          }
+        }
+      }
+    },
+    "Task": {
+      "type": "object",
+      "required": ["id", "description", "completed"],
+      "description": "A granular implementation task within a story. Maps to PRD Section 16 checklist items.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^[A-Z]+-[0-9]+$",
+          "description": "Unique task ID (e.g., DB-001, API-001, UI-001, TEST-001, VERIFY-001)"
+        },
+        "description": {
+          "type": "string",
+          "description": "Human-readable task description"
+        },
+        "completed": {
+          "type": "boolean",
+          "default": false,
+          "description": "Whether this task has been completed"
+        },
+        "filePath": {
+          "type": "string",
+          "description": "Target file path for this task (if applicable)"
+        },
+        "verificationCommand": {
+          "type": "string",
+          "description": "Shell command to verify task completion"
+        },
+        "acType": {
+          "type": "string",
+          "enum": ["file-exists", "file-contains", "command", "ui-validation", "manual"],
+          "description": "Type of acceptance criteria verification"
+        },
+        "completedAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Timestamp when task was completed"
+        },
+        "designSystem": {
+          "$ref": "#/definitions/DesignSystemConstraints",
+          "description": "Design system constraints for UI tasks (injected from ui-profile.json)"
+        }
+      }
+    },
+    "DesignSystemConstraints": {
+      "type": "object",
+      "description": "Design system constraints enforced during Ralph execution. Sourced from docs/design/ui-profile.json.",
+      "additionalProperties": false,
+      "properties": {
+        "uiProfileRef": {
+          "type": "string",
+          "description": "Path to the UI profile JSON file (e.g., docs/design/ui-profile.json)"
+        },
+        "profileId": {
+          "type": "string",
+          "description": "ID of the UI profile (e.g., 'cool-professional', 'satin-dark-soft-depth')"
+        },
+        "preset": {
+          "type": "string",
+          "enum": ["cool-professional", "satin-dark-soft-depth", "playful-gamified", "custom"],
+          "description": "Design preset for quick reference"
+        },
+        "allowedTokens": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "CSS variable names permitted in this task (e.g., ['--radius-md', '--surface-raised'])"
+        },
+        "bannedPatterns": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Patterns to avoid (e.g., ['saturated gradients', 'bouncy animations', 'emoji icons'])"
+        },
+        "themeMode": {
+          "type": "string",
+          "enum": ["light", "dark", "system"],
+          "description": "Theme mode for this task"
+        },
+        "dials": {
+          "type": "object",
+          "description": "Quick-reference dials from UI profile",
+          "properties": {
+            "radius": { "type": "string", "enum": ["sharp", "soft", "round"] },
+            "density": { "type": "string", "enum": ["compact", "comfortable", "spacious"] },
+            "motionIntensity": { "type": "string", "enum": ["subtle", "moderate", "expressive"] }
+          }
+        },
+        "rules": {
+          "type": "object",
+          "description": "Quantified design rules from UI profile",
+          "properties": {
+            "maxAccentColorsPerScreen": { "type": "integer", "minimum": 0 },
+            "maxGradientsPerCard": { "type": "integer", "minimum": 0 },
+            "minSpringDamping": { "type": "integer", "minimum": 0 }
+          }
+        }
+      }
+    },
+    "StorySource": {
+      "type": "object",
+      "required": ["prdPath", "step"],
+      "description": "Traceability to original PRD source",
+      "properties": {
+        "prdPath": {
+          "type": "string",
+          "description": "Relative path to source PRD markdown file"
+        },
+        "step": {
+          "type": "string",
+          "enum": ["step-5", "step-11"],
+          "description": "SSS step that produced the source PRD"
+        },
+        "sectionId": {
+          "type": "string",
+          "description": "Optional section/heading ID within the PRD this story derives from"
+        },
+        "lineRange": {
+          "type": "object",
+          "properties": {
+            "start": { "type": "integer" },
+            "end": { "type": "integer" }
+          },
+          "description": "Line range in source PRD (for precise traceability)"
+        }
+      }
+    },
+    "StoryTags": {
+      "type": "object",
+      "description": "Tags for filtering and grouping stories",
+      "properties": {
+        "screenId": {
+          "type": "string",
+          "description": "Screen this story implements (from flow-tree)"
+        },
+        "screenName": {
+          "type": "string",
+          "description": "Human-readable screen name"
+        },
+        "journeyId": {
+          "type": "string",
+          "description": "User journey this story belongs to"
+        },
+        "journeyStepIndex": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Position in the journey sequence"
+        },
+        "streamId": {
+          "type": "string",
+          "description": "Stream/swarm this story is assigned to (from Step 11b)"
+        },
+        "moduleId": {
+          "type": "string",
+          "description": "Module this story belongs to (from flow-tree)"
+        },
+        "featureId": {
+          "type": "string",
+          "description": "Feature ID (e.g., F1, F2 from Step 11 PRDs)"
+        },
+        "complexity": {
+          "type": "string",
+          "enum": ["simple", "medium", "complex"],
+          "description": "Implementation complexity"
+        }
+      }
+    },
+    "AcceptanceCriterion": {
+      "type": "object",
+      "required": ["id", "description", "type"],
+      "description": "A single verifiable acceptance criterion. The agent uses these to know when it is done.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^ac-[0-9]+$",
+          "description": "Acceptance criterion ID (e.g., ac-1, ac-2)"
+        },
+        "description": {
+          "type": "string",
+          "description": "Human-readable description of what is being verified"
+        },
+        "type": {
+          "type": "string",
+          "enum": ["command", "file-exists", "file-contains", "artifact-check", "ui-validation", "manual"],
+          "description": "Type of verification check"
+        },
+        "command": {
+          "type": "string",
+          "description": "SSS command to run (for type=command). E.g., '@verify-prd', '@gap-analysis'"
+        },
+        "commandArgs": {
+          "type": "object",
+          "description": "Arguments to pass to the command"
+        },
+        "filePath": {
+          "type": "string",
+          "description": "File path to check (for type=file-exists or file-contains)"
+        },
+        "filePattern": {
+          "type": "string",
+          "description": "Glob pattern for file(s) to check"
+        },
+        "contains": {
+          "type": "string",
+          "description": "Content that must exist in file (for type=file-contains)"
+        },
+        "artifactType": {
+          "type": "string",
+          "enum": ["component", "route", "api-endpoint", "test", "hook", "util", "type"],
+          "description": "Type of artifact to verify (for type=artifact-check)"
+        },
+        "artifactName": {
+          "type": "string",
+          "description": "Name of artifact to verify existence of"
+        },
+        "uiValidation": {
+          "$ref": "#/definitions/UIValidationConfig"
+        },
+        "expectedScore": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 100,
+          "description": "Minimum score required to pass (for commands that return scores)"
+        },
+        "manualSignoffRequired": {
+          "type": "boolean",
+          "default": false,
+          "description": "If true and type=manual, requires explicit HITL confirmation"
+        },
+        "passed": {
+          "type": "boolean",
+          "description": "Whether this specific criterion passed (set by Ralph loop)"
+        },
+        "lastResult": {
+          "type": "string",
+          "description": "Last verification result/output"
+        }
+      },
+      "allOf": [
+        {
+          "if": { "properties": { "type": { "const": "command" } } },
+          "then": { "required": ["command"] }
+        },
+        {
+          "if": { "properties": { "type": { "const": "file-exists" } } },
+          "then": { 
+            "anyOf": [
+              { "required": ["filePath"] },
+              { "required": ["filePattern"] }
+            ]
+          }
+        },
+        {
+          "if": { "properties": { "type": { "const": "file-contains" } } },
+          "then": { "required": ["filePath", "contains"] }
+        },
+        {
+          "if": { "properties": { "type": { "const": "artifact-check" } } },
+          "then": { "required": ["artifactType", "artifactName"] }
+        },
+        {
+          "if": { "properties": { "type": { "const": "ui-validation" } } },
+          "then": { "required": ["uiValidation"] }
+        }
+      ]
+    },
+    "UIValidationConfig": {
+      "type": "object",
+      "required": ["mode", "checks"],
+      "description": "UI validation configuration for @ui-healer integration",
+      "properties": {
+        "mode": {
+          "type": "string",
+          "enum": ["cursor-browser", "playwright", "claude-browser", "agent-browser", "any", "manual"],
+          "description": "UI validation mode. 'agent-browser' = Vercel Agent Browser CLI. 'any' = use whatever is available. 'manual' = require HITL signoff."
+        },
+        "route": {
+          "type": "string",
+          "description": "Route/URL to navigate to for validation"
+        },
+        "checks": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "object",
+            "required": ["type"],
+            "properties": {
+              "type": {
+                "type": "string",
+                "enum": ["visual-regression", "accessibility", "responsive", "interaction", "content-exists", "hormozi-conversion"],
+                "description": "Type of UI check"
+              },
+              "selector": {
+                "type": "string",
+                "description": "CSS selector for element to check"
+              },
+              "expectedText": {
+                "type": "string",
+                "description": "Expected text content"
+              },
+              "viewport": {
+                "type": "string",
+                "enum": ["mobile", "tablet", "desktop"],
+                "description": "Viewport size for responsive checks"
+              },
+              "action": {
+                "type": "string",
+                "enum": ["click", "type", "hover", "scroll"],
+                "description": "Interaction to perform"
+              },
+              "actionTarget": {
+                "type": "string",
+                "description": "Selector for interaction target"
+              },
+              "actionValue": {
+                "type": "string",
+                "description": "Value for type action"
+              }
+            }
+          }
+        },
+        "screenshotOnFailure": {
+          "type": "boolean",
+          "default": true,
+          "description": "Capture screenshot if validation fails"
+        }
+      }
+    },
+    "AttemptRecord": {
+      "type": "object",
+      "required": ["timestamp", "engine", "success"],
+      "description": "Record of an attempt to complete a story",
+      "properties": {
+        "timestamp": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "engine": {
+          "type": "string",
+          "enum": ["claude", "opencode", "cursor"]
+        },
+        "success": {
+          "type": "boolean"
+        },
+        "duration": {
+          "type": "integer",
+          "description": "Duration in seconds"
+        },
+        "filesChanged": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "criteriaResults": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "criterionId": { "type": "string" },
+              "passed": { "type": "boolean" },
+              "output": { "type": "string" }
+            }
+          }
+        },
+        "errorMessage": {
+          "type": "string",
+          "description": "Error message if attempt failed"
+        },
+        "learnings": {
+          "type": "string",
+          "description": "Learnings captured for progress.txt"
+        }
+      }
+    },
+    "Stream": {
+      "type": "object",
+      "required": ["id", "name", "storyIds"],
+      "description": "Stream definition for parallel execution (from Step 11b)",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "focusArea": {
+          "type": "string"
+        },
+        "storyIds": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Story IDs assigned to this stream"
+        },
+        "worktrees": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "type": { "type": "string" },
+              "path": { "type": "string" },
+              "branch": { "type": "string" }
+            }
+          }
+        }
+      }
+    },
+    "Journey": {
+      "type": "object",
+      "required": ["id", "name", "storyIds"],
+      "description": "User journey definition for journey-oriented execution",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
+        "storyIds": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Ordered story IDs in this journey"
+        }
+      }
+    }
+  }
+}
+
+

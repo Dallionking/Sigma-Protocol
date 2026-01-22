@@ -1,0 +1,22 @@
+{
+  "sigma_version": "3.0.0",
+  "initialized": "2026-01-14T05:22:36.553Z",
+  "retrofit": true,
+  "detected_stack": {
+    "type": "unknown",
+    "framework": null,
+    "language": "JavaScript/TypeScript",
+    "database": null,
+    "auth": null,
+    "hasTests": false,
+    "hasDocs": true,
+    "hasCI": true,
+    "files": {
+      "packageJson": true,
+      "requirements": false,
+      "cargoToml": false,
+      "goMod": false
+    }
+  },
+  "retrofit_mode": "partial"
+}

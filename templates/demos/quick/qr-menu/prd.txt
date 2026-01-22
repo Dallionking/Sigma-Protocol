@@ -1,0 +1,200 @@
+# Product Requirements Document: MenuScan
+## QR Code Digital Menu Platform
+
+### 1. Executive Summary
+
+MenuScan is a digital menu platform that enables restaurants to create beautiful, mobile-friendly menus accessible via QR codes. Diners scan a code at their table to instantly view the menu on their phones.
+
+### 2. Problem Statement
+
+Traditional paper menus are expensive to print, hard to update, and unhygienic. Restaurants need a digital solution that's easy to manage and provides a seamless experience for diners.
+
+### 3. Target Users
+
+**Primary**: Restaurant owners and managers
+**Secondary**: Diners scanning QR codes
+
+### 4. Core Features
+
+#### 4.1 Restaurant Onboarding
+- Email/password signup
+- Restaurant name and logo
+- Unique URL slug (menuscan.app/restaurant-name)
+
+#### 4.2 Category Management
+- Create menu categories (Appetizers, Mains, Desserts, Drinks)
+- Reorder categories
+- Category icons/emojis
+
+#### 4.3 Menu Item Management
+- Add item: name, description, price
+- Upload item photo
+- Dietary tags: vegan (V), vegetarian (VG), gluten-free (GF), spicy levels
+- Mark as "Sold Out" or "New"
+- Reorder items within category
+
+#### 4.4 Public Menu Page
+- Accessible at /[restaurant-slug]
+- Restaurant header (logo, name, description)
+- Category tabs or sections
+- Item cards with photo, name, price, description
+- Dietary icons displayed
+- Mobile-first responsive design
+
+#### 4.5 QR Code
+- Auto-generated QR linking to menu
+- Download as PNG (print-ready)
+- Optional: branded frame around QR
+
+#### 4.6 Multi-Language (Stretch)
+- Toggle between languages
+- Auto-translate option
+- Manual translation override
+
+### 5. Technical Requirements
+
+#### 5.1 Frontend
+- Next.js 14+ with App Router
+- TailwindCSS + shadcn/ui
+- QRCode.react for QR generation
+- React Dropzone for image upload
+
+#### 5.2 Backend
+- Supabase Auth
+- Supabase Database (PostgreSQL)
+- Supabase Storage (item photos)
+
+#### 5.3 Database Schema
+
+```sql
+-- Restaurants
+restaurants (
+  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  owner_id uuid REFERENCES auth.users NOT NULL,
+  name text NOT NULL,
+  slug text UNIQUE NOT NULL,
+  logo_url text,
+  description text,
+  address text,
+  phone text,
+  currency text DEFAULT 'USD',
+  created_at timestamptz DEFAULT now()
+)
+
+-- Menu categories
+categories (
+  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  restaurant_id uuid REFERENCES restaurants(id) ON DELETE CASCADE,
+  name text NOT NULL,
+  icon text, -- emoji
+  position integer NOT NULL,
+  created_at timestamptz DEFAULT now()
+)
+
+-- Menu items
+items (
+  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  category_id uuid REFERENCES categories(id) ON DELETE CASCADE,
+  name text NOT NULL,
+  description text,
+  price decimal(10,2) NOT NULL,
+  image_url text,
+  is_available boolean DEFAULT true,
+  is_new boolean DEFAULT false,
+  is_vegan boolean DEFAULT false,
+  is_vegetarian boolean DEFAULT false,
+  is_gluten_free boolean DEFAULT false,
+  spicy_level integer DEFAULT 0, -- 0-3
+  position integer NOT NULL,
+  created_at timestamptz DEFAULT now()
+)
+```
+
+### 6. User Flows
+
+#### 6.1 Restaurant Setup
+1. Sign up with email
+2. Enter restaurant name
+3. Choose URL slug
+4. Upload logo (optional)
+5. Redirected to empty dashboard
+
+#### 6.2 Adding Menu Content
+1. Click "Add Category"
+2. Enter category name, select emoji
+3. Within category, click "Add Item"
+4. Fill in item details (name, price, description)
+5. Upload photo (optional)
+6. Set dietary tags
+7. Save
+
+#### 6.3 Diner Experience
+1. Scan QR code at table
+2. Menu loads on phone
+3. Browse categories
+4. View item details
+5. (Optional) Place order
+
+### 7. Design Requirements
+
+#### Menu Page Layout
+```
+┌─────────────────────────────┐
+│  [Logo] Restaurant Name     │
+│  "Fine Italian Cuisine"     │
+├─────────────────────────────┤
+│ 🍝 Pasta | 🍕 Pizza | 🍷 Wine│  <- Category tabs
+├─────────────────────────────┤
+│ ┌─────────────────────────┐ │
+│ │ [Photo]                 │ │
+│ │ Spaghetti Carbonara     │ │
+│ │ Classic Roman pasta...  │ │
+│ │ $18.00        V GF      │ │
+│ └─────────────────────────┘ │
+│ ┌─────────────────────────┐ │
+│ │ [Photo]                 │ │
+│ │ Margherita Pizza        │ │
+│ │ Fresh mozzarella...     │ │
+│ │ $14.00        VG        │ │
+│ └─────────────────────────┘ │
+└─────────────────────────────┘
+```
+
+### 8. Non-Functional Requirements
+
+- Menu page loads in < 2 seconds
+- Works offline (PWA caching)
+- Supports 100+ menu items
+- Images optimized automatically
+
+### 9. QR Code Specifications
+
+- Minimum size: 2cm x 2cm when printed
+- Error correction: Level M (15%)
+- Includes restaurant logo in center (optional)
+- Download formats: PNG, SVG, PDF
+
+### 10. Out of Scope (V1)
+
+- Online ordering/cart
+- Payment processing
+- Table management
+- Inventory tracking
+- Analytics dashboard
+- Staff accounts
+
+### 11. Success Criteria
+
+- Restaurant can have menu live in < 10 minutes
+- Menu loads instantly on mobile
+- QR code scans reliably from 6 inches
+
+### 12. Timeline
+
+**Quick Demo Build**: 2-4 hours
+- Hour 1: Auth + Restaurant setup
+- Hour 2: Category & Item CRUD
+- Hour 3: Public menu page
+- Hour 4: QR generation + polish
+
+

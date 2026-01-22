@@ -1,0 +1,214 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://sigma-protocol.dev/schemas/streams.schema.json",
+  "title": "Sigma Orchestration Streams Configuration",
+  "description": "Configuration schema for multi-agent orchestration stream assignments in Sigma Protocol",
+  "type": "object",
+  "required": ["streams"],
+  "properties": {
+    "version": {
+      "type": "string",
+      "description": "Schema version",
+      "default": "1.0.0"
+    },
+    "created": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Timestamp when this configuration was created"
+    },
+    "session": {
+      "type": "string",
+      "description": "tmux session name for this orchestration",
+      "default": "sigma-orchestration"
+    },
+    "projectRoot": {
+      "type": "string",
+      "description": "Absolute path to the project root directory"
+    },
+    "streams": {
+      "type": "array",
+      "description": "Array of stream worker configurations",
+      "minItems": 1,
+      "maxItems": 8,
+      "items": {
+        "type": "object",
+        "required": ["name", "prds", "worktree"],
+        "properties": {
+          "name": {
+            "type": "string",
+            "pattern": "^[A-H]$",
+            "description": "Single letter stream identifier (A through H)"
+          },
+          "prds": {
+            "type": "array",
+            "description": "PRD IDs assigned to this stream in execution order",
+            "items": {
+              "type": "string",
+              "pattern": "^F\\d+|PRD-\\d+$"
+            },
+            "minItems": 0
+          },
+          "worktree": {
+            "type": "string",
+            "description": "Git worktree directory name (relative to worktrees/)"
+          },
+          "priority": {
+            "type": "string",
+            "enum": ["high", "medium", "low"],
+            "description": "Priority level for this stream",
+            "default": "medium"
+          },
+          "description": {
+            "type": "string",
+            "description": "Human-readable description of this stream's focus"
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "dependencies": {
+      "type": "object",
+      "description": "PRD dependency graph - key PRD depends on value PRDs",
+      "additionalProperties": {
+        "type": "array",
+        "items": {
+          "type": "string",
+          "pattern": "^F\\d+|PRD-\\d+$"
+        },
+        "description": "Array of PRD IDs that must be completed before the key PRD"
+      }
+    },
+    "merge_order": {
+      "type": "array",
+      "description": "Order to merge stream branches (based on dependencies)",
+      "items": {
+        "type": "string",
+        "pattern": "^[A-H]$"
+      }
+    },
+    "settings": {
+      "type": "object",
+      "description": "Orchestration settings",
+      "properties": {
+        "mode": {
+          "type": "string",
+          "enum": ["full-auto", "semi-auto", "manual"],
+          "description": "Orchestration mode",
+          "default": "semi-auto"
+        },
+        "notify_on": {
+          "type": "array",
+          "description": "Events that trigger voice notifications",
+          "items": {
+            "type": "string",
+            "enum": [
+              "story_complete",
+              "prd_complete",
+              "blocked",
+              "all_complete",
+              "crash",
+              "merge_conflict",
+              "error"
+            ]
+          },
+          "default": ["prd_complete", "blocked", "crash", "all_complete"]
+        },
+        "auto_merge": {
+          "type": "boolean",
+          "description": "Automatically start merge when all streams complete",
+          "default": false
+        },
+        "verify_stories": {
+          "type": "boolean",
+          "description": "Run verification after each story completion",
+          "default": true
+        },
+        "max_retries": {
+          "type": "integer",
+          "description": "Maximum retry attempts for failed operations",
+          "minimum": 0,
+          "maximum": 10,
+          "default": 3
+        }
+      },
+      "additionalProperties": false
+    },
+    "metadata": {
+      "type": "object",
+      "description": "Additional metadata about the orchestration",
+      "properties": {
+        "total_prds": {
+          "type": "integer",
+          "description": "Total number of PRDs across all streams"
+        },
+        "estimated_duration": {
+          "type": "string",
+          "description": "Estimated total duration (e.g., '4h', '2d')"
+        },
+        "generated_by": {
+          "type": "string",
+          "description": "Tool that generated this configuration"
+        },
+        "generated_at": {
+          "type": "string",
+          "format": "date-time",
+          "description": "When the configuration was generated"
+        }
+      },
+      "additionalProperties": true
+    }
+  },
+  "additionalProperties": false,
+  "examples": [
+    {
+      "version": "1.0.0",
+      "created": "2026-01-12T10:00:00Z",
+      "session": "sigma-orchestration",
+      "projectRoot": "/Users/dev/my-project",
+      "streams": [
+        {
+          "name": "A",
+          "prds": ["F001", "F005"],
+          "worktree": "stream-a",
+          "description": "Core Auth & User"
+        },
+        {
+          "name": "B",
+          "prds": ["F002", "F006"],
+          "worktree": "stream-b",
+          "description": "Dashboard & Charts"
+        },
+        {
+          "name": "C",
+          "prds": ["F003"],
+          "worktree": "stream-c",
+          "description": "Backend Services"
+        },
+        {
+          "name": "D",
+          "prds": ["F004"],
+          "worktree": "stream-d",
+          "description": "Integrations"
+        }
+      ],
+      "dependencies": {
+        "F005": ["F002"],
+        "F006": ["F003", "F004"]
+      },
+      "merge_order": ["A", "B", "C", "D"],
+      "settings": {
+        "mode": "semi-auto",
+        "notify_on": ["prd_complete", "blocked", "crash", "all_complete"],
+        "auto_merge": false,
+        "verify_stories": true
+      },
+      "metadata": {
+        "total_prds": 6,
+        "estimated_duration": "4h",
+        "generated_by": "@step-11b-prd-swarm --orchestrate",
+        "generated_at": "2026-01-12T10:00:00Z"
+      }
+    }
+  ]
+}
+

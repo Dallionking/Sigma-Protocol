@@ -1,0 +1,316 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://github.com/dallionking/sigma-protocol/schemas/sigma-manifest.schema.json",
+  "title": "Sigma Protocol Manifest",
+  "description": "Tracks which Sigma Protocol steps/commands have been run and their versions, enabling intelligent updates",
+  "type": "object",
+  "required": ["sigma_version", "initialized", "commands_run"],
+  "properties": {
+    "sigma_version": {
+      "type": "string",
+      "description": "Version of Sigma Protocol when manifest was created",
+      "pattern": "^\\d+\\.\\d+\\.\\d+(-[a-zA-Z0-9]+)?$",
+      "examples": ["3.0.0", "3.0.0-alpha.1"]
+    },
+    "initialized": {
+      "type": "string",
+      "format": "date-time",
+      "description": "ISO timestamp when Sigma Protocol was first installed"
+    },
+    "last_sync": {
+      "type": "string",
+      "format": "date-time",
+      "description": "ISO timestamp of last retrofit-enhance sync"
+    },
+    "last_update": {
+      "type": "string",
+      "format": "date-time",
+      "description": "ISO timestamp of last retrofit-enhance update mode run"
+    },
+    "project_info": {
+      "type": "object",
+      "description": "Project metadata captured at initialization",
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "Project name from package.json"
+        },
+        "tech_stack": {
+          "type": "string",
+          "description": "Detected tech stack (e.g., 'nextjs', 'expo')"
+        },
+        "monetized": {
+          "type": "boolean",
+          "description": "Whether Step 1.5 (Offer Architecture) is applicable"
+        }
+      }
+    },
+    "commands_run": {
+      "type": "object",
+      "description": "Map of command/step names to their run details",
+      "additionalProperties": {
+        "type": "object",
+        "required": ["version", "ran_at"],
+        "properties": {
+          "version": {
+            "type": "string",
+            "description": "Command version when it was run",
+            "pattern": "^\\d+\\.\\d+\\.\\d+(-[a-zA-Z0-9]+)?$"
+          },
+          "ran_at": {
+            "type": "string",
+            "format": "date-time",
+            "description": "ISO timestamp when command was run"
+          },
+          "output_files": {
+            "type": "array",
+            "description": "Files created/modified by this command",
+            "items": {
+              "type": "string"
+            }
+          },
+          "update_mode": {
+            "type": "boolean",
+            "description": "Whether this was an update (true) or full run (false)"
+          },
+          "sections_added": {
+            "type": "array",
+            "description": "Section IDs added during update mode",
+            "items": {
+              "type": "string"
+            }
+          },
+          "sections_present": {
+            "type": "array",
+            "description": "All section IDs present after this run",
+            "items": {
+              "type": "string"
+            }
+          }
+        }
+      }
+    },
+    "pending_updates": {
+      "type": "array",
+      "description": "Commands that have newer versions available",
+      "items": {
+        "type": "string"
+      }
+    },
+    "section_inventory": {
+      "type": "object",
+      "description": "Section-level tracking for each step document",
+      "additionalProperties": {
+        "type": "object",
+        "properties": {
+          "doc_path": {
+            "type": "string",
+            "description": "Path to the document"
+          },
+          "completeness": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 100,
+            "description": "Percentage of available sections present"
+          },
+          "sections_present": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "sections_missing": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "last_scanned": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      }
+    },
+    "active_work": {
+      "type": "object",
+      "description": "Tracks the current work-in-progress for @continue",
+      "properties": {
+        "current_prd": {
+          "type": "string",
+          "description": "Path to the active PRD JSON file"
+        },
+        "current_story_id": {
+          "type": "string",
+          "description": "ID of the story currently being implemented"
+        },
+        "last_activity": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Timestamp of last activity on this work item"
+        },
+        "source": {
+          "type": "string",
+          "enum": ["ralph", "manual", "swarm"],
+          "description": "How this work was initiated"
+        },
+        "progress": {
+          "type": "object",
+          "properties": {
+            "completed": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "total": {
+              "type": "integer",
+              "minimum": 0
+            }
+          }
+        }
+      }
+    },
+    "health_check": {
+      "type": "object",
+      "description": "Results from last sigma doctor run",
+      "properties": {
+        "last_run": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Timestamp of last health check"
+        },
+        "score": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 100,
+          "description": "Health score percentage"
+        },
+        "issues_found": {
+          "type": "array",
+          "description": "List of issues found during health check",
+          "items": {
+            "type": "object",
+            "properties": {
+              "type": {
+                "type": "string",
+                "enum": ["error", "warning", "info"]
+              },
+              "message": {
+                "type": "string"
+              },
+              "suggestion": {
+                "type": "string"
+              }
+            },
+            "required": ["type", "message"]
+          }
+        },
+        "platforms_healthy": {
+          "type": "array",
+          "description": "Platforms that passed health check",
+          "items": {
+            "type": "string",
+            "enum": ["cursor", "claude-code", "opencode"]
+          }
+        }
+      }
+    },
+    "installed_platforms": {
+      "type": "array",
+      "description": "Platforms for which Sigma Protocol is installed",
+      "items": {
+        "type": "string",
+        "enum": ["cursor", "claude-code", "opencode"]
+      }
+    },
+    "installed_modules": {
+      "type": "array",
+      "description": "Module categories that are installed",
+      "items": {
+        "type": "string",
+        "enum": ["steps", "audit", "dev", "ops", "deploy", "generators", "marketing"]
+      }
+    },
+    "file_hashes": {
+      "type": "object",
+      "description": "SHA-256 hashes of installed files for differential updates",
+      "additionalProperties": {
+        "type": "string",
+        "pattern": "^[a-f0-9]{64}$"
+      }
+    },
+    "source_version": {
+      "type": "string",
+      "description": "Version of SSS-Protocol source at last sync",
+      "pattern": "^\\d+\\.\\d+\\.\\d+(-[a-zA-Z0-9.]+)?$"
+    },
+    "source_commit": {
+      "type": "string",
+      "description": "Git commit hash of SSS-Protocol at last sync",
+      "pattern": "^[a-f0-9]{7,40}$"
+    }
+  },
+  "examples": [
+    {
+      "sigma_version": "3.0.0",
+      "initialized": "2025-11-01T10:00:00Z",
+      "last_sync": "2026-01-11T15:30:00Z",
+      "last_update": "2026-01-11T15:30:00Z",
+      "project_info": {
+        "name": "my-awesome-app",
+        "tech_stack": "nextjs",
+        "monetized": true
+      },
+      "commands_run": {
+        "step-1-ideation": {
+          "version": "2.0.0",
+          "ran_at": "2025-11-01T10:15:00Z",
+          "output_files": ["docs/specs/MASTER_PRD.md", "docs/stack-profile.json"],
+          "update_mode": false
+        },
+        "step-3-ux-design": {
+          "version": "3.0.0",
+          "ran_at": "2026-01-11T15:30:00Z",
+          "output_files": ["docs/ux/UX-DESIGN.md"],
+          "update_mode": true,
+          "sections_added": ["ia-frameworks", "animation-philosophy"],
+          "sections_present": ["personas", "journeys", "emotional", "ia-frameworks", "animation-philosophy"]
+        }
+      },
+      "pending_updates": [],
+      "section_inventory": {
+        "step-3": {
+          "doc_path": "docs/ux/UX-DESIGN.md",
+          "completeness": 100,
+          "sections_present": ["personas", "journeys", "emotional", "ia-frameworks", "animation-philosophy"],
+          "sections_missing": [],
+          "last_scanned": "2026-01-11T15:30:00Z"
+        }
+      },
+      "active_work": {
+        "current_prd": "docs/ralph/auth/prd.json",
+        "current_story_id": "story-003",
+        "last_activity": "2026-01-11T10:30:00Z",
+        "source": "ralph",
+        "progress": {
+          "completed": 2,
+          "total": 10
+        }
+      },
+      "health_check": {
+        "last_run": "2026-01-11T09:00:00Z",
+        "score": 95,
+        "issues_found": [
+          {
+            "type": "warning",
+            "message": "CLAUDE.md missing (recommended for Claude Code)",
+            "suggestion": "Run @step-12-context-engine to generate CLAUDE.md"
+          }
+        ],
+        "platforms_healthy": ["cursor", "opencode"]
+      },
+      "installed_platforms": ["cursor", "claude-code", "opencode"],
+      "installed_modules": ["steps", "audit", "dev", "ops", "deploy", "generators"]
+    }
+  ]
+}
+

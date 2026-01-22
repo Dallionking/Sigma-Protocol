@@ -1,0 +1,889 @@
+---
+name: api-docs-gen
+description: "Auto-generate API documentation from codebase - Next.js routes, Server Actions, OpenAPI/Swagger specs"
+model: claude-sonnet-4-5-20241022
+tools:
+  - Read
+  - Write
+  - Edit
+  - Bash
+  - WebFetch
+  # MCP tools inherited from original command
+---
+
+# api-docs-gen
+
+**Source:** Sigma Protocol generators module
+**Version:** 2.0.0
+
+---
+
+
+# @api-docs-gen
+
+**Auto-generate comprehensive API documentation from codebase**
+
+## 🎯 Purpose
+
+Eliminate the pain of manually maintaining API documentation. Research shows **80% of agencies have outdated API docs**, causing confusion for clients and new developers. This command automatically extracts API documentation from your codebase and keeps it current.
+
+**For agencies:** Provides professional API docs that stay synchronized with code changes, improving client handoffs and team onboarding.
+
+---
+
+## 📋 Command Usage
+
+```bash
+@api-docs-gen
+@api-docs-gen --format=swagger
+@api-docs-gen --output=/docs/api/
+@api-docs-gen --watch
+```
+
+### Parameters
+
+| Parameter | Description | Default |
+|-----------|-------------|---------|
+| `--format` | Output format: `markdown`, `swagger`, `openapi`, `both` | `both` |
+| `--output` | Custom output directory | `/docs/api/` |
+| `--watch` | Watch mode: regenerate on file changes | `false` |
+
+---
+
+## 📁 File Management (CRITICAL)
+
+**This command follows the File Creation & Organization Protocol from `.cursorrules`.**
+
+### Before Creating Files
+
+1. **Check manifest**: Use `checkManifest('@api-docs-gen')` from `/lib/manifest.ts`
+2. **Strategy**: `replace` - Always update single file
+
+### Output Location
+
+```
+/docs/api/
+  API-REFERENCE.md     ← SINGLE FILE (update in place)
+  openapi.json         ← OpenAPI spec
+```
+
+### After Creating Files
+
+**Update manifest**: `updateManifest('@api-docs-gen', '/docs/api/API-REFERENCE.md', 'replace')`
+
+---
+
+## 🔄 What Gets Scanned
+
+This command intelligently scans your Next.js codebase for API definitions:
+
+### 1. Next.js API Routes (`/app/api/**/route.ts`)
+```typescript
+// Automatically extracts:
+// - HTTP methods (GET, POST, PUT, DELETE, PATCH)
+// - Request/response types
+// - Authentication requirements
+// - Error responses
+// - Rate limiting rules
+
+export async function GET(request: Request) {
+  // Documentation extracted from JSDoc comments
+}
+```
+
+### 2. Server Actions (`"use server"`)
+```typescript
+// Automatically extracts:
+// - Function name and parameters
+// - Input validation (Zod schemas)
+// - Return types
+// - Error handling
+// - Authorization checks
+
+'use server';
+
+/**
+ * Create a new lead in CRM
+ * @param data - Lead data
+ * @returns Created lead object
+ */
+export async function createLead(data: LeadInput) {
+  // ...
+}
+```
+
+### 3. tRPC Procedures (if applicable)
+```typescript
+// Automatically extracts:
+// - Procedure name and type (query/mutation)
+// - Input/output schemas
+// - Middleware (auth, rate limiting)
+
+export const appRouter = router({
+  leads: {
+    create: protectedProcedure
+      .input(leadSchema)
+      .mutation(async ({ input }) => {
+        // ...
+      })
+  }
+});
+```
+
+---
+
+## 📦 What Gets Generated
+
+### Output Structure
+
+```
+/docs/api/
+  ├── API-REFERENCE.md                     # Master API documentation
+  ├── openapi.json                         # OpenAPI 3.0 spec
+  ├── swagger.html                         # Interactive Swagger UI
+  ├── endpoints/
+  │   ├── crm-leads.md                    # Grouped by feature
+  │   ├── auth.md
+  │   └── payments.md
+  └── server-actions/
+      ├── intake-actions.md
+      ├── admin-actions.md
+      └── prd-actions.md
+```
+
+---
+
+## 📄 Documentation Format
+
+### Master Documentation (API-REFERENCE.md)
+
+```markdown
+# API Reference
+**Project:** [Project Name]
+**Base URL:** https://api.example.com
+**Version:** 1.0.0
+**Last Updated:** November 6, 2025
+
+---
+
+## 🔐 Authentication
+
+All API endpoints require authentication unless marked as public.
+
+**Method:** Bearer Token (JWT)
+
+\`\`\`bash
+curl -H "Authorization: Bearer YOUR_TOKEN" \
+     https://api.example.com/api/leads
+\`\`\`
+
+**Token Expiration:** 7 days
+**Refresh:** Send POST to `/api/auth/refresh`
+
+---
+
+## 📊 Rate Limiting
+
+| Tier | Requests/Hour | Burst |
+|------|---------------|-------|
+| Free | 100 | 10 |
+| Pro | 1,000 | 50 |
+| Enterprise | 10,000 | 200 |
+
+**Headers:**
+- `X-RateLimit-Limit`: Total requests allowed
+- `X-RateLimit-Remaining`: Requests remaining
+- `X-RateLimit-Reset`: Unix timestamp when limit resets
+
+---
+
+## 🗂️ Endpoints
+
+### CRM Leads
+
+#### GET /api/crm/leads
+
+Retrieve all leads with optional filtering.
+
+**Authentication:** Required (Admin only)
+
+**Query Parameters:**
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `stage` | string | No | Filter by stage (new, discovery, proposal, won, lost) |
+| `search` | string | No | Search by name, email, or company |
+| `limit` | number | No | Number of results (default: 50, max: 100) |
+| `offset` | number | No | Pagination offset (default: 0) |
+
+**Request Example:**
+\`\`\`bash
+curl -X GET "https://api.example.com/api/crm/leads?stage=new&limit=10" \
+     -H "Authorization: Bearer YOUR_TOKEN"
+\`\`\`
+
+**Response (200 OK):**
+\`\`\`json
+{
+  "success": true,
+  "data": [
+    {
+      "id": "lead_123",
+      "name": "John Doe",
+      "email": "john@example.com",
+      "company": "Acme Corp",
+      "stage": "new",
+      "createdAt": "2025-11-01T10:00:00Z"
+    }
+  ],
+  "pagination": {
+    "total": 45,
+    "limit": 10,
+    "offset": 0,
+    "hasMore": true
+  }
+}
+\`\`\`
+
+**Error Responses:**
+| Code | Description |
+|------|-------------|
+| 401 | Unauthorized (missing or invalid token) |
+| 403 | Forbidden (not an admin) |
+| 429 | Too many requests (rate limit exceeded) |
+| 500 | Internal server error |
+
+---
+
+#### POST /api/crm/leads
+
+Create a new lead.
+
+**Authentication:** Required (Admin only)
+
+**Request Body:**
+\`\`\`typescript
+interface CreateLeadRequest {
+  name: string;              // Required, 1-255 characters
+  email: string;             // Required, valid email
+  phone?: string;            // Optional, E.164 format
+  company?: string;          // Optional, 1-255 characters
+  source?: string;           // Optional (e.g., "voice_intake")
+}
+\`\`\`
+
+**Request Example:**
+\`\`\`bash
+curl -X POST "https://api.example.com/api/crm/leads" \
+     -H "Authorization: Bearer YOUR_TOKEN" \
+     -H "Content-Type: application/json" \
+     -d '{
+       "name": "Jane Smith",
+       "email": "jane@example.com",
+       "company": "Tech Startup Inc",
+       "source": "referral"
+     }'
+\`\`\`
+
+**Response (201 Created):**
+\`\`\`json
+{
+  "success": true,
+  "data": {
+    "id": "lead_456",
+    "name": "Jane Smith",
+    "email": "jane@example.com",
+    "company": "Tech Startup Inc",
+    "stage": "new",
+    "source": "referral",
+    "createdAt": "2025-11-06T14:30:00Z"
+  }
+}
+\`\`\`
+
+**Error Responses:**
+| Code | Description |
+|------|-------------|
+| 400 | Bad request (validation failed) |
+| 401 | Unauthorized |
+| 403 | Forbidden |
+| 409 | Conflict (email already exists) |
+| 429 | Too many requests |
+| 500 | Internal server error |
+
+**Validation Errors (400):**
+\`\`\`json
+{
+  "success": false,
+  "error": "Validation failed",
+  "details": [
+    {
+      "field": "email",
+      "message": "Invalid email format"
+    }
+  ]
+}
+\`\`\`
+
+---
+
+### Authentication
+
+#### POST /api/auth/login
+
+[Additional endpoints...]
+
+---
+
+## 🔧 Server Actions
+
+Server Actions are called directly from React components (not via HTTP).
+
+### createLead(data)
+
+Create a new lead in CRM.
+
+**Usage:**
+\`\`\`typescript
+import { createLead } from '@/actions/admin/leads';
+
+const result = await createLead({
+  name: "John Doe",
+  email: "john@example.com"
+});
+\`\`\`
+
+**Parameters:**
+\`\`\`typescript
+interface LeadInput {
+  name: string;
+  email: string;
+  phone?: string;
+  company?: string;
+}
+\`\`\`
+
+**Returns:**
+\`\`\`typescript
+{
+  success: boolean;
+  data?: Lead;
+  error?: string;
+}
+\`\`\`
+
+**Authorization:** Requires authenticated user with admin role
+
+**Example:**
+\`\`\`typescript
+'use client';
+
+import { createLead } from '@/actions/admin/leads';
+import { useState } from 'react';
+
+export function CreateLeadForm() {
+  const [loading, setLoading] = useState(false);
+  
+  async function handleSubmit(formData: FormData) {
+    setLoading(true);
+    
+    const result = await createLead({
+      name: formData.get('name') as string,
+      email: formData.get('email') as string
+    });
+    
+    if (result.success) {
+      alert('Lead created!');
+    } else {
+      alert('Error: ' + result.error);
+    }
+    
+    setLoading(false);
+  }
+  
+  return (
+    <form action={handleSubmit}>
+      {/* Form fields */}
+    </form>
+  );
+}
+\`\`\`
+
+---
+
+## 📚 Error Handling
+
+All endpoints return consistent error format:
+
+\`\`\`typescript
+interface ErrorResponse {
+  success: false;
+  error: string;           // Human-readable error message
+  code?: string;           // Machine-readable error code
+  details?: object;        // Additional error details
+}
+\`\`\`
+
+**Common Error Codes:**
+| Code | HTTP Status | Description |
+|------|-------------|-------------|
+| `UNAUTHORIZED` | 401 | Missing or invalid auth token |
+| `FORBIDDEN` | 403 | Insufficient permissions |
+| `NOT_FOUND` | 404 | Resource not found |
+| `VALIDATION_ERROR` | 400 | Input validation failed |
+| `RATE_LIMIT_EXCEEDED` | 429 | Too many requests |
+| `INTERNAL_ERROR` | 500 | Server error |
+
+---
+
+## 🔄 Webhooks (If Applicable)
+
+[Document webhook endpoints if they exist]
+
+---
+
+## 📦 SDKs & Client Libraries
+
+[If you provide SDK, document here]
+
+---
+
+## 🧪 Testing
+
+**Postman Collection:** [Link to Postman collection]
+**Swagger UI:** [Link to Swagger UI]
+
+**Test Credentials (Staging):**
+\`\`\`
+Email: test@example.com
+Password: test123
+\`\`\`
+
+---
+
+## 🔗 Additional Resources
+
+- [Architecture Documentation](/docs/architecture/ARCHITECTURE.md)
+- [Database Schema](/docs/database/SCHEMA.md)
+- [Security Guidelines](/docs/security/SECURITY.md)
+
+---
+
+**Last Updated:** November 6, 2025  
+**Generated by:** @api-docs-gen
+
+$END$
+```
+
+---
+
+## 🛠️ Implementation Phases
+
+### Phase 1: Scan Codebase for API Endpoints
+
+**Find all API routes:**
+```bash
+find app/api -name "route.ts" -o -name "route.js"
+```
+
+**For each route file, extract:**
+```typescript
+interface APIRoute {
+  path: string;              // e.g., /api/crm/leads
+  methods: string[];         // ['GET', 'POST']
+  authentication: boolean;   // Requires auth?
+  authorization?: string;    // Role requirements
+  rateLimit?: string;        // Rate limiting rules
+  handlers: {
+    method: string;
+    params?: Parameter[];
+    requestBody?: Schema;
+    responses: Response[];
+    description?: string;
+  }[];
+}
+
+async function extractRouteInfo(filePath: string): Promise<APIRoute> {
+  const content = await readFile(filePath);
+  const ast = parseTypeScript(content); // Use TypeScript compiler API
+  
+  // Extract JSDoc comments
+  const jsdoc = extractJSDoc(ast);
+  
+  // Extract function signatures
+  const handlers = [];
+  for (const method of ['GET', 'POST', 'PUT', 'DELETE', 'PATCH']) {
+    const handler = ast.find(node => node.name === method);
+    if (handler) {
+      handlers.push({
+        method,
+        params: extractParams(handler),
+        requestBody: extractRequestBody(handler),
+        responses: extractResponses(handler),
+        description: jsdoc[method]?.description
+      });
+    }
+  }
+  
+  return {
+    path: filePathToAPIPath(filePath),
+    methods: handlers.map(h => h.method),
+    authentication: detectAuth(ast),
+    authorization: detectAuthz(ast),
+    rateLimit: detectRateLimit(ast),
+    handlers
+  };
+}
+```
+
+---
+
+### Phase 2: Scan for Server Actions
+
+**Find all Server Actions:**
+```bash
+grep -r "use server" --include="*.ts" --include="*.tsx" actions/
+```
+
+**For each Server Action file, extract:**
+```typescript
+interface ServerAction {
+  name: string;
+  file: string;
+  description?: string;
+  params: Parameter[];
+  returnType: string;
+  authentication: boolean;
+  authorization?: string;
+  validation?: Schema;
+}
+
+async function extractServerActions(filePath: string): Promise<ServerAction[]> {
+  const content = await readFile(filePath);
+  const ast = parseTypeScript(content);
+  
+  // Find all exported async functions
+  const actions = ast.body.filter(node => 
+    node.type === 'FunctionDeclaration' &&
+    node.async &&
+    node.exported
+  );
+  
+  return actions.map(action => ({
+    name: action.name,
+    file: filePath,
+    description: extractJSDoc(action)?.description,
+    params: extractParams(action),
+    returnType: extractReturnType(action),
+    authentication: detectAuth(action),
+    authorization: detectAuthz(action),
+    validation: extractZodSchema(action)
+  }));
+}
+```
+
+---
+
+### Phase 3: Generate OpenAPI/Swagger Spec
+
+**Create OpenAPI 3.0 JSON:**
+```typescript
+interface OpenAPISpec {
+  openapi: '3.0.0';
+  info: {
+    title: string;
+    version: string;
+    description: string;
+  };
+  servers: { url: string }[];
+  paths: Record<string, PathItem>;
+  components: {
+    schemas: Record<string, Schema>;
+    securitySchemes: Record<string, SecurityScheme>;
+  };
+}
+
+function generateOpenAPI(routes: APIRoute[]): OpenAPISpec {
+  const spec: OpenAPISpec = {
+    openapi: '3.0.0',
+    info: {
+      title: 'Project API',
+      version: '1.0.0',
+      description: 'Auto-generated API documentation'
+    },
+    servers: [
+      { url: 'https://api.example.com' },
+      { url: 'http://localhost:3000' }
+    ],
+    paths: {},
+    components: {
+      schemas: {},
+      securitySchemes: {
+        bearerAuth: {
+          type: 'http',
+          scheme: 'bearer',
+          bearerFormat: 'JWT'
+        }
+      }
+    }
+  };
+  
+  // Convert routes to OpenAPI paths
+  for (const route of routes) {
+    spec.paths[route.path] = {};
+    
+    for (const handler of route.handlers) {
+      spec.paths[route.path][handler.method.toLowerCase()] = {
+        summary: handler.description,
+        security: route.authentication ? [{ bearerAuth: [] }] : [],
+        parameters: handler.params?.map(p => ({
+          name: p.name,
+          in: p.in || 'query',
+          required: p.required,
+          schema: { type: p.type }
+        })),
+        requestBody: handler.requestBody ? {
+          content: {
+            'application/json': {
+              schema: handler.requestBody
+            }
+          }
+        } : undefined,
+        responses: handler.responses.reduce((acc, r) => {
+          acc[r.status] = {
+            description: r.description,
+            content: {
+              'application/json': {
+                schema: r.schema
+              }
+            }
+          };
+          return acc;
+        }, {})
+      };
+    }
+  }
+  
+  return spec;
+}
+```
+
+---
+
+### Phase 4: Generate Markdown Documentation
+
+**Create human-readable docs:**
+```typescript
+function generateMarkdownDocs(routes: APIRoute[], actions: ServerAction[]): string {
+  let markdown = `# API Reference\n\n`;
+  
+  // Authentication section
+  markdown += `## 🔐 Authentication\n\n`;
+  markdown += generateAuthSection();
+  
+  // Rate limiting section
+  markdown += `## 📊 Rate Limiting\n\n`;
+  markdown += generateRateLimitSection();
+  
+  // Endpoints grouped by feature
+  const groupedRoutes = groupByFeature(routes);
+  
+  for (const [feature, featureRoutes] of Object.entries(groupedRoutes)) {
+    markdown += `## ${feature}\n\n`;
+    
+    for (const route of featureRoutes) {
+      for (const handler of route.handlers) {
+        markdown += generateEndpointDoc(route, handler);
+      }
+    }
+  }
+  
+  // Server Actions section
+  markdown += `## 🔧 Server Actions\n\n`;
+  for (const action of actions) {
+    markdown += generateActionDoc(action);
+  }
+  
+  return markdown;
+}
+```
+
+---
+
+### Phase 5: Generate Swagger UI HTML
+
+**Create interactive documentation:**
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>API Documentation - Swagger UI</title>
+  <link rel="stylesheet" href="https://unpkg.com/swagger-ui-dist@5/swagger-ui.css" />
+</head>
+<body>
+  <div id="swagger-ui"></div>
+  <script src="https://unpkg.com/swagger-ui-dist@5/swagger-ui-bundle.js"></script>
+  <script>
+    window.onload = () => {
+      window.ui = SwaggerUIBundle({
+        url: './openapi.json',
+        dom_id: '#swagger-ui',
+        deepLinking: true,
+        presets: [
+          SwaggerUIBundle.presets.apis,
+          SwaggerUIBundle.SwaggerUIStandalonePreset
+        ],
+      });
+    };
+  </script>
+</body>
+</html>
+```
+
+---
+
+### Phase 6: Auto-Update Git Hook (Optional)
+
+**If `--watch` flag or Git hook setup:**
+
+```bash
+#!/bin/bash
+# .git/hooks/pre-commit
+
+# Regenerate API docs on every commit
+@api-docs-gen --silent
+
+# Stage updated docs
+git add docs/api/
+```
+
+**Or use file watcher:**
+```bash
+# Watch mode
+nodemon --watch "app/api/**/*.ts" \
+        --watch "actions/**/*.ts" \
+        --exec "@api-docs-gen"
+```
+
+---
+
+### Phase 7: Validation & Output
+
+**Final checks:**
+- [ ] All API routes documented
+- [ ] All Server Actions documented
+- [ ] OpenAPI spec valid (use validator)
+- [ ] Markdown formatted correctly
+- [ ] Swagger UI functional
+- [ ] Examples tested
+
+**Output summary:**
+```
+✅ API Documentation Generated
+
+📊 Summary:
+  - API Routes: 24 endpoints
+  - Server Actions: 18 actions
+  - Total Methods: 42 (GET: 15, POST: 12, PUT: 8, DELETE: 7)
+  
+📄 Files Created:
+  ✅ /docs/api/API-REFERENCE.md (master doc)
+  ✅ /docs/api/openapi.json (OpenAPI 3.0 spec)
+  ✅ /docs/api/swagger.html (interactive UI)
+  ✅ /docs/api/endpoints/*.md (grouped by feature)
+  ✅ /docs/api/server-actions/*.md (by module)
+
+🔗 Access:
+  - Markdown: /docs/api/API-REFERENCE.md
+  - Swagger UI: http://localhost:3000/docs/api/swagger.html
+  - OpenAPI JSON: http://localhost:3000/docs/api/openapi.json
+
+💡 Next Steps:
+  1. Review generated docs for accuracy
+  2. Add missing JSDoc comments for better docs
+  3. Include in @client-handoff package
+  4. Share Swagger UI link with client/team
+  5. Set up auto-regeneration (--watch or Git hook)
+```
+
+---
+
+## 🎯 Success Metrics
+
+**Documentation Quality Indicators:**
+- All endpoints documented ✅
+- Request/response examples provided ✅
+- Authentication documented ✅
+- Error responses documented ✅
+- OpenAPI spec validates ✅
+- Swagger UI loads correctly ✅
+
+**Team Success Indicators:**
+- New developers onboard faster (find APIs easily)
+- Client can integrate without asking questions
+- Support tickets about API usage decrease
+- Documentation stays current (auto-updates)
+
+---
+
+## 🔄 Maintenance
+
+**This command should be run:**
+- **After API changes** - Manually or via Git hook
+- **Before releases** - Validate docs are current
+- **Client handoff** - Include in documentation package
+- **Team onboarding** - Share with new developers
+
+**Auto-regeneration options:**
+```bash
+# Git hook (pre-commit)
+@api-docs-gen
+
+# CI/CD pipeline
+@api-docs-gen && git diff --exit-code docs/api/ || echo "Docs updated"
+
+# Watch mode (development)
+@api-docs-gen --watch
+```
+
+---
+
+## 💡 Pro Tips
+
+1. **Use JSDoc comments** - Better docs = better generated output
+2. **Type everything** - TypeScript types = accurate schema generation
+3. **Validate Zod schemas** - Auto-extracts validation rules
+4. **Test with Postman** - Import OpenAPI spec into Postman
+5. **Share Swagger UI** - Deploy to staging for client access
+6. **Include in handoff** - Use `@client-handoff` to include API docs
+7. **CI/CD integration** - Fail build if docs outdated
+
+---
+
+## 🛠️ Technical Implementation Notes
+
+**For Cursor AI implementing this command:**
+
+1. **Use TypeScript Compiler API** - Parse AST for accurate extraction
+2. **Extract JSDoc** - Use `ts.getJSDocTags()` for comments
+3. **Detect auth patterns** - Look for `auth()`, `getUser()`, `requireAdmin()`
+4. **Extract Zod schemas** - Parse `.parse()`, `.safeParse()` calls
+5. **Group by feature** - Use file path patterns (e.g., `/api/crm/*`)
+6. **Validate OpenAPI** - Use `openapi-validator` package
+7. **Handle edge cases** - Dynamic routes, middleware, tRPC
+
+**Performance:**
+- Total runtime: ~30 seconds for medium codebase
+- Parallelize file scanning
+- Cache parsed AST
+
+**Error Handling:**
+- If TypeScript parsing fails → Skip file, warn user
+- If OpenAPI validation fails → Note errors in output
+- If Swagger UI fails → Provide markdown only
+
+---
+
+$END$
+
+

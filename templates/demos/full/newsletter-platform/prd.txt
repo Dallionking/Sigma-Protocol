@@ -1,0 +1,378 @@
+# Product Requirements Document: WriteStack
+## Newsletter Publishing Platform
+
+### 1. Executive Summary
+
+WriteStack is a newsletter publishing platform that enables writers to build an audience and monetize their content through paid subscriptions. Think Substack meets Ghost - simple publishing with powerful monetization.
+
+### 2. Problem Statement
+
+Writers want to own their audience and monetize directly. Social media algorithms control reach, and traditional media doesn't pay well. They need a platform to publish, grow, and earn from their writing.
+
+### 3. Target Users
+
+**Writers**: Content creators, journalists, experts, thought leaders
+**Readers**: People who subscribe to newsletters
+
+### 4. Core Features
+
+#### 4.1 Publication Setup
+- Create publication:
+  - Name and tagline
+  - Logo and cover image
+  - Custom subdomain
+  - About page
+- Publication settings:
+  - Categories/topics
+  - Social links
+  - Custom colors
+
+#### 4.2 Content Editor
+- Rich text editor (WYSIWYG)
+- Formatting: headings, bold, italic, links
+- Images and embeds (YouTube, Twitter)
+- Code blocks
+- Pull quotes
+- Section breaks
+
+#### 4.3 Post Management
+- Create/edit posts
+- Save as draft
+- Preview before publish
+- Schedule for future
+- Post settings:
+  - Title and subtitle
+  - Excerpt
+  - Cover image
+  - SEO title/description
+  - Free or paid-only
+
+#### 4.4 Email Delivery
+- Send post to all subscribers
+- Send to free or paid only
+- Email customization
+- Test email before sending
+- Delivery tracking
+
+#### 4.5 Subscription Management
+- Free subscribers
+- Paid tiers (monthly/annual)
+- Stripe integration
+- Subscriber list
+- Import subscribers
+- Export subscribers
+
+#### 4.6 Reader Features
+- Publication homepage
+- Post archive
+- Individual post page
+- Subscribe modal
+- Comments
+- Share buttons
+- Related posts
+
+#### 4.7 Analytics
+- Total subscribers (free/paid)
+- Subscriber growth chart
+- Email metrics:
+  - Open rate
+  - Click rate
+  - Unsubscribes
+- Revenue metrics:
+  - MRR
+  - Churn rate
+  - LTV
+- Top performing posts
+
+### 5. Technical Requirements
+
+#### 5.1 Frontend
+- Next.js 14+ with App Router
+- TailwindCSS + shadcn/ui
+- Tiptap (rich text editor)
+- Recharts (analytics)
+
+#### 5.2 Backend
+- Supabase Auth
+- Supabase Database
+- Supabase Storage (images)
+- Stripe (subscriptions)
+- Resend (email delivery)
+- SendGrid alternative for scale
+
+#### 5.3 Database Schema
+
+```sql
+-- Publications (one per writer)
+publications (
+  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id uuid REFERENCES auth.users UNIQUE,
+  name text NOT NULL,
+  slug text UNIQUE NOT NULL,
+  tagline text,
+  description text,
+  logo_url text,
+  cover_url text,
+  about_content text, -- Markdown
+  primary_color text DEFAULT '#6366f1',
+  twitter_url text,
+  website_url text,
+  stripe_account_id text, -- Connected account
+  stripe_price_monthly text,
+  stripe_price_annual text,
+  price_monthly decimal(10, 2),
+  price_annual decimal(10, 2),
+  is_published boolean DEFAULT false,
+  created_at timestamptz DEFAULT now()
+)
+
+-- Posts
+posts (
+  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  publication_id uuid REFERENCES publications(id) ON DELETE CASCADE,
+  title text NOT NULL,
+  slug text NOT NULL,
+  subtitle text,
+  excerpt text,
+  content text NOT NULL, -- HTML from editor
+  cover_image_url text,
+  seo_title text,
+  seo_description text,
+  is_premium boolean DEFAULT false,
+  status text DEFAULT 'draft', -- 'draft', 'scheduled', 'published'
+  published_at timestamptz,
+  scheduled_for timestamptz,
+  email_sent boolean DEFAULT false,
+  email_sent_at timestamptz,
+  view_count integer DEFAULT 0,
+  created_at timestamptz DEFAULT now(),
+  updated_at timestamptz DEFAULT now(),
+  UNIQUE(publication_id, slug)
+)
+
+-- Subscribers
+subscribers (
+  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  publication_id uuid REFERENCES publications(id) ON DELETE CASCADE,
+  email text NOT NULL,
+  name text,
+  status text DEFAULT 'active', -- 'active', 'unsubscribed'
+  is_paid boolean DEFAULT false,
+  stripe_customer_id text,
+  stripe_subscription_id text,
+  subscription_tier text, -- 'monthly', 'annual'
+  subscribed_at timestamptz DEFAULT now(),
+  unsubscribed_at timestamptz,
+  created_at timestamptz DEFAULT now(),
+  UNIQUE(publication_id, email)
+)
+
+-- Email sends (for tracking)
+email_sends (
+  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  post_id uuid REFERENCES posts(id) ON DELETE CASCADE,
+  subscriber_id uuid REFERENCES subscribers(id) ON DELETE CASCADE,
+  sent_at timestamptz DEFAULT now(),
+  opened_at timestamptz,
+  clicked_at timestamptz,
+  created_at timestamptz DEFAULT now()
+)
+
+-- Comments
+comments (
+  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  post_id uuid REFERENCES posts(id) ON DELETE CASCADE,
+  subscriber_id uuid REFERENCES subscribers(id),
+  parent_id uuid REFERENCES comments(id), -- For replies
+  content text NOT NULL,
+  is_approved boolean DEFAULT true,
+  created_at timestamptz DEFAULT now()
+)
+
+-- Likes (for posts)
+likes (
+  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  post_id uuid REFERENCES posts(id) ON DELETE CASCADE,
+  subscriber_id uuid REFERENCES subscribers(id) ON DELETE CASCADE,
+  created_at timestamptz DEFAULT now(),
+  UNIQUE(post_id, subscriber_id)
+)
+```
+
+### 6. User Flows
+
+#### 6.1 Writer Publishes Post
+1. Log in to dashboard
+2. Click "New Post"
+3. Write content in editor
+4. Add cover image
+5. Set as free or paid
+6. Preview post
+7. Publish (immediate or scheduled)
+8. Email sent to subscribers
+
+#### 6.2 Reader Subscribes (Free)
+1. Visit publication page
+2. Click "Subscribe"
+3. Enter email
+4. Confirm email
+5. Start receiving posts
+
+#### 6.3 Reader Upgrades to Paid
+1. Hit paywall on premium post
+2. Click "Upgrade"
+3. Complete Stripe checkout
+4. Access all content
+
+### 7. Design Requirements
+
+#### Publication Homepage
+```
+┌─────────────────────────────────────────────────────────┐
+│  [Logo]  The Tech Weekly                                │
+│  Your weekly dose of tech insights                      │
+│                                     [Subscribe]         │
+├─────────────────────────────────────────────────────────┤
+│  Latest Posts                                           │
+│  ┌─────────────────────────────────────────────────┐   │
+│  │ [Cover Image]                                    │   │
+│  │ The Future of AI in 2025                        │   │
+│  │ A deep dive into what's coming next...          │   │
+│  │ Jan 14, 2025 · 8 min read          [Free] ★    │   │
+│  └─────────────────────────────────────────────────┘   │
+│  ┌─────────────────────────────────────────────────┐   │
+│  │ Why Every Startup Needs a Second Brain           │   │
+│  │ The tools and systems that scale...             │   │
+│  │ Jan 10, 2025 · 12 min read        [Premium] 🔒  │   │
+│  └─────────────────────────────────────────────────┘   │
+├─────────────────────────────────────────────────────────┤
+│  About                                                  │
+│  Written by John Doe, covering tech startups...        │
+└─────────────────────────────────────────────────────────┘
+```
+
+#### Post Page
+```
+┌─────────────────────────────────────────────────────────┐
+│  [Cover Image]                                          │
+│                                                         │
+│  The Future of AI in 2025                               │
+│  What the next wave of AI means for builders            │
+│                                                         │
+│  John Doe · Jan 14, 2025 · 8 min read                  │
+├─────────────────────────────────────────────────────────┤
+│                                                         │
+│  [Article content...]                                   │
+│                                                         │
+│  Lorem ipsum dolor sit amet, consectetur adipiscing     │
+│  elit. Sed do eiusmod tempor incididunt ut labore...   │
+│                                                         │
+│  ## The Rise of Agents                                  │
+│                                                         │
+│  More content here...                                   │
+│                                                         │
+├─────────────────────────────────────────────────────────┤
+│  [❤️ 42 likes]  [💬 12 comments]  [Share]              │
+├─────────────────────────────────────────────────────────┤
+│  Comments                                               │
+│  ┌─────────────────────────────────────────────────┐   │
+│  │ Jane: Great article! Especially the part...     │   │
+│  │ └─ John: Thanks Jane! Glad you enjoyed it      │   │
+│  └─────────────────────────────────────────────────┘   │
+└─────────────────────────────────────────────────────────┘
+```
+
+### 8. Email Template
+
+```html
+<!-- Post email template -->
+<div style="max-width: 600px; margin: 0 auto;">
+  <header>
+    <img src="[logo]" alt="[Publication Name]" />
+  </header>
+  
+  <article>
+    <h1>[Post Title]</h1>
+    <p style="color: #666;">[Subtitle]</p>
+    
+    <img src="[cover_image]" alt="" />
+    
+    <div>[Post Content]</div>
+  </article>
+  
+  <footer>
+    <p>
+      <a href="[post_url]">Read on web</a> · 
+      <a href="[unsubscribe_url]">Unsubscribe</a>
+    </p>
+  </footer>
+</div>
+```
+
+### 9. Stripe Integration
+
+Connected accounts for each writer:
+
+```typescript
+// Create connected account
+const account = await stripe.accounts.create({
+  type: 'express',
+  email: writer.email,
+  capabilities: {
+    card_payments: { requested: true },
+    transfers: { requested: true },
+  },
+});
+
+// Create subscription checkout
+const session = await stripe.checkout.sessions.create({
+  mode: 'subscription',
+  payment_method_types: ['card'],
+  line_items: [{
+    price: publication.stripe_price_monthly,
+    quantity: 1,
+  }],
+  subscription_data: {
+    application_fee_percent: 10, // Platform fee
+  },
+  success_url: `${url}/success`,
+  cancel_url: `${url}/cancel`,
+}, {
+  stripeAccount: publication.stripe_account_id,
+});
+```
+
+### 10. Non-Functional Requirements
+
+- Posts load in < 2 seconds
+- Emails delivered within 5 minutes
+- Support 100k+ subscribers per publication
+- 99.9% email deliverability
+- SEO optimized
+
+### 11. Out of Scope (V1)
+
+- Custom domains
+- Podcast support
+- Mobile app
+- Multi-author publications
+- API access
+- Newsletter recommendations
+- A/B testing
+
+### 12. Success Criteria
+
+- Writer publishes in < 30 minutes
+- Email open rate > 30%
+- Subscription conversion > 5%
+
+### 13. Timeline
+
+**Full Demo Build**: 1 week+ (50+ hours)
+- Days 1-2: Auth, publication setup, editor
+- Days 3-4: Post management, publishing
+- Days 5-6: Email delivery, subscriptions
+- Days 7-8: Reader experience, comments
+- Days 9-10: Analytics, polish
+
+

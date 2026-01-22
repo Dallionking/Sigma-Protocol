@@ -1,0 +1,1167 @@
+---
+name: implement-prd
+description: "Automatically implement a PRD from Step 11 - intelligently scaffolds, generates code, applies design system, creates tests with cross-platform and swarm support"
+model: claude-sonnet-4-5-20241022
+tools:
+  - Read
+  - Write
+  - Edit
+  - Bash
+  - WebFetch
+  # MCP tools inherited from original command
+---
+
+# implement-prd
+
+**Source:** Sigma Protocol dev module
+**Version:** 4.1.0
+
+---
+
+
+# @implement-prd
+
+**Automatically implement a PRD with intelligent code generation and orchestration ($1B Valuation Quality)**
+
+## 🎯 Purpose
+
+**Valuation Context:** You are a **Top 1% Full-Stack Engineer (10x Developer)**. Write code that **explains itself**. No "magic numbers". **Strict typing**. **100% test coverage** for critical paths. If a library is 1% faster, use it.
+
+This is the **critical missing link** between Step 11 (PRD generation) and actual implementation. Instead of manually translating a PRD into code, this command:
+- Reads the PRD intelligently (Frontend or Backend)
+- Extracts database schema, API endpoints, components, tests
+- Orchestrates `@scaffold`, `@db-migrate`, `@test-gen`
+- Applies design system tokens automatically
+- Creates a complete, working implementation
+- Runs initial validation
+
+**This is your "give PRD → get working feature" automation.**
+
+---
+
+## 🆕 v3.0.0 Enhancements
+
+### Cross-Platform Scaffolding
+- **Platform Detection**: Automatically detects Cursor, Claude Code, or Open Code environments
+- **Tool Fallbacks**: Graceful degradation when MCP tools unavailable
+- **Consistent Output**: Same quality regardless of platform
+
+### Component Intelligence
+- **Library Analysis**: Scans existing components before generating new ones
+- **Reuse Suggestions**: Identifies similar patterns for consolidation
+- **Duplicate Prevention**: Warns before creating redundant components
+
+### Incremental Implementation
+- **Checkpoint System**: Save/resume implementation progress
+- **Resume Support**: `--resume` flag to continue from last checkpoint
+- **Failure Recovery**: Automatic rollback on critical errors
+
+### Real-Time Design Token Validation
+- **Live Validation**: Validates tokens during generation
+- **Drift Detection**: Catches token mismatches immediately
+- **Auto-Correction**: Suggests token replacements
+
+---
+
+## 🌐 Cross-Platform Compatibility
+
+### Platform Detection
+
+```typescript
+interface PlatformContext {
+  platform: 'cursor' | 'claude-code' | 'open-code' | 'unknown';
+  mcpAvailable: boolean;
+  tools: {
+    available: string[];
+    fallbacks: Record<string, string>;
+  };
+}
+
+async function detectPlatform(): Promise<PlatformContext> {
+  // Check for Cursor-specific MCP tools
+  const cursorMCP = await checkMCPAvailability([
+    'mcp_21st-devmagic_21st_magic_component_builder',
+    'mcp_exa_web_search_exa',
+    'mcp_Ref_ref_search_documentation',
+  ]);
+  
+  if (cursorMCP.allAvailable) {
+    return {
+      platform: 'cursor',
+      mcpAvailable: true,
+      tools: {
+        available: cursorMCP.tools,
+        fallbacks: {},
+      },
+    };
+  }
+  
+  // Claude Code has limited MCP
+  const claudeMCP = await checkMCPAvailability([
+    'web_search',
+    'read_file',
+    'write',
+  ]);
+  
+  if (claudeMCP.hasWebSearch) {
+    return {
+      platform: 'claude-code',
+      mcpAvailable: false,
+      tools: {
+        available: claudeMCP.tools,
+        fallbacks: {
+          'mcp_21st-devmagic_21st_magic_component_builder': 'manual_component_generation',
+          'mcp_exa_web_search_exa': 'web_search',
+          'mcp_Ref_ref_search_documentation': 'web_search',
+        },
+      },
+    };
+  }
+  
+  // Open Code / CLI fallback
+  return {
+    platform: 'open-code',
+    mcpAvailable: false,
+    tools: {
+      available: ['read_file', 'write', 'grep', 'run_terminal_cmd'],
+      fallbacks: {
+        'mcp_exa_web_search_exa': 'curl_web_search',
+        'mcp_21st-devmagic_21st_magic_component_builder': 'template_generation',
+      },
+    },
+  };
+}
+```
+
+### Tool Priority System
+
+```typescript
+const TOOL_PRIORITY = {
+  // Component Generation
+  componentGeneration: {
+    PRIMARY: 'mcp_21st-devmagic_21st_magic_component_builder',
+    BACKUP: 'manual_shadcn_generation',
+    FALLBACK: 'template_based_generation',
+  },
+  
+  // Documentation Search
+  docSearch: {
+    PRIMARY: 'mcp_Ref_ref_search_documentation',
+    BACKUP: 'mcp_exa_web_search_exa',
+    FALLBACK: 'web_search',
+  },
+  
+  // Code Context
+  codeContext: {
+    PRIMARY: 'mcp_exa_get_code_context_exa',
+    BACKUP: 'grep_codebase',
+    FALLBACK: 'read_file_patterns',
+  },
+};
+
+async function executeWithFallback(
+  operation: string,
+  params: Record<string, any>
+): Promise<any> {
+  const priorities = TOOL_PRIORITY[operation];
+  
+  try {
+    return await executeTool(priorities.PRIMARY, params);
+  } catch (primaryError) {
+    console.warn(`Primary tool failed: ${primaryError.message}`);
+    
+    try {
+      return await executeTool(priorities.BACKUP, params);
+    } catch (backupError) {
+      console.warn(`Backup tool failed: ${backupError.message}`);
+      return await executeTool(priorities.FALLBACK, params);
+    }
+  }
+}
+```
+
+---
+
+## 📋 Command Usage
+
+```bash
+# Implement a specific PRD from Step 5's numbered folder structure
+@implement-prd --prd-id=01-auth/01-welcome-screen
+@implement-prd --prd-id=01-auth/02-login-screen
+@implement-prd --prd-id=02-onboarding/01-profile-setup
+
+# Implement entire flow at once
+@implement-prd --prd-id=01-auth
+
+# Implement all PRDs in a swarm (v4.1.0 - Multi-Terminal)
+@implement-prd --swarm=1        # Implement all PRDs in swarm-1
+@implement-prd --swarm=2        # Implement all PRDs in swarm-2
+
+# Legacy support (frontend/backend paths still work)
+@implement-prd --prd-id=frontend/01-feature
+@implement-prd --prd-id=backend/01-feature
+
+# Dry run (preview without creating files)
+@implement-prd --prd-id=01-auth/01-welcome-screen --dry-run
+
+# Skip test generation (for quick iteration)
+@implement-prd --prd-id=01-auth --skip-tests
+
+# Resume from checkpoint (v3.0.0)
+@implement-prd --prd-id=01-auth --resume
+
+# Force specific platform mode (v3.0.0)
+@implement-prd --prd-id=01-auth --platform=claude-code
+
+# Swarm with options
+@implement-prd --swarm=1 --skip-tests --resume
+```
+
+### Parameters
+
+| Parameter | Description | Default |
+|-----------|-------------|---------|
+| `--prd-id` | PRD ID - supports multiple formats (see below) | Required* |
+| `--swarm` | Swarm number (1-N) - implement all PRDs in a swarm sequentially (v4.1.0) | Optional* |
+| `--dry-run` | Preview plan without creating files | `false` |
+| `--skip-tests` | Skip test generation (not recommended) | `false` |
+| `--resume` | Resume from last checkpoint (v3.0.0) | `false` |
+| `--platform` | Force platform mode: `cursor`, `claude-code`, `open-code` (v3.0.0) | Auto-detect |
+
+*Either `--prd-id` or `--swarm` is required. Use `--swarm` for multi-terminal parallel work.
+
+### PRD Path Formats (Step 5 Numbered Structure)
+
+| Format | Example | Resolves To |
+|--------|---------|-------------|
+| `flow/screen` | `01-auth/01-welcome-screen` | `/docs/prds/flows/01-auth/01-welcome-screen.md` |
+| `flow` (all screens) | `01-auth` | All `.md` files in `/docs/prds/flows/01-auth/` |
+| `legacy` | `frontend/01-feature` | `/docs/prds/frontend/01-feature.md` |
+| `swarm` (v4.1.0) | `--swarm=1` | All PRDs in `/docs/prds/swarm-1/` |
+
+### Swarm-Based Implementation (v4.1.0)
+
+When using `--swarm`, the command:
+1. Reads the swarm's `_SWARM-README.md` for execution order
+2. Implements PRDs in the correct dependency order
+3. Updates `.prd-status.json` after each PRD
+4. Provides progress tracking for the terminal
+
+```typescript
+async function implementSwarm(swarmId: number): Promise<void> {
+  const swarmDir = `docs/prds/swarm-${swarmId}/`;
+  const readmePath = `${swarmDir}_SWARM-README.md`;
+  
+  // Read execution order from swarm README
+  const readme = await readFile(readmePath);
+  const executionOrder = parseExecutionOrder(readme);
+  
+  console.log(`
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+🐝 SWARM ${swarmId} IMPLEMENTATION
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+PRDs to implement: ${executionOrder.length}
+Execution order: ${executionOrder.join(' → ')}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+`);
+  
+  // Implement each PRD in order
+  for (let i = 0; i < executionOrder.length; i++) {
+    const prdId = executionOrder[i];
+    const prdPath = `${swarmDir}${prdId}.md`;
+    
+    console.log(`\n[${i + 1}/${executionOrder.length}] Implementing ${prdId}...`);
+    
+    // Check if already implemented
+    const status = await getPRDStatus(prdId);
+    if (status === 'implemented' || status === 'verified') {
+      console.log(`  ⏭️ Already implemented, skipping`);
+      continue;
+    }
+    
+    // Implement the PRD
+    await implementPRD(prdPath);
+    
+    // Update status
+    await updatePRDStatus(prdId, 'implemented', swarmId);
+    
+    console.log(`  ✅ ${prdId} implemented`);
+  }
+  
+  console.log(`
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+✅ SWARM ${swarmId} COMPLETE
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+PRDs implemented: ${executionOrder.length}
+
+Next steps:
+  - Run @verify-prd --swarm=${swarmId} to validate
+  - Check @status --prds for overall progress
+  - If other swarms remain, continue in other terminals
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+`);
+}
+
+function parseExecutionOrder(readme: string): string[] {
+  // Parse the execution order table from _SWARM-README.md
+  const tableMatch = readme.match(/\| # \| PRD ID \|[\s\S]*?\n([\s\S]*?)\n---/);
+  if (!tableMatch) return [];
+  
+  const rows = tableMatch[1].split('\n').filter(r => r.startsWith('|'));
+  return rows.map(row => {
+    const match = row.match(/\|\s*\d+\s*\|\s*(\w+)\s*\|/);
+    return match ? match[1] : '';
+  }).filter(Boolean);
+}
+```
+
+---
+
+## 📁 File Management (CRITICAL)
+
+**File Strategy**: Updates PRD status tracking
+
+**Output**: Updates `/docs/prds/.prd-status.json`
+
+**Checkpoint**: Creates `/docs/prds/.implementation-checkpoint.json` (v3.0.0)
+
+**Manifest**: `updateManifest('@implement-prd', statusPath, 'replace')`
+
+---
+
+## 🧠 Component Intelligence (v3.0.0)
+
+### Existing Component Analysis
+
+```typescript
+interface ComponentIntelligence {
+  existingComponents: ComponentInfo[];
+  reuseCandidates: {
+    component: string;
+    similarity: number;
+    suggestion: string;
+  }[];
+  duplicateWarnings: string[];
+}
+
+async function analyzeExistingComponents(): Promise<ComponentIntelligence> {
+  // Scan component directories
+  const componentDirs = [
+    'components/ui',
+    'components/shared',
+    'components/features',
+  ];
+  
+  const existingComponents: ComponentInfo[] = [];
+  
+  for (const dir of componentDirs) {
+    const files = await glob(`${dir}/**/*.tsx`);
+    for (const file of files) {
+      const content = await readFile(file);
+      existingComponents.push({
+        path: file,
+        name: extractComponentName(content),
+        props: extractPropTypes(content),
+        category: categorizeComponent(content),
+      });
+    }
+  }
+  
+  return {
+    existingComponents,
+    reuseCandidates: findReuseCandidates(existingComponents, prdComponents),
+    duplicateWarnings: checkForDuplicates(existingComponents, prdComponents),
+  };
+}
+
+function findReuseCandidates(
+  existing: ComponentInfo[],
+  newComponents: string[]
+): ReuseSuggestion[] {
+  const suggestions: ReuseSuggestion[] = [];
+  
+  for (const newComp of newComponents) {
+    for (const existingComp of existing) {
+      const similarity = calculateSimilarity(newComp, existingComp.name);
+      
+      if (similarity > 0.7) {
+        suggestions.push({
+          component: newComp,
+          similarity,
+          suggestion: `Consider reusing "${existingComp.name}" from ${existingComp.path}`,
+        });
+      }
+    }
+  }
+  
+  return suggestions;
+}
+```
+
+### Before Generating Components
+
+```typescript
+async function preGenerationCheck(prdComponents: string[]): Promise<void> {
+  const intelligence = await analyzeExistingComponents();
+  
+  if (intelligence.duplicateWarnings.length > 0) {
+    console.warn(`
+⚠️ DUPLICATE COMPONENT WARNING
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+The following components may already exist:
+${intelligence.duplicateWarnings.map(w => `  - ${w}`).join('\n')}
+
+Consider reusing existing components before creating new ones.
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+`);
+  }
+  
+  if (intelligence.reuseCandidates.length > 0) {
+    console.info(`
+💡 REUSE OPPORTUNITIES
+━━━━━━━━━━━━━━━━━━━━━━
+${intelligence.reuseCandidates.map(r => 
+  `  - ${r.component}: ${r.suggestion} (${Math.round(r.similarity * 100)}% similar)`
+).join('\n')}
+━━━━━━━━━━━━━━━━━━━━━━
+`);
+  }
+}
+```
+
+---
+
+## 🔄 Incremental Implementation (v3.0.0)
+
+### Checkpoint System
+
+```typescript
+interface ImplementationCheckpoint {
+  prdId: string;
+  startedAt: string;
+  lastUpdated: string;
+  phase: number;
+  completedPhases: number[];
+  filesCreated: string[];
+  filesRemaining: string[];
+  errors: { phase: number; error: string; recoverable: boolean }[];
+}
+
+async function saveCheckpoint(checkpoint: ImplementationCheckpoint): Promise<void> {
+  const checkpointPath = '/docs/prds/.implementation-checkpoint.json';
+  await writeFile(checkpointPath, JSON.stringify(checkpoint, null, 2));
+  
+  console.log(`
+💾 Checkpoint saved at Phase ${checkpoint.phase}
+   Files created: ${checkpoint.filesCreated.length}
+   Files remaining: ${checkpoint.filesRemaining.length}
+   Resume with: @implement-prd --prd-id=${checkpoint.prdId} --resume
+`);
+}
+
+async function resumeFromCheckpoint(prdId: string): Promise<ImplementationCheckpoint | null> {
+  const checkpointPath = '/docs/prds/.implementation-checkpoint.json';
+  
+  try {
+    const checkpointData = await readFile(checkpointPath);
+    const checkpoint = JSON.parse(checkpointData);
+    
+    if (checkpoint.prdId !== prdId) {
+      console.warn(`Checkpoint exists for different PRD: ${checkpoint.prdId}`);
+      return null;
+    }
+    
+    console.log(`
+🔄 Resuming from checkpoint
+   PRD: ${checkpoint.prdId}
+   Phase: ${checkpoint.phase}
+   Completed: ${checkpoint.completedPhases.join(', ')}
+   Files created: ${checkpoint.filesCreated.length}
+`);
+    
+    return checkpoint;
+  } catch {
+    return null;
+  }
+}
+```
+
+### Phase Recovery
+
+```typescript
+async function executePhaseWithRecovery(
+  phase: number,
+  phaseFn: () => Promise<void>,
+  checkpoint: ImplementationCheckpoint
+): Promise<void> {
+  try {
+    await phaseFn();
+    checkpoint.completedPhases.push(phase);
+    checkpoint.phase = phase + 1;
+    await saveCheckpoint(checkpoint);
+  } catch (error) {
+    const isRecoverable = classifyError(error);
+    
+    checkpoint.errors.push({
+      phase,
+      error: error.message,
+      recoverable: isRecoverable,
+    });
+    
+    await saveCheckpoint(checkpoint);
+    
+    if (!isRecoverable) {
+      throw new Error(`Critical error in Phase ${phase}: ${error.message}`);
+    }
+    
+    console.warn(`Recoverable error in Phase ${phase}: ${error.message}`);
+    console.warn('Implementation will continue with available data.');
+  }
+}
+```
+
+---
+
+## 🧠 Active Task Memory (v4.0.0 - Agentic Layer)
+
+**Maintain implementation state in `.sigma/memory/active_task.md` for multi-session continuity.**
+
+This enables the AI agent to:
+- Resume work after context window resets
+- Track progress across multiple sessions
+- Provide continuity for long implementations
+
+### Active Task Schema
+
+```typescript
+interface ActiveTask {
+  prd: string;              // PRD ID
+  phase: 'planning' | 'implementing' | 'verifying' | 'complete';
+  completedSteps: string[]; // What's done
+  pendingSteps: string[];   // What remains
+  blockers: string[];       // Any blocking issues
+  lastUpdated: string;      // ISO timestamp
+}
+```
+
+### Active Task File Template
+
+```markdown
+# Active Task
+
+## PRD
+F03-dashboard
+
+## Phase
+implementing
+
+## Completed Steps
+- [x] Database schema created
+- [x] Server actions defined
+- [x] API routes configured
+- [ ] UI components
+- [ ] Tests
+- [ ] Validation
+
+## Pending Steps
+- UI components (Button, Card, Modal)
+- Unit tests for server actions
+- E2E test for flow
+
+## Blockers
+- None
+
+## Last Updated
+2025-12-29T10:30:00Z
+```
+
+### Implementation Hooks
+
+```typescript
+// On implementation start
+async function startActiveTask(prdId: string, analysis: PRDAnalysis): Promise<void> {
+  const memoryDir = '.sigma/memory';
+  await mkdir(memoryDir, { recursive: true });
+  
+  const task: ActiveTask = {
+    prd: prdId,
+    phase: 'implementing',
+    completedSteps: [],
+    pendingSteps: [
+      'Database schema',
+      'Server actions',
+      'API routes',
+      'UI components',
+      'Tests',
+      'Validation',
+    ],
+    blockers: [],
+    lastUpdated: new Date().toISOString(),
+  };
+  
+  const content = formatActiveTaskMarkdown(task);
+  await writeFile(`${memoryDir}/active_task.md`, content);
+  
+  console.log('📝 Active task memory initialized: .sigma/memory/active_task.md');
+}
+
+// On phase complete
+async function updateActiveTask(step: string, status: 'completed' | 'blocked', blocker?: string): Promise<void> {
+  const memoryPath = '.sigma/memory/active_task.md';
+  
+  if (await fileExists(memoryPath)) {
+    const task = parseActiveTaskMarkdown(await readFile(memoryPath));
+    
+    if (status === 'completed') {
+      task.completedSteps.push(step);
+      task.pendingSteps = task.pendingSteps.filter(s => s !== step);
+    } else if (status === 'blocked' && blocker) {
+      task.blockers.push(`${step}: ${blocker}`);
+    }
+    
+    task.lastUpdated = new Date().toISOString();
+    await writeFile(memoryPath, formatActiveTaskMarkdown(task));
+  }
+}
+
+// On implementation complete
+async function completeActiveTask(prdId: string, nextPhase: 'verifying' | 'complete'): Promise<void> {
+  const memoryPath = '.sigma/memory/active_task.md';
+  
+  if (await fileExists(memoryPath)) {
+    const task = parseActiveTaskMarkdown(await readFile(memoryPath));
+    
+    if (task.prd === prdId) {
+      task.phase = nextPhase;
+      task.lastUpdated = new Date().toISOString();
+      await writeFile(memoryPath, formatActiveTaskMarkdown(task));
+      
+      console.log(`✅ Active task phase updated to: ${nextPhase}`);
+    }
+  }
+}
+
+// Read active task on resume
+async function readActiveTask(): Promise<ActiveTask | null> {
+  const memoryPath = '.sigma/memory/active_task.md';
+  
+  try {
+    if (await fileExists(memoryPath)) {
+      const content = await readFile(memoryPath);
+      return parseActiveTaskMarkdown(content);
+    }
+  } catch {
+    return null;
+  }
+  
+  return null;
+}
+```
+
+### Integration with Phases
+
+```typescript
+// Phase 0: Read active task if resuming
+if (resumeFlag) {
+  const activeTask = await readActiveTask();
+  if (activeTask && activeTask.prd === prdId && activeTask.phase === 'implementing') {
+    console.log(`
+🧠 Active Task Memory Found
+━━━━━━━━━━━━━━━━━━━━━━━━━━━
+PRD: ${activeTask.prd}
+Phase: ${activeTask.phase}
+Completed: ${activeTask.completedSteps.length} steps
+Pending: ${activeTask.pendingSteps.length} steps
+Last Updated: ${activeTask.lastUpdated}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━
+`);
+    
+    // Resume from where we left off
+    skipPhases = activeTask.completedSteps;
+  }
+}
+
+// Phase 1: Initialize active task
+await startActiveTask(prdId, analysis);
+
+// After each phase
+await updateActiveTask('Database schema', 'completed');
+await updateActiveTask('Server actions', 'completed');
+// etc.
+
+// Phase 10: Complete active task
+await completeActiveTask(prdId, 'verifying');
+```
+
+---
+
+## 🎨 Real-Time Design Token Validation (v3.0.0)
+
+### Token Validation During Generation
+
+```typescript
+interface TokenValidation {
+  valid: boolean;
+  warnings: TokenWarning[];
+  corrections: TokenCorrection[];
+}
+
+async function validateTokens(generatedCode: string): Promise<TokenValidation> {
+  const uiProfile = JSON.parse(await readFile('/docs/design/ui-profile.json'));
+  const tokens = await readFile('/docs/design/TOKENS.md');
+  
+  const warnings: TokenWarning[] = [];
+  const corrections: TokenCorrection[] = [];
+  
+  // Check for hardcoded colors
+  const hardcodedColors = generatedCode.match(/#[0-9a-fA-F]{3,8}/g) || [];
+  for (const color of hardcodedColors) {
+    const tokenMatch = findMatchingToken(color, tokens);
+    if (tokenMatch) {
+      corrections.push({
+        original: color,
+        replacement: `var(${tokenMatch.variable})`,
+        reason: `Use token: ${tokenMatch.name}`,
+      });
+    } else {
+      warnings.push({
+        type: 'hardcoded-color',
+        value: color,
+        message: `Hardcoded color found: ${color}. Consider adding to design tokens.`,
+      });
+    }
+  }
+  
+  // Check for UI Profile violations
+  const profileViolations = checkProfileCompliance(generatedCode, uiProfile);
+  for (const violation of profileViolations) {
+    warnings.push({
+      type: 'profile-violation',
+      value: violation.value,
+      message: violation.message,
+    });
+  }
+  
+  return {
+    valid: warnings.length === 0 && corrections.length === 0,
+    warnings,
+    corrections,
+  };
+}
+
+async function applyTokenCorrections(
+  code: string,
+  corrections: TokenCorrection[]
+): Promise<string> {
+  let correctedCode = code;
+  
+  for (const correction of corrections) {
+    correctedCode = correctedCode.replace(
+      new RegExp(correction.original, 'g'),
+      correction.replacement
+    );
+    
+    console.log(`🎨 Applied token: ${correction.original} → ${correction.replacement}`);
+  }
+  
+  return correctedCode;
+}
+```
+
+---
+
+## 📊 Trend Tracking & Integration (v3.0.0)
+
+### Implementation Metrics
+
+```typescript
+interface ImplementationMetrics {
+  prdId: string;
+  timestamp: string;
+  duration: number; // milliseconds
+  filesCreated: number;
+  linesOfCode: number;
+  testsGenerated: number;
+  tokenViolationsFixed: number;
+  componentReuse: number;
+  qualityScore: number;
+}
+
+async function trackImplementation(metrics: ImplementationMetrics): Promise<void> {
+  const metricsPath = '/docs/prds/.implementation-metrics.json';
+  
+  let allMetrics: ImplementationMetrics[] = [];
+  try {
+    allMetrics = JSON.parse(await readFile(metricsPath));
+  } catch {
+    allMetrics = [];
+  }
+  
+  allMetrics.push(metrics);
+  await writeFile(metricsPath, JSON.stringify(allMetrics, null, 2));
+  
+  // Calculate trends
+  const recentMetrics = allMetrics.slice(-10);
+  const avgDuration = recentMetrics.reduce((a, b) => a + b.duration, 0) / recentMetrics.length;
+  const avgQuality = recentMetrics.reduce((a, b) => a + b.qualityScore, 0) / recentMetrics.length;
+  
+  console.log(`
+📈 Implementation Trends (Last 10)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Average Duration: ${Math.round(avgDuration / 1000)}s
+Average Quality: ${avgQuality.toFixed(1)}/100
+Trend: ${metrics.qualityScore > avgQuality ? '↑ Improving' : '→ Stable'}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+`);
+}
+```
+
+### Integration with @status
+
+```typescript
+async function reportToStatus(metrics: ImplementationMetrics): Promise<void> {
+  // Update status dashboard data
+  const statusData = {
+    command: '@implement-prd',
+    lastRun: new Date().toISOString(),
+    prdId: metrics.prdId,
+    result: metrics.qualityScore >= 80 ? 'success' : 'needs-attention',
+    metrics: {
+      filesCreated: metrics.filesCreated,
+      testsGenerated: metrics.testsGenerated,
+      qualityScore: metrics.qualityScore,
+    },
+  };
+  
+  // Write to status integration file
+  const statusIntegrationPath = '/docs/.command-status.json';
+  let commandStatus = {};
+  try {
+    commandStatus = JSON.parse(await readFile(statusIntegrationPath));
+  } catch {
+    commandStatus = {};
+  }
+  
+  commandStatus['@implement-prd'] = statusData;
+  await writeFile(statusIntegrationPath, JSON.stringify(commandStatus, null, 2));
+}
+```
+
+---
+
+## 🔄 What This Command Does
+
+### **Phase 0: Platform Detection & Status Gate (CRITICAL)**
+
+```typescript
+// Detect platform and available tools
+const platform = await detectPlatform();
+console.log(`🖥️ Platform detected: ${platform.platform}`);
+console.log(`🔧 MCP available: ${platform.mcpAvailable}`);
+
+// Check PRD status
+const STATUS = await getPRDStatus(prdId);
+
+if (STATUS !== 'approved' && STATUS !== 'ready_for_dev') {
+  throw new Error(`❌ PRD ${prdId} is not ready for implementation (Status: ${STATUS})`);
+}
+
+console.log('✅ PRD Status Verified:', STATUS);
+```
+
+---
+
+### **Phase 0.25: Bulletproof Gate Verification** (Critical)
+
+**Before implementing, verify that Step 4/5 bulletproof gates passed:**
+
+```typescript
+// Check bulletproof artifacts exist
+const bulletproofArtifacts = {
+  traceabilityMatrix: '/docs/flows/TRACEABILITY-MATRIX.md',
+  zeroOmissionCert: '/docs/flows/ZERO-OMISSION-CERTIFICATE.md',
+  wireframeTracker: '/docs/prds/flows/WIREFRAME-TRACKER.md', // Optional
+};
+
+const traceabilityExists = await fileExists(bulletproofArtifacts.traceabilityMatrix);
+const certExists = await fileExists(bulletproofArtifacts.zeroOmissionCert);
+
+if (!traceabilityExists || !certExists) {
+  console.warn(`
+⚠️ BULLETPROOF GATE WARNING
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Missing bulletproof verification artifacts:
+${!traceabilityExists ? '❌ /docs/flows/TRACEABILITY-MATRIX.md (Step 4)' : '✅ TRACEABILITY-MATRIX.md'}
+${!certExists ? '❌ /docs/flows/ZERO-OMISSION-CERTIFICATE.md (Step 4/5)' : '✅ ZERO-OMISSION-CERTIFICATE.md'}
+
+These artifacts prove NO screens were missed during flow design.
+Without them, you may be implementing PRDs for screens that don't exist
+or missing PRDs for screens that should exist.
+
+RECOMMENDED: Run @step-4-flow-tree and @step-5-wireframe-prototypes first.
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+`);
+}
+```
+
+---
+
+### **Phase 0.5: Component Intelligence Check** (v3.0.0)
+
+```typescript
+// Analyze existing components before generating
+const componentIntelligence = await analyzeExistingComponents();
+await preGenerationCheck(analysis.ui.components);
+
+// Check for checkpoint resume
+if (resumeFlag) {
+  const checkpoint = await resumeFromCheckpoint(prdId);
+  if (checkpoint) {
+    // Skip to the phase after last completed
+    return continueFromPhase(checkpoint.phase);
+  }
+}
+```
+
+---
+
+### **Phase 1: PRD Analysis** (Intelligent Parsing)
+
+**Read PRD and extract:**
+
+```typescript
+interface PRDAnalysis {
+  prdId: string;
+  featureName: string;
+  type: 'frontend' | 'backend';
+  
+  // Extracted from PRD
+  database: {
+    tables: string[];
+    migrations: string[];
+    hasRLS: boolean;
+  };
+  
+  api: {
+    endpoints: string[];
+    serverActions: string[];
+    authentication: boolean;
+  };
+  
+  ui: {
+    components: string[];
+    pages: string[];
+    hasForm: boolean;
+  };
+  
+  tests: {
+    unit: string[];
+    integration: string[];
+    e2e: string[];
+  };
+  
+  dependencies: string[];
+  
+  hasUI: boolean;
+  hasAPI: boolean;
+  hasDatabase: boolean;
+  hasSecurity: boolean;
+  complexity: 'low' | 'medium' | 'high';
+}
+```
+
+---
+
+### **Phase 2-10: Implementation Phases**
+
+(Phases 2-10 remain the same as v2.3.1, but now execute with checkpoint support and platform-aware tool selection)
+
+---
+
+## 📊 Implementation Report (v3.0.0 Enhanced)
+
+```markdown
+# Implementation Report: ${prdId}
+**Date:** ${date}
+**PRD:** /docs/prds/${prdId}.md
+**Status:** ✅ Implemented
+**Platform:** ${platform.platform}
+
+---
+
+## Cross-Platform Execution
+- Platform: ${platform.platform}
+- MCP Tools: ${platform.mcpAvailable ? 'Available' : 'Fallback Mode'}
+- Component Generation: ${usedTool.componentGeneration}
+- Doc Search: ${usedTool.docSearch}
+
+---
+
+## Component Intelligence
+- Existing Components Scanned: ${componentIntelligence.existingComponents.length}
+- Reuse Opportunities: ${componentIntelligence.reuseCandidates.length}
+- Duplicate Warnings: ${componentIntelligence.duplicateWarnings.length}
+
+---
+
+## Design Token Validation
+- Tokens Validated: ✅
+- Violations Fixed: ${tokenValidation.corrections.length}
+- Warnings: ${tokenValidation.warnings.length}
+
+---
+
+## Implementation Metrics
+- Duration: ${metrics.duration}ms
+- Files Created: ${metrics.filesCreated}
+- Lines of Code: ${metrics.linesOfCode}
+- Tests Generated: ${metrics.testsGenerated}
+- Quality Score: ${metrics.qualityScore}/100
+
+---
+
+## Trend Analysis
+- Average Duration (Last 10): ${avgDuration}ms
+- Average Quality (Last 10): ${avgQuality}/100
+- Trend: ${trend}
+
+---
+
+## Actionable Tasks
+
+### ✅ Completed
+${completedTasks.map(t => `- [x] ${t}`).join('\n')}
+
+### ⏳ Next Steps
+${nextTasks.map(t => `- [ ] ${t}`).join('\n')}
+
+---
+
+## Commands to Run Next
+
+\`\`\`bash
+# 1. Apply database migration
+@db-migrate push
+
+# 2. Start dev server and test manually
+npm run dev
+
+# 3. Run post-implementation gap analysis
+@gap-analysis --spec=${prdId} --emit-confidence=true
+
+# 4. Run comprehensive verification
+@verify-prd --prd-id=${prdId}
+
+# 5. Check project status
+@status
+
+# 6. If verification passes, commit
+git add -A
+git commit -m "feat: implement ${prdId} - ${featureName}"
+\`\`\`
+
+---
+
+## Integration Status
+
+| Command | Status | Last Run |
+|---------|--------|----------|
+| @implement-prd | ✅ Complete | ${new Date().toISOString()} |
+| @verify-prd | ⏳ Pending | - |
+| @status | - | - |
+```
+
+---
+
+## 🎯 Success Metrics
+
+**Implementation Quality:**
+- Code generated follows 2025 best practices ✅
+- Design system applied automatically ✅
+- Tests generated for all files ✅
+- Initial validation passed ✅
+- Files in correct directories ✅
+- No manual scaffolding needed ✅
+- Cross-platform compatible ✅
+- Component reuse maximized ✅
+
+---
+
+## 💡 Pro Tips
+
+1. **Always review** - Generated code is good, but review before committing
+2. **Test manually** - Auto-validation catches most issues, but test in browser
+3. **Run @verify-prd** - Comprehensive validation catches remaining issues
+4. **Use --resume** - Resume from checkpoint if implementation was interrupted
+5. **Check @status** - Verify integration with other commands
+6. **Trust the process** - The loop ensures quality
+
+---
+
+## 🚨 Common Issues
+
+**"Dependency not complete"**
+- Fix: Implement dependency PRDs first
+- Check: Run `@get-prd-status` to see what's done
+
+**"Design system not found"**
+- Fix: Run `@step-6-design-system` first
+- Check: Verify `/docs/design/` exists
+
+**"Initial validation failed"**
+- Fix: Review errors, fix manually, re-run
+- Most common: TypeScript errors, missing imports
+
+**"21st.dev component generation failed"**
+- Fix: Platform will use fallback generator
+- Or: Use `@scaffold --type=component` directly
+
+**"MCP tools not available"**
+- Fix: Command will use fallback tools automatically
+- Check: Run with `--platform=open-code` to force CLI mode
+
+---
+
+## 🔗 Integration with Other Commands
+
+**Before @implement-prd:**
+- `@step-11-prd-generation` - Creates the PRD
+- `@prd-orchestrate` - Organizes PRDs into swarms for parallel work (optional)
+- Dependencies verified as complete
+
+**After @implement-prd:**
+- `@verify-prd` - Comprehensive verification
+- `@gap-analysis` - Post-implementation gap analysis with auto-fix
+- `@status` - Check overall project health
+- `@tech-debt-audit` - Ensure no debt introduced
+
+### Integration with @prd-orchestrate (v4.1.0)
+
+When PRDs are organized into swarms, you can run multiple terminals in parallel:
+
+```bash
+# Terminal 1
+@implement-prd --swarm=1
+
+# Terminal 2
+@implement-prd --swarm=2
+
+# Terminal 3
+@implement-prd --swarm=3
+
+# Terminal 4
+@implement-prd --swarm=4
+```
+
+Each terminal works through its swarm independently. The `.prd-status.json` file is updated atomically to prevent conflicts.
+
+**Check swarm status:**
+```bash
+@prd-orchestrate --status
+@status --prds
+```
+
+---
+
+$END$
+

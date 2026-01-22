@@ -1,0 +1,154 @@
+---
+description: "Apply research-backed persuasion psychology from 5 foundational books: Breakthrough Advertising, Influence, Take Their Money, Yes! 50 Ways, One Sentence Persuasion"
+globs: ["**/landing*.{md,tsx,jsx}", "**/copy*.md", "**/email*.md", "**/marketing/**/*"]
+alwaysApply: false
+---
+
+# Sigma Persuasion Psychology
+
+Research-backed frameworks from five foundational marketing books.
+
+## Quick Reference Card
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│ BEFORE WRITING ANY COPY, CHECK:                             │
+├─────────────────────────────────────────────────────────────┤
+│ □ Market Awareness Level (1-5)?                             │
+│ □ NESB Score (need 3/4)?                                    │
+│ □ Five Drivers addressed?                                   │
+│ □ Loss framing for urgency?                                 │
+│ □ Cialdini principles applied?                              │
+└─────────────────────────────────────────────────────────────┘
+```
+
+---
+
+## Framework 1: Market Awareness (Schwartz)
+
+**Source:** "Breakthrough Advertising"
+
+| Level | Customer State | Your Strategy |
+|-------|---------------|---------------|
+| **1. Unaware** | Don't know problem | Story/identity first |
+| **2. Problem Aware** | Know problem | Agitate, introduce solution |
+| **3. Solution Aware** | Know solutions | Differentiate mechanism |
+| **4. Product Aware** | Know your product | Objections, proof |
+| **5. Most Aware** | Ready to buy | Best offer, simple CTA |
+
+**Rule:** Messaging too advanced = no conversion.
+
+---
+
+## Framework 2: NESB (Milligan)
+
+**Source:** "Take Their Money"
+
+| Trigger | Question | If Weak... |
+|---------|----------|------------|
+| **N**ew | Fresh discovery? | Name unique mechanism |
+| **E**asy | Achievable? | Add steps, time |
+| **S**afe | Risk removed? | Guarantee, proof |
+| **B**ig | Significant? | Specific numbers |
+
+**Audit every headline:**
+```
+NEW:  □  EASY: □  SAFE: □  BIG: □
+```
+
+---
+
+## Framework 3: Five Drivers (Warren)
+
+**Source:** "One Sentence Persuasion Course"
+
+> "People will do anything for those who encourage their dreams, justify their failures, allay their fears, confirm their suspicions, and help them throw rocks at their enemies."
+
+| Driver | Copy Section | Template |
+|--------|-------------|----------|
+| **Encourage Dreams** | Hero, CTA | "Yes, you CAN [dream]..." |
+| **Justify Failures** | Problem | "If you failed, it wasn't your fault..." |
+| **Allay Fears** | Guarantee | "Worried about [fear]? Here's why..." |
+| **Confirm Suspicions** | Agitation | "You suspected [X]. You were right..." |
+| **Throw Rocks** | Enemy | "[They] don't want you to know..." |
+
+---
+
+## Framework 4: Cialdini's 7 Principles
+
+**Source:** "Influence" (7th edition)
+
+| Principle | Application |
+|-----------|-------------|
+| **Reciprocity** | Give value before asking |
+| **Commitment** | Small yes → big yes |
+| **Social Proof** | "Join 10,000+ [similar people]" |
+| **Authority** | Credentials, logos, press |
+| **Liking** | Story, shared identity |
+| **Scarcity** | Limited time/quantity |
+| **Unity** | "We" language, tribe identity |
+
+---
+
+## Framework 5: Loss Framing
+
+**Source:** "Yes! 50 Scientifically Proven Ways"
+
+Loss-framed messages are ~2x more effective:
+
+| Gain (Weaker) | Loss (Stronger) |
+|---------------|-----------------|
+| Save 10 hrs | Stop losing 10 hrs |
+| Get bonus | Don't miss bonus |
+| More leads | Stop losing leads |
+
+---
+
+## Combined Checklist
+
+Before finalizing ANY customer-facing copy:
+
+```markdown
+## Persuasion Audit
+
+### Awareness
+- [ ] Level identified: ___/5
+- [ ] Messaging matches level
+
+### NESB Score
+- [ ] NEW: ___/10
+- [ ] EASY: ___/10
+- [ ] SAFE: ___/10
+- [ ] BIG: ___/10
+- [ ] Average ≥ 7
+
+### Five Drivers
+- [ ] Dreams encouraged
+- [ ] Failures justified
+- [ ] Fears allayed
+- [ ] Suspicions confirmed
+- [ ] Enemy identified
+
+### Cialdini (3+ required)
+- [ ] Reciprocity
+- [ ] Commitment
+- [ ] Social Proof
+- [ ] Authority
+- [ ] Liking
+- [ ] Scarcity
+- [ ] Unity
+
+### Loss Framing
+- [ ] Urgency uses loss frame
+```
+
+---
+
+## Apply In Steps
+
+| Step | Frameworks to Apply |
+|------|---------------------|
+| Step 1 (Ideation) | NESB validation |
+| Step 1.5 (Offer) | Value Equation + NESB |
+| Step 3 (UX) | Persuasion layer cues |
+| Step 9 (Landing) | All 5 frameworks |

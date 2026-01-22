@@ -1,0 +1,269 @@
+# Product Requirements Document: HabitFlow
+## Daily Habit Tracking Application
+
+### 1. Executive Summary
+
+HabitFlow is a habit tracking application that helps users build consistent routines through daily check-ins, streak motivation, and visual progress tracking. Simple enough for daily use, powerful enough to drive behavior change.
+
+### 2. Problem Statement
+
+People struggle to build and maintain positive habits. Generic to-do apps don't provide the motivation and tracking needed for habit formation. Users need a dedicated tool with streaks, reminders, and progress visualization.
+
+### 3. Target Users
+
+**Primary**: Individuals wanting to build better habits (25-45 years old)
+**Secondary**: Health-conscious individuals, students, productivity enthusiasts
+
+### 4. Core Features
+
+#### 4.1 User Authentication
+- Email/password signup
+- OAuth (Google)
+- Profile with timezone setting
+
+#### 4.2 Habit Management
+- Create habit with:
+  - Name (required)
+  - Icon (emoji picker)
+  - Color (preset or custom)
+  - Frequency: Daily, Weekdays, Weekends, Custom days
+  - Reminder time (optional)
+  - Category: Health, Productivity, Learning, Mindfulness, Other
+- Edit existing habits
+- Archive habits (hide from daily view)
+- Delete habits (with confirmation)
+
+#### 4.3 Daily Tracking View
+- Shows today's date prominently
+- List of active habits for today
+- Each habit shows:
+  - Icon, name, current streak
+  - Checkbox to mark complete
+  - Streak flame icon if 3+ days
+- "All done" celebration when complete
+- Navigate to past days to backfill
+
+#### 4.4 Streak System
+- Current streak: consecutive completions
+- Longest streak: all-time record
+- Streak calculation rules:
+  - Daily habits: every day
+  - Weekly habits: at least once per week
+  - Custom: based on selected days
+- Streak freeze: 1 missed day allowed (reset on use)
+
+#### 4.5 Statistics & Analytics
+- Completion rate (%) - last 7, 30, 90 days
+- Calendar heatmap (GitHub contribution style)
+- Individual habit stats:
+  - Current streak
+  - Best streak
+  - Total completions
+  - Completion rate
+- Best performing habit
+- Most improved habit
+
+#### 4.6 Reminders
+- Web push notifications
+- Per-habit reminder times
+- Daily summary notification
+- Optional evening review prompt
+
+### 5. Technical Requirements
+
+#### 5.1 Frontend
+- Next.js 14+ with App Router
+- TailwindCSS + shadcn/ui
+- date-fns for date handling
+- Recharts for analytics
+- Web Push API for notifications
+
+#### 5.2 Backend
+- Supabase Auth
+- Supabase Database (PostgreSQL)
+- Supabase Edge Functions (reminders)
+
+#### 5.3 Database Schema
+
+```sql
+-- Users table (extends auth.users)
+profiles (
+  id uuid PRIMARY KEY REFERENCES auth.users,
+  display_name text,
+  timezone text DEFAULT 'UTC',
+  streak_freeze_available boolean DEFAULT true,
+  created_at timestamptz DEFAULT now()
+)
+
+-- Habits
+habits (
+  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id uuid REFERENCES profiles(id) ON DELETE CASCADE,
+  name text NOT NULL,
+  icon text DEFAULT '✨',
+  color text DEFAULT '#6366f1',
+  category text DEFAULT 'other',
+  frequency text NOT NULL, -- 'daily', 'weekdays', 'weekends', 'custom'
+  frequency_days integer[], -- For custom: [0,1,2,3,4,5,6] (Sun=0)
+  reminder_time time,
+  is_archived boolean DEFAULT false,
+  position integer NOT NULL,
+  created_at timestamptz DEFAULT now()
+)
+
+-- Habit completions
+completions (
+  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  habit_id uuid REFERENCES habits(id) ON DELETE CASCADE,
+  completed_date date NOT NULL,
+  notes text,
+  created_at timestamptz DEFAULT now(),
+  UNIQUE(habit_id, completed_date)
+)
+
+-- Streak cache (for performance)
+streaks (
+  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  habit_id uuid REFERENCES habits(id) ON DELETE CASCADE UNIQUE,
+  current_streak integer DEFAULT 0,
+  longest_streak integer DEFAULT 0,
+  last_completed_date date,
+  updated_at timestamptz DEFAULT now()
+)
+```
+
+### 6. User Flows
+
+#### 6.1 First-Time User
+1. Sign up with email/Google
+2. Set timezone
+3. Add first habit (guided)
+4. See today view with one habit
+5. Complete habit, see streak start
+
+#### 6.2 Daily Check-In
+1. Open app
+2. See today's habits
+3. Tap checkboxes to complete
+4. See streak update in real-time
+5. "All done" celebration if complete
+
+#### 6.3 Viewing Progress
+1. Navigate to Stats tab
+2. See overall completion rate
+3. View calendar heatmap
+4. Tap habit for individual stats
+5. See longest streak record
+
+### 7. Design Requirements
+
+#### Today View Layout
+```
+┌─────────────────────────────────────┐
+│  Tuesday, January 14               │
+│  3/5 habits completed              │
+├─────────────────────────────────────┤
+│ ┌─────────────────────────────────┐ │
+│ │ ☑️ 🧘 Morning Meditation        │ │
+│ │    🔥 7 day streak              │ │
+│ └─────────────────────────────────┘ │
+│ ┌─────────────────────────────────┐ │
+│ │ ☑️ 📚 Read 30 minutes           │ │
+│ │    🔥 12 day streak             │ │
+│ └─────────────────────────────────┘ │
+│ ┌─────────────────────────────────┐ │
+│ │ ⬜ 💪 Exercise                   │ │
+│ │    ○ No streak yet              │ │
+│ └─────────────────────────────────┘ │
+│                                     │
+│  [+ Add Habit]                      │
+└─────────────────────────────────────┘
+```
+
+#### Stats View Layout
+```
+┌─────────────────────────────────────┐
+│  Your Progress                      │
+├─────────────────────────────────────┤
+│  Completion Rate                    │
+│  ███████████░░░░░  73%             │
+│  Last 30 days                       │
+├─────────────────────────────────────┤
+│  January 2025                       │
+│  ┌─┬─┬─┬─┬─┬─┬─┐                   │
+│  │░│█│█│░│█│█│█│ ...               │
+│  └─┴─┴─┴─┴─┴─┴─┘                   │
+│  (calendar heatmap)                 │
+├─────────────────────────────────────┤
+│  Top Habits                         │
+│  1. 🧘 Meditation - 92%             │
+│  2. 📚 Reading - 85%                │
+│  3. 💪 Exercise - 71%               │
+└─────────────────────────────────────┘
+```
+
+### 8. Streak Calculation Logic
+
+```typescript
+function calculateStreak(
+  habit: Habit, 
+  completions: Completion[], 
+  today: Date
+): number {
+  // Sort completions by date descending
+  const sorted = completions.sort((a, b) => 
+    new Date(b.completed_date).getTime() - new Date(a.completed_date).getTime()
+  );
+  
+  let streak = 0;
+  let currentDate = today;
+  
+  for (const completion of sorted) {
+    const completionDate = new Date(completion.completed_date);
+    const expectedDate = getExpectedDate(habit, currentDate);
+    
+    if (isSameDay(completionDate, expectedDate)) {
+      streak++;
+      currentDate = getPreviousExpectedDate(habit, currentDate);
+    } else if (completionDate < expectedDate) {
+      break; // Streak broken
+    }
+  }
+  
+  return streak;
+}
+```
+
+### 9. Non-Functional Requirements
+
+- App loads in < 2 seconds
+- Check-in takes < 5 seconds
+- Streak updates in real-time
+- Works offline (PWA)
+- Data syncs when online
+
+### 10. Out of Scope (V1)
+
+- Social features (friends, accountability)
+- Habit templates library
+- Export data
+- Multiple habit types (counter, duration)
+- Integrations (Apple Health, Google Fit)
+- Premium subscription
+
+### 11. Success Criteria
+
+- User completes check-in in < 30 seconds
+- 7-day retention > 40%
+- Streak calculation 100% accurate
+- Push notification delivery > 90%
+
+### 12. Timeline
+
+**Medium Demo Build**: 1 day (8 hours)
+- Hours 1-2: Auth + Database setup + Habit CRUD
+- Hours 3-4: Daily view + Completion tracking
+- Hours 5-6: Streak calculation + Statistics
+- Hours 7-8: Calendar heatmap + Polish
+
+

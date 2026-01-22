@@ -3,7 +3,7 @@ version: "4.1.0"
 last_updated: "2026-01-05"
 changelog:
   - "4.1.0: Added --swarm flag for multi-terminal parallel implementation (integrates with @prd-orchestrate swarm structure)"
-  - "4.0.0: Added Active Task Memory (.sss/memory/active_task.md) for multi-session continuity and agentic resume support"
+  - "4.0.0: Added Active Task Memory (.sigma/memory/active_task.md) for multi-session continuity and agentic resume support"
   - "3.0.0: Added cross-platform scaffolding, component intelligence, incremental implementation, real-time design token validation, trend tracking, and actionable task lists"
   - "2.3.1: Added app-shell layout guardrails (ban container mx-auto for interior pages; prefer ui-profile.json layout defaults) to prevent narrow centered dashboards"
   - "2.3.0: Implementer now reads UI Profile (UI-PROFILE.md + ui-profile.json) and applies profile rules (tokens/effects/motion guardrails) during UI generation"
@@ -558,7 +558,7 @@ async function executePhaseWithRecovery(
 
 ## 🧠 Active Task Memory (v4.0.0 - Agentic Layer)
 
-**Maintain implementation state in `.sss/memory/active_task.md` for multi-session continuity.**
+**Maintain implementation state in `.sigma/memory/active_task.md` for multi-session continuity.**
 
 This enables the AI agent to:
 - Resume work after context window resets
@@ -614,7 +614,7 @@ implementing
 ```typescript
 // On implementation start
 async function startActiveTask(prdId: string, analysis: PRDAnalysis): Promise<void> {
-  const memoryDir = '.sss/memory';
+  const memoryDir = '.sigma/memory';
   await mkdir(memoryDir, { recursive: true });
   
   const task: ActiveTask = {
@@ -636,12 +636,12 @@ async function startActiveTask(prdId: string, analysis: PRDAnalysis): Promise<vo
   const content = formatActiveTaskMarkdown(task);
   await writeFile(`${memoryDir}/active_task.md`, content);
   
-  console.log('📝 Active task memory initialized: .sss/memory/active_task.md');
+  console.log('📝 Active task memory initialized: .sigma/memory/active_task.md');
 }
 
 // On phase complete
 async function updateActiveTask(step: string, status: 'completed' | 'blocked', blocker?: string): Promise<void> {
-  const memoryPath = '.sss/memory/active_task.md';
+  const memoryPath = '.sigma/memory/active_task.md';
   
   if (await fileExists(memoryPath)) {
     const task = parseActiveTaskMarkdown(await readFile(memoryPath));
@@ -660,7 +660,7 @@ async function updateActiveTask(step: string, status: 'completed' | 'blocked', b
 
 // On implementation complete
 async function completeActiveTask(prdId: string, nextPhase: 'verifying' | 'complete'): Promise<void> {
-  const memoryPath = '.sss/memory/active_task.md';
+  const memoryPath = '.sigma/memory/active_task.md';
   
   if (await fileExists(memoryPath)) {
     const task = parseActiveTaskMarkdown(await readFile(memoryPath));
@@ -677,7 +677,7 @@ async function completeActiveTask(prdId: string, nextPhase: 'verifying' | 'compl
 
 // Read active task on resume
 async function readActiveTask(): Promise<ActiveTask | null> {
-  const memoryPath = '.sss/memory/active_task.md';
+  const memoryPath = '.sigma/memory/active_task.md';
   
   try {
     if (await fileExists(memoryPath)) {

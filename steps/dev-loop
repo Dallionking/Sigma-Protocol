@@ -2,8 +2,8 @@
 version: "4.0.0"
 last_updated: "2025-12-29"
 changelog:
-  - "4.0.0: Added Active Task Memory (.sss/memory/active_task.md) for loop resume support across sessions"
-  - "3.0.0: Added Grade 4 Agentic Layer - auto-fix via @gap-analysis when verification fails, uses .sss/tools/ for project verification"
+  - "4.0.0: Added Active Task Memory (.sigma/memory/active_task.md) for loop resume support across sessions"
+  - "3.0.0: Added Grade 4 Agentic Layer - auto-fix via @gap-analysis when verification fails, uses .sigma/tools/ for project verification"
   - "2.0.0: Updated for 13-step workflow, references Step 11 PRDs"
   - "1.0.0: Initial release"
 description: "Master orchestrator - automatically implements all PRDs from Step 11 in sequence with self-correcting verification loops"
@@ -82,7 +82,7 @@ This is the **ultimate automation** you requested: give it PRDs from Step 11, an
 **Output**: 
 - Updates `/docs/prds/.prd-status.json`
 - Creates `/docs/development/DEV-LOOP-[DATE].md`
-- Updates `.sss/memory/active_task.md` (Agentic Layer)
+- Updates `.sigma/memory/active_task.md` (Agentic Layer)
 
 **Manifest**: `updateManifest('@dev-loop', reportPath, 'append-dated')`
 
@@ -90,14 +90,14 @@ This is the **ultimate automation** you requested: give it PRDs from Step 11, an
 
 ## 🧠 Active Task Memory (Agentic Layer)
 
-The dev-loop maintains state in `.sss/memory/active_task.md` for multi-session continuity.
+The dev-loop maintains state in `.sigma/memory/active_task.md` for multi-session continuity.
 
 ### Active Task Integration
 
 ```typescript
 // Initialize active task at loop start
 async function initDevLoopActiveTask(prds: PRD[]): Promise<void> {
-  const memoryDir = '.sss/memory';
+  const memoryDir = '.sigma/memory';
   await mkdir(memoryDir, { recursive: true });
   
   const content = `# Active Task
@@ -127,7 +127,7 @@ ${new Date().toISOString()}
 
 // Update after each PRD
 async function updateDevLoopActiveTask(completedPrd: string, status: 'verified' | 'failed' | 'skipped'): Promise<void> {
-  const memoryPath = '.sss/memory/active_task.md';
+  const memoryPath = '.sigma/memory/active_task.md';
   
   if (await fileExists(memoryPath)) {
     const content = await readFile(memoryPath);
@@ -143,7 +143,7 @@ async function updateDevLoopActiveTask(completedPrd: string, status: 'verified' 
 
 // Read active task on resume
 async function readDevLoopActiveTask(): Promise<{ pendingPrds: string[], lastPrd: string } | null> {
-  const memoryPath = '.sss/memory/active_task.md';
+  const memoryPath = '.sigma/memory/active_task.md';
   
   try {
     if (await fileExists(memoryPath)) {
@@ -176,7 +176,7 @@ async function readDevLoopActiveTask(): Promise<{ pendingPrds: string[], lastPrd
 
 // Clear active task when loop completes
 async function completeDevLoopActiveTask(): Promise<void> {
-  const memoryPath = '.sss/memory/active_task.md';
+  const memoryPath = '.sigma/memory/active_task.md';
   
   if (await fileExists(memoryPath)) {
     const content = await readFile(memoryPath);
@@ -293,7 +293,7 @@ The dev loop was interrupted. Resume from where you left off?
       │    ┌────────────────────────┐
       │    │  🔧 AUTO-FIX (Grade 4) │
       │    │  @gap-analysis --fix   │
-      │    │  .sss/tools/* verify   │
+      │    │  .sigma/tools/* verify   │
       │    │  Loop back until pass  │
       │    │  or exhausted          │
       │    └────────┬───────────────┘
@@ -501,12 +501,12 @@ for (const prd of filteredPRDs) {
       await runCommand(`@gap-analysis --spec=${prd.id} --max-iterations=2 --ui=auto`);
       
       // Run project-local tools if available (Grade 3)
-      const hasTools = await fileExists('.sss/tools/typecheck.sh');
+      const hasTools = await fileExists('.sigma/tools/typecheck.sh');
       if (hasTools) {
         console.log(`\n🛠️  Running project verification tools...`);
         try {
-          await runScript('.sss/tools/typecheck.sh');
-          await runScript('.sss/tools/lint.sh');
+          await runScript('.sigma/tools/typecheck.sh');
+          await runScript('.sigma/tools/lint.sh');
         } catch (toolError) {
           console.log(`   ⚠️  Tool found errors, gap-analysis may have fixed them`);
         }

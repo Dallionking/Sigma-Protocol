@@ -1,7 +1,8 @@
 ---
-version: "2.1.0"
-last_updated: "2026-01-01"
+version: "2.2.0"
+last_updated: "2026-01-07"
 changelog:
+  - "2.2.0: Added react-performance.md reference for state management optimization during transitions"
   - "2.1.0: Added SwiftUI state patterns (ViewState enum, AsyncContentView, animation transitions, symbol effects)"
   - "2.0.0: Renumbered from Step 5 to Step 7 in 13-step workflow"
   - "1.0.0: Initial release as Step 5"
@@ -90,6 +91,8 @@ Each technical state should map to an **emotional state**:
 | **Celebratory** (confetti, success) | 500-800ms | spring/bounce |
 
 **The 60fps Rule:** Only animate `transform` and `opacity`. Never animate `width`, `height`, `margin`, `padding`.
+
+> **📚 React Performance Reference:** State changes can trigger expensive re-renders. For patterns on memoization, state colocation, and preventing cascading re-renders during state transitions, see `/src/foundation-skills/react-performance.md`.
 
 ---
 

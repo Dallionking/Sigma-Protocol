@@ -102,8 +102,8 @@ This document defines the **official file paths** for all outputs created by the
 **Outputs:**
 - `/docs/prds/F[N]-[FEATURE-NAME].md`
 
-### Step 11.5: PRD Swarm Orchestration (Optional)
-**Command:** `@step-11.5-prd-swarm` or `@prd-orchestrate`
+### Step 11b: PRD Swarm Orchestration (Optional)
+**Command:** `@step-11b-prd-swarm` or `@prd-orchestrate`
 **Outputs:**
 - `/docs/prds/swarm-[N]/` — Swarm folders containing grouped PRDs
 - `/docs/prds/swarm-[N]/_SWARM-README.md` — Per-swarm execution guide
@@ -111,7 +111,7 @@ This document defines the **official file paths** for all outputs created by the
 - `/docs/prds/SWARM-PLAN.md` — Master orchestration plan
 - `/docs/prds/DEPENDENCY-GRAPH.md` — Mermaid visualization (if `--visualize`)
 - `/docs/prds/.prd-status.json` — Updated with swarm assignments
-- `/.sss/confidence/prd-swarm-[DATE].json` — Epistemic confidence artifact
+- `/.sigma/confidence/prd-swarm-[DATE].json` — Epistemic confidence artifact
 
 ### Step 12: Cursor Rules
 **Command:** `@step-12-context-engine`

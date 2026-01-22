@@ -115,6 +115,51 @@ docs/marketing/avatars/
 
 ---
 
+## 🎯 Market Awareness Classification (Schwartz Framework)
+
+**Purpose:** Understanding where your avatar is in their awareness journey determines your entire messaging approach.
+
+### Assessment Questions
+
+**Problem Recognition**
+- [ ] They actively experience the problem
+- [ ] They have language/vocabulary for it
+- [ ] They're searching for solutions
+
+**Solution Exposure**
+- [ ] They've tried other solutions before
+- [ ] They can name alternatives/competitors
+- [ ] They have opinions about what works/doesn't
+
+**Brand Familiarity**
+- [ ] They've heard of your brand/product
+- [ ] They've consumed your content
+- [ ] They're on your email list or following you
+
+### Awareness Stage Determination
+
+| If... | Then Awareness Stage is... |
+|-------|---------------------------|
+| No problem recognition checkboxes | **Unaware** |
+| Problem recognition but no solution exposure | **Problem Aware** |
+| Solution exposure but no brand familiarity | **Solution Aware** |
+| Brand familiarity but hasn't purchased | **Product Aware** |
+| Existing customer or ready to buy | **Most Aware** |
+
+**This Avatar's Awareness Stage**: _____________________
+
+### Messaging Implications
+
+| Stage | Lead With | Avoid |
+|-------|-----------|-------|
+| Unaware | Story, curiosity, pattern interrupt | Product talk, features |
+| Problem Aware | Problem agitation, empathy | Direct selling |
+| Solution Aware | Your unique mechanism, differentiation | Generic claims |
+| Product Aware | Objection handling, urgency | Explaining basics |
+| Most Aware | Offer, deal, scarcity | Education |
+
+---
+
 ## 🧠 Customer Avatar Framework (ASK Method)
 
 ### The Complete Avatar
@@ -210,6 +255,110 @@ docs/marketing/avatars/
 │ • What newsletters do they read?                    │
 └─────────────────────────────────────────────────────┘
 ```
+
+---
+
+## 🎭 Five Drivers Deep Dive (Blair Warren Framework)
+
+**The One Sentence:** "People will do anything for those who encourage their dreams, justify their failures, allay their fears, confirm their suspicions, and help them throw rocks at their enemies."
+
+For your target customer, research and identify:
+
+### 1. Dreams to Encourage
+> People will do anything for those who encourage their dreams.
+
+- What's the big dream they've stopped talking about because others dismissed it?
+- What would they attempt if they knew they couldn't fail?
+- What success do they secretly envision when no one's watching?
+- What potential do they see in themselves that others don't?
+
+**Their dream in their words**: "_________________________"
+
+### 2. Failures to Justify
+> People will do anything for those who justify their failures.
+
+- What have they tried before that didn't work?
+- What do they blame themselves for?
+- What shame do they carry about past attempts?
+- What's the REAL external reason they failed? (bad info, wrong tools, bad timing)
+
+**Past failure they feel ashamed of**: "_________________________"
+**External factor that actually caused it**: "_________________________"
+
+### 3. Fears to Allay
+> People will do anything for those who allay their fears.
+
+- What keeps them up at night about this problem?
+- What are they afraid will happen if they try and fail again?
+- What judgment do they fear from spouse, friends, peers?
+- What "what ifs" are paralyzing them right now?
+
+**Top 3 Fears**:
+1. "_________________________"
+2. "_________________________"
+3. "_________________________"
+
+### 4. Suspicions to Confirm
+> People will do anything for those who confirm their suspicions.
+
+- What do they secretly believe about the industry/typical solutions?
+- What skepticism have they developed from past experience?
+- What do they "know in their gut" but can't prove?
+- What conventional wisdom do they question?
+
+**Suspicion they hold**: "_________________________"
+**Evidence that confirms it**: "_________________________"
+
+### 5. Enemies to Help Fight
+> People will do anything for those who help them throw rocks at their enemies.
+
+- Who or what do they blame for their situation?
+- What frustrates them about existing solutions?
+- What "villain" is holding them back? (can be abstract: confusion, complexity, gatekeeping)
+- Who are they tired of being taken advantage of by?
+
+**Their enemy (person/company/concept)**: "_________________________"
+**What that enemy does that infuriates them**: "_________________________"
+
+---
+
+## 🎯 Similarity Markers (For Testimonial & Social Proof Matching)
+
+**From "Yes! 50 Ways":** People comply more readily with requests from people similar to them. The hotel towel study showed that adding "guests in THIS room" increased compliance by 33%.
+
+### Capture These Similarity Markers
+
+Use these to match testimonials and social proof to specific avatar segments:
+
+| Marker Type | Details to Capture | Why It Matters |
+|-------------|-------------------|----------------|
+| **Role/Title** | Exact job title(s) they identify with | "Other product managers like you..." |
+| **Industry** | Specific vertical/sector | "Join 500+ fintech founders..." |
+| **Company Stage** | Startup / Scale-up / Enterprise | "For seed-stage startups..." |
+| **Company Size** | Solo / Small team / 50+ | "Built for teams of 5-15" |
+| **Geography** | City, Region, or Global | "Join 423 founders in Austin" |
+| **Experience Level** | Beginner / Intermediate / Expert | "Even if you're just starting..." |
+| **Shared Struggle** | Specific problem they face | "For founders who hate manual work" |
+| **Shared Values** | What they believe in | "For builders who value quality" |
+| **Shared Background** | Career path, education | "From developer to founder" |
+| **Demographics** | Age range, gender (if relevant) | "Millennial entrepreneurs" |
+
+### Similarity-Enhanced Social Proof Templates
+
+| Generic (Weaker) | Similar (Stronger) | Most Similar (Strongest) |
+|------------------|-------------------|-------------------------|
+| "Join 10,000 users" | "Join 10,000 founders like you" | "Join 347 fintech founders in Austin" |
+| "Trusted by companies" | "Trusted by seed-stage startups" | "Trusted by 87 AI startups in YC" |
+| "Customers love us" | "Product managers love us" | "PMs at Stripe, Notion, Linear love us" |
+
+### Testimonial Matching Matrix
+
+When selecting testimonials for copy, match on 2+ similarity markers:
+
+| Avatar Segment | Required Testimonial Similarity |
+|----------------|--------------------------------|
+| [Avatar 1 name] | Same [role] + [stage] |
+| [Avatar 2 name] | Same [industry] + [struggle] |
 
 ---
 

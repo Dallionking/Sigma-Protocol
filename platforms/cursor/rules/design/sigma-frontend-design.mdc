@@ -1,0 +1,65 @@
+---
+description: "Sigma Frontend Design - Create distinctive, production-grade frontend interfaces avoiding generic AI aesthetics. Auto-triggers for React/Vue/CSS files."
+globs: ["**/*.tsx", "**/*.jsx", "**/*.vue", "**/*.css", "**/*.scss", "tailwind.config.*", "**/components/**/*"]
+keywords: ["ui", "component", "tailwind", "shadcn", "layout", "typography", "motion", "design", "styling", "frontend", "aesthetic"]
+---
+
+# Sigma Frontend Design Skill
+
+Create **distinctive, production-grade frontend interfaces** that avoid generic "AI slop" aesthetics.
+
+## Design Thinking
+
+Before coding, commit to a **BOLD aesthetic direction**:
+
+1. **Purpose**: What problem does this interface solve? Who uses it?
+2. **Tone**: Pick an extreme (brutally minimal, maximalist, retro-futuristic, organic, luxury, playful, editorial, brutalist, art deco, soft/pastel, industrial)
+3. **Differentiation**: What makes this UNFORGETTABLE?
+
+## Typography
+
+**NEVER USE**: Inter, Roboto, Arial, system fonts, Open Sans, Lato
+
+**USE INSTEAD**:
+- Display: Playfair Display, Bebas Neue, Clash Display, Satoshi, Cabinet Grotesk
+- Body: Source Serif Pro, IBM Plex Sans, Nunito Sans, DM Sans
+- Mono: JetBrains Mono, Fira Code
+
+## Color Strategy
+
+**AVOID**: Purple gradients on white, generic blue (#3B82F6), evenly-distributed palettes
+
+**USE**: Dominant + sharp accent approach
+```css
+:root {
+  --color-bg: #0A0A0A;        /* 80% of UI */
+  --color-surface: #1A1A1A;   /* 15% of UI */
+  --color-accent: #FF6B35;    /* 5% - pops */
+}
+```
+
+## Motion
+
+Focus on high-impact moments:
+- Staggered page load reveals (animation-delay)
+- Scroll-triggered animations
+- Hover states that surprise
+
+```css
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+  }
+}
+```
+
+## Anti-Patterns Checklist
+
+Before submitting frontend code, verify:
+- [ ] No Inter, Roboto, or Arial fonts
+- [ ] No default Tailwind blue without customization
+- [ ] No purple gradients on white backgrounds
+- [ ] Animation/motion is present and intentional
+- [ ] Color palette has clear hierarchy
+- [ ] Typography has character
+- [ ] At least one memorable/distinctive element

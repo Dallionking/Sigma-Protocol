@@ -3,7 +3,7 @@ version: "1.0.0"
 last_updated: "2026-01-05"
 changelog:
   - "1.0.0: Initial release — Standalone PRD Swarm orchestration command"
-description: "Analyze PRD dependencies and organize into parallelizable swarms for multi-terminal implementation (standalone alias for @step-11.5-prd-swarm)"
+description: "Analyze PRD dependencies and organize into parallelizable swarms for multi-terminal implementation (standalone alias for @step-11b-prd-swarm)"
 allowed-tools:
   # PRIMARY MCP Tools (Use First)
   - mcp_Ref_ref_search_documentation
@@ -39,7 +39,7 @@ parameters:
 
 **Standalone command for organizing PRDs into parallelizable swarms.**
 
-This is an alias for `@step-11.5-prd-swarm` that can be run at any time after PRDs exist.
+This is an alias for `@step-11b-prd-swarm` that can be run at any time after PRDs exist.
 
 ---
 
@@ -262,7 +262,7 @@ Update PRD status as you complete them:
 
 | Command | Relationship |
 |---------|--------------|
-| `@step-11.5-prd-swarm` | Full step version with HITL checkpoints |
+| `@step-11b-prd-swarm` | Full step version with HITL checkpoints |
 | `@implement-prd --swarm=N` | Implement all PRDs in a swarm |
 | `@status --prds` | Show PRD completion status |
 | `@gap-analysis` | Post-implementation gap analysis per swarm (with Epistemic Confidence) |
@@ -281,7 +281,7 @@ Update PRD status as you complete them:
 
 ## 🎯 Core Algorithm Reference
 
-This command implements the same algorithm as `@step-11.5-prd-swarm`:
+This command implements the same algorithm as `@step-11b-prd-swarm`:
 
 1. **Scan** all PRDs and extract Section 0 metadata
 2. **Parse** dependencies from each PRD
@@ -299,5 +299,5 @@ This command implements the same algorithm as `@step-11.5-prd-swarm`:
 
 ---
 
-*For the full step with all HITL checkpoints, use `@step-11.5-prd-swarm`*
+*For the full step with all HITL checkpoints, use `@step-11b-prd-swarm`*
 

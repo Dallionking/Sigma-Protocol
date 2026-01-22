@@ -1,7 +1,8 @@
 ---
-version: "2.4.0"
-last_updated: "2026-01-01"
+version: "2.5.0"
+last_updated: "2026-01-07"
 changelog:
+  - "2.5.0: Added react-performance.md reference in animation implementation checklist"
   - "2.4.0: Added SwiftUI Design Tokens format (Swift DesignTokens struct with Colors, Typography, Spacing, Radius, Shadows, Motion)"
   - "2.3.2: Added App Shell layout guardrails (wide vs narrow containers, sidebar width rules, dashboard grid patterns, surface layering checks) to prevent narrow/flat dashboards"
   - "2.3.1: Clarified Magic UI BorderBeam reference paths for boilerplate repos vs commands repo"
@@ -60,7 +61,7 @@ The UI must *look* expensive to justify "Grand Slam Pricing".
 
 ```bash
 # Check for boilerplate
-cat .sss/boilerplate.json 2>/dev/null
+cat .sigma/boilerplate.json 2>/dev/null
 ```
 
 ### If Boilerplate Detected
@@ -1195,6 +1196,8 @@ These represent the **quality benchmark** for premium animations — use when ap
 - [ ] **Responsive**: Animation scales appropriately on different devices
 - [ ] **Battery-aware**: Reduced animations on low-power mode (mobile)
 ```
+
+> **📚 React Performance Reference:** For detailed React-specific optimization patterns (memoization to prevent re-render during animation, virtualization, code splitting), see `/src/foundation-skills/react-performance.md`.
 
 ### G.5.3 Animation Testing Requirements
 

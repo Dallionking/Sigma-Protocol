@@ -1,0 +1,20 @@
+# Generated orchestration artifacts (not needed in final boilerplate)
+**/docs/prds/
+**/docs/ralph/
+**/.sigma/orchestration/
+**/.sigma/streams/
+
+# Dependencies
+**/node_modules/
+
+# Build outputs
+**/.next/
+**/dist/
+**/.expo/
+
+# Environment files (users create their own)
+**/.env
+**/.env.local
+**/.env.*.local
+
+

@@ -1,7 +1,8 @@
 ---
-version: "2.1.0"
-last_updated: "2025-12-20"
+version: "2.2.0"
+last_updated: "2026-01-07"
 changelog:
+  - "2.2.0: Added mandatory Backend Scope section to feature shaping template - no frontend-only features allowed. Updated Betting Table with Backend column."
   - "2.1.0: Added Boilerplate Pre-Built Features section - skip shaping for boilerplate-provided features"
   - "2.0.0: Renumbered from Step 8 to Step 10 in 13-step workflow"
   - "1.0.0: Initial release as Step 8"
@@ -50,7 +51,7 @@ Run a complete, interactive **Step-8: Feature Shaping → Story Map → Betting 
 
 ```bash
 # Check for boilerplate
-cat .sss/boilerplate.json 2>/dev/null
+cat .sigma/boilerplate.json 2>/dev/null
 ```
 
 ### If Boilerplate Detected
@@ -764,6 +765,28 @@ OUT OF SCOPE:
 - [Deferred to future PRDs]
 ```
 
+**Backend Scope** (MANDATORY — No frontend-only features):
+```
+DATABASE:
+- [ ] New tables: [list or "None - uses existing"]
+- [ ] Modified tables: [list or "None"]
+- [ ] RLS policies needed: [Yes/No]
+
+SERVER ACTIONS / API:
+- [ ] New server actions: [list with names]
+- [ ] New API routes: [list or "None - server actions only"]
+
+INTEGRATIONS:
+- [ ] External services: [list or "None"]
+- [ ] Webhooks needed: [list or "None"]
+
+SECURITY:
+- [ ] Auth required: [Yes/No, which operations]
+- [ ] Rate limiting: [specify or "Standard"]
+```
+
+**⚠️ BLOCKING CHECK:** If this feature has UI but Backend Scope is empty, STOP. Every data-displaying or data-mutating UI needs corresponding backend.
+
 **Rabbit Holes** (Technical risks/unknowns):
 ```
 🐰 RABBIT HOLES IDENTIFIED:
@@ -841,13 +864,19 @@ For **EACH feature**:
 
 ### Betting Table Format
 
-| # | Shaped Feature | Outcome Link | Kano Type | Appetite | Priority | Phase | Dependencies | INVEST | Vertical? |
-|---|----------------|--------------|-----------|----------|----------|-------|--------------|--------|-----------|
-| 1 | Database Schema | Foundation | Must-Have | Big Batch | P0 | 0 | None | ✅ | N/A |
-| 2 | Auth System | Security | Must-Have | Big Batch | P0 | 0 | Database | ✅ | ✅ |
-| 3 | Voice Intake | Reduce time-to-PRD | Delighter | Big Batch | P1 | 1 | Auth, DB | ✅ | ✅ |
-| 4 | PRD Generator | Reduce time-to-PRD | Performance | Big Batch | P1 | 1 | Voice, DB | ✅ | ✅ |
-| 5 | Landing Page | Increase conversions | Performance | Small Batch | P2 | 2 | Design System | ✅ | ✅ |
+| # | Shaped Feature | Outcome Link | Kano Type | Appetite | Priority | Phase | Dependencies | INVEST | Backend? | Vertical? |
+|---|----------------|--------------|-----------|----------|----------|-------|--------------|--------|----------|-----------|
+| 1 | Database Schema | Foundation | Must-Have | Big Batch | P0 | 0 | None | ✅ | ✅ N/A | N/A |
+| 2 | Auth System | Security | Must-Have | Big Batch | P0 | 0 | Database | ✅ | ✅ DB+API | ✅ |
+| 3 | Voice Intake | Reduce time-to-PRD | Delighter | Big Batch | P1 | 1 | Auth, DB | ✅ | ✅ DB+API | ✅ |
+| 4 | PRD Generator | Reduce time-to-PRD | Performance | Big Batch | P1 | 1 | Voice, DB | ✅ | ✅ DB+API | ✅ |
+| 5 | Landing Page | Increase conversions | Performance | Small Batch | P2 | 2 | Design System | ✅ | ⚪ UI-only | ✅ |
+
+**Backend Column Legend:**
+- ✅ DB+API = Has database tables AND server actions
+- ✅ API = Server actions only (no new tables)
+- ⚪ UI-only = Pure frontend (marketing page, no data)
+- ❌ TBD = **BLOCKING** — Cannot proceed to Step 11 until backend scope defined
 
 **Kano Classification**:
 - **Must-Have**: Expected, absence causes dissatisfaction → Phase 0/1

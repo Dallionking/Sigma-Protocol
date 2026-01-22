@@ -1,0 +1,149 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Sandbox Orchestration Session State",
+  "description": "Tracks session state for auto-resume functionality",
+  "type": "object",
+  "properties": {
+    "sessionId": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Unique session identifier"
+    },
+    "startedAt": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Session start timestamp"
+    },
+    "provider": {
+      "type": "string",
+      "enum": ["e2b", "docker", "daytona"],
+      "description": "Sandbox provider being used"
+    },
+    "status": {
+      "type": "string",
+      "enum": ["running", "paused", "completed", "failed", "interrupted"],
+      "description": "Current session status"
+    },
+    "sandboxes": {
+      "type": "array",
+      "description": "List of sandboxes in this session",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Unique sandbox identifier"
+          },
+          "storyId": {
+            "type": "string",
+            "description": "Story being implemented"
+          },
+          "forkIndex": {
+            "type": "integer",
+            "minimum": 0,
+            "description": "Fork index for Best of N"
+          },
+          "status": {
+            "type": "string",
+            "enum": ["pending", "creating", "running", "completed", "failed", "destroyed"],
+            "description": "Sandbox lifecycle status"
+          },
+          "result": {
+            "type": ["object", "null"],
+            "description": "Execution result (null if not completed)",
+            "properties": {
+              "testResults": {
+                "type": "object",
+                "properties": {
+                  "total": { "type": "integer" },
+                  "passed": { "type": "integer" },
+                  "failed": { "type": "integer" }
+                }
+              },
+              "lintResults": {
+                "type": "object",
+                "properties": {
+                  "errors": { "type": "integer" },
+                  "warnings": { "type": "integer" }
+                }
+              },
+              "evaluation": {
+                "type": "object",
+                "properties": {
+                  "score": { "type": "integer", "minimum": 0, "maximum": 100 },
+                  "meetsThresholds": { "type": "boolean" }
+                }
+              },
+              "error": { "type": "string" }
+            }
+          },
+          "startedAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "completedAt": {
+            "type": ["string", "null"],
+            "format": "date-time"
+          },
+          "logs": {
+            "type": "string",
+            "description": "Execution logs (may be truncated)"
+          },
+          "previewUrl": {
+            "type": ["string", "null"],
+            "description": "Preview URL if available"
+          },
+          "prNumber": {
+            "type": ["integer", "null"],
+            "description": "PR number if created"
+          }
+        },
+        "required": ["id", "storyId", "forkIndex", "status"]
+      }
+    },
+    "completedStories": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "List of completed story IDs"
+    },
+    "selectedForks": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "string"
+      },
+      "description": "Map of storyId -> selected sandboxId"
+    },
+    "costAccumulated": {
+      "type": "number",
+      "minimum": 0,
+      "description": "Total cost accumulated so far"
+    },
+    "lastCheckpoint": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Last state save timestamp"
+    },
+    "bestOfNConfig": {
+      "type": "object",
+      "properties": {
+        "mode": {
+          "type": "string",
+          "enum": ["per-story", "per-stream", "per-prd"]
+        },
+        "n": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "reviewStrategy": {
+          "type": "string",
+          "enum": ["hybrid", "ai-only", "manual"]
+        }
+      }
+    }
+  },
+  "required": ["sessionId", "startedAt", "provider", "status", "sandboxes"]
+}
+
+

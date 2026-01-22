@@ -1,4 +1,4 @@
-# SSS Protocol Module Manifest
+# Sigma Protocol Module Manifest
 #
 # ARCHITECTURE NOTE:
 # The ORIGINAL command files (steps/, audit/, dev/, etc.) remain the source of truth.
@@ -11,12 +11,12 @@
 #
 # NO content is lost. Each platform gets the full methodology.
 
-name: sss-protocol
-version: "1.1.0"
+name: sigma-protocol
+version: "1.0.0-alpha.1"
 description: "Sigma Startup Stack - 13-Step Product Development Methodology"
-author: "SSS Team"
+author: "Sigma Team"
 license: "MIT"
-repository: "https://github.com/your-org/sss-protocol"
+repository: "https://github.com/dallionking/sigma-protocol"
 
 # Supported platforms
 platforms:
@@ -27,7 +27,7 @@ platforms:
 # Module categories
 modules:
   steps:
-    name: "SSS Steps"
+    name: "Sigma Steps"
     description: "Core 13-step product development workflow"
     required: true
     commands:
@@ -176,7 +176,7 @@ agents:
 
 foundation_skills:
   # ---------------------------------------------------------------------------
-  # SSS CORE (6 skills) - Power the 13-step methodology
+  # SIGMA CORE (6 skills) - Power the 13-step methodology
   # ---------------------------------------------------------------------------
   core:
     - id: research
@@ -379,7 +379,7 @@ foundation_skills:
 tools:
   - id: verify_step
     name: "Verify Step"
-    description: "Verify SSS step completion against schema"
+    description: "Verify Sigma step completion against schema"
     file: tools/verify-step.ts
 
   - id: prd_score
@@ -399,7 +399,7 @@ platform_config:
     rules_file: ".cursorrules"
     rules_dir: ".cursor/rules"
     skills_dir: ".cursor/rules" # Skills become .mdc rules in Cursor
-    skill_prefix: "sss-"
+    skill_prefix: "sigma-"
     skill_extension: ".mdc"
 
   claude-code:

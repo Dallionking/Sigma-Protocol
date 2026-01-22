@@ -1,7 +1,8 @@
 ---
-version: "2.3.0"
-last_updated: "2026-01-01"
+version: "2.4.0"
+last_updated: "2026-01-07"
 changelog:
+  - "2.4.0: Added Data Requirements Matrix (C.4-C.6) - maps screens to data entities and operations, bridges to Step 5/10/11 backend requirements"
   - "2.3.0: Added SwiftUI native iOS navigation patterns (NavigationStack, TabView, Sheet/FullScreenCover) with code examples"
   - "2.2.0: Added UI Profile import/confirmation from Step 3 and persisted meta.uiProfile into /product/flows/flow-tree.json"
   - "2.1.0: Added Phase H - flow-tree.json generation for module selection + boilerplate integration"
@@ -864,8 +865,58 @@ Identify screens that appear in multiple flows:
 | Success Toast | Auth, Core Features | Transaction confirmations |
 | Confirmation Dialog | Settings, Core Features | Destructive action confirmation |
 
-**HITL checkpoint →** Present screen inventory and counts.
-**Prompt:** "Approve screen inventory? Reply `approve screens` or `add: [screen]` or `remove: [screen]`."
+### C.4 Data Requirements Matrix (NEW — Bridges Screens to Backend)
+
+**Purpose:** Map every screen to its data requirements. This feeds directly into Step 5's Backend Data Operations and Step 11's Section 0.5 (Full Stack Overview).
+
+| # | Screen ID | Data Entities (READ) | Operations (WRITE) | Real-Time? | Complexity |
+|---|-----------|---------------------|-------------------|------------|------------|
+| 1 | launch-splash | App config | None | No | Simple |
+| 2 | auth-login | None | Create session | No | Medium |
+| 3 | auth-signup | None | Create user, session | No | Medium |
+| 4 | dashboard-main | User, Activities (list), Stats | None | Yes (activities) | Complex |
+| 5 | item-create | Categories, Templates | Create item | No | Medium |
+| 6 | item-detail | Item (single), Comments (list) | None | Yes (comments) | Complex |
+| 7 | settings-profile | User profile | Update user | No | Simple |
+| ... | ... | ... | ... | ... | ... |
+
+**Data Complexity Legend:**
+- **Simple**: Static or CRUD, no real-time, no complex queries
+- **Medium**: Forms with validation, filtered lists, computed fields
+- **Complex**: Real-time updates, aggregations, relationships, pagination
+
+### C.5 Data Entity Summary
+
+From the Data Requirements Matrix, summarize the entities needed:
+
+| Entity | Screens Using (READ) | Screens Modifying (WRITE) | Real-Time Needed |
+|--------|---------------------|--------------------------|------------------|
+| User | dashboard-main, settings-*, profile-* | auth-signup, settings-profile | No |
+| Activity | dashboard-main, activity-list | [various action screens] | Yes |
+| Item | item-list, item-detail | item-create, item-edit | No |
+| Comment | item-detail | item-detail (add comment) | Yes |
+| ... | ... | ... | ... |
+
+### C.6 Backend Complexity Estimate
+
+Based on the Data Requirements Matrix:
+
+| Metric | Count | Notes |
+|--------|-------|-------|
+| **Total Entities** | [N] | From C.5 Entity Summary |
+| **Real-Time Screens** | [N] | Screens requiring WebSocket/polling |
+| **Complex Screens** | [N] | Data complexity = Complex |
+| **External Integrations** | [N] | From Step 1 Technical Preview |
+
+**Estimated Backend Complexity:** [Simple / Medium / Complex / Very Complex]
+
+**Note to downstream steps:**
+- Step 5: Use C.4 to populate Backend Data Operations section for each flow
+- Step 10: Use C.5/C.6 to estimate Backend Scope for each feature
+- Step 11: Use C.4/C.5 to validate Section 0.5 Full Stack Overview completeness
+
+**HITL checkpoint →** Present screen inventory, counts, and data requirements.
+**Prompt:** "Approve screen inventory and data requirements? Reply `approve screens` or `add: [screen]` or `remove: [screen]`."
 
 ---
 

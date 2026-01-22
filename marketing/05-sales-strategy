@@ -443,15 +443,55 @@ what made you book this call today?"
 - "Want to get started?"
 ```
 
-### Top 10 Objection Handlers
+### NESB Validation for Sales Copy (Kyle Milligan Framework)
+
+Before finalizing any sales copy, ensure it triggers all four emotional responses:
+
+**Score Each Piece of Copy (1-10):**
+
+| Trigger | Question | Your Copy Score |
+|---------|----------|-----------------|
+| **NEW** | Does this feel like a novel discovery? | ___/10 |
+| **EASY** | Does this feel achievable without heroic effort? | ___/10 |
+| **SAFE** | Have you removed all perceived risk? | ___/10 |
+| **BIG** | Is the promised transformation significant? | ___/10 |
+
+**NESB Sales Copy Examples:**
+
+| Element | Without NESB | With NESB |
+|---------|--------------|-----------|
+| **Headline** | "Our coaching program" | "The 3-Phase Protocol that took me from $0 to $1M" |
+| **Subhead** | "Learn sales techniques" | "Close deals in 15 minutes using questions—no scripts, no pressure" |
+| **Proof** | "Many clients succeed" | "1,247 students with 68% avg close rate—guaranteed" |
+| **CTA** | "Sign up now" | "Get instant access—start closing this week" |
+
+---
+
+### Five Drivers Objection Framework (Blair Warren)
+
+Use the Five Drivers to preemptively address objections in your copy:
+
+| Driver | Hidden Objection | Copy Response |
+|--------|------------------|---------------|
+| **Encourage Dreams** | "Is this really possible for me?" | "You're closer than you think. [Name] was exactly where you are..." |
+| **Justify Failures** | "I've failed before—maybe I'm the problem" | "If you've tried before and failed, it wasn't your fault. You were using..." |
+| **Allay Fears** | "What if this doesn't work?" | "You're protected by our [guarantee]. The only way you lose is by not trying." |
+| **Confirm Suspicions** | "I bet this is just like all the others" | "You suspected something was off with [old way]. You were right..." |
+| **Throw Rocks at Enemies** | "Who/what has been holding me back?" | "The gurus who told you [common advice]? They forgot to mention..." |
+
+---
+
+### Top 10 Objection Handlers (Enhanced with Five Drivers)
 
 ```markdown
 ### "I need to think about it"
 > "Totally understand. What specifically do you want to think through?
 > Is it the investment, timing, or whether this will work for you?"
+> **[Five Drivers: Allay Fears - address the real hesitation]**
 
 ### "It's too expensive"
 > "Compared to what? What's the cost of NOT solving this over 6-12 months?"
+> **[Five Drivers: Confirm Suspicions - they suspect they're losing more by waiting]**
 
 ### "I don't have time"
 > "That's exactly why you need this. You don't have time BECAUSE of 
@@ -463,6 +503,7 @@ what made you book this call today?"
 
 ### "I've tried this before"
 > "What went wrong? [Listen] Here's why this is different..."
+> **[Five Drivers: Justify Failures - their past failure wasn't their fault, they had the wrong approach]**
 
 ### "Not the right time"
 > "When would be the right time? What would need to change?"

@@ -47,8 +47,21 @@ This agent automatically invokes these skills:
 
 | Skill | Purpose |
 |-------|---------|
-| **frontend-design** | Distinctive aesthetics, anti-AI-slop |
+| **frontend-design** | Distinctive aesthetics, anti-AI-slop (v2.0 with expanded typography, colors, motion) |
+| **browser-verification** | Platform-adaptive browser testing (Cursor/Playwright/Claude) |
 | **verification** | Quality gate checks |
+| **compound-engineering** | Structured workflow for complex UI features |
+
+**Browser Verification Integration:**
+When implementing UI, always verify with the appropriate browser tool:
+- **Cursor IDE**: `mcp_cursor-ide-browser_*` tools
+- **Claude Code**: Playwright MCP or Claude Browser
+- **OpenCode**: Playwright MCP
+
+```bash
+# After implementing a component, verify visually
+@browser-verification --url=http://localhost:3000/component-demo
+```
 
 ---
 

@@ -1,0 +1,172 @@
+# Product Requirements Document: LinkHub
+## Link-in-Bio Platform
+
+### 1. Executive Summary
+
+LinkHub is a link-in-bio platform that allows content creators to create a personalized landing page containing all their important links. Users get a custom URL (linkhub.app/username) to share across social media platforms.
+
+### 2. Problem Statement
+
+Content creators are limited to one clickable link in social media bios. They need a simple way to aggregate multiple destinations (YouTube, TikTok, merch stores, etc.) into a single, shareable link.
+
+### 3. Target Users
+
+**Primary**: Content creators with 1K-100K followers
+**Secondary**: Small businesses, freelancers, podcasters
+
+### 4. Core Features
+
+#### 4.1 Authentication
+- Email/password signup
+- OAuth (Google, GitHub)
+- Username selection (URL slug)
+
+#### 4.2 Dashboard
+- Overview of total views and clicks
+- Quick-add link button
+- List of all links with inline stats
+
+#### 4.3 Link Management
+- Add link: title, URL, optional icon
+- Edit existing links
+- Delete links
+- Drag-and-drop reorder
+- Toggle link visibility
+
+#### 4.4 Profile Customization
+- Upload profile photo
+- Edit display name
+- Edit bio (max 150 chars)
+- Select theme from presets
+- Custom accent color picker
+
+#### 4.5 Public Profile Page
+- Displays at /[username]
+- Shows profile photo, name, bio
+- Renders all visible links as buttons
+- Tracks views and clicks
+- Mobile-optimized design
+
+#### 4.6 Analytics
+- Total page views (last 7/30 days)
+- Click count per link
+- Click-through rate
+- Top performing links
+
+### 5. Technical Requirements
+
+#### 5.1 Frontend
+- Next.js 14+ with App Router
+- TailwindCSS + shadcn/ui
+- React DnD for drag-and-drop
+
+#### 5.2 Backend
+- Supabase Auth
+- Supabase Database (PostgreSQL)
+- Supabase Storage (profile photos)
+
+#### 5.3 Database Schema
+
+```sql
+-- Users table (extends Supabase auth.users)
+profiles (
+  id uuid PRIMARY KEY REFERENCES auth.users,
+  username text UNIQUE NOT NULL,
+  display_name text,
+  bio text,
+  avatar_url text,
+  theme text DEFAULT 'default',
+  accent_color text DEFAULT '#000000',
+  created_at timestamptz DEFAULT now()
+)
+
+-- Links table
+links (
+  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id uuid REFERENCES profiles(id) ON DELETE CASCADE,
+  title text NOT NULL,
+  url text NOT NULL,
+  icon text,
+  position integer NOT NULL,
+  is_visible boolean DEFAULT true,
+  click_count integer DEFAULT 0,
+  created_at timestamptz DEFAULT now()
+)
+
+-- Analytics events
+analytics (
+  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  profile_id uuid REFERENCES profiles(id),
+  link_id uuid REFERENCES links(id),
+  event_type text NOT NULL, -- 'view' or 'click'
+  referrer text,
+  user_agent text,
+  country text,
+  created_at timestamptz DEFAULT now()
+)
+```
+
+### 6. User Flows
+
+#### 6.1 New User Onboarding
+1. Land on homepage
+2. Click "Get Started"
+3. Sign up with email or OAuth
+4. Choose username
+5. Add first 3 links (guided)
+6. Select theme
+7. Preview and publish
+
+#### 6.2 Adding a Link
+1. Click "+ Add Link" on dashboard
+2. Enter title and URL
+3. Optionally select icon
+4. Save
+5. Link appears at bottom of list
+6. Drag to reorder if needed
+
+#### 6.3 Viewing Analytics
+1. Navigate to Analytics tab
+2. See overview cards (views, clicks, CTR)
+3. See per-link breakdown table
+4. Toggle date range (7d/30d/all)
+
+### 7. Non-Functional Requirements
+
+- Page load time < 2 seconds
+- Public profiles should be SEO-optimized
+- Support 10,000+ concurrent users
+- Mobile-first responsive design
+
+### 8. Theme Options
+
+1. **Minimal** - White background, black text, rounded buttons
+2. **Dark** - Dark gray background, white text
+3. **Gradient** - Purple-to-pink gradient background
+4. **Glassmorphism** - Blurred glass effect cards
+5. **Neon** - Dark with neon accent borders
+
+### 9. Out of Scope (V1)
+
+- Custom domains
+- Team/organization accounts
+- A/B testing links
+- Email collection
+- Paid subscriptions
+- Embedded content (YouTube, Spotify)
+
+### 10. Success Criteria
+
+- User can go from signup to live page in under 5 minutes
+- Click tracking is 99.9% accurate
+- Lighthouse score > 90 on public profiles
+
+### 11. Timeline
+
+**Quick Demo Build**: 2-4 hours
+- Hour 1: Auth + Database setup
+- Hour 2: Dashboard + Link CRUD
+- Hour 3: Public profile page + themes
+- Hour 4: Analytics + polish
+
+

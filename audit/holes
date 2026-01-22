@@ -107,7 +107,7 @@ const outputFile = `HOLES-ANALYSIS-${today}.md`;
 
 // 1. Detect context
 const hasPRD = await glob('docs/prd/*.md').catch(() => []);
-const hasBoilerplate = await readFile('.sss/boilerplate.json').catch(() => null);
+const hasBoilerplate = await readFile('.sigma/boilerplate.json').catch(() => null);
 const hasStackProfile = await readFile('docs/stack-profile.json').catch(() => null);
 
 // 2. Load relevant planning docs
@@ -534,7 +534,7 @@ async function mapDependencies(): Promise<Dependency[]> {
   const dependencies: Dependency[] = [];
   
   // Check for boilerplate dependencies
-  const boilerplate = await readFile('.sss/boilerplate.json').catch(() => null);
+  const boilerplate = await readFile('.sigma/boilerplate.json').catch(() => null);
   if (!boilerplate) {
     dependencies.push({
       name: 'Project scaffolding',
@@ -905,10 +905,10 @@ async function saveConfidenceArtifact(findings: GapFinding[]): Promise<void> {
   };
   
   // Ensure directory exists
-  await run_terminal_cmd('mkdir -p .sss/confidence');
+  await run_terminal_cmd('mkdir -p .sigma/confidence');
   
   // Save artifact
-  const filename = `.sss/confidence/holes-${timestamp.split('T')[0]}.json`;
+  const filename = `.sigma/confidence/holes-${timestamp.split('T')[0]}.json`;
   await write(filename, JSON.stringify(artifact, null, 2));
   
   console.log(`\n📊 Epistemic artifact saved: ${filename}`);

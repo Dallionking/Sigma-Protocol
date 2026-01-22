@@ -1,0 +1,815 @@
+---
+name: status
+description: "Display SSS workflow progress - quick status check for all steps (0-12 including 1.5 and 11b), PRDs, swarms, and Epistemic Confidence"
+model: claude-sonnet-4-5-20241022
+tools:
+  - Read
+  - Write
+  - Edit
+  - Bash
+  - WebFetch
+
+---
+
+# status
+
+**Source:** Sigma Protocol ops module
+**Version:** 3.1.0
+
+---
+
+
+# @status — SSS Workflow Progress Tracker
+
+**Mission**  
+Display a quick, at-a-glance view of your SSS workflow progress. Shows completion status for all steps (0-12, including conditional 1.5), PRD implementation status, bulletproof gate compliance, and recommended next actions.
+
+---
+
+## 🎯 Purpose
+
+Quickly answer:
+- Which SSS steps are complete?
+- Which steps are in progress or missing?
+- Is Step 1.5 (Offer Architecture) needed and complete?
+- Is Step 11b (PRD Swarm) needed and complete?
+- Are bulletproof gates (traceability, zero-omission, wireframe tracker) in place?
+- How many PRDs exist and their status?
+- Are PRDs organized into swarms for parallel implementation?
+- What is the progress of each swarm?
+- What is the current Epistemic Confidence level?
+- Are there any overridden confidence gates or pending validation tasks?
+- What should I work on next?
+
+---
+
+## 📋 Command Usage
+
+### **Quick Status**
+\`\`\`bash
+@status
+\`\`\`
+
+### **Detailed Status**
+\`\`\`bash
+@status --detailed
+\`\`\`
+
+### **PRD-Focused Status**
+\`\`\`bash
+@status --prds
+\`\`\`
+
+---
+
+## 🎭 Parameters
+
+| Parameter | Values | Description | Default |
+|-----------|--------|-------------|---------|
+| \`--detailed\` | boolean | Show file paths and dates | \`false\` |
+| \`--prds\` | boolean | Focus on PRD status | \`false\` |
+| \`--json\` | boolean | Output as JSON | \`false\` |
+
+---
+
+<goal>
+You are the **Project Status Dashboard** - providing instant visibility into SSS methodology compliance.
+
+## Status Check Algorithm
+
+### Step 1: Check Core Documentation
+
+\`\`\`typescript
+// Canonical step order (see docs/mcp/SSS-VERSIONING.md for authoritative reference)
+const sssSteps = [
+  {
+    step: '0',
+    name: 'Environment Setup',
+    required: true,
+    checkPaths: ['docs/ops/ENVIRONMENT-SETUP.md'],
+    optional: false,
+  },
+  {
+    step: '1',
+    name: 'Ideation',
+    required: true,
+    checkPaths: ['docs/specs/MASTER_PRD.md', 'docs/stack-profile.json'],
+    optional: false,
+  },
+  {
+    step: '1.5',
+    name: 'Offer Architecture',
+    required: 'conditional', // Required only when monetization detected
+    checkPaths: ['docs/specs/OFFER_ARCHITECTURE.md', 'docs/specs/pricing-config.json'],
+    optional: false,
+    conditionalCheck: async () => await isMonetized(),
+  },
+  {
+    step: '2',
+    name: 'Architecture',
+    required: true,
+    checkPaths: ['docs/architecture/ARCHITECTURE.md'],
+    optional: false,
+  },
+  {
+    step: '3',
+    name: 'UX Design',
+    required: true,
+    checkPaths: ['docs/ux/UX-DESIGN.md'],
+    optional: false,
+  },
+  {
+    step: '4',
+    name: 'Flow Tree',
+    required: true,
+    checkPaths: [
+      'docs/flows/FLOW-TREE.md',
+      'docs/flows/SCREEN-INVENTORY.md',
+      // Transition map: accepts canonical or legacy alias
+      { path: 'docs/flows/TRANSITION-MAP.md', aliases: ['docs/flows/STATE-TRANSITIONS.md'] },
+    ],
+    bulletproofGates: [
+      'docs/flows/TRACEABILITY-MATRIX.md',
+      'docs/flows/ZERO-OMISSION-CERTIFICATE.md',
+    ],
+    optional: false,
+  },
+  {
+    step: '5',
+    name: 'Wireframes',
+    required: false,
+    checkPaths: ['docs/wireframes/PROTOTYPE-SUMMARY.md'],
+    bulletproofGates: ['docs/prds/flows/WIREFRAME-TRACKER.md'],
+    optional: true,
+  },
+  {
+    step: '6',
+    name: 'Design System',
+    required: true,
+    checkPaths: ['docs/design/DESIGN-SYSTEM.md'],
+    optional: false,
+  },
+  {
+    step: '7',
+    name: 'Interface States',
+    required: true,
+    checkPaths: ['docs/states/STATE-SPEC.md'],
+    optional: false,
+  },
+  {
+    step: '8',
+    name: 'Technical Spec',
+    required: true,
+    checkPaths: ['docs/technical/TECHNICAL-SPEC.md'],
+    optional: false,
+  },
+  {
+    step: '9',
+    name: 'Landing Page',
+    required: false,
+    checkPaths: ['docs/landing-page/LANDING-PAGE.md'],
+    optional: true,
+  },
+  {
+    step: '10',
+    name: 'Feature Breakdown',
+    required: true,
+    checkPaths: ['docs/implementation/FEATURE-BREAKDOWN.md'],
+    optional: false,
+  },
+  {
+    step: '11',
+    name: 'PRDs',
+    required: true,
+    checkPaths: ['docs/prds/'],
+    optional: false,
+  },
+  {
+    step: '11b',
+    name: 'PRD Swarm',
+    required: 'conditional', // Required only when 5+ PRDs exist
+    checkPaths: ['docs/prds/SWARM-PLAN.md', 'docs/prds/swarm-1/'],
+    optional: false,
+    conditionalCheck: async () => await hasMultiplePRDs(),
+  },
+  {
+    step: '12',
+    name: 'Cursor Rules',
+    required: true,
+    checkPaths: ['.cursorrules'],
+    optional: false,
+  },
+];
+
+// Multiple PRD detection for Step 11b conditional logic
+async function hasMultiplePRDs(): Promise<boolean> {
+  const prdFiles = await glob('docs/prds/F*.md');
+  const flowPrds = await glob('docs/prds/flows/**/F*.md');
+  return (prdFiles.length + flowPrds.length) >= 5;
+}
+
+// Monetization detection for Step 1.5 conditional logic
+async function isMonetized(): Promise<boolean> {
+  const signals = [
+    await fileExists('docs/specs/pricing-config.json'),
+    await fileExists('docs/specs/OFFER_ARCHITECTURE.md'),
+    await fileContains('docs/specs/MASTER_PRD.md', /payment|billing|subscription|pricing|stripe|paddle/i),
+    await jsonHasField('docs/stack-profile.json', ['stripe', 'paddle', 'payments', 'billing']),
+  ];
+  return signals.some(Boolean);
+}
+\`\`\`
+
+### Step 2: Check Each Path (with alias and conditional support)
+
+\`\`\`typescript
+async function checkStepStatus(step: SSSStep): Promise<StepStatus> {
+  // Handle conditional steps (like Step 1.5)
+  if (step.required === 'conditional') {
+    const shouldCheck = await step.conditionalCheck();
+    if (!shouldCheck) {
+      return 'skipped-conditional'; // "Skipped (Not monetized)"
+    }
+  }
+  
+  // Check all paths (with alias support)
+  const pathsExist = await Promise.all(
+    step.checkPaths.map(async (pathSpec) => {
+      if (typeof pathSpec === 'string') {
+        return checkExists(pathSpec);
+      } else {
+        // Object with aliases: check canonical or any alias
+        const canonical = await checkExists(pathSpec.path);
+        if (canonical) return true;
+        for (const alias of pathSpec.aliases || []) {
+          if (await checkExists(alias)) return true;
+        }
+        return false;
+      }
+    })
+  );
+  
+  // Check bulletproof gates (bonus status)
+  let gatesComplete = true;
+  if (step.bulletproofGates) {
+    const gatesExist = await Promise.all(
+      step.bulletproofGates.map(path => checkExists(path))
+    );
+    gatesComplete = gatesExist.every(Boolean);
+  }
+  
+  const allExist = pathsExist.every(Boolean);
+  const someExist = pathsExist.some(Boolean);
+  
+  if (allExist && gatesComplete) {
+    return 'complete';
+  } else if (allExist && !gatesComplete) {
+    return 'partial-gates'; // Core files exist but bulletproof gates missing
+  } else if (someExist) {
+    return 'partial';
+  } else if (step.optional) {
+    return 'skipped';
+  } else if (step.required === 'conditional') {
+    return 'missing-conditional'; // "Missing (Required - Monetized)"
+  } else {
+    return 'missing';
+  }
+}
+\`\`\`
+
+### Step 3: Check PRD Status
+
+\`\`\`typescript
+interface SwarmStatus {
+  hasSwarms: boolean;
+  swarmCount: number;
+  swarms: Array<{
+    id: number;
+    name: string;
+    total: number;
+    complete: number;
+    inProgress: number;
+    pending: number;
+  }>;
+}
+
+async function checkPRDStatus(): Promise<PRDStatusSummary & { swarms: SwarmStatus }> {
+  // Check for PRD status file
+  const statusFile = 'docs/prds/.prd-status.json';
+  
+  // Count PRD files (including in swarm folders)
+  const topLevelPrds = await glob('docs/prds/F*.md');
+  const swarmPrds = await glob('docs/prds/swarm-*/F*.md');
+  const flowPrds = await glob('docs/prds/flows/**/F*.md');
+  const prdFiles = [...topLevelPrds, ...swarmPrds, ...flowPrds];
+  
+  // Parse status if exists
+  let implemented = 0;
+  let verified = 0;
+  let pending = 0;
+  
+  // Check for swarm structure
+  const swarmFolders = await glob('docs/prds/swarm-*/');
+  const swarmStatus: SwarmStatus = {
+    hasSwarms: swarmFolders.length > 0,
+    swarmCount: swarmFolders.length,
+    swarms: [],
+  };
+  
+  if (await checkExists(statusFile)) {
+    const status = await readJSON(statusFile);
+    
+    // Count by status
+    for (const feature of Object.values(status.features || {})) {
+      if (feature.status === 'implemented') implemented++;
+      else if (feature.status === 'verified') verified++;
+      else pending++;
+    }
+    
+    // Parse swarm assignments
+    if (status.swarms && swarmFolders.length > 0) {
+      for (let i = 1; i <= status.swarms.count; i++) {
+        const swarmPrdsInFolder = await glob(`docs/prds/swarm-${i}/F*.md`);
+        const swarmFeatures = Object.entries(status.features || {})
+          .filter(([id, f]) => f.swarm === i);
+        
+        const swarm = {
+          id: i,
+          name: `swarm-${i}`,
+          total: swarmPrdsInFolder.length,
+          complete: swarmFeatures.filter(([, f]) => 
+            f.status === 'implemented' || f.status === 'verified'
+          ).length,
+          inProgress: swarmFeatures.filter(([, f]) => 
+            f.status === 'in_progress'
+          ).length,
+          pending: swarmFeatures.filter(([, f]) => 
+            f.status === 'pending' || !f.status
+          ).length,
+        };
+        swarmStatus.swarms.push(swarm);
+      }
+    }
+  }
+  
+  return {
+    total: prdFiles.length,
+    implemented,
+    verified,
+    pending: prdFiles.length - implemented - verified,
+    swarms: swarmStatus,
+  };
+}
+\`\`\`
+
+### Step 4: Check Epistemic Confidence
+
+\`\`\`typescript
+interface EpistemicStatus {
+  hasArtifacts: boolean;
+  recentConfidence: number | null;
+  overrides: ConfidenceOverride[];
+  criticalUncertainties: string[];
+  validationTasks: string[];
+  gapScore: number | null;
+}
+
+async function checkEpistemicStatus(): Promise<EpistemicStatus> {
+  const result: EpistemicStatus = {
+    hasArtifacts: false,
+    recentConfidence: null,
+    overrides: [],
+    criticalUncertainties: [],
+    validationTasks: [],
+    gapScore: null,
+  };
+  
+  // Check for confidence artifacts
+  const artifactDir = '.sigma/confidence';
+  if (await checkExists(artifactDir)) {
+    const artifacts = await glob('.sigma/confidence/*.json');
+    result.hasArtifacts = artifacts.length > 0;
+    
+    // Get most recent artifacts (within 24 hours)
+    const recent = artifacts
+      .filter(a => isWithin24Hours(a))
+      .sort(byTimestamp);
+    
+    if (recent.length > 0) {
+      const latest = await readJSON(recent[recent.length - 1]);
+      result.recentConfidence = latest.confidence?.total || latest.confidence?.gapScore;
+      result.gapScore = latest.gaps ? computeGapScore(latest.gaps) : null;
+    }
+  }
+  
+  // Check for risk acceptance (overrides)
+  const riskFile = 'docs/risks/RISK-ACCEPTANCE.md';
+  if (await checkExists(riskFile)) {
+    const content = await readFile(riskFile);
+    result.overrides = parseOverrides(content);
+  }
+  
+  // Check for critical uncertainties in recent artifacts
+  const artifacts = await glob('.sigma/confidence/*.json');
+  for (const artifactPath of artifacts.slice(-5)) {
+    const artifact = await readJSON(artifactPath);
+    if (artifact.uncertainties?.critical?.length > 0) {
+      result.criticalUncertainties.push(...artifact.uncertainties.critical);
+    }
+  }
+  
+  // Check for validation tasks
+  const todoFile = '.sigma/todos.json';
+  if (await checkExists(todoFile)) {
+    const todos = await readJSON(todoFile);
+    result.validationTasks = todos
+      .filter(t => t.id.startsWith('epistemic-') && t.status === 'pending')
+      .map(t => t.content);
+  }
+  
+  return result;
+}
+
+function parseOverrides(content: string): ConfidenceOverride[] {
+  const overrides: ConfidenceOverride[] = [];
+  const entryPattern = /## Entry: (.+)\n\n\*\*Command:\*\* (.+)\n\*\*Confidence:\*\* (\d+)%/g;
+  
+  let match;
+  while ((match = entryPattern.exec(content)) !== null) {
+    overrides.push({
+      timestamp: match[1],
+      command: match[2],
+      confidence: parseInt(match[3]),
+    });
+  }
+  
+  return overrides;
+}
+\`\`\`
+
+### Step 4: Generate Status Display
+
+## Output Format
+
+\`\`\`
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+📊 SSS STATUS: [Project Name]
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+WORKFLOW PROGRESS
+─────────────────────────────────────────────
+Step 0:   Environment       ✅ Complete
+Step 1:   Ideation          ✅ Complete
+Step 1.5: Offer Architecture ⏭️ Skipped (Not monetized)
+Step 2:   Architecture      ✅ Complete
+Step 3:   UX Design         ⏳ In Progress
+Step 4:   Flow Tree         ⬚ Not Started
+Step 5:   Wireframes        ⬚ Not Started (Optional)
+Step 6:   Design System     ⬚ Not Started
+Step 7:   Interface States  ⬚ Not Started
+Step 8:   Technical Spec    ⬚ Not Started
+Step 9:   Landing Page      ⬚ Skipped (Optional)
+Step 10:  Feature Breakdown ⬚ Not Started
+Step 11:  PRDs              ⬚ Not Started
+Step 11b: PRD Swarm         ⏭️ Skipped (< 5 PRDs)
+Step 12:  Cursor Rules      ⬚ Not Started
+─────────────────────────────────────────────
+
+PROGRESS: 3/11 required steps (27%)
+  [Step 1.5 skipped - not monetized]
+
+BULLETPROOF GATES
+─────────────────────────────────────────────
+Step 4: ⬚ TRACEABILITY-MATRIX.md (not started)
+Step 4: ⬚ ZERO-OMISSION-CERTIFICATE.md (not started)
+Step 5: ⬚ WIREFRAME-TRACKER.md (not started)
+─────────────────────────────────────────────
+
+PRD STATUS
+─────────────────────────────────────────────
+Total PRDs:    0
+Implemented:   0
+Verified:      0
+Pending:       0
+─────────────────────────────────────────────
+
+SWARM STATUS (if organized)
+─────────────────────────────────────────────
+| Swarm     | PRDs | Complete | In Prog | Pending |
+|-----------|------|----------|---------|---------|
+| swarm-1   | 18   | 5 (28%)  | 2       | 11      |
+| swarm-2   | 16   | 8 (50%)  | 1       | 7       |
+| swarm-3   | 19   | 0 (0%)   | 0       | 19      |
+| swarm-4   | 19   | 12 (63%) | 3       | 4       |
+─────────────────────────────────────────────
+Overall: 25/72 complete (35%)
+
+[If no swarms: "PRDs not organized into swarms. Run @prd-orchestrate"]
+─────────────────────────────────────────────
+
+EPISTEMIC CONFIDENCE
+─────────────────────────────────────────────
+Recent Confidence: [X]% [✅ | ⚠️ | ⛔]
+Gap Score:         [X]%
+Overrides:         [X] (see RISK-ACCEPTANCE.md)
+Validation Tasks:  [X] pending
+
+Critical Uncertainties:
+  • [None or list]
+  
+Recent Overrides:
+  • [None or list with date]
+─────────────────────────────────────────────
+
+RECOMMENDED NEXT STEP
+─────────────────────────────────────────────
+▶ Run: @step-3-ux-design
+
+Continue UX design to unlock:
+  → Step 4: Flow Tree & Screen Architecture
+  → Step 5: Wireframe Prototypes
+─────────────────────────────────────────────
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+\`\`\`
+
+## Detailed Output (--detailed)
+
+\`\`\`
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+📊 SSS STATUS: [Project Name] (Detailed)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+WORKFLOW PROGRESS
+─────────────────────────────────────────────
+
+✅ Step 0: Environment Setup
+   📁 .env.example (exists)
+   📁 package.json (exists)
+   ⏱️ Last modified: 2025-01-20
+
+✅ Step 1: Ideation
+   📁 docs/specs/MASTER_PRD.md (2,450 lines)
+   📁 docs/stack-profile.json (exists)
+   ⏱️ Last modified: 2025-01-21
+
+✅ Step 2: Architecture
+   📁 docs/architecture/ARCHITECTURE.md (1,200 lines)
+   📁 docs/database/SCHEMA.md (exists)
+   ⏱️ Last modified: 2025-01-22
+
+⏳ Step 3: UX Design
+   📁 docs/ux/UX-DESIGN.md (partial - 500 lines)
+   ⏱️ Last modified: 2025-01-23
+
+⬚ Step 4: Flow Tree
+   ❌ docs/flows/FLOW-TREE.md (not started)
+   ❌ docs/flows/SCREEN-INVENTORY.md (not started)
+   💡 Critical for screen completeness
+
+⬚ Step 5: Wireframes (Optional)
+   ❌ docs/wireframes/PROTOTYPE-SUMMARY.md (not started)
+   💡 Recommended for visual-first workflow
+
+...
+
+PRD STATUS (Detailed)
+─────────────────────────────────────────────
+
+📄 F01-AUTHENTICATION.md
+   Status: ✅ Implemented
+   Score: 8.5/10
+   Last verified: 2025-01-25
+
+📄 F02-DASHBOARD.md
+   Status: ⏳ In Progress
+   Score: 7.2/10 (needs improvement)
+   Issues: Missing test coverage
+
+📄 F03-USER-PROFILE.md
+   Status: ⬚ Pending
+   Score: N/A
+   Next: Run @implement-prd F03
+
+─────────────────────────────────────────────
+\`\`\`
+
+## Next Step Logic
+
+\`\`\`typescript
+function determineNextStep(status: FullStatus): NextStepRecommendation {
+  // First, check if epistemic validation tasks need attention
+  if (status.epistemic.validationTasks.length > 0) {
+    return {
+      command: '@status --epistemic',
+      reason: 'Epistemic validation tasks pending. Complete before deployment.',
+      unlocks: ['Safe deployment'],
+      priority: 'high',
+    };
+  }
+  
+  // Check for critical uncertainties
+  if (status.epistemic.criticalUncertainties.length > 0) {
+    return {
+      command: '@holes',
+      reason: 'Critical uncertainties detected. Resolve before proceeding.',
+      unlocks: ['Confidence > 90%'],
+      priority: 'high',
+    };
+  }
+  
+  // Find first incomplete required step
+  for (const step of status.steps) {
+    if (step.required && step.status !== 'complete') {
+      return {
+        command: getStepCommand(step.step),
+        reason: getStepReason(step),
+        unlocks: getUnlockedSteps(step.step),
+      };
+    }
+  }
+  
+  // If all steps complete, check PRDs
+  if (status.prds.pending > 0) {
+    const nextPRD = getNextPendingPRD(status.prds);
+    return {
+      command: \`@implement-prd \${nextPRD}\`,
+      reason: 'All documentation complete. Start implementing features.',
+      unlocks: ['Production deployment'],
+    };
+  }
+  
+  // All done!
+  return {
+    command: '@ship-check',
+    reason: 'All steps and PRDs complete. Ready for deployment!',
+    unlocks: ['Production'],
+  };
+}
+\`\`\`
+
+## Swarm Status Display Logic
+
+\`\`\`typescript
+async function renderSwarmStatus(prds: PRDStatusSummary): Promise<string> {
+  const swarms = prds.swarms;
+  
+  if (!swarms.hasSwarms) {
+    return \`
+SWARM STATUS
+─────────────────────────────────────────────
+PRDs not organized into swarms.
+Run: @prd-orchestrate to organize for parallel implementation
+─────────────────────────────────────────────\`;
+  }
+  
+  let output = \`
+SWARM STATUS
+─────────────────────────────────────────────
+| Swarm     | PRDs | Complete | In Prog | Pending |
+|-----------|------|----------|---------|---------|
+\`;
+  
+  let totalComplete = 0;
+  let totalPrds = 0;
+  
+  for (const swarm of swarms.swarms) {
+    const pct = swarm.total > 0 
+      ? Math.round((swarm.complete / swarm.total) * 100) 
+      : 0;
+    output += \`| \${swarm.name.padEnd(9)} | \${String(swarm.total).padEnd(4)} | \${String(swarm.complete).padEnd(3)}(\${pct}%)  | \${String(swarm.inProgress).padEnd(7)} | \${String(swarm.pending).padEnd(7)} |
+\`;
+    totalComplete += swarm.complete;
+    totalPrds += swarm.total;
+  }
+  
+  const overallPct = totalPrds > 0 
+    ? Math.round((totalComplete / totalPrds) * 100) 
+    : 0;
+  
+  output += \`─────────────────────────────────────────────
+Overall: \${totalComplete}/\${totalPrds} complete (\${overallPct}%)
+
+Quick Commands:
+  @implement-prd --swarm=1    # Work on swarm-1
+  @prd-orchestrate --status   # Detailed swarm status
+─────────────────────────────────────────────\`;
+  
+  return output;
+}
+\`\`\`
+
+## Epistemic Status Display Logic
+
+\`\`\`typescript
+async function renderEpistemicStatus(epistemic: EpistemicStatus): Promise<string> {
+  let output = \`
+EPISTEMIC CONFIDENCE
+─────────────────────────────────────────────\`;
+  
+  // Recent confidence
+  if (epistemic.recentConfidence !== null) {
+    const icon = epistemic.recentConfidence >= 90 ? '✅' 
+               : epistemic.recentConfidence >= 80 ? '⚠️' 
+               : '⛔';
+    output += \`
+Recent Confidence: \${epistemic.recentConfidence}% \${icon}\`;
+  } else {
+    output += \`
+Recent Confidence: No recent data\`;
+  }
+  
+  // Gap score
+  if (epistemic.gapScore !== null) {
+    output += \`
+Gap Score:         \${epistemic.gapScore}%\`;
+  }
+  
+  // Overrides
+  output += \`
+Overrides:         \${epistemic.overrides.length} \${epistemic.overrides.length > 0 ? '(see RISK-ACCEPTANCE.md)' : ''}\`;
+  
+  // Validation tasks
+  output += \`
+Validation Tasks:  \${epistemic.validationTasks.length} pending\`;
+  
+  // Critical uncertainties
+  if (epistemic.criticalUncertainties.length > 0) {
+    output += \`
+
+⚠️  Critical Uncertainties:\`;
+    for (const uncertainty of epistemic.criticalUncertainties.slice(0, 3)) {
+      output += \`
+  • \${uncertainty}\`;
+    }
+    if (epistemic.criticalUncertainties.length > 3) {
+      output += \`
+  • ... and \${epistemic.criticalUncertainties.length - 3} more\`;
+    }
+  }
+  
+  // Recent overrides
+  if (epistemic.overrides.length > 0) {
+    output += \`
+
+Recent Overrides:\`;
+    for (const override of epistemic.overrides.slice(-3)) {
+      output += \`
+  • \${override.command} (\${override.confidence}%) - \${override.timestamp.split('T')[0]}\`;
+    }
+  }
+  
+  output += \`
+─────────────────────────────────────────────\`;
+  
+  return output;
+}
+\`\`\`
+
+</goal>
+
+---
+
+## 📊 Status Icons
+
+| Icon | Meaning |
+|------|---------|
+| ✅ | Complete (all files + gates) |
+| ⚠️ | Partial Gates (core files exist, bulletproof gates missing) |
+| ⏳ | In Progress / Partial |
+| ⬚ | Not Started |
+| ❌ | Missing (Required) |
+| ⏭️ | Skipped (Conditional not triggered, e.g., "Not monetized") |
+| 💡 | Optional / Recommended |
+
+---
+
+## 🔗 Related Commands
+
+- \`@retrofit-analyze\` - Analyze existing codebase
+- \`@validate-methodology\` - Detailed compliance check
+- \`@analyze\` - Full codebase health report
+- \`@step-verify --step=N\` - Deep gap analysis with 100-point scoring
+- \`@step-verify --step=N --fix\` - Auto-fill missing items
+- \`@holes\` - Pre-implementation gap analysis (feeds Gap Score into Epistemic Confidence)
+- \`@gap-analysis\` - Post-implementation gap analysis with auto-fix (Tier 2 Epistemic Confidence)
+- \`@prd-orchestrate\` - Organize PRDs into swarms for parallel terminal implementation
+- \`@implement-prd --swarm=N\` - Implement all PRDs in a specific swarm
+
+### @status vs @step-verify
+
+| Aspect | @status | @step-verify |
+|--------|---------|--------------|
+| **Speed** | Instant overview | Detailed analysis |
+| **Depth** | File existence check | 100-point scoring (5 categories) |
+| **Scope** | All steps at once | Single step or range |
+| **Output** | Progress bars, % complete | Scores, gaps, fix recommendations |
+| **Fix** | Suggests next step | Auto-fixes gaps (\`--fix\` flag) |
+
+**Use @status for:** Quick progress check, "what step am I on?"  
+**Use @step-verify for:** Deep analysis, ensure step is 100% complete before proceeding
+
+---
+
+*Quick SSS workflow status at a glance*
+

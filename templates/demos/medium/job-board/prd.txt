@@ -1,0 +1,332 @@
+# Product Requirements Document: JobHub
+## Niche Job Board Platform
+
+### 1. Executive Summary
+
+JobHub is a specialized job board platform that connects employers with job seekers in a specific industry or niche. Features job posting, applicant tracking, and job search with filters.
+
+### 2. Problem Statement
+
+Generic job boards are overcrowded and impersonal. Niche communities need dedicated job boards where employers can reach qualified candidates and job seekers find relevant opportunities without noise.
+
+### 3. Target Users
+
+**Employers**: Companies hiring in the niche
+**Job Seekers**: Professionals looking for jobs in the niche
+**Admin**: Platform operators
+
+### 4. Core Features
+
+#### 4.1 Public Job Listings
+- Browse all active jobs
+- Filter by:
+  - Category/department
+  - Location type (remote, on-site, hybrid)
+  - Experience level (entry, mid, senior)
+  - Salary range
+  - Posted date
+- Full-text search
+- Sort by: newest, salary, relevance
+- Pagination
+
+#### 4.2 Job Detail Page
+- Job title and company
+- Company logo
+- Location and type
+- Salary range
+- Full description (markdown)
+- Requirements list
+- Benefits list
+- How to apply
+- Posted date
+- Apply button
+
+#### 4.3 Employer Features
+- Sign up as employer
+- Company profile:
+  - Name, logo, website
+  - Description
+  - Size, industry
+- Post new job:
+  - Title, category, type
+  - Location (city or remote)
+  - Salary range (optional)
+  - Description (rich text)
+  - Requirements
+  - Benefits
+  - Application method (email, URL, or in-app)
+- Manage posted jobs (edit, close, delete)
+- View applicants per job
+- Mark applicants (reviewed, interviewed, rejected, hired)
+
+#### 4.4 Job Seeker Features
+- Sign up as job seeker
+- Profile:
+  - Name, email
+  - Resume upload
+  - LinkedIn URL
+  - Bio
+- Apply to jobs (in-app)
+- Track applications
+- Save jobs for later
+- Job alerts (optional)
+
+#### 4.5 Admin Dashboard
+- Review pending jobs (if moderation enabled)
+- Approve/reject postings
+- Manage categories
+- Feature/sponsor jobs
+- User management
+- Basic analytics
+
+### 5. Technical Requirements
+
+#### 5.1 Frontend
+- Next.js 14+ with App Router
+- TailwindCSS + shadcn/ui
+- React Hook Form + Zod
+- Tiptap or similar for rich text
+
+#### 5.2 Backend
+- Supabase Auth (with roles)
+- Supabase Database (PostgreSQL)
+- Supabase Storage (logos, resumes)
+- Full-text search (Supabase or Algolia)
+
+#### 5.3 Database Schema
+
+```sql
+-- User roles
+profiles (
+  id uuid PRIMARY KEY REFERENCES auth.users,
+  role text NOT NULL DEFAULT 'seeker', -- 'seeker', 'employer', 'admin'
+  email text NOT NULL,
+  created_at timestamptz DEFAULT now()
+)
+
+-- Companies (for employers)
+companies (
+  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id uuid REFERENCES profiles(id) ON DELETE CASCADE,
+  name text NOT NULL,
+  slug text UNIQUE NOT NULL,
+  logo_url text,
+  website text,
+  description text,
+  size text, -- '1-10', '11-50', '51-200', '201-500', '500+'
+  industry text,
+  location text,
+  is_verified boolean DEFAULT false,
+  created_at timestamptz DEFAULT now()
+)
+
+-- Job postings
+jobs (
+  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  company_id uuid REFERENCES companies(id) ON DELETE CASCADE,
+  title text NOT NULL,
+  slug text NOT NULL,
+  category text NOT NULL,
+  type text NOT NULL, -- 'full-time', 'part-time', 'contract', 'internship'
+  location_type text NOT NULL, -- 'remote', 'on-site', 'hybrid'
+  location text, -- City/country if on-site/hybrid
+  salary_min integer,
+  salary_max integer,
+  salary_currency text DEFAULT 'USD',
+  experience_level text, -- 'entry', 'mid', 'senior', 'lead'
+  description text NOT NULL,
+  requirements text[],
+  benefits text[],
+  apply_method text NOT NULL, -- 'email', 'url', 'internal'
+  apply_value text, -- email address or URL
+  status text DEFAULT 'pending', -- 'pending', 'active', 'closed', 'rejected'
+  is_featured boolean DEFAULT false,
+  views integer DEFAULT 0,
+  expires_at timestamptz,
+  published_at timestamptz,
+  created_at timestamptz DEFAULT now(),
+  UNIQUE(company_id, slug)
+)
+
+-- Job seeker profiles
+seeker_profiles (
+  id uuid PRIMARY KEY REFERENCES profiles(id) ON DELETE CASCADE,
+  full_name text,
+  headline text,
+  bio text,
+  resume_url text,
+  linkedin_url text,
+  portfolio_url text,
+  location text,
+  is_open_to_work boolean DEFAULT true,
+  created_at timestamptz DEFAULT now()
+)
+
+-- Applications
+applications (
+  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  job_id uuid REFERENCES jobs(id) ON DELETE CASCADE,
+  seeker_id uuid REFERENCES seeker_profiles(id) ON DELETE CASCADE,
+  cover_letter text,
+  resume_url text, -- Override profile resume
+  status text DEFAULT 'pending', -- 'pending', 'reviewed', 'interviewed', 'rejected', 'hired'
+  notes text, -- Employer notes
+  created_at timestamptz DEFAULT now(),
+  UNIQUE(job_id, seeker_id)
+)
+
+-- Saved jobs
+saved_jobs (
+  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  seeker_id uuid REFERENCES seeker_profiles(id) ON DELETE CASCADE,
+  job_id uuid REFERENCES jobs(id) ON DELETE CASCADE,
+  created_at timestamptz DEFAULT now(),
+  UNIQUE(seeker_id, job_id)
+)
+
+-- Categories (for admin management)
+categories (
+  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  name text UNIQUE NOT NULL,
+  slug text UNIQUE NOT NULL,
+  description text,
+  job_count integer DEFAULT 0,
+  created_at timestamptz DEFAULT now()
+)
+```
+
+### 6. User Flows
+
+#### 6.1 Employer Posts Job
+1. Sign up as employer
+2. Create company profile
+3. Click "Post Job"
+4. Fill job details
+5. Submit for review (or auto-publish)
+6. Job appears in listings
+
+#### 6.2 Job Seeker Applies
+1. Browse/search jobs
+2. Click job to view details
+3. Click "Apply"
+4. Upload resume (or use profile)
+5. Add cover letter (optional)
+6. Submit application
+7. Track in dashboard
+
+#### 6.3 Employer Reviews Applications
+1. View job's applicants
+2. Click applicant to see details
+3. Download resume
+4. Change status (reviewed, interviewed, etc.)
+5. Add notes
+
+### 7. Design Requirements
+
+#### Job Listing Card
+```
+┌─────────────────────────────────────────┐
+│  [Logo]  Software Engineer              │
+│          Acme Corp                      │
+│          San Francisco · Remote OK      │
+│                                         │
+│  $120k - $180k  ·  Full-time  ·  Senior│
+│                                         │
+│  React · TypeScript · Node.js           │
+│                                         │
+│  Posted 2 days ago      [Save] [Apply]  │
+└─────────────────────────────────────────┘
+```
+
+#### Job Detail Page
+```
+┌─────────────────────────────────────────────────┐
+│  [Logo]  Senior Software Engineer              │
+│          Acme Corp · San Francisco             │
+│                                                 │
+│  💰 $120k - $180k    🏢 Remote OK              │
+│  📅 Full-time        ⏰ Posted 2 days ago      │
+│                                                 │
+│  [Apply Now]                    [Save Job]     │
+├─────────────────────────────────────────────────┤
+│  About this role                               │
+│  We're looking for a senior engineer to...     │
+│                                                 │
+│  Requirements                                   │
+│  • 5+ years experience                         │
+│  • React and TypeScript                        │
+│  • ...                                         │
+│                                                 │
+│  Benefits                                       │
+│  • Competitive salary                          │
+│  • Remote work                                 │
+│  • ...                                         │
+├─────────────────────────────────────────────────┤
+│  About Acme Corp                               │
+│  [Logo] Building the future of...              │
+│  🔗 acme.com  ·  51-200 employees             │
+└─────────────────────────────────────────────────┘
+```
+
+### 8. Search Implementation
+
+Using Supabase full-text search:
+
+```sql
+-- Add search column
+ALTER TABLE jobs ADD COLUMN search_vector tsvector;
+
+-- Create index
+CREATE INDEX jobs_search_idx ON jobs USING GIN(search_vector);
+
+-- Update trigger
+CREATE OR REPLACE FUNCTION jobs_search_update() RETURNS trigger AS $$
+BEGIN
+  NEW.search_vector :=
+    setweight(to_tsvector('english', COALESCE(NEW.title, '')), 'A') ||
+    setweight(to_tsvector('english', COALESCE(NEW.description, '')), 'B') ||
+    setweight(to_tsvector('english', array_to_string(COALESCE(NEW.requirements, '{}'), ' ')), 'C');
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER jobs_search_trigger
+BEFORE INSERT OR UPDATE ON jobs
+FOR EACH ROW EXECUTE FUNCTION jobs_search_update();
+```
+
+### 9. Non-Functional Requirements
+
+- Job listings load in < 2 seconds
+- Search returns in < 1 second
+- Support 10,000+ active jobs
+- SEO-optimized job pages
+
+### 10. Out of Scope (V1)
+
+- Paid job postings/subscriptions
+- Resume parsing
+- AI matching
+- Messaging between employers/seekers
+- Video interviews
+- Background checks
+- ATS integrations
+
+### 11. Success Criteria
+
+- Employer posts job in < 5 minutes
+- Job seeker applies in < 2 minutes
+- Search results relevant and fast
+
+### 12. Timeline
+
+**Medium Demo Build**: 1-2 days (10-14 hours)
+- Hours 1-2: Auth + Role setup
+- Hours 3-4: Company + Job models
+- Hours 5-6: Job listing + detail pages
+- Hours 7-8: Search + filters
+- Hours 9-10: Application flow
+- Hours 11-12: Employer dashboard
+- Hours 13-14: Polish + admin
+
+

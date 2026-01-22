@@ -1,0 +1,424 @@
+# Product Requirements Document: FitCoach
+## Personal Training & Fitness Coaching Platform
+
+### 1. Executive Summary
+
+FitCoach is a fitness coaching platform that enables personal trainers to manage clients, create workout programs, and track client progress. Trainers can build their online coaching business while clients get a personalized fitness experience.
+
+### 2. Problem Statement
+
+Personal trainers need a professional way to manage remote clients, deliver workout programs, and track progress. Spreadsheets and WhatsApp don't scale. They need a dedicated platform that impresses clients and saves time.
+
+### 3. Target Users
+
+**Trainers**: Personal trainers, fitness coaches, strength coaches
+**Clients**: People working with trainers for fitness goals
+
+### 4. Core Features
+
+#### 4.1 Trainer Onboarding
+- Sign up with email
+- Profile setup:
+  - Name, photo
+  - Bio and specialties
+  - Certifications
+  - Social links
+- Unique profile URL
+
+#### 4.2 Client Management
+- Invite clients via email
+- Client profile:
+  - Basic info
+  - Goals (weight loss, muscle gain, etc.)
+  - Starting measurements
+  - Health notes
+- Client list with status
+- Active/inactive toggle
+
+#### 4.3 Exercise Library
+- Pre-built exercise database (100+)
+- Each exercise:
+  - Name
+  - Target muscle groups
+  - Equipment needed
+  - Video/GIF demonstration
+  - Instructions
+- Add custom exercises
+- Search and filter
+
+#### 4.4 Workout Builder
+- Create workout templates
+- Add exercises with:
+  - Sets and reps (or time)
+  - Rest periods
+  - Notes
+- Superset/circuit support
+- Reorder exercises
+- Save as template
+
+#### 4.5 Program Creation
+- Multi-week programs
+- Assign workouts to days
+- Week templates
+- Program description and goals
+- Difficulty level
+
+#### 4.6 Client Assignment
+- Assign program to client
+- Set start date
+- Customize for client
+- Client notified
+
+#### 4.7 Progress Tracking
+- Weight logging (client)
+- Body measurements (client)
+- Progress photos (client)
+- Workout completion
+- Personal records
+- Charts over time
+
+#### 4.8 Client Portal
+- Dashboard with today's workout
+- View assigned program
+- Log workout completion
+- Record weights used
+- Log bodyweight/measurements
+- Message trainer
+- View progress history
+
+#### 4.9 Messaging
+- In-app chat per client
+- Workout-specific feedback
+- Push notifications
+- Read receipts
+
+#### 4.10 Trainer Analytics
+- Total active clients
+- Client retention
+- Workout completion rates
+- Revenue (if payments enabled)
+
+### 5. Technical Requirements
+
+#### 5.1 Frontend
+- Next.js 14+ with App Router
+- TailwindCSS + shadcn/ui
+- React Hook Form + Zod
+- Recharts (progress charts)
+- Date-fns (date handling)
+- React Query (data fetching)
+
+#### 5.2 Backend
+- Supabase Auth
+- Supabase Database (PostgreSQL)
+- Supabase Storage (images, videos)
+- Supabase Realtime (messaging)
+- Resend (email invites)
+
+#### 5.3 Database Schema
+
+```sql
+-- Trainers
+trainers (
+  id uuid PRIMARY KEY REFERENCES auth.users,
+  email text NOT NULL,
+  name text NOT NULL,
+  slug text UNIQUE NOT NULL,
+  avatar_url text,
+  bio text,
+  specialties text[],
+  certifications text[],
+  instagram_url text,
+  website_url text,
+  is_accepting_clients boolean DEFAULT true,
+  created_at timestamptz DEFAULT now()
+)
+
+-- Clients
+clients (
+  id uuid PRIMARY KEY REFERENCES auth.users,
+  trainer_id uuid REFERENCES trainers(id),
+  email text NOT NULL,
+  name text NOT NULL,
+  avatar_url text,
+  date_of_birth date,
+  gender text,
+  height_cm integer,
+  goals text[],
+  health_notes text,
+  status text DEFAULT 'active', -- 'invited', 'active', 'inactive'
+  invited_at timestamptz,
+  joined_at timestamptz,
+  created_at timestamptz DEFAULT now()
+)
+
+-- Exercises (library)
+exercises (
+  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  trainer_id uuid REFERENCES trainers(id), -- NULL for global
+  name text NOT NULL,
+  description text,
+  instructions text,
+  muscle_groups text[] NOT NULL,
+  equipment text[],
+  video_url text,
+  image_url text,
+  is_global boolean DEFAULT false,
+  created_at timestamptz DEFAULT now()
+)
+
+-- Workout templates
+workouts (
+  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  trainer_id uuid REFERENCES trainers(id) ON DELETE CASCADE,
+  name text NOT NULL,
+  description text,
+  difficulty text, -- 'beginner', 'intermediate', 'advanced'
+  duration_minutes integer,
+  is_template boolean DEFAULT true,
+  created_at timestamptz DEFAULT now()
+)
+
+-- Workout exercises (junction)
+workout_exercises (
+  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  workout_id uuid REFERENCES workouts(id) ON DELETE CASCADE,
+  exercise_id uuid REFERENCES exercises(id),
+  position integer NOT NULL,
+  sets integer,
+  reps text, -- "8-12" or "30 sec"
+  rest_seconds integer,
+  notes text,
+  superset_group integer, -- For supersets
+  created_at timestamptz DEFAULT now()
+)
+
+-- Programs (multi-week)
+programs (
+  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  trainer_id uuid REFERENCES trainers(id) ON DELETE CASCADE,
+  name text NOT NULL,
+  description text,
+  duration_weeks integer NOT NULL,
+  difficulty text,
+  goal text,
+  is_template boolean DEFAULT true,
+  created_at timestamptz DEFAULT now()
+)
+
+-- Program schedule (which workouts on which days)
+program_schedule (
+  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  program_id uuid REFERENCES programs(id) ON DELETE CASCADE,
+  workout_id uuid REFERENCES workouts(id),
+  week_number integer NOT NULL,
+  day_of_week integer NOT NULL, -- 0-6
+  created_at timestamptz DEFAULT now()
+)
+
+-- Client program assignments
+client_programs (
+  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  client_id uuid REFERENCES clients(id) ON DELETE CASCADE,
+  program_id uuid REFERENCES programs(id),
+  start_date date NOT NULL,
+  end_date date,
+  status text DEFAULT 'active', -- 'active', 'completed', 'paused'
+  created_at timestamptz DEFAULT now()
+)
+
+-- Workout logs (client completion)
+workout_logs (
+  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  client_id uuid REFERENCES clients(id) ON DELETE CASCADE,
+  workout_id uuid REFERENCES workouts(id),
+  completed_at timestamptz DEFAULT now(),
+  duration_minutes integer,
+  notes text,
+  rating integer, -- 1-5
+  created_at timestamptz DEFAULT now()
+)
+
+-- Exercise logs (weights used)
+exercise_logs (
+  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  workout_log_id uuid REFERENCES workout_logs(id) ON DELETE CASCADE,
+  exercise_id uuid REFERENCES exercises(id),
+  sets_completed integer,
+  reps_completed text, -- "12,10,8"
+  weight_used text, -- "100,105,110" (lbs/kg)
+  notes text,
+  created_at timestamptz DEFAULT now()
+)
+
+-- Body measurements
+measurements (
+  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  client_id uuid REFERENCES clients(id) ON DELETE CASCADE,
+  date date NOT NULL,
+  weight_kg decimal(5,2),
+  body_fat_percent decimal(4,1),
+  chest_cm decimal(5,1),
+  waist_cm decimal(5,1),
+  hips_cm decimal(5,1),
+  bicep_cm decimal(5,1),
+  thigh_cm decimal(5,1),
+  notes text,
+  created_at timestamptz DEFAULT now()
+)
+
+-- Progress photos
+progress_photos (
+  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  client_id uuid REFERENCES clients(id) ON DELETE CASCADE,
+  date date NOT NULL,
+  photo_url text NOT NULL,
+  type text, -- 'front', 'side', 'back'
+  notes text,
+  created_at timestamptz DEFAULT now()
+)
+
+-- Messages
+messages (
+  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  trainer_id uuid REFERENCES trainers(id),
+  client_id uuid REFERENCES clients(id),
+  sender_type text NOT NULL, -- 'trainer' or 'client'
+  content text NOT NULL,
+  read_at timestamptz,
+  created_at timestamptz DEFAULT now()
+)
+```
+
+### 6. User Flows
+
+#### 6.1 Trainer Sets Up
+1. Sign up
+2. Complete profile
+3. Add custom exercises (optional)
+4. Create workout templates
+5. Create program
+6. Invite first client
+
+#### 6.2 Client Joins
+1. Receive email invite
+2. Click link to sign up
+3. Complete profile
+4. Set goals and measurements
+5. See assigned program
+
+#### 6.3 Client Does Workout
+1. Open app/dashboard
+2. See today's workout
+3. Start workout
+4. Log each exercise
+5. Complete and rate
+6. Trainer notified
+
+#### 6.4 Trainer Reviews
+1. See client activity
+2. Review workout logs
+3. Send feedback message
+4. Track progress charts
+
+### 7. Design Requirements
+
+#### Trainer Dashboard
+```
+┌─────────────────────────────────────────────────────────┐
+│  FitCoach                              [+ New Client]   │
+├─────────────────────────────────────────────────────────┤
+│  Welcome back, Coach Mike!                              │
+│                                                         │
+│  ┌──────────┐ ┌──────────┐ ┌──────────┐ ┌──────────┐  │
+│  │ 12       │ │ 8        │ │ 87%      │ │ 24       │  │
+│  │ Clients  │ │ Active   │ │ Complete │ │ Workouts │  │
+│  └──────────┘ └──────────┘ └──────────┘ └──────────┘  │
+├─────────────────────────────────────────────────────────┤
+│  Recent Activity                                        │
+│  ○ Sarah completed "Leg Day" - 2 hours ago             │
+│  ○ Mike logged weight: 185 lbs - 5 hours ago          │
+│  ○ New message from Jessica - 1 day ago               │
+├─────────────────────────────────────────────────────────┤
+│  Clients                                    [View All]  │
+│  ┌─────────────────────────────────────────────────┐   │
+│  │ [Avatar] Sarah M.       Week 6/12   ████░░ 87%  │   │
+│  │ [Avatar] Mike T.        Week 3/8    ███░░░ 65%  │   │
+│  │ [Avatar] Jessica R.     Week 1/12   █░░░░░ 100% │   │
+│  └─────────────────────────────────────────────────┘   │
+└─────────────────────────────────────────────────────────┘
+```
+
+#### Client Workout View
+```
+┌─────────────────────────────────────────────────────────┐
+│  Today's Workout                                        │
+│  Push Day - Week 3, Day 1                               │
+├─────────────────────────────────────────────────────────┤
+│  1. Bench Press                                         │
+│     4 sets × 8-10 reps                                  │
+│     Rest: 90 sec                                        │
+│     [Video]                                             │
+│     ┌───┬───┬───┬───┐                                  │
+│     │Set│Rep│Wt │ ✓ │                                  │
+│     ├───┼───┼───┼───┤                                  │
+│     │ 1 │ 10│135│ ✅│                                  │
+│     │ 2 │ 9 │145│ ✅│                                  │
+│     │ 3 │ 8 │155│   │                                  │
+│     │ 4 │ - │ - │   │                                  │
+│     └───┴───┴───┴───┘                                  │
+├─────────────────────────────────────────────────────────┤
+│  2. Incline Dumbbell Press                              │
+│     3 sets × 10-12 reps                                 │
+│     ...                                                 │
+├─────────────────────────────────────────────────────────┤
+│  [Complete Workout]                                     │
+└─────────────────────────────────────────────────────────┘
+```
+
+### 8. Exercise Library Seed Data
+
+Include 100+ common exercises:
+- **Chest**: Bench press, push-ups, cable fly...
+- **Back**: Pull-ups, rows, lat pulldown...
+- **Legs**: Squats, lunges, leg press...
+- **Shoulders**: Overhead press, lateral raises...
+- **Arms**: Curls, tricep dips, skull crushers...
+- **Core**: Planks, crunches, leg raises...
+- **Cardio**: Running, cycling, rowing...
+
+### 9. Non-Functional Requirements
+
+- Dashboard loads < 2 seconds
+- Workout sync across devices
+- Offline workout logging (PWA)
+- Progress photos stored securely
+- HIPAA consideration for health data
+
+### 10. Out of Scope (V1)
+
+- Payment processing
+- Live video coaching
+- Nutrition tracking
+- Meal planning
+- Wearable integration
+- Group training
+- Marketplace for trainers
+- White-label solution
+
+### 11. Success Criteria
+
+- Trainer creates program in < 30 minutes
+- Client completes workout flow in < 15 minutes
+- Progress visible in clear charts
+
+### 12. Timeline
+
+**Full Demo Build**: 1 week+ (40+ hours)
+- Days 1-2: Auth, profiles, exercise library
+- Days 3-4: Workout/program builder
+- Days 5-6: Client portal, workout logging
+- Days 7-8: Progress tracking, charts
+- Days 9-10: Messaging, polish, testing
+
+

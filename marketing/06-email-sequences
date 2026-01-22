@@ -138,6 +138,62 @@ docs/marketing/emails/
 
 ---
 
+## 🎯 Persuasion Psychology for Email (MANDATORY)
+
+### Commitment Ladder (Small Yes → Big Yes)
+
+**From "Yes! 50 Ways":** Getting someone to agree to a small request dramatically increases compliance with larger requests.
+
+**Apply to Email Sequences:**
+
+| Email | Commitment Level | Ask | Example |
+|-------|------------------|-----|---------|
+| 1 | Micro | Open email, click link | "Click to confirm your spot" |
+| 2 | Small | Reply with one word | "Reply YES if you want the bonus" |
+| 3 | Medium | Complete quick action | "Take this 2-minute quiz" |
+| 4 | Medium | Share preference | "Which problem is bigger: A or B?" |
+| 5-6 | Large | Consider offer | "Here's what we offer..." |
+| 7 | Conversion | Purchase/Sign up | "Get started now" |
+
+**Implementation Rule:** Never jump to a big ask without warming up with smaller commitments first.
+
+---
+
+### Loss Framing for Email (2x More Powerful)
+
+**From "Yes! 50 Ways":** Loss-framed messages are approximately 2x more motivating than gain-framed messages.
+
+**Apply to Email Subject Lines:**
+
+| Gain Frame (Weaker) | Loss Frame (Stronger) |
+|---------------------|----------------------|
+| "Get more leads" | "Stop losing leads to competitors" |
+| "Save 10 hours/week" | "Stop wasting 10 hours every week" |
+| "Increase your revenue" | "Stop leaving money on the table" |
+| "Access expires soon" | "Don't lose your spot" |
+| "Bonus available" | "Don't miss your bonus" |
+
+**Loss-Framing Email Types:**
+- **Day 5 urgency email**: Frame as loss prevention ("Your discount disappears at midnight")
+- **Cart abandon**: "You'll lose your 20% discount"
+- **Re-engagement**: "You're about to lose access to..."
+
+---
+
+### Five Drivers Email Mapping (Blair Warren)
+
+Map each driver to specific emails in your sequence:
+
+| Driver | Email Type | Example Subject Line |
+|--------|-----------|---------------------|
+| **Encourage Dreams** | Welcome, Success stories | "Yes, [Name]—this IS possible for you" |
+| **Justify Failures** | Day 2-3 (The Story) | "Why nothing has worked until now (it's not your fault)" |
+| **Allay Fears** | Day 5-6 (Objection) | "Worried it won't work? Read this..." |
+| **Confirm Suspicions** | Nurture (Controversial) | "You suspected the 'gurus' were wrong. Here's proof." |
+| **Throw Rocks at Enemies** | Problem emails | "The real reason [industry] keeps failing you" |
+
+---
+
 ## 📧 Email Sequence Templates
 
 ### 1. Welcome Sequence (5-7 Emails)

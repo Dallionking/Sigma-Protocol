@@ -1,0 +1,742 @@
+---
+version: "2.0.0"
+last_updated: "2026-01-14"
+changelog:
+  - "2.0.0: Added mid-session spawning with backend detection (iTerm2 → tmux → Task), defaults to 1 stream + N forks"
+  - "1.1.0: Renamed from @sigma-orchestrate to @orchestrate for cleaner naming"
+  - "1.0.0: Initial release — Multi-agent orchestration coordinator"
+description: "Spawn and coordinate multi-agent orchestration. Can be invoked mid-session to spin up fork workers. Supports iTerm2 native tabs/panes, tmux, or Task subagents."
+allowed-tools:
+  # PRIMARY MCP Tools
+  - mcp_sequential-thinking_sequentialthinking
+  - mcp_exa_get_code_context_exa
+  - mcp_Ref_ref_search_documentation
+  
+  # BACKUP MCP Tools
+  - mcp_perplexity-ask_perplexity_ask
+  
+  # FILE TOOLS
+  - read_file
+  - write
+  - search_replace
+  - list_dir
+  - glob_file_search
+  - grep
+  - run_terminal_cmd
+  - todo_write
+parameters:
+  - --streams
+  - --forks
+  - --mode
+  - --backend
+  - --prd-file
+  - --prd
+  - --notify-on
+  - --auto-merge
+  - --quick
+---
+
+# @orchestrate — Multi-Agent Orchestration
+
+**Mission:** Spawn and coordinate multiple Claude Code agents working in parallel. Can be invoked mid-session to quickly spin up fork workers for a task.
+
+> **v2.0:** Now supports mid-session spawning with automatic backend detection (iTerm2 → tmux → Task subagents).
+
+---
+
+## 🚀 Quick Start (Mid-Session)
+
+Invoke this command when you want to parallelize work:
+
+```bash
+# Quick: Spawn 3 forks for current task (defaults to 1 stream + 3 forks)
+@orchestrate --quick=3
+
+# Spawn forks for a specific PRD
+@orchestrate --prd=user-auth --forks=2
+
+# Full orchestration with multiple streams
+@orchestrate --streams=2 --forks=2
+
+# Specify backend explicitly
+@orchestrate --backend=iterm --forks=3
+```
+
+### Mid-Session Defaults
+
+When invoked mid-session, `/orchestrate` defaults to:
+- **1 stream** (your current context becomes the PRD)
+- **N forks** as specified
+- **Backend auto-detection**: iTerm2 → tmux → Task subagents
+
+---
+
+## 🎯 Backend Selection (macOS)
+
+The command auto-detects the best available backend:
+
+| Priority | Backend | Description |
+|----------|---------|-------------|
+| 1 | **iTerm2** | Native tabs for streams, split panes for forks |
+| 2 | **tmux** | Terminal multiplexer with windows and panes |
+| 3 | **Task** | In-process subagents (no new terminals) |
+
+Override with `--backend=iterm|tmux|task`
+
+---
+
+## 📋 Command Usage
+
+```bash
+# Interactive (asks questions)
+@orchestrate
+
+# Quick spawn (1 stream + N forks for current context)
+@orchestrate --quick=3
+
+# Specify a PRD to implement in parallel
+@orchestrate --prd=payment-integration --forks=3
+
+# Full orchestration setup
+@orchestrate --streams=2 --forks=2 --prd-file=docs/prds/SWARM-PLAN.md
+
+# Explicit backend
+@orchestrate --backend=iterm --streams=1 --forks=4
+
+# Set orchestration mode
+@orchestrate --mode=semi-auto
+```
+
+### Parameters
+
+| Parameter | Values | Default | Description |
+|-----------|--------|---------|-------------|
+| `--quick` | 1-8 | - | Quick spawn N forks (1 stream, current context) |
+| `--streams` | 1-8 | 1 | Number of streams (tabs in iTerm2) |
+| `--forks` | 1-8 | 2 | Number of forks per stream (panes in iTerm2) |
+| `--backend` | `iterm`, `tmux`, `task` | auto-detect | Terminal backend |
+| `--prd` | string | - | Single PRD to implement |
+| `--prd-file` | path | `.sigma/orchestration/streams.json` | PRD assignments file |
+| `--mode` | `full-auto`, `semi-auto`, `manual` | `semi-auto` | Orchestration mode |
+| `--notify-on` | events | `prd_complete,blocked` | Events for voice notifications |
+| `--auto-merge` | boolean | `false` | Auto-merge when all complete |
+
+---
+
+## ⚡ Interactive Flow (Default)
+
+When invoked without parameters, the command asks:
+
+```
+🎯 SIGMA ORCHESTRATION SETUP
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+What do you want to orchestrate?
+
+1. Quick spawn forks for current task (1 stream + N forks)
+2. Set up full orchestration (multiple streams)
+
+> Choice: 1
+
+How many forks? (2-8): 3
+
+Detected backend: iTerm2
+
+Spawning 1 stream with 3 forks in iTerm2...
+✅ Created 1 tab with 3 panes
+
+Fork workers are ready. They will:
+- Read their CLAUDE.md for instructions
+- Implement in parallel
+- Auto-report completion via hooks
+
+You are now the orchestrator. Check inbox for updates.
+```
+
+---
+
+## 🎯 Role Definition
+
+You are the **ORCHESTRATOR** — the central coordinator in a multi-agent system. Your responsibilities:
+
+1. **Spawn workers** if not already running (using detected backend)
+2. **Assign PRDs** to stream workers based on the configuration
+3. **Monitor progress** via inbox messages from streams
+4. **Run verification** (@gap-analysis) on completed stories
+5. **Control flow** — tell streams to continue or wait
+6. **Voice notify** the user on important events
+7. **Pause for approval** when PRDs complete
+8. **Track progress** in `.sigma/orchestration/progress.json`
+
+### Skills to Use
+
+- **@orchestrator-admin** - Your primary workflow skill
+- **@gap-analysis** - Review fork completions
+- **@senior-architect** - Technical arbitration between implementations
+
+### Hooks Installed
+
+Your Stop hook (`.claude/hooks/orchestrator-stop.sh`) automatically:
+- Polls inbox for new messages after each response
+- Suggests gap-analysis when forks report completion
+- Cleans up inbox when it exceeds 50 messages
+
+---
+
+### Orchestration Modes
+
+| Mode | Stories | PRDs | Description |
+|------|---------|------|-------------|
+| `full-auto` | Auto-continue | Auto-continue | Fully autonomous, no pauses |
+| `semi-auto` | Auto-continue | Pause for approval | **RECOMMENDED** - Stories flow, PRDs need human OK |
+| `manual` | Pause for approval | Pause for approval | Full human control |
+
+---
+
+## ⚡ Spawn Flow (New in v2.0)
+
+When invoked mid-session with `--quick` or `--forks`:
+
+```typescript
+async function spawnOrchestration(params): Promise<void> {
+  // 1. Detect backend
+  const backend = params.backend || detectBackend();
+  // Order: iTerm2 → tmux → Task subagents
+  
+  console.log(`Backend: ${backend}`);
+  
+  // 2. Determine configuration
+  const streams = params.streams || 1;  // Default: 1 stream for mid-session
+  const forks = params.forks || params.quick || 2;
+  const prd = params.prd || 'current-context';
+  
+  // 3. Spawn based on backend
+  switch (backend) {
+    case 'iterm':
+      // Use iTerm2 AppleScript to create tabs + panes
+      await launchItermTabs({ streams, forks, prd });
+      break;
+      
+    case 'tmux':
+      // Use tmux windows + panes
+      await launchTmuxSession({ streams, forks, prd });
+      break;
+      
+    case 'task':
+      // Use Task subagents (in-process)
+      await launchTaskSubagents({ streams, forks, prd });
+      break;
+  }
+  
+  // 4. Install hooks in each fork
+  for (const fork of allForks) {
+    await installHooksInWorktree(fork.workdir, fork.id, projectRoot, 'fork');
+  }
+  
+  // 5. Install orchestrator hooks in current directory
+  await installHooksInWorktree(projectRoot, 'orchestrator', projectRoot, 'orchestrator');
+  
+  // 6. Create CLAUDE.md files
+  await generateClaudeMdFiles(config);
+  
+  console.log(`
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+✅ ORCHESTRATION SPAWNED
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Backend: ${backend}
+Streams: ${streams}
+Forks per stream: ${forks}
+Total agents: ${1 + streams * forks}
+
+Hooks installed:
+- Fork Stop: auto-report + heartbeat
+- Orchestrator Stop: auto-poll inbox
+
+You are now the orchestrator.
+Check your inbox for fork updates.
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  `);
+}
+
+function detectBackend(): 'iterm' | 'tmux' | 'task' {
+  // Check iTerm2 first
+  if (process.platform === 'darwin') {
+    try {
+      const result = execSync('osascript -e \'application "iTerm2" is running\'');
+      if (result.toString().trim() === 'true') return 'iterm';
+      // Check if iTerm2 is installed
+      if (fs.existsSync('/Applications/iTerm.app')) return 'iterm';
+    } catch {}
+  }
+  
+  // Check tmux
+  try {
+    execSync('which tmux');
+    return 'tmux';
+  } catch {}
+  
+  // Fallback to Task subagents
+  return 'task';
+}
+```
+
+---
+
+## ⚡ Preflight (Existing Orchestration)
+
+```typescript
+// 1. Check orchestration context
+const configPath = '.sigma/orchestration/streams.json';
+const config = await readFile(configPath).catch(() => null);
+
+if (!config) {
+  throw new Error(`
+No orchestration config found at ${configPath}
+Run spawn-streams.sh first to create the orchestration environment.
+  `);
+}
+
+// 2. Parse configuration
+const streams = JSON.parse(config);
+const streamCount = streams.streams.length;
+const projectRoot = streams.projectRoot;
+
+// 3. Check for active lock
+const lockPath = '.sigma/orchestration/active.lock';
+if (!(await fileExists(lockPath))) {
+  console.warn('No active.lock found - orchestration may not be running');
+}
+
+// 4. Display status
+console.log(`
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+🎯 SIGMA ORCHESTRATOR — COORDINATOR ACTIVE
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Session: ${streams.session}
+Streams: ${streamCount}
+Mode: ${params.mode || 'semi-auto'}
+Project: ${projectRoot}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+`);
+
+// 5. Initialize progress tracking
+const progressPath = '.sigma/orchestration/progress.json';
+let progress = await readFile(progressPath).catch(() => '{}');
+progress = JSON.parse(progress);
+
+if (!progress.started) {
+  progress = {
+    started: new Date().toISOString(),
+    streams: {},
+    completedPRDs: [],
+    currentPhase: 'initializing'
+  };
+  await write(progressPath, JSON.stringify(progress, null, 2));
+}
+```
+
+---
+
+## 🔄 Core Workflow
+
+### Phase 1: Initialize Streams
+
+```typescript
+interface StreamAssignment {
+  name: string;        // A, B, C, D
+  prds: string[];      // ["F001", "F005"]
+  worktree: string;    // "stream-a"
+  currentPRD?: string;
+  status: 'idle' | 'working' | 'awaiting_verification' | 'prd_complete' | 'blocked';
+}
+
+async function initializeStreams(config: StreamConfig): Promise<void> {
+  console.log('\n📡 Initializing stream connections...\n');
+  
+  for (const stream of config.streams) {
+    // Wait for stream registration via mcp_agent_mail
+    console.log(`Waiting for Stream ${stream.name} to register...`);
+    
+    // Send initial assignment
+    await sendMessage({
+      from: 'orchestrator',
+      to: `stream-${stream.name.toLowerCase()}`,
+      type: 'prd_assignment',
+      payload: {
+        prd: stream.prds[0],
+        worktree: stream.worktree,
+        executeOrder: getExecutionOrder(stream.prds[0])
+      }
+    });
+    
+    console.log(`✅ Stream ${stream.name} assigned: ${stream.prds[0]}`);
+  }
+  
+  updateProgress({ currentPhase: 'executing' });
+  voiceNotify('All streams initialized. Starting PRD execution.');
+}
+```
+
+### Phase 2: Monitor Progress
+
+```typescript
+async function monitorLoop(): Promise<void> {
+  console.log('\n🔄 Entering monitoring loop...\n');
+  console.log('Listening for stream messages...\n');
+  
+  while (true) {
+    // Check inbox for messages from streams
+    const messages = await checkInbox();
+    
+    for (const msg of messages) {
+      switch (msg.type) {
+        case 'story_complete':
+          await handleStoryComplete(msg);
+          break;
+          
+        case 'prd_complete':
+          await handlePRDComplete(msg);
+          break;
+          
+        case 'blocked':
+          await handleBlocked(msg);
+          break;
+          
+        case 'error':
+          await handleError(msg);
+          break;
+          
+        case 'status_update':
+          updateStreamStatus(msg.from, msg.payload.status);
+          break;
+      }
+    }
+    
+    // Check for all streams complete
+    if (allStreamsComplete()) {
+      await handleAllComplete();
+      break;
+    }
+    
+    // Brief pause before next check
+    await sleep(1000);
+  }
+}
+```
+
+### Phase 3: Handle Events
+
+```typescript
+async function handleStoryComplete(msg: AgentMessage): Promise<void> {
+  const { from, payload } = msg;
+  const { prd, story_id, story_title } = payload;
+  
+  console.log(`\n📬 Stream ${from}: Story complete - ${story_id} (${story_title})`);
+  
+  // Run quick verification
+  const verified = await runStoryVerification(story_id);
+  
+  if (verified) {
+    console.log(`✅ Story ${story_id} verified`);
+    
+    // Tell stream to continue
+    await sendMessage({
+      from: 'orchestrator',
+      to: from,
+      type: 'continue',
+      payload: { message: 'Story verified. Proceed to next.' }
+    });
+  } else {
+    console.log(`⚠️ Story ${story_id} needs fixes`);
+    
+    // Tell stream about issues
+    await sendMessage({
+      from: 'orchestrator',
+      to: from,
+      type: 'revision_needed',
+      payload: { 
+        story_id,
+        issues: verified.issues,
+        message: 'Please address these issues before continuing.'
+      }
+    });
+  }
+  
+  updateProgress({ 
+    streams: { [from]: { lastStory: story_id, status: 'working' } }
+  });
+}
+
+async function handlePRDComplete(msg: AgentMessage): Promise<void> {
+  const { from, payload } = msg;
+  const { prd } = payload;
+  const streamName = from.replace('stream-', '').toUpperCase();
+  
+  console.log(`\n🎉 Stream ${streamName}: PRD COMPLETE - ${prd}`);
+  
+  // Run full gap analysis
+  console.log(`Running @gap-analysis for ${prd}...`);
+  const gapAnalysis = await runGapAnalysis(prd);
+  
+  // Voice notify
+  voiceNotify(`Sigma! Stream ${streamName} completed ${prd}. Ready for testing.`);
+  
+  // Update progress
+  updateProgress({
+    completedPRDs: [...progress.completedPRDs, prd],
+    streams: { [from]: { currentPRD: null, status: 'prd_complete' } }
+  });
+  
+  // Check mode for next action
+  if (params.mode === 'full-auto') {
+    // Auto-assign next PRD
+    await assignNextPRD(from);
+  } else {
+    // Pause for approval (semi-auto or manual)
+    console.log(`
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+⏸️  PRD COMPLETE — AWAITING APPROVAL
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Stream: ${streamName}
+PRD: ${prd}
+
+Gap Analysis Score: ${gapAnalysis.score}%
+
+To approve and continue, say:
+  "Approved, continue"
+  
+To see details:
+  "@gap-analysis --spec=${prd}"
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    `);
+    
+    // Update stream status
+    updateStreamStatus(from, 'awaiting_approval');
+  }
+}
+
+async function handleBlocked(msg: AgentMessage): Promise<void> {
+  const { from, payload } = msg;
+  const { blockedOn, reason } = payload;
+  const streamName = from.replace('stream-', '').toUpperCase();
+  
+  console.log(`\n⚠️ Stream ${streamName} BLOCKED on ${blockedOn}`);
+  console.log(`   Reason: ${reason}`);
+  
+  // Voice notify
+  voiceNotify(`Stream ${streamName} is blocked, waiting for ${blockedOn}`);
+  
+  // Update status
+  updateStreamStatus(from, 'blocked');
+  updateProgress({
+    streams: { [from]: { status: 'blocked', blockedOn } }
+  });
+  
+  // Check if blockedOn PRD is complete
+  const blockingStream = findStreamForPRD(blockedOn);
+  if (blockingStream) {
+    console.log(`   Waiting for Stream ${blockingStream.name} to complete ${blockedOn}`);
+  }
+}
+
+async function handleAllComplete(): Promise<void> {
+  console.log(`
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+🎉 ALL STREAMS COMPLETE
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Completed PRDs:
+${progress.completedPRDs.map(p => `  ✅ ${p}`).join('\n')}
+
+Total Time: ${getElapsedTime(progress.started)}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  `);
+  
+  voiceNotify('All streams complete. Ready for final merge.');
+  
+  if (params.autoMerge) {
+    await startMergeSequence();
+  } else {
+    console.log(`
+To start the merge sequence:
+  Run: ./scripts/orchestrator/merge-streams.sh
+
+Or merge manually:
+  git checkout main
+  git merge stream-a
+  git merge stream-b
+  ...
+    `);
+  }
+}
+```
+
+### Phase 4: Approval Handling
+
+```typescript
+// This function is called when user says "Approved, continue"
+async function handleApproval(streamName: string): Promise<void> {
+  const stream = `stream-${streamName.toLowerCase()}`;
+  
+  console.log(`\n✅ Approval received for Stream ${streamName.toUpperCase()}`);
+  
+  // Find next PRD for this stream
+  const config = await loadConfig();
+  const streamConfig = config.streams.find(s => 
+    s.name.toLowerCase() === streamName.toLowerCase()
+  );
+  
+  if (!streamConfig) {
+    console.log('Stream not found');
+    return;
+  }
+  
+  // Find completed PRDs
+  const completedPRDs = progress.completedPRDs;
+  const nextPRD = streamConfig.prds.find(p => !completedPRDs.includes(p));
+  
+  if (nextPRD) {
+    // Assign next PRD
+    await sendMessage({
+      from: 'orchestrator',
+      to: stream,
+      type: 'prd_assignment',
+      payload: {
+        prd: nextPRD,
+        worktree: streamConfig.worktree
+      }
+    });
+    
+    console.log(`\n📤 Assigned next PRD to Stream ${streamName.toUpperCase()}: ${nextPRD}`);
+    voiceNotify(`Stream ${streamName} starting ${nextPRD}`);
+    
+    updateStreamStatus(stream, 'working');
+  } else {
+    console.log(`\n✅ Stream ${streamName.toUpperCase()} has completed all assigned PRDs`);
+    voiceNotify(`Stream ${streamName} has completed all assigned work`);
+    
+    updateStreamStatus(stream, 'done');
+  }
+}
+```
+
+---
+
+## 📊 Progress Tracking
+
+```json
+// .sigma/orchestration/progress.json
+{
+  "started": "2026-01-12T10:00:00Z",
+  "currentPhase": "executing",
+  "streams": {
+    "stream-a": {
+      "status": "working",
+      "currentPRD": "F001",
+      "completedStories": ["F001-001", "F001-002"],
+      "lastActivity": "2026-01-12T10:30:00Z"
+    },
+    "stream-b": {
+      "status": "prd_complete",
+      "currentPRD": null,
+      "completedPRDs": ["F002"]
+    }
+  },
+  "completedPRDs": ["F002"],
+  "blockedStreams": [],
+  "errors": []
+}
+```
+
+---
+
+## 🔔 Voice Notifications
+
+The orchestrator triggers voice notifications via `scripts/notify/voice.py`:
+
+| Event | Message Example |
+|-------|-----------------|
+| PRD Complete | "Sigma! Stream A completed User Authentication. Ready for testing." |
+| Blocked | "Stream B is blocked, waiting for Stream A." |
+| Crash | "Stream C crashed and was restarted." |
+| All Complete | "All streams complete. Ready for final merge." |
+| Merge Conflict | "Merge conflict detected in stream D." |
+
+```typescript
+async function voiceNotify(message: string): Promise<void> {
+  const notifyScript = './scripts/notify/voice.py';
+  await run_terminal_cmd(`python3 "${notifyScript}" "${message}"`);
+}
+```
+
+---
+
+## 🔗 Message Protocol
+
+Communication with streams uses this message format:
+
+```typescript
+interface AgentMessage {
+  from: string;           // "orchestrator" | "stream-a" | etc
+  to: string;             // Target agent
+  type: MessageType;      // Event type
+  payload: Record<string, any>;
+  timestamp?: string;     // Auto-added
+}
+
+type MessageType = 
+  | 'register'           // Stream registering with orchestrator
+  | 'prd_assignment'     // Orchestrator assigning PRD to stream
+  | 'story_complete'     // Stream reporting story completion
+  | 'prd_complete'       // Stream reporting PRD completion
+  | 'continue'           // Orchestrator telling stream to proceed
+  | 'revision_needed'    // Orchestrator requesting fixes
+  | 'blocked'            // Stream reporting blocked status
+  | 'error'              // Error report
+  | 'status_update';     // General status update
+```
+
+---
+
+## 🎮 Interactive Commands
+
+While orchestrating, you can give these commands:
+
+| Command | Action |
+|---------|--------|
+| `status` | Show current status of all streams |
+| `approve [stream]` | Approve PRD completion and continue |
+| `block [stream] on [prd]` | Manually block a stream |
+| `unblock [stream]` | Manually unblock a stream |
+| `pause [stream]` | Pause a stream's execution |
+| `resume [stream]` | Resume a paused stream |
+| `merge` | Start the merge sequence |
+| `abort` | Abort orchestration |
+
+---
+
+## ✅ Quality Gates
+
+The orchestrator runs verification at these points:
+
+1. **Story Complete** → Quick verification (tests pass, no errors)
+2. **PRD Complete** → Full @gap-analysis
+3. **All Complete** → Full project verification before merge
+
+---
+
+## 🔗 Related Commands
+
+| Command | Description |
+|---------|-------------|
+| `@stream` | Stream worker command (run in stream panes) |
+| `@gap-analysis` | Post-implementation gap analysis |
+| `@step-11b-prd-swarm --orchestrate` | Generate orchestration config |
+| `spawn-streams.sh` | Create tmux session with streams |
+| `merge-streams.sh` | Merge completed streams |
+
+---
+
+*Part of the Sigma Protocol Multi-Agent Orchestration System*
+
+

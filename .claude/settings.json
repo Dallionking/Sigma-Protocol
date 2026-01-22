@@ -1,0 +1,113 @@
+{
+  "hooks": {
+    "Stop": [
+      {
+        "matcher": "(prd.*(complete|done|finished)|fork.*(complete|blocked)|gap.analysis|orchestrat|@hub|stream.*(complete|done)|story.*(pass|complete)|ralph.*(loop|done|complete)|swarm.*(complete|finished))",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash \"$CLAUDE_PROJECT_DIR/.claude/hooks/orchestrator-stop.sh\""
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Edit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 \"$CLAUDE_PROJECT_DIR/.claude/hooks/validators/prd-validator.py\" \"$CLAUDE_FILE_PATH\"",
+            "condition": {
+              "glob": "**/prds/*.md"
+            }
+          }
+        ]
+      },
+      {
+        "matcher": "Edit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 \"$CLAUDE_PROJECT_DIR/.claude/hooks/validators/bdd-validator.py\" \"$CLAUDE_FILE_PATH\"",
+            "condition": {
+              "glob": "**/*.feature"
+            }
+          }
+        ]
+      },
+      {
+        "matcher": "Edit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash \"$CLAUDE_PROJECT_DIR/.claude/hooks/validators/typescript-validator.sh\" \"$CLAUDE_FILE_PATH\"",
+            "condition": {
+              "glob": "**/*.{ts,tsx}"
+            }
+          }
+        ]
+      },
+      {
+        "matcher": "Edit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 \"$CLAUDE_PROJECT_DIR/.claude/hooks/validators/design-tokens-validator.py\" \"$CLAUDE_FILE_PATH\"",
+            "condition": {
+              "glob": "**/*token*.json"
+            }
+          }
+        ]
+      },
+      {
+        "matcher": "Edit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 \"$CLAUDE_PROJECT_DIR/.claude/hooks/validators/design-tokens-validator.py\" \"$CLAUDE_FILE_PATH\"",
+            "condition": {
+              "glob": "**/*theme*.json"
+            }
+          }
+        ]
+      },
+      {
+        "matcher": "Edit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 \"$CLAUDE_PROJECT_DIR/.claude/hooks/validators/csv-validator.py\" \"$CLAUDE_FILE_PATH\"",
+            "condition": {
+              "glob": "**/*.csv"
+            }
+          }
+        ]
+      },
+      {
+        "matcher": "Edit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash \"$CLAUDE_PROJECT_DIR/.claude/hooks/validators/ui-validation.sh\" \"$CLAUDE_FILE_PATH\"",
+            "condition": {
+              "glob": "**/components/**/*.{tsx,jsx}"
+            }
+          }
+        ]
+      },
+      {
+        "matcher": "Edit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash \"$CLAUDE_PROJECT_DIR/.claude/hooks/validators/ui-validation.sh\" \"$CLAUDE_FILE_PATH\"",
+            "condition": {
+              "glob": "**/app/**/page.{tsx,jsx}"
+            }
+          }
+        ]
+      }
+    ]
+  }
+}
