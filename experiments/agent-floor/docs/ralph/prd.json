@@ -27,7 +27,7 @@
   },
   "meta": {
     "totalStories": 52,
-    "passedStories": 26
+    "passedStories": 27
   },
   "stories": [
     {
@@ -1509,7 +1509,7 @@
       "title": "Add personality traits to agent schema",
       "description": "Extend agent schema with personality and mood attributes.",
       "priority": 2,
-      "passes": false,
+      "passes": true,
       "source": {
         "prdPath": "docs/MASTER_PRD.md",
         "prdId": "PRD-019"
@@ -1546,7 +1546,12 @@
       "files": [
         "src/types/agent.ts",
         "src/server/rooms/FloorRoom.ts"
-      ]
+      ],
+      "lastAttempt": {
+        "timestamp": "2026-01-22T14:56:03Z",
+        "engine": "claude",
+        "success": true
+      }
     },
     {
       "id": "PRD019-002",
