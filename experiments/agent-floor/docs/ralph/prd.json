@@ -27,7 +27,7 @@
   },
   "meta": {
     "totalStories": 52,
-    "passedStories": 28
+    "passedStories": 29
   },
   "stories": [
     {
@@ -1665,7 +1665,7 @@
       "title": "Add token tracking to provider adapters",
       "description": "Track token usage in each LLM provider adapter.",
       "priority": 2,
-      "passes": false,
+      "passes": true,
       "source": {
         "prdPath": "docs/MASTER_PRD.md",
         "prdId": "PRD-020"
@@ -1698,7 +1698,12 @@
       "agentInstructions": "Use architecture-patterns skill. Update src/server/providers/index.ts with token tracking.",
       "files": [
         "src/server/providers/index.ts"
-      ]
+      ],
+      "lastAttempt": {
+        "timestamp": "2026-01-22T15:08:05Z",
+        "engine": "claude",
+        "success": true
+      }
     },
     {
       "id": "PRD021-001",
