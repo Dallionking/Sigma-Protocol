@@ -432,3 +432,22 @@ src/
   - Uses `cn()` utility for className composition
   - Test connection is simulated (replace with real API test in production)
   - Provider "delete" actually disables and clears config (providers are predefined)
+
+### PRD005-002: Message Reactions Component (2026-01-22)
+- Created `src/components/chat/MessageReactions.tsx`
+- Features:
+  - 3 reaction types: thumbsUp, eyes, checkmark (lucide-react icons)
+  - Reaction picker appears on hover with smooth slide-in animation
+  - Reaction count displayed in pill-shaped badges
+  - Toggle reaction on/off with visual active state
+  - Hover animation with scale and pulse effect
+  - `useMessageReactions()` hook for state management
+- Exported types:
+  - `ReactionType` - Union type of reaction keys
+  - `Reaction` - Individual reaction with type, count, hasReacted
+  - `MessageReactionsProps` - Component props interface
+- Integration notes:
+  - Integrated into ChatPanel's MessageBubble component
+  - Reactions state managed at ChatPanel level via hook
+  - Uses floor theme colors: floor-highlight, floor-accent, floor-card, floor-border
+  - Accessible with proper aria-labels for screen readers
