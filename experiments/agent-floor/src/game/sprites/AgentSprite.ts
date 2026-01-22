@@ -87,6 +87,11 @@ export class AgentSprite extends Phaser.GameObjects.Container {
   private walkAnimFrame: number = 0;
   private onArrivalCallback: (() => void) | null = null;
 
+  // Coffee break state (PRD-019-002)
+  private isResting: boolean = false;
+  private restingTween: Phaser.Tweens.Tween | null = null;
+  private coffeeIcon: Phaser.GameObjects.Text | null = null;
+
   // Animation constants
   private static readonly WALK_SPEED = 100; // pixels per second
   private static readonly WALK_BOB_AMPLITUDE = 2;
@@ -641,11 +646,89 @@ export class AgentSprite extends Phaser.GameObjects.Container {
   }
 
   /**
+   * Start the resting animation for coffee break (PRD-019-002)
+   * Shows a coffee icon and gentle breathing animation
+   */
+  startResting(): void {
+    if (this.isResting) return;
+
+    this.isResting = true;
+    this.setStatus("idle");
+
+    // Create coffee icon above the agent
+    this.coffeeIcon = this.scene.add.text(0, -40, "☕", {
+      fontSize: "16px",
+    });
+    this.coffeeIcon.setOrigin(0.5);
+    this.add(this.coffeeIcon);
+
+    // Animate the coffee icon (floating up and down)
+    this.scene.tweens.add({
+      targets: this.coffeeIcon,
+      y: -45,
+      duration: 800,
+      yoyo: true,
+      repeat: -1,
+      ease: "Sine.easeInOut",
+    });
+
+    // Add gentle breathing animation to the sprite
+    this.restingTween = this.scene.tweens.add({
+      targets: this.sprite,
+      scaleX: 1.22,
+      scaleY: 1.18,
+      duration: 1500,
+      yoyo: true,
+      repeat: -1,
+      ease: "Sine.easeInOut",
+    });
+
+    console.log(`☕ AgentSprite ${this.agentData.id}: Started resting animation`);
+  }
+
+  /**
+   * Stop the resting animation (PRD-019-002)
+   */
+  stopResting(): void {
+    if (!this.isResting) return;
+
+    this.isResting = false;
+
+    // Remove coffee icon
+    if (this.coffeeIcon) {
+      this.scene.tweens.killTweensOf(this.coffeeIcon);
+      this.coffeeIcon.destroy();
+      this.coffeeIcon = null;
+    }
+
+    // Stop breathing animation
+    if (this.restingTween) {
+      this.restingTween.stop();
+      this.restingTween = null;
+    }
+
+    // Reset sprite scale
+    this.sprite.setScale(1.2);
+
+    console.log(`☕ AgentSprite ${this.agentData.id}: Stopped resting animation`);
+  }
+
+  /**
+   * Check if the agent is currently resting (PRD-019-002)
+   */
+  getIsResting(): boolean {
+    return this.isResting;
+  }
+
+  /**
    * Destroy the sprite and clean up resources
    */
   destroy(fromScene?: boolean): void {
     // Stop any running walk
     this.stopWalking();
+
+    // Stop resting animation
+    this.stopResting();
 
     // Clear talking line
     this.clearTalkingLine();

@@ -21,6 +21,16 @@ interface AgentSpriteData {
 }
 
 /**
+ * Water cooler zone position (PRD-019-002)
+ */
+interface WaterCoolerZone {
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+}
+
+/**
  * OfficeScene - Main Phaser scene for the virtual office floor
  *
  * Manages:
@@ -46,6 +56,11 @@ export class OfficeScene extends Phaser.Scene {
 
   // Pathfinding
   private pathfinder: Pathfinding | null = null;
+
+  // Water cooler (PRD-019-002)
+  private waterCooler: Phaser.GameObjects.Image | null = null;
+  private waterCoolerLabel: Phaser.GameObjects.Text | null = null;
+  private waterCoolerZone: WaterCoolerZone | null = null;
 
   // Constants
   private static readonly TILE_SIZE = 32;
@@ -105,6 +120,22 @@ export class OfficeScene extends Phaser.Scene {
     graphics.strokeRect(0, 0, 48, 32);
     graphics.generateTexture("desk", 48, 32);
 
+    // Water cooler texture (PRD-019-002)
+    graphics.clear();
+    // Base (water jug)
+    graphics.fillStyle(0x4fc3f7); // Light blue for water
+    graphics.fillRoundedRect(4, 0, 24, 28, 4);
+    // Stand
+    graphics.fillStyle(0x616161); // Gray for stand
+    graphics.fillRect(8, 28, 16, 12);
+    // Dispensing area
+    graphics.fillStyle(0x424242);
+    graphics.fillRect(10, 36, 12, 4);
+    // Highlight on water jug
+    graphics.fillStyle(0x81d4fa);
+    graphics.fillRect(8, 4, 4, 16);
+    graphics.generateTexture("water-cooler", 32, 44);
+
     graphics.destroy();
   }
 
@@ -130,11 +161,42 @@ export class OfficeScene extends Phaser.Scene {
   create(): void {
     this.drawFloorGrid();
     this.createTitle();
+    this.createWaterCooler();
     this.initializePathfinding();
     this.setupInputHandlers();
 
     // Notify that the scene is ready
     this.config.onReady?.();
+  }
+
+  /**
+   * Create the water cooler in the break area (PRD-019-002)
+   */
+  private createWaterCooler(): void {
+    // Position water cooler in the upper right area of the office
+    const width = this.cameras.main.width;
+    const coolerX = width - 80;
+    const coolerY = 120;
+
+    // Create the water cooler sprite
+    this.waterCooler = this.add.image(coolerX, coolerY, "water-cooler");
+    this.waterCooler.setDepth(1);
+
+    // Create label
+    this.waterCoolerLabel = this.add.text(coolerX, coolerY + 30, "☕ Break", {
+      fontFamily: '"Press Start 2P", monospace',
+      fontSize: "6px",
+      color: "#6b6b6b",
+    });
+    this.waterCoolerLabel.setOrigin(0.5);
+
+    // Define the water cooler zone (where agents stand when taking a break)
+    this.waterCoolerZone = {
+      x: coolerX - 30,
+      y: coolerY + 10,
+      width: 60,
+      height: 40,
+    };
   }
 
   /**
@@ -491,6 +553,119 @@ export class OfficeScene extends Phaser.Scene {
    */
   getPathfinder(): Pathfinding | null {
     return this.pathfinder;
+  }
+
+  /**
+   * Get the water cooler zone position (PRD-019-002)
+   */
+  getWaterCoolerZone(): WaterCoolerZone | null {
+    return this.waterCoolerZone;
+  }
+
+  /**
+   * Walk an agent to the water cooler for a coffee break (PRD-019-002)
+   * @param agentId - ID of the agent taking a break
+   * @param options - Walk options including callbacks
+   * @returns Promise that resolves when agent arrives at water cooler
+   */
+  async walkAgentToWaterCooler(
+    agentId: string,
+    options: WalkToOptions = {}
+  ): Promise<void> {
+    const spriteData = this.agentSprites.get(agentId);
+    if (!spriteData || !this.waterCoolerZone) return;
+
+    // Calculate a position near the water cooler
+    // Offset based on which agents are already there to avoid overlap
+    const existingAgentsAtCooler = this.getAgentsAtWaterCooler();
+    const offsetIndex = existingAgentsAtCooler.length;
+    const offsetX = (offsetIndex % 3) * 30 - 30; // Spread agents horizontally
+    const offsetY = Math.floor(offsetIndex / 3) * 25; // Stack rows if needed
+
+    const targetX = this.waterCoolerZone.x + this.waterCoolerZone.width / 2 + offsetX;
+    const targetY = this.waterCoolerZone.y + offsetY;
+
+    // Get all other agent sprites for collision avoidance
+    const otherAgents: AgentSprite[] = [];
+    this.agentSprites.forEach((data, id) => {
+      if (id !== agentId) {
+        otherAgents.push(data.sprite);
+      }
+    });
+
+    // Walk to water cooler with collision avoidance
+    await spriteData.sprite.walkTo(targetX, targetY, {
+      ...options,
+      avoidAgents: otherAgents,
+    });
+  }
+
+  /**
+   * Get list of agent IDs currently at the water cooler (PRD-019-002)
+   */
+  private getAgentsAtWaterCooler(): string[] {
+    if (!this.waterCoolerZone) return [];
+
+    const atCooler: string[] = [];
+    const zone = this.waterCoolerZone;
+
+    this.agentSprites.forEach((spriteData, agentId) => {
+      const sprite = spriteData.sprite;
+      // Check if agent is within the water cooler zone (with some padding)
+      if (
+        sprite.x >= zone.x - 20 &&
+        sprite.x <= zone.x + zone.width + 20 &&
+        sprite.y >= zone.y - 20 &&
+        sprite.y <= zone.y + zone.height + 20
+      ) {
+        atCooler.push(agentId);
+      }
+    });
+
+    return atCooler;
+  }
+
+  /**
+   * Walk an agent back to their desk after a coffee break (PRD-019-002)
+   * @param agentId - ID of the agent returning to their desk
+   * @param options - Walk options including callbacks
+   */
+  async walkAgentBackToDesk(
+    agentId: string,
+    options: WalkToOptions = {}
+  ): Promise<void> {
+    const agent = this.agents.find((a) => a.id === agentId);
+    const spriteData = this.agentSprites.get(agentId);
+    if (!agent || !spriteData) return;
+
+    // Find the agent's desk position
+    const agentIndex = this.agents.findIndex((a) => a.id === agentId);
+    const deskX = OfficeScene.AGENT_START_X + agentIndex * OfficeScene.AGENT_SPACING;
+    const deskY = OfficeScene.AGENT_START_Y;
+
+    // Get all other agent sprites for collision avoidance
+    const otherAgents: AgentSprite[] = [];
+    this.agentSprites.forEach((data, id) => {
+      if (id !== agentId) {
+        otherAgents.push(data.sprite);
+      }
+    });
+
+    // Walk back to desk
+    await spriteData.sprite.walkTo(deskX, deskY, {
+      ...options,
+      avoidAgents: otherAgents,
+    });
+
+    // Update desk position
+    spriteData.desk.setPosition(deskX, deskY + 30);
+  }
+
+  /**
+   * Check if an agent is at the water cooler (PRD-019-002)
+   */
+  isAgentAtWaterCooler(agentId: string): boolean {
+    return this.getAgentsAtWaterCooler().includes(agentId);
   }
 }
 

@@ -44,6 +44,15 @@ const MAX_LLM_RETRIES = 3;
 /** Retry delay base in ms (exponential backoff) */
 const RETRY_DELAY_BASE_MS = 1000;
 
+/** Fatigue threshold below which agent needs a coffee break (PRD-019-002) */
+const COFFEE_BREAK_THRESHOLD = 30;
+
+/** Duration of coffee break in milliseconds (PRD-019-002) */
+const COFFEE_BREAK_DURATION_MS = 10000; // 10 seconds
+
+/** Amount of fatigue restored by coffee break (PRD-019-002) */
+const COFFEE_BREAK_RESTORE_AMOUNT = 50;
+
 /** Callback type for state change notifications */
 export type StateChangeCallback = (transition: AgentStateTransition) => void;
 
@@ -121,6 +130,14 @@ export class AgentWorker {
 
   // Token tracking (PRD-020)
   private tokenTracker: TokenTracker | null = null;
+
+  // Coffee break state (PRD-019-002)
+  private onCoffeeBreak: boolean = false;
+  private coffeeBreakStartTime: number | null = null;
+  private coffeeBreakCallbacks: {
+    onBreakStarted?: () => void;
+    onBreakEnded?: () => void;
+  } | null = null;
 
   constructor(config: ExtendedAgentWorkerConfig) {
     this.agentId = config.agentId;
@@ -538,17 +555,95 @@ ${personalityInstructions.map(i => `- ${i}`).join("\n")}`;
   }
 
   /**
-   * Decrease fatigue (after completing work)
+   * Decrease fatigue (after rest/break - restores energy)
    */
-  decreaseFatigue(amount: number = 10): void {
+  decreaseFatigue(amount: number = 20): void {
+    this.setFatigueLevel(this.fatigueLevel + amount);
+  }
+
+  /**
+   * Increase fatigue (after completing work - uses energy)
+   */
+  increaseFatigue(amount: number = 10): void {
     this.setFatigueLevel(this.fatigueLevel - amount);
   }
 
   /**
-   * Increase fatigue (after rest/break)
+   * Check if the agent needs a coffee break
+   * Returns true if fatigue level drops below threshold
    */
-  increaseFatigue(amount: number = 20): void {
-    this.setFatigueLevel(this.fatigueLevel + amount);
+  needsCoffeeBreak(): boolean {
+    return this.fatigueLevel <= COFFEE_BREAK_THRESHOLD;
+  }
+
+  /**
+   * Check if the agent is currently on a coffee break
+   */
+  isOnCoffeeBreak(): boolean {
+    return this.onCoffeeBreak;
+  }
+
+  /**
+   * Start a coffee break - agent will walk to water cooler
+   * @param onBreakStarted - Callback when break officially starts (agent arrived at cooler)
+   * @param onBreakEnded - Callback when break ends and agent returns to work
+   */
+  startCoffeeBreak(
+    onBreakStarted?: () => void,
+    onBreakEnded?: () => void
+  ): void {
+    if (this.onCoffeeBreak) {
+      console.log(`☕ AgentWorker ${this.agentId}: Already on coffee break`);
+      return;
+    }
+
+    this.onCoffeeBreak = true;
+    this.coffeeBreakStartTime = Date.now();
+    console.log(`☕ AgentWorker ${this.agentId}: Starting coffee break (fatigue: ${this.fatigueLevel})`);
+
+    // Store callbacks for external coordination (e.g., walking to water cooler)
+    this.coffeeBreakCallbacks = { onBreakStarted, onBreakEnded };
+
+    // Transition to walking state
+    this.transitionTo("walking", "Walking to water cooler for coffee break");
+  }
+
+  /**
+   * Notify that agent has arrived at water cooler
+   * Called by external coordinator (e.g., OfficeScene) when walk completes
+   */
+  arrivedAtWaterCooler(): void {
+    if (!this.onCoffeeBreak) return;
+
+    console.log(`☕ AgentWorker ${this.agentId}: Arrived at water cooler, resting...`);
+    this.transitionTo("idle", "Resting at water cooler");
+
+    // Notify callback
+    this.coffeeBreakCallbacks?.onBreakStarted?.();
+
+    // Schedule break completion
+    setTimeout(() => {
+      this.completeCoffeeBreak();
+    }, COFFEE_BREAK_DURATION_MS);
+  }
+
+  /**
+   * Complete the coffee break - restore fatigue and return to work
+   */
+  private completeCoffeeBreak(): void {
+    if (!this.onCoffeeBreak) return;
+
+    // Restore fatigue
+    const previousFatigue = this.fatigueLevel;
+    this.decreaseFatigue(COFFEE_BREAK_RESTORE_AMOUNT);
+    console.log(`☕ AgentWorker ${this.agentId}: Coffee break complete! Fatigue restored: ${previousFatigue} → ${this.fatigueLevel}`);
+
+    this.onCoffeeBreak = false;
+    this.coffeeBreakStartTime = null;
+
+    // Notify callback
+    this.coffeeBreakCallbacks?.onBreakEnded?.();
+    this.coffeeBreakCallbacks = null;
   }
 
   // ==========================================================================
@@ -573,9 +668,29 @@ ${personalityInstructions.map(i => `- ${i}`).join("\n")}`;
 
   /**
    * Core tick logic - autonomous work loop
-   * Priority: Messages > Tasks > Idle
+   * Priority: Coffee Break (if needed) > Messages > Tasks > Idle
    */
   private async executeTick(): Promise<void> {
+    // Step 0: Skip if on coffee break (let the break complete)
+    if (this.onCoffeeBreak) {
+      return;
+    }
+
+    // Step 0.5: Check if agent needs a coffee break (PRD-019-002)
+    if (this.needsCoffeeBreak()) {
+      // Notify via callback that coffee break is needed
+      // External coordinator (AgentManager/OfficeScene) will handle walking to water cooler
+      console.log(`☕ AgentWorker ${this.agentId}: Fatigue level critical (${this.fatigueLevel}), needs coffee break`);
+
+      // Emit state change to signal need for break
+      // The actual startCoffeeBreak() will be called by AgentManager
+      if (this.onStateChange) {
+        // Signal the need for coffee break via a special transition
+        this.transitionTo("walking", "Need coffee break - walking to water cooler");
+      }
+      return;
+    }
+
     // Step 1: Check messages (highest priority)
     if (this.hasUnprocessedMessages()) {
       await this.processMessages();
@@ -698,8 +813,8 @@ ${personalityInstructions.map(i => `- ${i}`).join("\n")}`;
         this.startTalking(message.from);
       }
 
-      // Decrease fatigue after responding (PRD-019)
-      this.decreaseFatigue(5);
+      // Increase fatigue after responding (PRD-019-002) - work drains energy
+      this.increaseFatigue(5);
     }
   }
 
@@ -760,8 +875,8 @@ ${personalityInstructions.map(i => `- ${i}`).join("\n")}`;
         "broadcast"
       );
 
-      // Decrease fatigue after completing task (PRD-019)
-      this.decreaseFatigue(15);
+      // Increase fatigue after completing task (PRD-019-002) - work drains energy
+      this.increaseFatigue(15);
 
       // Task completion will be handled by AgentManager
       // For now, stay in working state until clearTask() is called
