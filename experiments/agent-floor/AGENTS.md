@@ -451,3 +451,33 @@ src/
   - Reactions state managed at ChatPanel level via hook
   - Uses floor theme colors: floor-highlight, floor-accent, floor-card, floor-border
   - Accessible with proper aria-labels for screen readers
+
+### PRD018-001: ElevenLabs Voice Integration (2026-01-22)
+- Created `src/lib/voice/elevenlabs.ts` - ElevenLabs API client for text-to-speech
+- Features:
+  - `ElevenLabsClient` class with API key management
+  - `textToSpeech(text, voiceId, options?)` - Non-streaming TTS conversion
+  - `streamTextToSpeech(text, voiceId)` - Streaming TTS via async generator
+  - Audio queue management:
+    - `enqueueAudio(agentId, text, voiceId)` - Add to queue
+    - `getQueue()` / `getQueueItem(id)` - Query queue state
+    - `clearQueue()` / `clearCompleted()` / `removeFromQueue(id)` - Queue maintenance
+    - Callbacks: `setOnAudioQueued`, `setOnAudioStarted`, `setOnAudioCompleted`, `setOnAudioError`
+  - Voice management: `getVoices()` / `getVoice(voiceId)` / `isAvailable()`
+  - Retry logic with exponential backoff and jitter (3 retries max)
+- Voice mapping per agent role:
+  - `ROLE_VOICE_MAPPING` - Maps AgentRole to ElevenLabs voice IDs
+  - `getVoiceForRole(role)` - Get voice ID for a specific role
+  - Each role has distinct voice character (PM: professional, Architect: thoughtful, etc.)
+- Exported types:
+  - `ElevenLabsOptions`, `VoiceSettings`, `TextToSpeechOptions`
+  - `QueuedAudio` - Queue item with status tracking
+  - `VoiceInfo` - Voice metadata from API
+  - `AudioQueueCallback` - Callback function type
+- Factory function: `createElevenLabsClient(options?)`
+- Integration notes:
+  - Uses fetch API for HTTP requests (Node.js compatible)
+  - API key from `ELEVENLABS_API_KEY` env var or passed as option
+  - Default model: `eleven_multilingual_v2`
+  - Default output format: `mp3_44100_128`
+  - 30-second timeout per request
