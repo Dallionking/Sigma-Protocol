@@ -1,10 +1,11 @@
 "use client";
 
 import { useRef, useEffect, useState } from "react";
-import { Send, AtSign, Smile } from "lucide-react";
+import { Send, AtSign } from "lucide-react";
 import { useFloorStore } from "@/lib/store/floor-store";
 import { formatDistanceToNow } from "date-fns";
 import type { FloorMessage } from "@/types/message";
+import CodeBlock, { parseCodeBlocks, hasCodeBlocks } from "./CodeBlock";
 
 export default function ChatPanel() {
   const { messages, agents, inputMessage, setInputMessage, sendMessage } =
@@ -161,9 +162,9 @@ function MessageBubble({
   const isSystem = message.type === "system";
   const isUser = message.from === "user";
 
-  // Render content with @mentions highlighted
-  const renderContent = (content: string) => {
-    const parts = content.split(/(@\w+)/g);
+  // Render text content with @mentions highlighted
+  const renderTextWithMentions = (text: string) => {
+    const parts = text.split(/(@\w+)/g);
     return parts.map((part, i) => {
       if (part.startsWith("@")) {
         return (
@@ -173,6 +174,34 @@ function MessageBubble({
         );
       }
       return part;
+    });
+  };
+
+  // Render content with code blocks and @mentions
+  const renderContent = (content: string) => {
+    // If no code blocks, render with mentions only
+    if (!hasCodeBlocks(content)) {
+      return renderTextWithMentions(content);
+    }
+
+    // Parse code blocks and render each part
+    const parts = parseCodeBlocks(content);
+    return parts.map((part, i) => {
+      if (part.type === "code") {
+        return (
+          <CodeBlock
+            key={i}
+            code={part.content}
+            language={part.language}
+          />
+        );
+      }
+      // Text part - render with mentions
+      return (
+        <span key={i}>
+          {renderTextWithMentions(part.content)}
+        </span>
+      );
     });
   };
 
