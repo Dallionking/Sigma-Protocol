@@ -27,7 +27,7 @@
   },
   "meta": {
     "totalStories": 52,
-    "passedStories": 11
+    "passedStories": 12
   },
   "stories": [
     {
@@ -2212,7 +2212,7 @@
       "title": "Create UI validation script",
       "description": "Bash script for validating all UI using agent-browser CLI.",
       "priority": 1,
-      "passes": false,
+      "passes": true,
       "source": {
         "prdPath": "docs/MASTER_PRD.md",
         "prdId": "SCRIPTS"
@@ -2253,7 +2253,12 @@
       "agentInstructions": "Use agent-browser-validation and quality-gates skills. Spawn qa-engineer subagent. Create at scripts/validate-ui.sh.",
       "files": [
         "scripts/validate-ui.sh"
-      ]
+      ],
+      "lastAttempt": {
+        "timestamp": "2026-01-22T12:55:42Z",
+        "engine": "claude",
+        "success": true
+      }
     },
     {
       "id": "SCRIPTS-002",

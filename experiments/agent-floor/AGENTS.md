@@ -178,3 +178,20 @@ src/
   - Desks marked as `TileType.DESK` in pathfinding grid
   - `walkAgentTo()` automatically passes other agents for collision avoidance
   - Uses `pathfinder.avoidPoint()` for dynamic obstacle avoidance
+
+### PRD002-001: Error Boundary Component (2026-01-22)
+- Created `src/components/ui/error-boundary.tsx`
+- Features:
+  - `ErrorBoundary` class component (required for error catching)
+  - `getDerivedStateFromError` + `componentDidCatch` for error handling
+  - Console logging with component stack trace
+  - Default fallback UI with retry button
+  - Custom fallback prop support
+  - `onError` callback for external error tracking
+  - `onReset` callback for cleanup on retry
+  - `withErrorBoundary` HOC for wrapping functional components
+- Styling:
+  - Uses floor theme colors: `floor-panel`, `floor-accent`, `floor-highlight`
+  - AlertTriangle icon from lucide-react
+  - RefreshCw icon for retry button
+- Test page at `/test/error-boundary` for validation
