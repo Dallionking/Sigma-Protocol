@@ -411,3 +411,24 @@ src/
   - Team IDs are sanitized to prevent path injection
   - Factory function: `createSandboxedWorkspace(teamId, options?)`
   - All operations are relative to team workspace
+
+### PRD027-001: ProviderConfig Component (2026-01-22)
+- Created `src/components/settings/ProviderConfig.tsx` - UI for LLM provider management
+- Features:
+  - List configured providers in Active/Available sections
+  - Add provider form with dropdown selection
+  - API key input with masked password field and show/hide toggle
+  - Test connection button with visual status feedback (idle/testing/success/error)
+  - Delete provider button to disable and clear config
+  - Model selection dropdown per provider
+  - Enable/disable toggle switch per provider
+- Exported constants/types:
+  - `PROVIDER_METADATA` - Provider configuration metadata array
+  - `ProviderMeta` - Provider metadata interface
+  - `ConnectionStatus` - Test connection status type
+- Added `/settings` page route at `src/app/settings/page.tsx`
+- Integration notes:
+  - Uses `useSettingsStore` from settings-store for localStorage persistence
+  - Uses `cn()` utility for className composition
+  - Test connection is simulated (replace with real API test in production)
+  - Provider "delete" actually disables and clears config (providers are predefined)
