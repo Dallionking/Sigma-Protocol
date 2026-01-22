@@ -14,6 +14,7 @@ src/
 │   └── store/      # Zustand stores
 ├── server/
 │   ├── agents/     # Agent lifecycle management (AgentManager, AgentWorker)
+│   ├── providers/  # LLM provider registry (factory pattern)
 │   └── rooms/      # Colyseus rooms
 └── types/          # TypeScript type definitions
 ```
@@ -116,3 +117,23 @@ src/
   - MessageBus initializes queues for existing agents on construction
   - Use `setMessageQueuedCallback()` to notify AgentManager of new messages
   - FloorRoom passes messages via `routeMessage()` on user chat
+
+### PRD011-001: LLM Provider Registry (2026-01-22)
+- Created `src/server/providers/index.ts` with factory pattern
+- Features:
+  - `registerProvider(provider)` - Add provider to registry
+  - `registerProviderFactory(id, factory)` - Lazy initialization support
+  - `getProvider(id)` / `getProviderAsync(id)` - Retrieve providers
+  - `listProviders()` / `listProviderIds()` - Enumerate providers
+  - `hasProvider(id)` - Check existence
+  - `unregisterProvider(id)` / `clearProviders()` - Removal utilities
+- Default stub providers auto-registered on import:
+  - `claude-code` (CLI-based, type: "cli", Max subscription)
+  - `anthropic` (Claude API, supportsVision, supportsTools)
+  - `openai` (supportsVision, supportsTools)
+  - `gemini` (1M context, supportsVision, supportsTools)
+  - `openrouter` (multi-model router)
+  - `xai` (Grok, supportsTools)
+  - `ollama` (local inference)
+- Stub providers return mock responses - replace with real adapters in PRD-012/013
+- Re-exports LLMProvider types from `@/types/provider`
