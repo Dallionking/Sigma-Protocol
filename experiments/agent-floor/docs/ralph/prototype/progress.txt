@@ -66,3 +66,38 @@
 - Source PRD docs/wireframes/tabs/S006-A-chat.md does not exist, but functionality matches story title
 
 ---
+
+### 2026-01-23T07:00:16Z - S006A-001
+**Status:** COMPLETED
+**Engine:** claude
+
+
+---
+
+### 2026-01-23T09:10:00Z - S006A-002
+**Status:** COMPLETED
+**Engine:** claude
+
+**Validation:**
+- ✅ CodeBlock renders with shiki syntax highlighting (TypeScript, Python, JSX, JSON, Bash)
+- ✅ Copy button shows "Copied!" feedback for 2 seconds
+- ✅ Language labels display correctly (JavaScript, TypeScript, Python, etc.)
+- ✅ Reaction picker appears on message hover with 3 reaction types
+- ✅ Thumbs up, Eyes, Checkmark icons in picker
+- ✅ Toggle reaction adds/removes with count badge
+- ✅ Active reaction shows highlighted state
+- ✅ Proper ARIA labels for accessibility
+- ✅ Screenshot evidence: validation-S006A-002-codeblocks.png, validation-S006A-002-reactions.png
+
+**Files:**
+- src/components/chat/CodeBlock.tsx (verified - shiki highlighting, copy button, language labels)
+- src/components/chat/MessageReactions.tsx (verified - picker, toggle, counts)
+- src/components/chat/ChatPanel.tsx (verified - integration with CodeBlock and MessageReactions)
+- src/app/test/code-block/page.tsx (test page for CodeBlock validation)
+
+**Notes:**
+- Implementation was completed in prior PRDs (PRD005-001, PRD005-002)
+- This story validates the Code Blocks & Reactions features in the Chat Tab
+- Test page at /test/code-block demonstrates all CodeBlock functionality
+
+---

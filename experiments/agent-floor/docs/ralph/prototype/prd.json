@@ -16,7 +16,7 @@
   },
   "meta": {
     "totalStories": 25,
-    "passedStories": 7
+    "passedStories": 8
   },
   "stories": [
     {
@@ -110,7 +110,7 @@
         "S006-002"
       ],
       "lastAttempt": {
-        "timestamp": "2026-01-23T07:15:00Z",
+        "timestamp": "2026-01-23T07:00:16Z",
         "engine": "claude",
         "success": true
       }
@@ -119,13 +119,18 @@
       "id": "S006A-002",
       "title": "Chat Tab - Code Blocks & Reactions",
       "priority": 8,
-      "passes": false,
+      "passes": true,
       "source": {
         "prdPath": "docs/wireframes/tabs/S006-A-chat.md"
       },
       "dependsOn": [
         "S006A-001"
-      ]
+      ],
+      "lastAttempt": {
+        "timestamp": "2026-01-23T09:10:00Z",
+        "engine": "claude",
+        "success": true
+      }
     },
     {
       "id": "S006B-001",
