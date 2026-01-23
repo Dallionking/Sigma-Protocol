@@ -559,3 +559,24 @@ src/
   - Tab navigation: Agents, Chat, Tasks, Dashboard, Settings
 - UI validation performed via agent-browser CLI
 - Screenshot saved: `validation-S006-001.png`
+
+### S006-002: Floor Screen - Tab Navigation & Panel (2026-01-23)
+- Created `src/components/floor/TabNavigation.tsx` - Reusable tab navigation component
+- Features:
+  - `TabNavigation` component with full ARIA accessibility
+  - `TabPanel` wrapper with proper `role="tabpanel"` and aria associations
+  - `TabSeparator` for visual division between tab groups
+  - Keyboard navigation: Arrow keys, Home, End, Enter, Space
+  - Toggle behavior: clicking active tab closes the panel
+  - Badge support for notification counts
+  - Focus management with `tabIndex` control
+- Exported types:
+  - `TabId` - Union type of valid tab identifiers
+  - `Tab` - Tab configuration with id, label, icon, badge, testId
+- Refactored `src/app/floor/[teamId]/page.tsx`:
+  - Replaced inline buttons with `TabNavigation` component
+  - Added `TabPanel` wrappers for semantic structure
+  - Used `<aside>` element for side panel with dynamic aria-label
+  - Added proper ARIA attributes throughout
+- UI validation performed via Playwright MCP
+- Screenshots saved: `validation-S006-002.png`, `validation-S006-002-panel-closed.png`
