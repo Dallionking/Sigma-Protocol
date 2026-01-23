@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { useParams } from "next/navigation";
 import dynamic from "next/dynamic";
 import Link from "next/link";
@@ -9,6 +9,7 @@ import ChatPanel from "@/components/chat/ChatPanel";
 import TaskBoard from "@/components/tasks/TaskBoard";
 import AgentList from "@/components/floor/AgentList";
 import { TokenDashboard } from "@/components/dashboard";
+import { TabNavigation, TabPanel, TabSeparator, Tab, TabId } from "@/components/floor/TabNavigation";
 import { useFloorStore } from "@/lib/store/floor-store";
 import {
   ConnectionStatusIndicator,
@@ -29,13 +30,37 @@ const FloorCanvas = dynamic(() => import("@/components/floor/FloorCanvas"), {
   ),
 });
 
-type Panel = "chat" | "tasks" | "agents" | "dashboard" | "settings" | null;
+// Define tabs configuration
+const MAIN_TABS: Tab[] = [
+  { id: "agents", label: "Agents", icon: Users, testId: "agents-tab" },
+  { id: "chat", label: "Chat", icon: MessageSquare, testId: "chat-tab" },
+  { id: "tasks", label: "Tasks", icon: ListTodo, testId: "tasks-tab" },
+  { id: "dashboard", label: "Dashboard", icon: Activity, testId: "dashboard-tab" },
+];
+
+const SETTINGS_TABS: Tab[] = [
+  { id: "settings", label: "Settings", icon: Settings, testId: "settings-tab" },
+];
 
 export default function FloorPage() {
   const params = useParams();
   const teamId = params.teamId as string;
-  const [activePanel, setActivePanel] = useState<Panel>("chat");
-  const { connect, disconnect, connectionStatus, agents, reconnect } = useFloorStore();
+  const [activeTab, setActiveTab] = useState<TabId | null>("chat");
+  const { connect, disconnect, agents, messages, reconnect } = useFloorStore();
+
+  // Calculate unread message count (for future use)
+  const unreadCount = useMemo(() => {
+    // For now, return 0 - in a real app this would track unread state
+    return 0;
+  }, [messages]);
+
+  // Tabs with dynamic badges
+  const tabsWithBadges = useMemo(() => {
+    return MAIN_TABS.map((tab) => ({
+      ...tab,
+      badge: tab.id === "chat" ? unreadCount : undefined,
+    }));
+  }, [unreadCount]);
 
   useEffect(() => {
     // Connect to Colyseus server
@@ -46,8 +71,8 @@ export default function FloorPage() {
     };
   }, [teamId, connect, disconnect]);
 
-  const togglePanel = (panel: Panel) => {
-    setActivePanel(activePanel === panel ? null : panel);
+  const handleTabChange = (tabId: TabId | null) => {
+    setActiveTab(tabId);
   };
 
   return (
@@ -58,6 +83,7 @@ export default function FloorPage() {
           <Link
             href="/"
             className="p-2 rounded-lg hover:bg-floor-accent transition-colors"
+            aria-label="Back to home"
           >
             <ArrowLeft className="w-5 h-5" />
           </Link>
@@ -67,7 +93,7 @@ export default function FloorPage() {
             </h1>
             <div className="flex items-center gap-2 text-sm">
               <ConnectionStatusIndicator size="sm" />
-              <span className="text-floor-muted">•</span>
+              <span className="text-floor-muted" aria-hidden="true">•</span>
               <span className="text-floor-muted">
                 {agents.length} agents active
               </span>
@@ -75,66 +101,20 @@ export default function FloorPage() {
           </div>
         </div>
 
-        {/* Panel toggles */}
-        <div className="flex items-center gap-2">
-          <button
-            onClick={() => togglePanel("agents")}
-            className={`p-2 rounded-lg transition-colors ${
-              activePanel === "agents"
-                ? "bg-floor-highlight text-white"
-                : "hover:bg-floor-accent"
-            }`}
-            title="Agents"
-          >
-            <Users className="w-5 h-5" />
-          </button>
-          <button
-            onClick={() => togglePanel("chat")}
-            className={`p-2 rounded-lg transition-colors relative ${
-              activePanel === "chat"
-                ? "bg-floor-highlight text-white"
-                : "hover:bg-floor-accent"
-            }`}
-            title="Chat"
-          >
-            <MessageSquare className="w-5 h-5" />
-          </button>
-          <button
-            onClick={() => togglePanel("tasks")}
-            className={`p-2 rounded-lg transition-colors ${
-              activePanel === "tasks"
-                ? "bg-floor-highlight text-white"
-                : "hover:bg-floor-accent"
-            }`}
-            title="Tasks"
-          >
-            <ListTodo className="w-5 h-5" />
-          </button>
-          <button
-            onClick={() => togglePanel("dashboard")}
-            className={`p-2 rounded-lg transition-colors ${
-              activePanel === "dashboard"
-                ? "bg-floor-highlight text-white"
-                : "hover:bg-floor-accent"
-            }`}
-            title="Token Dashboard"
-            data-testid="dashboard-tab"
-          >
-            <Activity className="w-5 h-5" />
-          </button>
-          <div className="w-px h-6 bg-floor-accent mx-2" />
-          <button
-            onClick={() => togglePanel("settings")}
-            className={`p-2 rounded-lg transition-colors ${
-              activePanel === "settings"
-                ? "bg-floor-highlight text-white"
-                : "hover:bg-floor-accent"
-            }`}
-            title="Settings"
-          >
-            <Settings className="w-5 h-5" />
-          </button>
-        </div>
+        {/* Tab Navigation */}
+        <nav className="flex items-center" aria-label="Floor panel navigation">
+          <TabNavigation
+            tabs={tabsWithBadges}
+            activeTab={activeTab}
+            onTabChange={handleTabChange}
+          />
+          <TabSeparator />
+          <TabNavigation
+            tabs={SETTINGS_TABS}
+            activeTab={activeTab}
+            onTabChange={handleTabChange}
+          />
+        </nav>
       </header>
 
       {/* Main content */}
@@ -153,20 +133,29 @@ export default function FloorPage() {
           />
         </div>
 
-        {/* Side panel */}
-        {activePanel && (
-          <div className="w-96 bg-floor-panel border-l border-floor-accent overflow-hidden panel-slide-in">
-            {activePanel === "chat" && <ChatPanel />}
-            {activePanel === "tasks" && <TaskBoard />}
-            {activePanel === "agents" && <AgentList />}
-            {activePanel === "dashboard" && <TokenDashboard />}
-            {activePanel === "settings" && (
-              <div className="p-4">
-                <h2 className="text-lg font-semibold mb-4">Settings</h2>
-                <p className="text-floor-muted">Settings panel coming soon...</p>
-              </div>
-            )}
-          </div>
+        {/* Side panel with TabPanel components */}
+        {activeTab && (
+          <aside
+            className="w-96 bg-floor-panel border-l border-floor-accent overflow-hidden panel-slide-in"
+            aria-label={`${activeTab} panel`}
+          >
+            <TabPanel id="chat" activeTab={activeTab} className="h-full">
+              <ChatPanel />
+            </TabPanel>
+            <TabPanel id="tasks" activeTab={activeTab} className="h-full">
+              <TaskBoard />
+            </TabPanel>
+            <TabPanel id="agents" activeTab={activeTab} className="h-full">
+              <AgentList />
+            </TabPanel>
+            <TabPanel id="dashboard" activeTab={activeTab} className="h-full">
+              <TokenDashboard />
+            </TabPanel>
+            <TabPanel id="settings" activeTab={activeTab} className="h-full p-4">
+              <h2 className="text-lg font-semibold mb-4">Settings</h2>
+              <p className="text-floor-muted">Settings panel coming soon...</p>
+            </TabPanel>
+          </aside>
         )}
       </div>
 
