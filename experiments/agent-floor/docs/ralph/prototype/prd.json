@@ -1,0 +1,218 @@
+{
+  "$schema": "../../../schemas/ralph-backlog.schema.json",
+  "project": "agent-floor-prototype",
+  "version": "1.0.0",
+  "workspace": "/Users/dallionking/SSS Projects/SSS-Protocol/experiments/agent-floor",
+  "generatedAt": "2026-01-23T00:00:00Z",
+  "generatedBy": "step-5b-prd-to-json",
+  "mode": "prototype",
+  "config": {
+    "uiValidation": "agent-browser",
+    "skills": ["frontend-design", "react-performance", "web-design-guidelines"]
+  },
+  "meta": {
+    "totalStories": 25,
+    "passedStories": 4
+  },
+  "stories": [
+    {
+      "id": "S001-001",
+      "title": "Landing Page - Hero Section & Navigation",
+      "priority": 1,
+      "passes": true,
+      "source": { "prdPath": "docs/wireframes/screens/S001-landing.md" }
+    },
+    {
+      "id": "S001-002",
+      "title": "Landing Page - Features & Footer",
+      "priority": 2,
+      "passes": true,
+      "source": { "prdPath": "docs/wireframes/screens/S001-landing.md" },
+      "dependsOn": ["S001-001"]
+    },
+    {
+      "id": "S002-001",
+      "title": "Login Screen - Form & Validation",
+      "priority": 3,
+      "passes": true,
+      "source": { "prdPath": "docs/wireframes/screens/S002-login.md" },
+      "dependsOn": ["S001-001"]
+    },
+    {
+      "id": "S003-001",
+      "title": "Signup Screen - Registration Form",
+      "priority": 4,
+      "passes": true,
+      "source": { "prdPath": "docs/wireframes/screens/S003-signup.md" },
+      "dependsOn": ["S002-001"]
+    },
+    {
+      "id": "S006-001",
+      "title": "Floor Screen - Canvas & Agent Sprites",
+      "priority": 5,
+      "passes": false,
+      "source": { "prdPath": "docs/wireframes/screens/S006-floor.md" },
+      "dependsOn": ["S003-001"]
+    },
+    {
+      "id": "S006-002",
+      "title": "Floor Screen - Tab Navigation & Panel",
+      "priority": 6,
+      "passes": false,
+      "source": { "prdPath": "docs/wireframes/screens/S006-floor.md" },
+      "dependsOn": ["S006-001"]
+    },
+    {
+      "id": "S006A-001",
+      "title": "Chat Tab - Message List & Input",
+      "priority": 7,
+      "passes": false,
+      "source": { "prdPath": "docs/wireframes/tabs/S006-A-chat.md" },
+      "dependsOn": ["S006-002"]
+    },
+    {
+      "id": "S006A-002",
+      "title": "Chat Tab - Code Blocks & Reactions",
+      "priority": 8,
+      "passes": false,
+      "source": { "prdPath": "docs/wireframes/tabs/S006-A-chat.md" },
+      "dependsOn": ["S006A-001"]
+    },
+    {
+      "id": "S006B-001",
+      "title": "Tasks Tab - Kanban Board Layout",
+      "priority": 9,
+      "passes": false,
+      "source": { "prdPath": "docs/wireframes/tabs/S006-B-tasks.md" },
+      "dependsOn": ["S006-002"]
+    },
+    {
+      "id": "S006B-002",
+      "title": "Tasks Tab - Drag & Drop",
+      "priority": 10,
+      "passes": false,
+      "source": { "prdPath": "docs/wireframes/tabs/S006-B-tasks.md" },
+      "dependsOn": ["S006B-001"]
+    },
+    {
+      "id": "S006C-001",
+      "title": "Agents Tab - Agent Grid",
+      "priority": 11,
+      "passes": false,
+      "source": { "prdPath": "docs/wireframes/tabs/S006-C-agents.md" },
+      "dependsOn": ["S006-002"]
+    },
+    {
+      "id": "S006C-002",
+      "title": "Agents Tab - Add Agent Flow",
+      "priority": 12,
+      "passes": false,
+      "source": { "prdPath": "docs/wireframes/tabs/S006-C-agents.md" },
+      "dependsOn": ["S006C-001"]
+    },
+    {
+      "id": "S006D-001",
+      "title": "Tokens Tab - Usage Dashboard",
+      "priority": 13,
+      "passes": false,
+      "source": { "prdPath": "docs/wireframes/tabs/S006-D-tokens.md" },
+      "dependsOn": ["S006-002"]
+    },
+    {
+      "id": "S006E-001",
+      "title": "Activity Tab - Timeline Feed",
+      "priority": 14,
+      "passes": false,
+      "source": { "prdPath": "docs/wireframes/tabs/S006-E-activity.md" },
+      "dependsOn": ["S006-002"]
+    },
+    {
+      "id": "S006E-002",
+      "title": "Activity Tab - Filters",
+      "priority": 15,
+      "passes": false,
+      "source": { "prdPath": "docs/wireframes/tabs/S006-E-activity.md" },
+      "dependsOn": ["S006E-001"]
+    },
+    {
+      "id": "M001-001",
+      "title": "Onboarding Wizard - Steps 1-2",
+      "priority": 16,
+      "passes": false,
+      "source": { "prdPath": "docs/wireframes/modals/M001-onboarding.md" },
+      "dependsOn": ["S003-001"]
+    },
+    {
+      "id": "M001-002",
+      "title": "Onboarding Wizard - Steps 3-5",
+      "priority": 17,
+      "passes": false,
+      "source": { "prdPath": "docs/wireframes/modals/M001-onboarding.md" },
+      "dependsOn": ["M001-001"]
+    },
+    {
+      "id": "M002-001",
+      "title": "Agent Detail Modal - Stats & Info",
+      "priority": 18,
+      "passes": false,
+      "source": { "prdPath": "docs/wireframes/modals/M002-agent-detail.md" },
+      "dependsOn": ["S006C-001"]
+    },
+    {
+      "id": "M002-002",
+      "title": "Agent Detail Modal - Edit Mode",
+      "priority": 19,
+      "passes": false,
+      "source": { "prdPath": "docs/wireframes/modals/M002-agent-detail.md" },
+      "dependsOn": ["M002-001"]
+    },
+    {
+      "id": "M003-001",
+      "title": "Task Detail Modal - Full View",
+      "priority": 20,
+      "passes": false,
+      "source": { "prdPath": "docs/wireframes/modals/M003-task-detail.md" },
+      "dependsOn": ["S006B-001"]
+    },
+    {
+      "id": "M003-002",
+      "title": "Task Detail Modal - Edit & Actions",
+      "priority": 21,
+      "passes": false,
+      "source": { "prdPath": "docs/wireframes/modals/M003-task-detail.md" },
+      "dependsOn": ["M003-001"]
+    },
+    {
+      "id": "M009-001",
+      "title": "Command Palette - Search & Navigation",
+      "priority": 22,
+      "passes": false,
+      "source": { "prdPath": "docs/wireframes/modals/M009-command-palette.md" },
+      "dependsOn": ["S006-002"]
+    },
+    {
+      "id": "M009-002",
+      "title": "Command Palette - Agent Search",
+      "priority": 23,
+      "passes": false,
+      "source": { "prdPath": "docs/wireframes/modals/M009-command-palette.md" },
+      "dependsOn": ["M009-001"]
+    },
+    {
+      "id": "RESPONSIVE-001",
+      "title": "Responsive Layout - Mobile Breakpoints",
+      "priority": 24,
+      "passes": false,
+      "source": { "prdPath": "docs/wireframes/RESPONSIVE-LAYOUTS.md" },
+      "dependsOn": ["S006-002"]
+    },
+    {
+      "id": "A11Y-001",
+      "title": "Accessibility - ARIA & Keyboard",
+      "priority": 25,
+      "passes": false,
+      "source": { "prdPath": "docs/wireframes/COMPONENT-SPECS.md" },
+      "dependsOn": ["RESPONSIVE-001"]
+    }
+  ]
+}
