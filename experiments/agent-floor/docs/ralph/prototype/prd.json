@@ -16,7 +16,7 @@
   },
   "meta": {
     "totalStories": 25,
-    "passedStories": 5
+    "passedStories": 7
   },
   "stories": [
     {
@@ -85,25 +85,35 @@
       "id": "S006-002",
       "title": "Floor Screen - Tab Navigation & Panel",
       "priority": 6,
-      "passes": false,
+      "passes": true,
       "source": {
         "prdPath": "docs/wireframes/screens/S006-floor.md"
       },
       "dependsOn": [
         "S006-001"
-      ]
+      ],
+      "lastAttempt": {
+        "timestamp": "2026-01-23T06:55:43Z",
+        "engine": "claude",
+        "success": true
+      }
     },
     {
       "id": "S006A-001",
       "title": "Chat Tab - Message List & Input",
       "priority": 7,
-      "passes": false,
+      "passes": true,
       "source": {
         "prdPath": "docs/wireframes/tabs/S006-A-chat.md"
       },
       "dependsOn": [
         "S006-002"
-      ]
+      ],
+      "lastAttempt": {
+        "timestamp": "2026-01-23T07:15:00Z",
+        "engine": "claude",
+        "success": true
+      }
     },
     {
       "id": "S006A-002",
