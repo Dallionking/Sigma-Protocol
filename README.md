@@ -39,25 +39,32 @@ Sigma Protocol guides AI assistants through a complete product development workf
 
 **Step 1: Install Sigma Protocol**
 ```bash
-# Clone the repo
+# Install globally
+npm install -g sigma-protocol
+
+# Or clone and link locally
 git clone https://github.com/Dallionking/Sigma-Protocol.git
 cd Sigma-Protocol
-
-# Install dependencies
 npm install
-
-# Run the CLI
-node cli/sigma-cli.js
+npm link
 ```
 
-**Step 2: Create a New Project**
+**Step 2: Run Sigma**
+```bash
+# Just type sigma
+sigma
+
+# This opens the interactive menu
+```
+
+**Step 3: Create a New Project**
 ```bash
 # Interactive project wizard
-node cli/sigma-cli.js new
+sigma new
 
-# Or manually create project structure
-mkdir my-project && cd my-project
-node ../Sigma-Protocol/cli/sigma-cli.js retrofit
+# Or add to existing project
+cd your-project
+sigma retrofit
 ```
 
 **Step 3: Start the Workflow in Your AI Assistant**
@@ -87,7 +94,7 @@ The AI will guide you through:
 **Option 1: Full Retrofit**
 ```bash
 cd your-existing-project
-node /path/to/Sigma-Protocol/cli/sigma-cli.js retrofit
+sigma retrofit
 ```
 
 This will:
@@ -264,18 +271,18 @@ See [RALPH-MODE.md](docs/RALPH-MODE.md) for details.
 ## CLI Reference
 
 ```bash
-node cli/sigma-cli.js [command]
+sigma [command]
 
 Commands:
-  (none)              Interactive installation menu
-  new                 Create new project wizard
-  retrofit            Add Sigma to existing project
-  doctor              Installation health check
-  doctor --fix        Auto-fix common issues
-  install-skills      Install all skills (163)
-  status              Show workflow status
-  search <query>      Search commands and skills
-  help                Show all commands
+  sigma                 Interactive installation menu
+  sigma new             Create new project wizard
+  sigma retrofit        Add Sigma to existing project
+  sigma doctor          Installation health check
+  sigma doctor --fix    Auto-fix common issues
+  sigma install-skills  Install all skills (163)
+  sigma status          Show workflow status
+  sigma search <query>  Search commands and skills
+  sigma help            Show all commands
 ```
 
 ---
