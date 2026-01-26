@@ -155,14 +155,14 @@ ls -d .opencode/skill/*/ 2>/dev/null | wc -l
 
 ### B.3 Auto-Install Missing Skills
 
-**This step automatically installs missing Foundation Skills from SSS Protocol source.**
+**This step automatically installs missing Foundation Skills from Sigma Protocol source.**
 
 ```typescript
 // Auto-install logic executed when --fix flag is used or skills are missing
 
 interface SkillInstallConfig {
   skillName: string;
-  sourcePath: string;  // Relative to SSS Protocol package
+  sourcePath: string;  // Relative to Sigma Protocol package
   required: boolean;
 }
 
@@ -174,9 +174,9 @@ const REQUIRED_SKILLS: SkillInstallConfig[] = [
 ];
 
 async function autoInstallMissingSkills(platform: 'cursor' | 'claude-code' | 'opencode', missingSkills: string[]) {
-  // Determine SSS Protocol source directory
+  // Determine Sigma Protocol source directory
   const sssProtocolDir = await findSssProtocolDir();
-  // Options: node_modules/sss-protocol, ~/.sss-protocol, or global install
+  // Options: node_modules/sigma-protocol, ~/.sigma-protocol, or global install
 
   // Determine target directory based on platform
   const targetConfig = {
@@ -215,9 +215,9 @@ async function autoInstallMissingSkills(platform: 'cursor' | 'claude-code' | 'op
 async function findSssProtocolDir(): Promise<string> {
   // Check locations in order of preference
   const locations = [
-    'node_modules/sss-protocol',           // Local install
-    `${process.env.HOME}/.sss-protocol`,   // User home
-    '/usr/local/share/sss-protocol',       // Global install
+    'node_modules/sigma-protocol',           // Local install
+    `${process.env.HOME}/.sigma-protocol`,   // User home
+    '/usr/local/share/sigma-protocol',       // Global install
   ];
 
   for (const loc of locations) {
@@ -226,13 +226,13 @@ async function findSssProtocolDir(): Promise<string> {
     }
   }
 
-  throw new Error('SSS Protocol not found. Run: npm install sss-protocol');
+  throw new Error('Sigma Protocol not found. Run: npm install sigma-protocol');
 }
 ```
 
 **Auto-Install Behavior:**
 - **Detects missing required skills** (frontend-design, systematic-debugging)
-- **Copies from SSS Protocol source directory** (node_modules or ~/.sss-protocol)
+- **Copies from Sigma Protocol source directory** (node_modules or ~/.sigma-protocol)
 - **Creates directory structure if needed** (for Claude Code/OpenCode)
 - **Reports each skill installed**
 - **Works with `--fix` flag or automatically when required skills are missing**
@@ -250,14 +250,14 @@ async function findSssProtocolDir(): Promise<string> {
 
 ```bash
 # Via SSS CLI
-npx sss-protocol install-skills --platform [cursor|claude-code|opencode]
+npx sigma-protocol install-skills --platform [cursor|claude-code|opencode]
 
 # Or copy manually for Cursor
-cp node_modules/sss-protocol/src/skills/frontend-design.md .cursor/rules/sss-frontend-design.mdc
+cp node_modules/sigma-protocol/src/skills/frontend-design.md .cursor/rules/sss-frontend-design.mdc
 
 # Or copy manually for Claude Code
 mkdir -p .claude/skills/frontend-design
-cp node_modules/sss-protocol/src/skills/frontend-design.md .claude/skills/frontend-design/SKILL.md
+cp node_modules/sigma-protocol/src/skills/frontend-design.md .claude/skills/frontend-design/SKILL.md
 ```
 
 **Quality Gate B:**
@@ -595,7 +595,7 @@ After passing this step:
 
 ```bash
 # Reinstall Foundation Skills
-npx sss-protocol install-skills --platform [your-platform]
+npx sigma-protocol install-skills --platform [your-platform]
 
 # Verify installation
 ls -la .cursor/rules/sss-*.mdc   # For Cursor

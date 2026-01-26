@@ -298,7 +298,7 @@ flowchart TD
 
 ---
 
-## Integration with SSS Protocol
+## Integration with Sigma Protocol
 
 ### Step 3 (UX Design)
 

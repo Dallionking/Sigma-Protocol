@@ -2,7 +2,7 @@
   "$schema": "../../schemas/ralph-backlog.schema.json",
   "project": "agent-floor",
   "version": "0.2.0",
-  "workspace": "/Users/dallionking/SSS Projects/SSS-Protocol/experiments/agent-floor",
+  "workspace": "/Users/dallionking/SSS Projects/Sigma-Protocol/experiments/agent-floor",
   "generatedAt": "2026-01-22T00:00:00Z",
   "config": {
     "uiValidation": "agent-browser",

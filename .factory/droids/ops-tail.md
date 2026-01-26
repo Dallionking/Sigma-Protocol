@@ -34,7 +34,7 @@ Open terminal windows showing live Ralph loop output.
 Run the tail-logs script:
 
 ```bash
-/Users/dallionking/SSS\ Projects/SSS-Protocol/scripts/ralph/tail-logs.sh {{target}}
+/Users/dallionking/SSS\ Projects/Sigma-Protocol/scripts/ralph/tail-logs.sh {{target}}
 ```
 
 ### Arguments

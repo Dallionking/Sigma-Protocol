@@ -326,7 +326,7 @@ node --inspect-brk script.js
 
 ---
 
-## Integration with SSS Protocol
+## Integration with Sigma Protocol
 
 ### @ui-healer
 

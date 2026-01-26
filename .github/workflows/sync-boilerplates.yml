@@ -1,8 +1,8 @@
-# SSS Protocol Boilerplate Sync Workflow
+# Sigma Protocol Boilerplate Sync Workflow
 # 
 # This workflow:
 # 1. Builds platform-specific outputs (Cursor, Claude Code, OpenCode)
-# 2. Syncs SSS commands from the commands repo to all boilerplate repos
+# 2. Syncs Sigma commands from the commands repo to all boilerplate repos
 #
 # Triggered when command files are modified on the main branch.
 #
@@ -87,9 +87,9 @@ jobs:
           mkdir -p dist/cursor dist/claude-code dist/opencode
           
           # Build for each platform
-          node tools/sss-cli.js build --platform cursor --target dist/cursor
-          node tools/sss-cli.js build --platform claude-code --target dist/claude-code
-          node tools/sss-cli.js build --platform opencode --target dist/opencode
+          node tools/sigma-cli.js build --platform cursor --target dist/cursor
+          node tools/sigma-cli.js build --platform claude-code --target dist/claude-code
+          node tools/sigma-cli.js build --platform opencode --target dist/opencode
           
           echo "Build complete!"
           echo ""
@@ -166,11 +166,11 @@ jobs:
           name: platform-outputs
           path: dist/
 
-      - name: Sync to sss-nextjs-starter
+      - name: Sync to sigma-nextjs-starter
         uses: ./.github/actions/sync-boilerplate
         with:
           source_folder: boilerplates/nextjs-saas
-          target_repo: ${{ env.GITHUB_ORG }}/sss-nextjs-starter
+          target_repo: ${{ env.GITHUB_ORG }}/sigma-nextjs-starter
           deploy_key: ${{ secrets.BOILERPLATE_DEPLOY_KEY }}
           # Include multi-platform outputs
           include_cursor: 'true'
@@ -195,11 +195,11 @@ jobs:
           name: platform-outputs
           path: dist/
 
-      - name: Sync to sss-expo-starter
+      - name: Sync to sigma-expo-starter
         uses: ./.github/actions/sync-boilerplate
         with:
           source_folder: boilerplates/expo-mobile
-          target_repo: ${{ env.GITHUB_ORG }}/sss-expo-starter
+          target_repo: ${{ env.GITHUB_ORG }}/sigma-expo-starter
           deploy_key: ${{ secrets.BOILERPLATE_DEPLOY_KEY }}
           include_cursor: 'true'
           include_claude_code: 'true'
@@ -223,11 +223,11 @@ jobs:
           name: platform-outputs
           path: dist/
 
-      - name: Sync to sss-nextjs-ai
+      - name: Sync to sigma-nextjs-ai
         uses: ./.github/actions/sync-boilerplate
         with:
           source_folder: boilerplates/nextjs-ai
-          target_repo: ${{ env.GITHUB_ORG }}/sss-nextjs-ai
+          target_repo: ${{ env.GITHUB_ORG }}/sigma-nextjs-ai
           deploy_key: ${{ secrets.BOILERPLATE_DEPLOY_KEY }}
           include_cursor: 'true'
           include_claude_code: 'true'
@@ -251,11 +251,11 @@ jobs:
           name: platform-outputs
           path: dist/
 
-      - name: Sync to sss-nextjs-portable
+      - name: Sync to sigma-nextjs-portable
         uses: ./.github/actions/sync-boilerplate
         with:
           source_folder: boilerplates/nextjs-portable
-          target_repo: ${{ env.GITHUB_ORG }}/sss-nextjs-portable
+          target_repo: ${{ env.GITHUB_ORG }}/sigma-nextjs-portable
           deploy_key: ${{ secrets.BOILERPLATE_DEPLOY_KEY }}
           include_cursor: 'true'
           include_claude_code: 'true'
@@ -279,11 +279,11 @@ jobs:
           name: platform-outputs
           path: dist/
 
-      - name: Sync to sss-tanstack-starter
+      - name: Sync to sigma-tanstack-starter
         uses: ./.github/actions/sync-boilerplate
         with:
           source_folder: boilerplates/tanstack-saas
-          target_repo: ${{ env.GITHUB_ORG }}/sss-tanstack-starter
+          target_repo: ${{ env.GITHUB_ORG }}/sigma-tanstack-starter
           deploy_key: ${{ secrets.BOILERPLATE_DEPLOY_KEY }}
           include_cursor: 'true'
           include_claude_code: 'true'
@@ -297,7 +297,7 @@ jobs:
     steps:
       - name: Summary
         run: |
-          echo "## SSS Protocol Sync Summary" >> $GITHUB_STEP_SUMMARY
+          echo "## Sigma Protocol Sync Summary" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "### Platform Build" >> $GITHUB_STEP_SUMMARY
           echo "| Platform | Status |" >> $GITHUB_STEP_SUMMARY

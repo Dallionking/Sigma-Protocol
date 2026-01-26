@@ -1162,7 +1162,7 @@ After:  24/24 screens documented (100%)
 
 ### E1: Read SSS Manifest
 
-Check for `.sss-manifest.json` in target codebase:
+Check for `.sigma-manifest.json` in target codebase:
 
 ```typescript
 interface SSSManifest {
@@ -1232,7 +1232,7 @@ async function compareVersions(manifest: SSSManifest): Promise<VersionComparison
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 ## Manifest Found
-- Location: .sss-manifest.json
+- Location: .sigma-manifest.json
 - Last Sync: 2025-11-15T10:30:00Z (19 days ago)
 - Commands Tracked: 8
 
@@ -1276,7 +1276,7 @@ Proceed with sync? (yes/no/select)
 Commands are re-run based on dependency cascade rules:
 
 ```typescript
-// See docs/mcp/SSS-VERSIONING.md for canonical cascade rules
+// See docs/mcp/SIGMA-VERSIONING.md for canonical cascade rules
 const CASCADE_RULES = {
   'step-1': ['step-1.5', 'step-2', 'step-3', 'step-4', 'step-10', 'step-11'],
   'step-1.5': ['step-2', 'step-9'],  // Offer Architecture affects Architecture + Landing Page
@@ -1345,7 +1345,7 @@ async function updateManifest(command: string, version: string) {
 | generators/scaffold | RE-RUN | ✅ Updated references |
 
 ## Manifest Updated
-- Location: .sss-manifest.json
+- Location: .sigma-manifest.json
 - New Last Sync: 2025-12-04T15:30:00Z
 - Commands Tracked: 9 (+1 new)
 - All versions current: ✅
@@ -1619,7 +1619,7 @@ When a command is updated and re-run, downstream commands may need to be re-run 
 ### Cascade Rule Matrix
 
 ```typescript
-// See docs/mcp/SSS-VERSIONING.md for canonical cascade rules
+// See docs/mcp/SIGMA-VERSIONING.md for canonical cascade rules
 const CASCADE_RULES: Record<string, string[]> = {
   // Core Documentation Steps
   'step-0-environment-setup': [],  // Foundation - no cascades
@@ -1784,8 +1784,8 @@ The animation quality reference from `MOBILE_APP_DESIGN_LEARNINGS.md` is now int
 ### Example 1: Sync Mode (Keeping Commands Updated)
 
 ```bash
-# 1. User has project with .sss-manifest.json
-$ cat .sss-manifest.json
+# 1. User has project with .sigma-manifest.json
+$ cat .sigma-manifest.json
 # Shows commands run 3 weeks ago
 
 # 2. Check for updates (dry run)

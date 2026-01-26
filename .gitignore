@@ -94,7 +94,7 @@ temp/
 *.tracking.json
 
 # Research & Analysis (not needed by end users)
-.sss/confidence/
+.sigma/confidence/
 docs/research/
 docs/analysis/
 *-analysis-*.md
@@ -171,3 +171,4 @@ CHANGELOG-*.md
 
 # Archived documentation
 .archive/
+package-lock.json

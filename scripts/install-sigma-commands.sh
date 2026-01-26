@@ -1,6 +1,6 @@
 #!/bin/bash
-# SSS Commands Installer (Bash version)
-# Installs SSS commands into .cursor/ structure with folder preservation
+# Sigma Commands Installer (Bash version)
+# Installs Sigma commands into .cursor/ structure with folder preservation
 
 set -e
 
@@ -27,7 +27,7 @@ while [[ $# -gt 0 ]]; do
         --backup|-b) BACKUP=true; shift ;;
         --verbose|-v) VERBOSE=true; shift ;;
         --help|-h)
-            echo "Usage: install-sss-commands.sh [OPTIONS]"
+            echo "Usage: install-sigma-commands.sh [OPTIONS]"
             echo ""
             echo "Options:"
             echo "  -f, --force     Override all existing files"
@@ -55,7 +55,7 @@ SKIPPED=0
 BACKED=0
 ERRORS=0
 
-echo -e "${MAGENTA}\n🚀 SSS Commands Installer\n${NC}"
+echo -e "${MAGENTA}\n🚀 Sigma Commands Installer\n${NC}"
 echo -e "${GRAY}Source: $SOURCE_ROOT${NC}"
 echo -e "${GRAY}Target: $TARGET_COMMANDS (commands), $TARGET_RULES (rules)${NC}"
 

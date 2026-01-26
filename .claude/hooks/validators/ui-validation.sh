@@ -174,7 +174,7 @@ run_validation() {
     fi
 
     # Take screenshot for evidence
-    local screenshot_path="$PROJECT_ROOT/.sss/validation-screenshots/${SESSION_ID}.png"
+    local screenshot_path="$PROJECT_ROOT/.sigma/validation-screenshots/${SESSION_ID}.png"
     mkdir -p "$(dirname "$screenshot_path")" 2>/dev/null || true
     agent-browser screenshot "$screenshot_path" 2>/dev/null || true
 

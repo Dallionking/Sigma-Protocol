@@ -1,6 +1,6 @@
 ---
 name: retrofit-sync
-description: "Unified retrofit command - sync any project with latest SSS-Protocol in one pass"
+description: "Unified retrofit command - sync any project with latest Sigma-Protocol in one pass"
 model: claude-sonnet-4-5-20241022
 tools:
   - Read
@@ -22,9 +22,9 @@ tools:
 # /retrofit-sync — Unified Project Retrofit
 
 **Mission**
-Bring any existing project up to the latest SSS-Protocol standards in a single unified workflow. This command orchestrates the entire retrofit process: analyze, update, generate, and Ralph setup.
+Bring any existing project up to the latest Sigma-Protocol standards in a single unified workflow. This command orchestrates the entire retrofit process: analyze, update, generate, and Ralph setup.
 
-**Valuation Context:** You are a **Principal Consultant** deploying SSS-Protocol to a portfolio of projects. Speed and consistency are critical—every project should have identical tooling and methodology.
+**Valuation Context:** You are a **Principal Consultant** deploying Sigma-Protocol to a portfolio of projects. Speed and consistency are critical—every project should have identical tooling and methodology.
 
 ---
 
@@ -32,7 +32,7 @@ Bring any existing project up to the latest SSS-Protocol standards in a single u
 
 One command to retrofit any project:
 1. **Analyze** current state (gaps, versions, health)
-2. **Update** CLI and platform configs to latest SSS-Protocol
+2. **Update** CLI and platform configs to latest Sigma-Protocol
 3. **Generate** any missing SSS documentation
 4. **Setup** Ralph backlog structure for autonomous implementation
 
@@ -105,7 +105,7 @@ One command to retrofit any project:
 ---
 
 <goal>
-You are the **SSS Deployment Specialist** - responsible for bringing projects into SSS-Protocol compliance quickly and consistently.
+You are the **SSS Deployment Specialist** - responsible for bringing projects into Sigma-Protocol compliance quickly and consistently.
 
 ---
 
@@ -198,7 +198,7 @@ Write analysis summary to manifest for tracking:
 
 ### 3.1: Run Sigma Update
 
-Sync with latest SSS-Protocol:
+Sync with latest Sigma-Protocol:
 
 ```bash
 # If --backup flag was set, include it
@@ -274,7 +274,7 @@ find docs/prds -name "*.md" 2>/dev/null | head -20
 
 # Check for existing Ralph backlogs
 ls -la docs/ralph/*/prd.json 2>/dev/null
-ls -la .sss/ralph-backlog.json 2>/dev/null
+ls -la .sigma/ralph-backlog.json 2>/dev/null
 ```
 
 ### 5.2: Create Ralph Directory Structure
@@ -363,7 +363,7 @@ Create `docs/retrofit/SYNC-REPORT.md`:
 - .claude/commands/* (12 files)
 
 ### Backups
-- .sss/backups/backup-2026-01-21T00-00-00/
+- .sigma/backups/backup-2026-01-21T00-00-00/
 
 ## Next Steps
 
@@ -446,4 +446,4 @@ sigma ralph
 
 ---
 
-*Unified retrofit workflow for SSS-Protocol deployment*
+*Unified retrofit workflow for Sigma-Protocol deployment*

@@ -218,7 +218,7 @@ task-master models --set-research sonar-pro
 
 ---
 
-## Key Files in SSS Protocol
+## Key Files in Sigma Protocol
 
 - `cli/lib/orchestration/index.js` - Uses Taskmaster for PRD detection
 - `.taskmaster/tasks/tasks.json` - Task data

@@ -1,7 +1,7 @@
 {
-  "name": "sss-expo-starter",
+  "name": "sigma-expo-starter",
   "version": "1.0.0",
-  "description": "Production-ready Expo mobile app with Supabase, RevenueCat, and SSS methodology",
+  "description": "Production-ready Expo mobile app with Supabase, RevenueCat, and Sigma methodology",
   "main": "expo-router/entry",
   "scripts": {
     "dev": "expo start",

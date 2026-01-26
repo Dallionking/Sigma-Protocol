@@ -1,6 +1,6 @@
 #!/bin/bash
-# SSS OpenCode Configuration Installer
-# Installs SSS commands, skills, and agents into ~/.config/opencode/
+# Sigma OpenCode Configuration Installer
+# Installs Sigma commands, skills, and agents into ~/.config/opencode/
 # for global availability across all projects
 
 set -e
@@ -36,7 +36,7 @@ while [[ $# -gt 0 ]]; do
         --help|-h)
             echo "Usage: install-opencode-config.sh [OPTIONS]"
             echo ""
-            echo "Installs SSS Protocol commands, skills, and agents into OpenCode's"
+            echo "Installs Sigma Protocol commands, skills, and agents into OpenCode's"
             echo "global configuration directory (~/.config/opencode/)."
             echo ""
             echo "Options:"
@@ -52,8 +52,8 @@ while [[ $# -gt 0 ]]; do
             echo "After installation, commands are available in OpenCode as:"
             echo "  /step-1-ideation     - Run ideation step"
             echo "  /audit/gap-analysis  - Run gap analysis"
-            echo "  @sigma               - Use primary SSS agent"
-            echo "  @sss-researcher      - Use researcher subagent"
+            echo "  @sigma               - Use primary Sigma agent"
+            echo "  @sigma-researcher      - Use researcher subagent"
             exit 0
             ;;
         *) echo "Unknown option: $1"; exit 1 ;;
@@ -177,7 +177,7 @@ copy_file() {
 # Header
 echo -e "${MAGENTA}"
 echo "╔══════════════════════════════════════════════════════════════════╗"
-echo "║           SSS Protocol - OpenCode Configuration Installer         ║"
+echo "║           Sigma Protocol - OpenCode Configuration Installer         ║"
 echo "╚══════════════════════════════════════════════════════════════════╝"
 echo -e "${NC}"
 
@@ -242,12 +242,12 @@ if should_install_all || [ "$SKILLS_ONLY" = true ]; then
 fi
 
 # ══════════════════════════════════════════════════════════════════
-# PHASE 2: Install SSS Agents
+# PHASE 2: Install Sigma Agents
 # ══════════════════════════════════════════════════════════════════
 
 if should_install_all || [ "$AGENTS_ONLY" = true ]; then
     echo -e "${MAGENTA}\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
-    echo -e "${MAGENTA}🤖 Phase 2: Installing SSS Agents${NC}"
+    echo -e "${MAGENTA}🤖 Phase 2: Installing Sigma Agents${NC}"
     echo -e "${MAGENTA}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
     
     AGENTS_SOURCE="$SOURCE_ROOT/platforms/opencode/agent"
@@ -335,8 +335,8 @@ echo -e "${MAGENTA}\n━━━━━━━━━━━━━━━━━━━�
 if [ "$DRY_RUN" = false ]; then
     echo -e "${CYAN}\n🎯 Next Steps:${NC}"
     echo -e "   1. Start OpenCode in any project: ${GREEN}opencode${NC}"
-    echo -e "   2. Use SSS commands: ${GREEN}/step-1-ideation${NC}"
-    echo -e "   3. Use SSS agents: ${GREEN}@sigma${NC} or ${GREEN}@sss-researcher${NC}"
+    echo -e "   2. Use Sigma commands: ${GREEN}/step-1-ideation${NC}"
+    echo -e "   3. Use Sigma agents: ${GREEN}@sigma${NC} or ${GREEN}@sigma-researcher${NC}"
     echo -e "   4. List available commands: ${GREEN}/help${NC}"
     echo ""
     echo -e "${CYAN}📂 Installed to:${NC}"

@@ -495,7 +495,7 @@ Add this detection rule:
 After generating rules, also generate the agentic tools:
 
 ```bash
-# Create .sss directories
+# Create .sigma directories
 mkdir -p .sigma/tools
 mkdir -p .sigma/memory
 

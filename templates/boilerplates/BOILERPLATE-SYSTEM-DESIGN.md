@@ -157,7 +157,7 @@ interface BoilerplateProvenance {
 
 ```typescript
 function detectBoilerplate(projectRoot: string): BoilerplateProvenance | null {
-  const provenancePath = path.join(projectRoot, '.sss', 'boilerplate.json');
+  const provenancePath = path.join(projectRoot, '.sigma', 'boilerplate.json');
   
   if (!fs.existsSync(provenancePath)) {
     return null; // Custom build

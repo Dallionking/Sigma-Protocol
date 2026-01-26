@@ -240,12 +240,12 @@
     },
     "source_version": {
       "type": "string",
-      "description": "Version of SSS-Protocol source at last sync",
+      "description": "Version of Sigma-Protocol source at last sync",
       "pattern": "^\\d+\\.\\d+\\.\\d+(-[a-zA-Z0-9.]+)?$"
     },
     "source_commit": {
       "type": "string",
-      "description": "Git commit hash of SSS-Protocol at last sync",
+      "description": "Git commit hash of Sigma-Protocol at last sync",
       "pattern": "^[a-f0-9]{7,40}$"
     }
   },

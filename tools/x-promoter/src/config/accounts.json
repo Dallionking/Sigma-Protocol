@@ -1,14 +1,14 @@
 {
   "accounts": [
     {
-      "id": "sss-protocol",
-      "name": "SSS Protocol Promotion",
+      "id": "sigma-protocol",
+      "name": "Sigma Protocol Promotion",
       "enabled": true,
       "product": {
-        "name": "SSS Protocol",
+        "name": "Sigma Protocol",
         "tagline": "FAANG-style AI development workflow for everyone",
         "description": "A structured approach to AI-assisted development that replicates enterprise-level planning processes",
-        "githubUrl": "https://github.com/dallionking/sss-protocol",
+        "githubUrl": "https://github.com/dallionking/sigma-protocol",
         "creator": "Dallion King",
         "features": [
           "BDD-first approach with structured scenarios",

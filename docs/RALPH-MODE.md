@@ -231,7 +231,7 @@ File locking (`flock`) prevents race conditions when updating `prd.json`.
 │   │ PRD → JSON     │        │ PRD → JSON     │                         │
 │   └───────┬────────┘        └───────┬────────┘                         │
 │           ↓                         ↓                                   │
-│   .sss/ralph-backlog.json    .sss/ralph-backlog.json                   │
+│   .sigma/ralph-backlog.json    .sigma/ralph-backlog.json                   │
 │           │                         │                                   │
 │           └─────────┬───────────────┘                                   │
 │                     ↓                                                   │
@@ -268,8 +268,8 @@ File locking (`flock`) prevents race conditions when updating `prd.json`.
 
 | File | Purpose | Location |
 |------|---------|----------|
-| `ralph-backlog.json` | Machine-readable story backlog | `.sss/` or `docs/ralph/` |
-| `invokes.json` | Agent/skill invocation map | `.sss/` |
+| `ralph-backlog.json` | Machine-readable story backlog | `.sigma/` or `docs/ralph/` |
+| `invokes.json` | Agent/skill invocation map | `.sigma/` |
 | `prd-map.json` | Maps markdown PRDs to JSON backlogs | `docs/ralph/` |
 | `progress.txt` | Short-term memory between iterations | `docs/ralph/` |
 | `AGENTS.md` | Long-term architectural learnings | `docs/ralph/` |
@@ -485,7 +485,7 @@ sigma ralph --backlog docs/ralph/custom-backlog.json
 
 ### What the CLI Does
 
-1. **Loads backlog** from `.sss/ralph-backlog.json` (or custom path)
+1. **Loads backlog** from `.sigma/ralph-backlog.json` (or custom path)
 2. **Filters stories** by status (`pending`), dependencies, PRD name, or stream
 3. **Displays execution plan** and confirms with user
 4. **For each story:**
@@ -746,7 +746,7 @@ sigma sandbox destroy --all
 
 ### Sandbox Session Schema
 
-Session state is tracked in `.sss/sandbox-session.json`:
+Session state is tracked in `.sigma/sandbox-session.json`:
 
 ```json
 {
@@ -861,7 +861,7 @@ A PRD is `ralph_ready: true` when:
 
 ## 10. Agent/Skill Invocation Map (@invokes)
 
-Step 13 now generates `.sss/invokes.json` with machine-readable agent selection rules.
+Step 13 now generates `.sigma/invokes.json` with machine-readable agent selection rules.
 
 ### Pattern-Based Agent Selection
 
@@ -897,7 +897,7 @@ Step 13 now generates `.sss/invokes.json` with machine-readable agent selection 
 ### Usage in Ralph Loop
 
 When executing a story, the CLI:
-1. Reads `.sss/invokes.json`
+1. Reads `.sigma/invokes.json`
 2. Matches story files against patterns
 3. Selects appropriate agent
 4. Injects agent instructions into prompt
@@ -997,7 +997,7 @@ python3 .claude/hooks/validators/prd-validator.py docs/prds/your-prd.md
 **A:**
 - **Short-term:** `docs/ralph/progress.txt` (per-story notes)
 - **Long-term:** `docs/ralph/AGENTS.md` (architectural patterns)
-- **Backlog:** `.sss/ralph-backlog.json` (story status)
+- **Backlog:** `.sigma/ralph-backlog.json` (story status)
 
 ---
 
@@ -1009,7 +1009,7 @@ python3 .claude/hooks/validators/prd-validator.py docs/prds/your-prd.md
 - [ ] Convert to JSON: `sigma step-5b-prd-to-json` or `sigma step-11a-prd-to-json`
 - [ ] Start dev server: `npm run dev`
 - [ ] Run Ralph loop: `sigma ralph`
-- [ ] Monitor `.sss/ralph-backlog.json` for status updates
+- [ ] Monitor `.sigma/ralph-backlog.json` for status updates
 
 ### For Sandbox Execution
 

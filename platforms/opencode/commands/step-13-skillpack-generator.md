@@ -433,7 +433,7 @@ invokes:
 
 ### 6.3 Generate Invocation Index (AUTO-GENERATED)
 
-Create `.sss/invokes.json` with:
+Create `.sigma/invokes.json` with:
 - Pattern-to-agent mappings
 - Task type patterns
 - Acceptance criteria type handlers
@@ -523,7 +523,7 @@ Return:
 - Fan-out script status (if multi-root)
 - Plugin scaffold created/updated
 - @invokes metadata generated (patterns, AC types, skills)
-- `.sss/invokes.json` created
+- `.sigma/invokes.json` created
 - Skill matrix generated (count by category)
 - CLAUDE.md placeholders filled
 - Skipped outputs (and why)
@@ -585,7 +585,7 @@ If OpenCode detected:
 
 | Check | Description | Points |
 |-------|-------------|--------|
-| file_exists:.sss/invokes.json | Invokes index generated | 4 |
+| file_exists:.sigma/invokes.json | Invokes index generated | 4 |
 | has_pattern:invokes.json:patterns | Pattern-to-agent mapping | 3 |
 | has_pattern:invokes.json:acceptanceCriteriaTypes | AC type handlers | 3 |
 | has_pattern:CLAUDE.md:Ralph Loop Integration | Orchestrator has Ralph section | 2 |

@@ -364,7 +364,7 @@ ignore:
 
 ---
 
-## Integration with SSS Protocol
+## Integration with Sigma Protocol
 
 ### Step 0 (Environment Setup)
 

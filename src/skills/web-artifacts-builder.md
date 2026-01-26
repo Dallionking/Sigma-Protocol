@@ -456,7 +456,7 @@ npx shadcn-ui@latest add button card dialog form input table
 
 ---
 
-## Integration with SSS Protocol
+## Integration with Sigma Protocol
 
 ### Complex UI Features
 

@@ -1,16 +1,16 @@
 #!/usr/bin/env node
 
 /**
- * SSS Protocol CLI
+ * Sigma Protocol CLI
  *
  * Interactive installer for the Sigma Startup Stack methodology.
  * Supports Cursor, Claude Code, and OpenCode platforms.
  *
  * Usage:
- *   npx sss-protocol install    # Interactive installation
- *   npx sss-protocol build      # Build platform outputs
- *   npx sss-protocol status     # Check installation status
- *   npx sss-protocol update     # Update to latest version
+ *   npx sigma-protocol install    # Interactive installation
+ *   npx sigma-protocol build      # Build platform outputs
+ *   npx sigma-protocol status     # Check installation status
+ *   npx sigma-protocol update     # Update to latest version
  */
 
 import { Command } from "commander";
@@ -158,7 +158,7 @@ async function writeManifest(targetDir, manifest) {
   await fs.writeFile(manifestPath, JSON.stringify(manifest, null, 2));
 }
 
-// Get current SSS-Protocol version from package.json
+// Get current Sigma-Protocol version from package.json
 async function getSourceVersion() {
   try {
     const pkgPath = path.join(ROOT_DIR, "package.json");
@@ -169,7 +169,7 @@ async function getSourceVersion() {
   }
 }
 
-// Get current git commit hash from SSS-Protocol
+// Get current git commit hash from Sigma-Protocol
 async function getSourceCommit() {
   const { execFile } = await import("child_process");
   const { promisify } = await import("util");
@@ -188,7 +188,7 @@ async function getSourceCommit() {
 // Create a backup of existing installation
 async function createBackup(targetDir, platforms) {
   const timestamp = new Date().toISOString().replace(/[:.]/g, "-");
-  const backupDir = path.join(targetDir, ".sss", "backups", `backup-${timestamp}`);
+  const backupDir = path.join(targetDir, ".sigma", "backups", `backup-${timestamp}`);
 
   await fs.ensureDir(backupDir);
 
@@ -348,7 +348,7 @@ function analyzeAgentOutput(output) {
 
 // Save agent output for debugging
 async function saveAgentOutput(storyId, output, targetDir) {
-  const logsDir = path.join(targetDir, ".sss", "logs", "ralph");
+  const logsDir = path.join(targetDir, ".sigma", "logs", "ralph");
   await fs.ensureDir(logsDir);
 
   const timestamp = new Date().toISOString().replace(/[:.]/g, "-");
@@ -362,7 +362,7 @@ async function saveAgentOutput(storyId, output, targetDir) {
 function showBanner() {
   console.log(
     chalk.cyan(
-      figlet.textSync("SSS Protocol", {
+      figlet.textSync("Sigma Protocol", {
         font: "Small",
         horizontalLayout: "default",
       }),
@@ -636,7 +636,7 @@ ${existingFrontmatter.tools?.some((t) => t.includes("mcp_")) ? "  # MCP tools in
 
 # ${filename}
 
-**Source:** SSS Protocol ${module} module
+**Source:** Sigma Protocol ${module} module
 **Version:** ${existingFrontmatter.version || "1.0.0"}
 
 ---
@@ -661,7 +661,7 @@ allowed-tools:
 
 # /${filename}
 
-Invoke the **${filename}** agent from SSS Protocol.
+Invoke the **${filename}** agent from Sigma Protocol.
 
 This command runs the full ${filename} workflow including:
 - All HITL (Human-in-the-Loop) checkpoints
@@ -676,11 +676,11 @@ This command runs the full ${filename} workflow including:
 
 // Generate CLAUDE.md orchestrator with full module list
 function generateClaudeMd(modules) {
-  return `# SSS Protocol - Claude Code Configuration
+  return `# Sigma Protocol - Claude Code Configuration
 
 ## Overview
 
-SSS Protocol is a **platform-agnostic 13-step product development methodology** for AI-assisted development.
+Sigma Protocol is a **platform-agnostic 13-step product development methodology** for AI-assisted development.
 
 This CLAUDE.md orchestrates the SSS workflow in Claude Code, providing access to all step commands, agents, and skills.
 
@@ -830,7 +830,7 @@ Each step has verification criteria. Target: 80+/100 score.
 
 ## Documentation
 
-See https://github.com/your-org/sss-protocol for full documentation.
+See https://github.com/your-org/sigma-protocol for full documentation.
 `;
 }
 
@@ -962,7 +962,7 @@ $ARGUMENTS
 
 ---
 
-**This command invokes the @${filename} agent with full SSS Protocol methodology.**
+**This command invokes the @${filename} agent with full Sigma Protocol methodology.**
 
 Run with: \`/${filename} [your input]\`
 `;
@@ -1012,7 +1012,7 @@ permission:
 
 # ${filename}
 
-**Source:** SSS Protocol ${module} module
+**Source:** Sigma Protocol ${module} module
 **Version:** ${existingFrontmatter.version || "1.0.0"}
 **Format:** OpenCode Agent (full methodology preserved)
 
@@ -1026,11 +1026,11 @@ ${bodyContent}
 
 // Generate AGENTS.md for OpenCode
 function generateAgentsMd(_modules) {
-  return `# SSS Protocol - OpenCode Configuration
+  return `# Sigma Protocol - OpenCode Configuration
 
 ## Overview
 
-SSS Protocol is a 13-step product development methodology for AI-assisted development.
+Sigma Protocol is a 13-step product development methodology for AI-assisted development.
 This configuration enables the SSS workflow in OpenCode.
 
 ## Available Commands
@@ -1075,7 +1075,7 @@ Press Tab to switch between specialized agents:
 
 ## Documentation
 
-See https://github.com/your-org/sss-protocol for full documentation.
+See https://github.com/your-org/sigma-protocol for full documentation.
 `;
 }
 
@@ -1083,7 +1083,7 @@ See https://github.com/your-org/sss-protocol for full documentation.
 function generateOpenCodeConfig(_modules) {
   return {
     $schema: "https://opencode.dev/schemas/config.json",
-    name: "sss-protocol",
+    name: "sigma-protocol",
     version: "1.0.0",
     agents: {
       default: {
@@ -1139,7 +1139,7 @@ async function installCommand(options) {
     {
       type: "confirm",
       name: "confirm",
-      message: `Install SSS Protocol for ${platforms.map((p) => PLATFORMS[p].name).join(", ")}?`,
+      message: `Install Sigma Protocol for ${platforms.map((p) => PLATFORMS[p].name).join(", ")}?`,
       default: true,
     },
   ]);
@@ -1182,7 +1182,7 @@ async function installCommand(options) {
   console.log("");
   console.log(
     boxen(
-      chalk.green("SSS Protocol installed successfully!\n\n") +
+      chalk.green("Sigma Protocol installed successfully!\n\n") +
         chalk.white("Next steps:\n") +
         platforms
           .map((p) => {
@@ -1288,7 +1288,7 @@ async function statusCommand(options) {
 
   // Check for Ralph readiness
   const ralphPaths = [
-    path.join(targetDir, ".sss", "ralph-backlog.json"),
+    path.join(targetDir, ".sigma", "ralph-backlog.json"),
     path.join(targetDir, "docs", "ralph", "implementation", "prd.json"),
     path.join(targetDir, "docs", "ralph", "prototype", "prd.json"),
   ];
@@ -1372,7 +1372,7 @@ async function statusCommand(options) {
       console.log(chalk.cyan("  sigma update          # Update to latest version"));
     }
     if (!existing["claude-code"] && !existing.cursor && !existing.opencode) {
-      console.log(chalk.cyan("  sigma install         # Install SSS Protocol"));
+      console.log(chalk.cyan("  sigma install         # Install Sigma Protocol"));
     }
     if (!ralphReady && masterPrdExists) {
       console.log(chalk.cyan("  @step-11a-prd-to-json # Set up Ralph backlog"));
@@ -1701,7 +1701,7 @@ async function installHarnessCommand(options) {
       },
       {
         name: "sigma-workflow",
-        description: "SSS Protocol step execution",
+        description: "Sigma Protocol step execution",
         mode: "primary",
         model: "anthropic/claude-opus-4-5",
       },
@@ -1740,7 +1740,7 @@ ${agent.description}
     if (!(await fs.pathExists(harnessConfigPath))) {
       const harnessConfig = {
         $schema:
-          "https://raw.githubusercontent.com/your-org/sss-protocol/main/packages/sss-harness/sss-harness.schema.json",
+          "https://raw.githubusercontent.com/your-org/sigma-protocol/main/packages/sss-harness/sss-harness.schema.json",
         workflow: {
           qualityGateThreshold: 80,
           hitlEnabled: true,
@@ -1772,10 +1772,10 @@ ${agent.description}
           chalk.white("Next steps:\n") +
           chalk.cyan("  1. npm install sss-harness\n") +
           chalk.cyan(
-            "  2. npx sss-protocol install-skills --platform opencode\n",
+            "  2. npx sigma-protocol install-skills --platform opencode\n",
           ) +
           chalk.cyan("  3. Run 'opencode' and press Tab to switch agents\n\n") +
-          chalk.gray("Documentation: https://github.com/your-org/sss-protocol"),
+          chalk.gray("Documentation: https://github.com/your-org/sigma-protocol"),
         {
           padding: 1,
           margin: 1,
@@ -1994,20 +1994,20 @@ async function installValidatorsCommand(options) {
 const program = new Command();
 
 program
-  .name("sss-protocol")
-  .description("SSS Protocol - Platform-agnostic AI development methodology")
+  .name("sigma-protocol")
+  .description("Sigma Protocol - Platform-agnostic AI development methodology")
   .version("1.0.0-alpha.1");
 
 program
   .command("install")
   .alias("init")
-  .description("Interactive installation of SSS Protocol")
+  .description("Interactive installation of Sigma Protocol")
   .option("-t, --target <directory>", "Target directory", process.cwd())
   .action(installCommand);
 
 program
   .command("status")
-  .description("Check SSS Protocol installation status and health")
+  .description("Check Sigma Protocol installation status and health")
   .option("-t, --target <directory>", "Target directory", process.cwd())
   .option("-v, --verbose", "Show detailed health issues")
   .action(statusCommand);
@@ -2034,7 +2034,7 @@ async function updateCommand(options) {
   const force = options.force || false;
   const verbose = options.verbose || false;
 
-  console.log(chalk.white("SSS Protocol Update\n"));
+  console.log(chalk.white("Sigma Protocol Update\n"));
   console.log(chalk.gray(`Target: ${targetDir}`));
   console.log(chalk.gray(`Platform: ${platformArg}`));
   if (dryRun) console.log(chalk.yellow("Mode: DRY RUN"));
@@ -2048,7 +2048,7 @@ async function updateCommand(options) {
     spinner.warn("No .sigma-manifest.json found");
     console.log(chalk.yellow("\nThis project hasn't been initialized with Sigma Protocol."));
     console.log(chalk.white("Run:"));
-    console.log(chalk.cyan("  npx sss-protocol install\n"));
+    console.log(chalk.cyan("  npx sigma-protocol install\n"));
     console.log(chalk.gray("Or use --force to initialize during update."));
 
     if (!force) {
@@ -2061,7 +2061,7 @@ async function updateCommand(options) {
   }
 
   // Get source version info
-  spinner = ora("Checking SSS-Protocol version...").start();
+  spinner = ora("Checking Sigma-Protocol version...").start();
   const sourceVersion = await getSourceVersion();
   const sourceCommit = await getSourceCommit();
   spinner.succeed(`Source: v${sourceVersion}${sourceCommit ? ` (${sourceCommit})` : ""}`);
@@ -2195,7 +2195,7 @@ async function updateCommand(options) {
   console.log("");
   console.log(
     boxen(
-      chalk.green(`SSS Protocol updated to v${sourceVersion}!\n\n`) +
+      chalk.green(`Sigma Protocol updated to v${sourceVersion}!\n\n`) +
         chalk.white(`Platforms: ${platforms.map((p) => PLATFORMS[p]?.name || p).join(", ")}\n`) +
         chalk.white(`Modules: ${modules.length} modules\n`) +
         chalk.gray(`Files: +${changes.added.length} ~${changes.modified.length}\n\n`) +
@@ -2272,7 +2272,7 @@ async function computeAllHashes(targetDir, platforms) {
 
 program
   .command("update")
-  .description("Update SSS Protocol to latest version")
+  .description("Update Sigma Protocol to latest version")
   .option("-t, --target <directory>", "Target project directory", process.cwd())
   .option("-p, --platform <platform>", "Platform to update (cursor, claude-code, opencode, all)", "all")
   .option("--dry-run", "Preview changes without applying")
@@ -2332,7 +2332,7 @@ async function ralphCommand(options) {
 
   // Locate ralph-backlog.json
   const backlogPaths = [
-    path.join(targetDir, ".sss", "ralph-backlog.json"),
+    path.join(targetDir, ".sigma", "ralph-backlog.json"),
     path.join(targetDir, "docs", "ralph", "implementation", "prd.json"),
     path.join(targetDir, "docs", "ralph", "prototype", "prd.json"),
   ];
@@ -2609,7 +2609,7 @@ async function executeInSandbox(prompt, story, options) {
   }
 
   // Write prompt to temp file
-  const promptFile = path.join(targetDir, ".sss", `ralph-prompt-${story.id}.md`);
+  const promptFile = path.join(targetDir, ".sigma", `ralph-prompt-${story.id}.md`);
   await fs.ensureDir(path.dirname(promptFile));
   await fs.writeFile(promptFile, prompt);
 
@@ -2740,7 +2740,7 @@ async function executeWithClaude(prompt, story, options) {
   }
 
   // Write prompt to temp file
-  const promptFile = path.join(targetDir, ".sss", `ralph-prompt-${story.id}.md`);
+  const promptFile = path.join(targetDir, ".sigma", `ralph-prompt-${story.id}.md`);
   await fs.ensureDir(path.dirname(promptFile));
   await fs.writeFile(promptFile, prompt);
 
@@ -2962,7 +2962,7 @@ async function executeWithCursor(prompt, story, options) {
   console.log(chalk.white("---\n"));
 
   // Write prompt to file as backup
-  const promptFile = path.join(targetDir, ".sss", `ralph-prompt-${story.id}.md`);
+  const promptFile = path.join(targetDir, ".sigma", `ralph-prompt-${story.id}.md`);
   await fs.ensureDir(path.dirname(promptFile));
   await fs.writeFile(promptFile, prompt);
   console.log(chalk.gray(`Full prompt saved to: ${promptFile}\n`));

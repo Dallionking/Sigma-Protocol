@@ -1,6 +1,6 @@
-# Contributing to SSS Protocol
+# Contributing to Sigma Protocol
 
-Thank you for your interest in contributing to SSS Protocol! This document provides guidelines for contributing.
+Thank you for your interest in contributing to Sigma Protocol! This document provides guidelines for contributing.
 
 ## Code of Conduct
 
@@ -135,8 +135,8 @@ If unsure, open a discussion issue first.
 
 ```bash
 # Clone the repo
-git clone https://github.com/your-org/sss-protocol.git
-cd sss-protocol
+git clone https://github.com/your-org/sigma-protocol.git
+cd sigma-protocol
 
 # Install dependencies
 npm install
@@ -156,5 +156,5 @@ node tools/sss-cli.js build --platform cursor --target ./test-output
 
 ---
 
-Thank you for contributing to SSS Protocol! 🎉
+Thank you for contributing to Sigma Protocol! 🎉
 

@@ -80,7 +80,7 @@ You are the **Project Status Dashboard** - providing instant visibility into SSS
 ### Step 1: Check Core Documentation
 
 \`\`\`typescript
-// Canonical step order (see docs/mcp/SSS-VERSIONING.md for authoritative reference)
+// Canonical step order (see docs/mcp/SIGMA-VERSIONING.md for authoritative reference)
 const sssSteps = [
   {
     step: '0',

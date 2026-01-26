@@ -9,7 +9,7 @@
 
 ## Reporting a Vulnerability
 
-If you discover a security vulnerability in SSS Protocol, please report it responsibly:
+If you discover a security vulnerability in Sigma Protocol, please report it responsibly:
 
 ### Do NOT
 
@@ -19,7 +19,7 @@ If you discover a security vulnerability in SSS Protocol, please report it respo
 
 ### Do
 
-1. **Email**: Send details to [security@sss-protocol.dev] (or open a private security advisory on GitHub)
+1. **Email**: Send details to [security@sigma-protocol.dev] (or open a private security advisory on GitHub)
 2. **Include**:
    - Description of the vulnerability
    - Steps to reproduce
@@ -44,11 +44,11 @@ The following files should **never** be committed to version control:
 - Database connection strings
 - Service account keys
 
-SSS Protocol's `.gitignore` excludes these by default.
+Sigma Protocol's `.gitignore` excludes these by default.
 
 ### Command Execution
 
-SSS Protocol commands may execute shell commands and access the filesystem. When using commands:
+Sigma Protocol commands may execute shell commands and access the filesystem. When using commands:
 
 - Review generated code before running
 - Be cautious with `@implement-prd` and `@scaffold` in production
@@ -73,5 +73,5 @@ Ensure MCP servers are from trusted sources.
 
 ## Acknowledgments
 
-We appreciate security researchers who help keep SSS Protocol safe. Responsible reporters will be acknowledged (with permission) in release notes.
+We appreciate security researchers who help keep Sigma Protocol safe. Responsible reporters will be acknowledged (with permission) in release notes.
 

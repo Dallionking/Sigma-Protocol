@@ -1,5 +1,5 @@
 {
-  "name": "sss-tanstack-starter",
+  "name": "sigma-tanstack-starter",
   "version": "1.0.0",
   "description": "Modern full-stack SaaS with TanStack Start SSR and type-safe routing",
   "private": true,

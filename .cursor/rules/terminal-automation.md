@@ -138,7 +138,7 @@ function osascript(lines) {
 
 ---
 
-## Key Files in SSS Protocol
+## Key Files in Sigma Protocol
 
 - `cli/lib/orchestration/iterm-launcher.js` - iTerm2 native launcher
 - `cli/lib/orchestration/tmux-launcher.js` - tmux fallback launcher

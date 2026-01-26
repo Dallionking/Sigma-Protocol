@@ -143,7 +143,7 @@ const analysis = await parseAnalysisReport(analysisPath);
 ### A2: Determine Generation Scope
 
 \`\`\`typescript
-// Monetization check for conditional Step 1.5 (see docs/mcp/SSS-VERSIONING.md)
+// Monetization check for conditional Step 1.5 (see docs/mcp/SIGMA-VERSIONING.md)
 const monetizationResult = await detectMonetization();
 const isMonetized = monetizationResult.isMonetized;
 
@@ -255,7 +255,7 @@ Proceed? (yes/no)
 
 ### B1.5: Step 1.5 - OFFER_ARCHITECTURE.md (Conditional)
 
-**Only generated if monetization detected.** See detection rules in \`docs/mcp/SSS-VERSIONING.md\`.
+**Only generated if monetization detected.** See detection rules in \`docs/mcp/SIGMA-VERSIONING.md\`.
 
 **Source Analysis:**
 - Read MASTER_PRD.md for business model section

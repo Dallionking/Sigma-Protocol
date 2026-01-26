@@ -214,7 +214,7 @@ sigma f-thread --aggregate=best       # Pick the best
 | **Swarm Folders** | `docs/prds/swarm-[N]/` *(Step 11b)* |
 | **PRD Status** | `docs/prds/.prd-status.json` *(Step 11b)* |
 | Cursor Rules | `.cursorrules` |
-| **SSS Manifest** | `.sss-manifest.json` *(Version tracking)* |
+| **SSS Manifest** | `.sigma-manifest.json` *(Version tracking)* |
 | **Agentic Tools** | `.sigma/tools/` *(Grade 3 - typecheck, lint, test, build)* |
 | **Active Task** | `.sigma/memory/active_task.md` *(Grade 4 - resume support)* |
 

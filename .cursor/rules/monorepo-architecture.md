@@ -46,7 +46,7 @@ Invoke this skill when:
 
 ## Recommended Tool: Turborepo
 
-For most SSS Protocol projects, **Turborepo** is recommended:
+For most Sigma Protocol projects, **Turborepo** is recommended:
 
 | Tool | Best For | Complexity | Vercel Integration |
 |------|----------|------------|-------------------|
@@ -487,7 +487,7 @@ jobs:
 | Deployment | App Store | Play Store | Both stores |
 | Team expertise | Swift/iOS | Kotlin/Android | React Native |
 
-**Recommendation for SSS Protocol:** Use **Expo** for cross-platform unless:
+**Recommendation for Sigma Protocol:** Use **Expo** for cross-platform unless:
 - Client specifically requires native iOS (SwiftUI)
 - Heavy native integrations needed (AR, NFC, etc.)
 - Performance-critical native code required
@@ -583,7 +583,7 @@ import { Button } from '@project/ui';
 
 ---
 
-## Integration with SSS Protocol
+## Integration with Sigma Protocol
 
 ### Step 1 (Ideation)
 Project Scope Discovery determines if monorepo is needed.

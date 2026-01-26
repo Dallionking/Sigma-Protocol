@@ -35,11 +35,11 @@ SKILL_REGISTRY_LOADED=false
 #
 # Args:
 #   $1 - Project/workspace directory
-#   $2 - (Optional) SSS Protocol root directory
+#   $2 - (Optional) Sigma Protocol root directory
 # =============================================================================
 build_skill_registry() {
     local project_dir="$1"
-    local sss_root="${2:-}"
+    local sigma_root="${2:-}"
 
     # Create temp file for registry
     SKILL_REGISTRY_PATH=$(mktemp /tmp/ralph-skill-registry.XXXXXX.json)
@@ -56,15 +56,15 @@ build_skill_registry() {
         "$project_dir/platforms/claude-code/skills"
         "$project_dir/platforms/opencode/skill"
         # Package skill directories
-        "$project_dir/packages/sss-harness/skills"
+        "$project_dir/packages/sigma-harness/skills"
         "$project_dir/packages/sigma-protocol-plugin/skills"
     )
 
-    # Add SSS root if provided (for external projects using SSS)
-    if [[ -n "$sss_root" ]]; then
-        [[ -d "$sss_root/src/skills" ]] && skill_dirs+=("$sss_root/src/skills")
-        [[ -d "$sss_root/platforms/claude-code/skills" ]] && skill_dirs+=("$sss_root/platforms/claude-code/skills")
-        [[ -d "$sss_root/platforms/opencode/skill" ]] && skill_dirs+=("$sss_root/platforms/opencode/skill")
+    # Add Sigma root if provided (for external projects using Sigma)
+    if [[ -n "$sigma_root" ]]; then
+        [[ -d "$sigma_root/src/skills" ]] && skill_dirs+=("$sigma_root/src/skills")
+        [[ -d "$sigma_root/platforms/claude-code/skills" ]] && skill_dirs+=("$sigma_root/platforms/claude-code/skills")
+        [[ -d "$sigma_root/platforms/opencode/skill" ]] && skill_dirs+=("$sigma_root/platforms/opencode/skill")
     fi
 
     # Parse all skill files

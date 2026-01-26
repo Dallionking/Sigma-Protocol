@@ -37,7 +37,7 @@ function resolveSourceRoot() {
   return localRoot;
 }
 
-// Root directory of SSS-Protocol
+// Root directory of Sigma-Protocol
 export const ROOT_DIR = resolveSourceRoot();
 
 /**

@@ -265,7 +265,7 @@ Add to `.claude/settings.json`:
 
 ---
 
-## Integration with SSS Protocol
+## Integration with Sigma Protocol
 
 ### Step 11 (PRD Generation)
 
@@ -319,7 +319,7 @@ Fork workers use Stop hooks to validate completion:
 
 ```bash
 # Install validators
-npx sss-protocol install-validators
+npx sigma-protocol install-validators
 
 # Test a validator manually
 python3 .claude/hooks/validators/prd-validator.py docs/prds/F1.md

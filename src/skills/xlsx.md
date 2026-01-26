@@ -317,7 +317,7 @@ const schema = {
 
 ---
 
-## Integration with SSS Protocol
+## Integration with Sigma Protocol
 
 ### Data Analysis Tasks
 

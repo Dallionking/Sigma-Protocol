@@ -167,7 +167,7 @@ agents:
 # FOUNDATION SKILLS
 # =============================================================================
 # These skills are installed at Step 0 and available for all subsequent steps.
-# They provide universal capabilities that enhance the SSS workflow.
+# They provide universal capabilities that enhance the Sigma workflow.
 #
 # Step 13 (Skillpack Generator) creates PROJECT-SPECIFIC skill overlays
 # that build on these foundation skills with the project's design system,

@@ -658,20 +658,20 @@ async function generateInvokesJson(
     }
   };
 
-  // Ensure .sss directory exists
-  await fs.ensureDir(path.join(targetDir, '.sss'));
+  // Ensure .sigma directory exists
+  await fs.ensureDir(path.join(targetDir, '.sigma'));
 
   // Write invokes.json
   await fs.writeFile(
-    path.join(targetDir, '.sss', 'invokes.json'),
+    path.join(targetDir, '.sigma', 'invokes.json'),
     JSON.stringify(invokesJson, null, 2)
   );
 
-  console.log(`✅ Generated .sss/invokes.json (skill routing for Ralph loop)`);
+  console.log(`✅ Generated .sigma/invokes.json (skill routing for Ralph loop)`);
 }
 ```
 
-**Example output `.sss/invokes.json`:**
+**Example output `.sigma/invokes.json`:**
 
 ```json
 {
@@ -793,7 +793,7 @@ Ralph Loop automatically selects agents based on:
 2. Acceptance criteria types
 3. Stack-specific skills
 
-See `.sss/invokes.json` for the full mapping.
+See `.sigma/invokes.json` for the full mapping.
 
 ### Validator Hooks
 
@@ -907,7 +907,7 @@ Return:
 - Fan-out script status (if multi-root)
 - Plugin scaffold created/updated
 - **@invokes metadata generated** (patterns, AC types, skills)
-- **`.sss/invokes.json` created**
+- **`.sigma/invokes.json` created**
 - **Skill matrix generated** (count by category)
 - **CLAUDE.md placeholders filled** ({{SKILLS_BY_CATEGORY}}, {{SKILL_COUNT}})
 - Skipped outputs (and why)
@@ -969,7 +969,7 @@ If OpenCode is detected, also require:
 
 | Check | Description | Points |
 |------|-------------|--------|
-| file_exists:.sss/invokes.json | Invokes index generated | 4 |
+| file_exists:.sigma/invokes.json | Invokes index generated | 4 |
 | has_pattern:invokes.json:patterns | Pattern-to-agent mapping present | 3 |
 | has_pattern:invokes.json:acceptanceCriteriaTypes | AC type handlers defined | 3 |
 | has_pattern:CLAUDE.md\|AGENTS.md:Ralph Loop Integration | Orchestrator has Ralph section | 2 |

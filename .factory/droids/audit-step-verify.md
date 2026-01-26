@@ -63,7 +63,7 @@ tools:
 - **Step 1.5** (Offer Architecture) — Required only when monetization is detected
 - **Step 11b** (PRD Swarm) — Required only when 5+ PRDs exist
 
-See Canonical Step Registry in `docs/mcp/SSS-VERSIONING.md`.
+See Canonical Step Registry in `docs/mcp/SIGMA-VERSIONING.md`.
 
 ---
 
@@ -106,7 +106,7 @@ const params = parseParams(command);
 // params.fix: boolean
 // params.verbose: boolean
 
-// Canonical step order (see docs/mcp/SSS-VERSIONING.md for authoritative reference)
+// Canonical step order (see docs/mcp/SIGMA-VERSIONING.md for authoritative reference)
 const CANONICAL_STEP_ORDER = [0, 1, '1.5', 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, '11b', 12];
 
 // Parse step parameter (supports decimals like 1.5)
@@ -678,7 +678,7 @@ BULLETPROOF GATES:
 5. Collect gaps with fix recommendations
 
 **Conditional Step Handling:**
-- **Step 1.5:** If in verify list, first check if monetization is detected (see `docs/mcp/SSS-VERSIONING.md` for detection rules). If not monetized, skip with status "Skipped (Not monetized)".
+- **Step 1.5:** If in verify list, first check if monetization is detected (see `docs/mcp/SIGMA-VERSIONING.md` for detection rules). If not monetized, skip with status "Skipped (Not monetized)".
 - **Step 11b:** If in verify list, first check if 5+ PRDs exist in `docs/prds/`. If fewer than 5 PRDs, skip with status "Skipped (< 5 PRDs)".
 
 ### Step 3: Generate Report

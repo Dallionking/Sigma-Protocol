@@ -315,7 +315,7 @@ Restores context for the specified project.
 
 ---
 
-## Integration with SSS Protocol
+## Integration with Sigma Protocol
 
 ### Project Continuity
 

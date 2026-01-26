@@ -2,7 +2,7 @@
 
 **Automated X/Twitter promotion system with multi-account support**
 
-Part of [SSS Protocol](https://github.com/dallionking/sss-protocol) - A FAANG-style AI development workflow.
+Part of [Sigma Protocol](https://github.com/dallionking/sigma-protocol) - A FAANG-style AI development workflow.
 
 ---
 
@@ -48,7 +48,7 @@ cp env.example .env
 npm run cli db init
 
 # Test your account connection
-npm run cli account test sss-protocol
+npm run cli account test sigma-protocol
 
 # Start the promoter
 npm start
@@ -70,7 +70,7 @@ DATABASE_URL=
 ANTHROPIC_API_KEY=your_key_here
 
 # X Account 1 Credentials
-X_ACCOUNT_1_NAME=sss-protocol
+X_ACCOUNT_1_NAME=sigma-protocol
 X_ACCOUNT_1_API_KEY=your_api_key
 X_ACCOUNT_1_API_SECRET=your_api_secret
 X_ACCOUNT_1_ACCESS_TOKEN=your_access_token
@@ -270,7 +270,7 @@ npm run cli db init               # Initialize database
 
 ## License
 
-MIT - Part of SSS Protocol
+MIT - Part of Sigma Protocol
 
 Created by Dallion King
 

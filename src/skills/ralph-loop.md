@@ -37,7 +37,7 @@ sigma ralph --all
 ### Via Shell Script (Direct)
 
 ```bash
-# From SSS-Protocol directory
+# From Sigma-Protocol directory
 ./scripts/ralph/sigma-ralph.sh \
   --workspace=/path/to/project \
   --backlog=docs/ralph/ios/prd.json \

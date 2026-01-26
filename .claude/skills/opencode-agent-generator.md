@@ -407,7 +407,7 @@ Define explicit communication protocols for swarm coordination.
 
 ---
 
-## Integration with SSS Protocol
+## Integration with Sigma Protocol
 
 ### SSS Workflow Agents
 

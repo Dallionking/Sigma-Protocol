@@ -1,6 +1,6 @@
 ---
-name: sss-protocol-dev
-description: "Expert skill for developing and iterating on the SSS Protocol CLI, orchestration, and AI-native workflows"
+name: sigma-protocol-dev
+description: "Expert skill for developing and iterating on the Sigma Protocol CLI, orchestration, and AI-native workflows"
 version: 1.0.0
 triggers:
   - sss protocol
@@ -10,7 +10,7 @@ triggers:
   - protocol iteration
 ---
 
-# @sss-protocol-dev
+# @sigma-protocol-dev
 
 Expert knowledge for developing, iterating, and extending the Sigma (SSS) Protocol - the AI-native development workflow.
 
@@ -19,7 +19,7 @@ Expert knowledge for developing, iterating, and extending the Sigma (SSS) Protoc
 ## Architecture Overview
 
 ```
-SSS-Protocol/
+Sigma-Protocol/
 ├── cli/
 │   ├── sigma-cli.js           # Main CLI entry point
 │   ├── lib/

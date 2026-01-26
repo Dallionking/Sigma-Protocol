@@ -89,7 +89,7 @@ For simpler needs, use structured markdown files:
 
 ---
 
-## SSS Protocol Memory Structure
+## Sigma Protocol Memory Structure
 
 ### Recommended Memory Entities
 

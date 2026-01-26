@@ -236,7 +236,7 @@ function updateNavigation(projectPath: string, moduleId: string, action: 'add' |
 ```typescript
 // Record selected modules in provenance
 function updateProvenance(projectPath: string, selectedModules: string[]) {
-  const provenancePath = path.join(projectPath, '.sss', 'boilerplate.json');
+  const provenancePath = path.join(projectPath, '.sigma', 'boilerplate.json');
   const provenance = JSON.parse(fs.readFileSync(provenancePath, 'utf-8'));
   
   provenance.modules = {
@@ -263,7 +263,7 @@ npm run setup
 
 ```typescript
 // Verify provenance file exists
-const provenancePath = path.join(projectPath, '.sss', 'boilerplate.json');
+const provenancePath = path.join(projectPath, '.sigma', 'boilerplate.json');
 const provenance = JSON.parse(fs.readFileSync(provenancePath));
 
 // Verify SSS commands bundled

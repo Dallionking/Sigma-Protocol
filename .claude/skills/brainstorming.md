@@ -176,7 +176,7 @@ For faster sessions, use this condensed format:
 
 ---
 
-## Integration with SSS Protocol
+## Integration with Sigma Protocol
 
 ### Step 1 (Ideation)
 

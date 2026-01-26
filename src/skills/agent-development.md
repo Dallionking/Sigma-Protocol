@@ -483,7 +483,7 @@ You research technical topics and provide comprehensive summaries.
 
 ---
 
-## Integration with SSS Protocol
+## Integration with Sigma Protocol
 
 ### SSS Workflow Agents
 

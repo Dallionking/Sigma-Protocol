@@ -1,12 +1,12 @@
 name: 'Sync Boilerplate'
-description: 'Syncs a boilerplate folder + multi-platform SSS commands to a target repository'
+description: 'Syncs a boilerplate folder + multi-platform Sigma commands to a target repository'
 
 inputs:
   source_folder:
     description: 'Path to boilerplate source folder (e.g., boilerplates/nextjs-saas)'
     required: true
   target_repo:
-    description: 'Target repository (e.g., your-org/sss-nextjs-starter)'
+    description: 'Target repository (e.g., your-org/sigma-nextjs-starter)'
     required: true
   deploy_key:
     description: 'SSH deploy key with write access to target repo'
@@ -168,8 +168,8 @@ runs:
       shell: bash
       run: |
         cd /tmp/target
-        git config user.name "SSS Protocol Sync Bot"
-        git config user.email "bot@sss-protocol.dev"
+        git config user.name "Sigma Protocol Sync Bot"
+        git config user.email "bot@sigma-protocol.dev"
         
         git add -A
         
@@ -192,7 +192,7 @@ runs:
         fi
         
         # Create commit message
-        COMMIT_MSG="chore: sync SSS Protocol from commands repo
+        COMMIT_MSG="chore: sync Sigma Protocol from commands repo
 
 Source commit: ${{ github.sha }}
 Triggered by: ${{ github.event_name }}
@@ -200,7 +200,7 @@ Triggered by: ${{ github.event_name }}
 Synced:
 - Boilerplate code from ${{ inputs.source_folder }}
 - Shared schemas (schemas/)
-- SSS Protocol commands for:$PLATFORMS
+- Sigma Protocol commands for:$PLATFORMS
 
 Platform outputs:
 - .cursor/commands/ (Cursor @commands)

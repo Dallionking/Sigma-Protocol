@@ -427,7 +427,7 @@ root_allowed_files:
   - .node-version
   
   # SSS Meta-files
-  - .sss-manifest.json
+  - .sigma-manifest.json
   - .mcp.json
 
 root_allowed_directories:
@@ -547,7 +547,7 @@ postcss.config.mjs, components.json
 
 ### **SSS Meta-Files (CRITICAL - NEVER DELETE)**
 ```
-.sss-manifest.json   → SSS command version tracking
+.sigma-manifest.json   → SSS command version tracking
 .mcp.json            → MCP tool configuration
 .cursorrules         → Cursor AI context file
 ```

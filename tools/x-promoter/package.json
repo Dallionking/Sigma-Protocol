@@ -1,8 +1,8 @@
 {
-  "name": "@sss-protocol/x-promoter",
+  "name": "@sigma-protocol/x-promoter",
   "version": "1.0.0",
   "type": "module",
-  "description": "Automated X/Twitter promotion system with multi-account support - Part of SSS Protocol",
+  "description": "Automated X/Twitter promotion system with multi-account support - Part of Sigma Protocol",
   "main": "dist/index.js",
   "bin": {
     "x-promoter": "./dist/cli.js"
@@ -23,7 +23,7 @@
     "automation",
     "promotion",
     "ai",
-    "sss-protocol"
+    "sigma-protocol"
   ],
   "author": "Dallion King",
   "license": "MIT",

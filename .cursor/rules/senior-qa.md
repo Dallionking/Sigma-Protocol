@@ -372,7 +372,7 @@ export function createTestUser(overrides: Partial<User> = {}): User {
 
 ---
 
-## Integration with SSS Protocol
+## Integration with Sigma Protocol
 
 ### @qa-plan
 

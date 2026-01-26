@@ -548,6 +548,6 @@ Before reporting complete:
 
 ---
 
-*Comprehensive methodology compliance validation ensuring all Steps 0-12 documentation exists (including conditional Step 1.5, Flow Tree with bulletproof gates, Shape Up, BDD, and Context Engineering artifacts) with clear reporting of completion status and actionable next steps for achieving 100% compliance. See `docs/mcp/SSS-VERSIONING.md` for canonical step registry.*
+*Comprehensive methodology compliance validation ensuring all Steps 0-12 documentation exists (including conditional Step 1.5, Flow Tree with bulletproof gates, Shape Up, BDD, and Context Engineering artifacts) with clear reporting of completion status and actionable next steps for achieving 100% compliance. See `docs/mcp/SIGMA-VERSIONING.md` for canonical step registry.*
 
 

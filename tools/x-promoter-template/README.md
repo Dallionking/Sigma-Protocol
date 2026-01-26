@@ -2,7 +2,7 @@
 
 **Automated X/Twitter promotion boilerplate for your projects**
 
-Part of [SSS Protocol](https://github.com/dallionking/sss-protocol) - Open source toolkit for AI developers.
+Part of [Sigma Protocol](https://github.com/dallionking/sigma-protocol) - Open source toolkit for AI developers.
 
 ---
 
@@ -192,7 +192,7 @@ You can promote multiple projects from different accounts. Add additional accoun
 
 ## License
 
-MIT - Part of SSS Protocol
+MIT - Part of Sigma Protocol
 
 Based on the X Promoter tool by Dallion King
 

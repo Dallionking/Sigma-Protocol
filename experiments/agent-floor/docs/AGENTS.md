@@ -25,7 +25,7 @@ AgentFloor is a Pokemon-style 2D virtual office where AI agents walk around, vis
 
 ### Project Location
 ```
-/Users/dallionking/SSS Projects/SSS-Protocol/experiments/agent-floor/
+/Users/dallionking/SSS Projects/Sigma-Protocol/experiments/agent-floor/
 ```
 
 ### Directory Structure

@@ -380,7 +380,7 @@ Keep a changelog in the skill:
 
 ---
 
-## Integration with SSS Protocol
+## Integration with Sigma Protocol
 
 ### Step 13 (Skillpack Generator)
 

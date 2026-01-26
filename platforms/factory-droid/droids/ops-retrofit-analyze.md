@@ -463,7 +463,7 @@ interface SSSComplianceMatrix {
 
 **Scoring Algorithm:**
 \`\`\`typescript
-// See docs/mcp/SSS-VERSIONING.md for canonical step registry
+// See docs/mcp/SIGMA-VERSIONING.md for canonical step registry
 const stepWeights = {
   '0': 5,     // Environment Setup
   '1': 12,    // Ideation/PRD - Critical

@@ -2,7 +2,7 @@
 # =============================================================================
 # Skill Sync Script - Cross-Platform Skill Library Consistency
 # =============================================================================
-# Ensures SSS Protocol skills are consistently available across all platforms:
+# Ensures Sigma Protocol skills are consistently available across all platforms:
 # - Claude Code (platforms/claude-code/skills/)
 # - OpenCode (platforms/opencode/skill/)
 # - Ralph Loop (via skill-registry.sh)
@@ -97,7 +97,7 @@ get_skill_names() {
 show_inventory() {
     echo ""
     echo "╔═══════════════════════════════════════════════════════════════════╗"
-    echo "║                     SSS Protocol Skill Inventory                  ║"
+    echo "║                     Sigma Protocol Skill Inventory                  ║"
     echo "╚═══════════════════════════════════════════════════════════════════╝"
     echo ""
 
@@ -306,7 +306,7 @@ show_cursor_candidates() {
 
 main() {
     echo ""
-    echo "🔄 SSS Protocol Skill Sync"
+    echo "🔄 Sigma Protocol Skill Sync"
     echo "════════════════════════════"
 
     # Always show inventory

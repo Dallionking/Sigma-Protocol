@@ -529,7 +529,7 @@ function Component() {
 
 ---
 
-## Integration with SSS Protocol
+## Integration with Sigma Protocol
 
 ### PRD Implementation
 When implementing PRD features with data-heavy UI:

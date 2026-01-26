@@ -18,7 +18,7 @@ sources:
 
 # Superdesign Integration Skill
 
-This skill integrates **[Superdesign](https://superdesign.dev)** — the first open-source AI Design Agent — into the SSS Protocol workflow. Generate UI mockups, wireframes, and components directly from natural language prompts.
+This skill integrates **[Superdesign](https://superdesign.dev)** — the first open-source AI Design Agent — into the Sigma Protocol workflow. Generate UI mockups, wireframes, and components directly from natural language prompts.
 
 ## What is Superdesign?
 
@@ -110,7 +110,7 @@ SVG design generation:
 
 ---
 
-## Integration with SSS Protocol Steps
+## Integration with Sigma Protocol Steps
 
 ### Step 3 (UX Design)
 Use Superdesign to rapidly prototype user journey screens:
@@ -267,7 +267,7 @@ Superdesign saves files locally:
     └── extracted_tokens.json
 ```
 
-**Integration with SSS Protocol:**
+**Integration with Sigma Protocol:**
 ```
 /docs/wireframes/               # Step 5 outputs
 ├── screenshots/                # Visual captures

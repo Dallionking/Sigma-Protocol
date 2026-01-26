@@ -1865,7 +1865,7 @@ async function retrofitCommand(options) {
   }
 
   // Check for existing Sigma docs
-  const sssDocPaths = [
+  const sigmaDocPaths = [
     "docs/specs/MASTER_PRD.md",
     "docs/architecture/ARCHITECTURE.md",
     "docs/ux/UX-DESIGN.md",
@@ -1880,7 +1880,7 @@ async function retrofitCommand(options) {
   const existingDocs = [];
   const missingDocs = [];
 
-  for (const docPath of sssDocPaths) {
+  for (const docPath of sigmaDocPaths) {
     const fullPath = path.join(targetDir, docPath);
     if (await fs.pathExists(fullPath)) {
       existingDocs.push(docPath);
@@ -2018,12 +2018,12 @@ async function updateCommand(options) {
     options.skipRetrofit = true;
   }
 
-  // Check if we're running from within the SSS-Protocol source repo
+  // Check if we're running from within the Sigma-Protocol source repo
   const resolvedTarget = path.resolve(targetDir);
   const resolvedRoot = path.resolve(ROOT_DIR);
   if (resolvedTarget === resolvedRoot) {
     console.log(
-      chalk.yellow("⚠ Cannot update the SSS-Protocol source repo itself.\n"),
+      chalk.yellow("⚠ Cannot update the Sigma-Protocol source repo itself.\n"),
     );
     console.log(chalk.white("To update a project, run from that project directory:"));
     console.log(chalk.cyan("  cd /path/to/your/project"));
@@ -2103,7 +2103,7 @@ async function updateCommand(options) {
     console.log(chalk.gray(`   ROOT_DIR: ${ROOT_DIR}`));
     console.log("");
     console.log(chalk.white("Solutions:"));
-    console.log(chalk.gray("   1. Run from the SSS-Protocol repository root"));
+    console.log(chalk.gray("   1. Run from the Sigma-Protocol repository root"));
     console.log(chalk.gray("   2. Reinstall using: npx sigma-protocol install"));
     return;
   }
@@ -2458,19 +2458,19 @@ async function doctorCommand(options) {
     warnings.push("No .sigma-manifest.json found (version tracking disabled)");
   }
 
-  // Check 3: Stale SSS references
+  // Check 3: Stale Sigma references
   const spinner = ora("Checking for stale references...").start();
 
   try {
     const { execSync } = await import("child_process");
     const grepResult = execSync(
-      `grep -r "SSS\\|sss-\\|\\.sss" "${targetDir}" --include="*.md" --include="*.mdc" --include="*.json" -l 2>/dev/null || true`,
+      `grep -r "Sigma\\|sigma-\\|\\.sigma" "${targetDir}" --include="*.md" --include="*.mdc" --include="*.json" -l 2>/dev/null || true`,
       { encoding: "utf8" }
     );
 
     if (grepResult.trim()) {
       const files = grepResult.trim().split("\n").filter(Boolean);
-      // Filter out files that should have SSS (like historical docs or this file itself)
+      // Filter out files that should have Sigma (like historical docs or this file itself)
       const problematicFiles = files.filter(f => 
         !f.includes("node_modules") && 
         !f.includes(".git") &&
@@ -2479,7 +2479,7 @@ async function doctorCommand(options) {
       );
       
       if (problematicFiles.length > 0) {
-        warnings.push(`Found ${problematicFiles.length} files with stale SSS references`);
+        warnings.push(`Found ${problematicFiles.length} files with stale Sigma references`);
         if (options.verbose) {
           console.log(chalk.gray("\n  Files with stale refs:"));
           problematicFiles.slice(0, 5).forEach(f => console.log(chalk.gray(`    - ${f}`)));
@@ -2488,10 +2488,10 @@ async function doctorCommand(options) {
           }
         }
       } else {
-        passed.push("No stale SSS references found");
+        passed.push("No stale Sigma references found");
       }
     } else {
-      passed.push("No stale SSS references found");
+      passed.push("No stale Sigma references found");
     }
     spinner.stop();
   } catch {
@@ -2655,10 +2655,10 @@ async function doctorCommand(options) {
       });
     }
     
-    if (warnings.some(w => w.includes("stale SSS references"))) {
+    if (warnings.some(w => w.includes("stale Sigma references"))) {
       fixChoices.push({
-        name: "Fix stale SSS references (spawn Claude Code via tmux)",
-        value: "fix-sss",
+        name: "Fix stale Sigma references (spawn Claude Code via tmux)",
+        value: "fix-sigma",
       });
     }
     
@@ -2709,12 +2709,12 @@ async function doctorCommand(options) {
           console.log(chalk.cyan("\nRun: sigma install\n"));
           break;
           
-        case "fix-sss": {
-          console.log(chalk.cyan("\nSpawning Claude Code to fix SSS references...\n"));
+        case "fix-sigma": {
+          console.log(chalk.cyan("\nSpawning Claude Code to fix Sigma references...\n"));
           const { spawnClaude, selectTerminalBackend } = await import("./lib/terminal-utils.js");
           const backend = options.backend || await selectTerminalBackend();
           if (backend) {
-            await spawnClaude("@cleanup-sss", {
+            await spawnClaude("@cleanup-sigma", {
               backend,
               sessionName: "sigma-doctor"
             });

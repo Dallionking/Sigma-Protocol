@@ -13,7 +13,7 @@ AgentFloor is a Pokemon-style 2D virtual office where AI agents walk around, vis
 - **LLM Providers:** Claude Code CLI, Anthropic, OpenAI, Gemini, OpenRouter, XAI, Ollama
 
 ## Project Location
-`/Users/dallionking/SSS Projects/SSS-Protocol/experiments/agent-floor/`
+`/Users/dallionking/SSS Projects/Sigma-Protocol/experiments/agent-floor/`
 
 ---
 
@@ -834,7 +834,7 @@ When running Ralph loop, use these settings:
 
 ```bash
 ./scripts/ralph/sigma-ralph.sh \
-  --workspace="/Users/dallionking/SSS Projects/SSS-Protocol/experiments/agent-floor" \
+  --workspace="/Users/dallionking/SSS Projects/Sigma-Protocol/experiments/agent-floor" \
   --backlog=docs/ralph/prd.json \
   --engine=claude-code \
   --ui-validation=agent-browser \

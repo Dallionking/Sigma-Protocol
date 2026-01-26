@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# TypeScript Validator - Validates TypeScript/JavaScript files for SSS Protocol.
+# TypeScript Validator - Validates TypeScript/JavaScript files for Sigma Protocol.
 #
 # This validator runs as a PostToolUse hook, enabling "Closed Loop Prompt" pattern
 # where agents automatically fix validation failures in the same session.

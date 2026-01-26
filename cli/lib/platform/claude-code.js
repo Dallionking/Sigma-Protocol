@@ -399,7 +399,7 @@ For all \`UI-*\` tasks:
 4. Avoid banned patterns (saturated gradients, bouncy animations)
 5. Verify with \`@ui-healer\` before completing
 
-**See \`.sss/invokes.json\` for the full routing manifest.**
+**See \`.sigma/invokes.json\` for the full routing manifest.**
 
 ---
 

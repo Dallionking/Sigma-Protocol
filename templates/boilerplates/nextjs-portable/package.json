@@ -1,5 +1,5 @@
 {
-  "name": "sss-nextjs-portable",
+  "name": "sigma-nextjs-portable",
   "version": "1.0.0",
   "description": "Self-hostable Next.js SaaS with Drizzle ORM - works with any Postgres",
   "private": true,

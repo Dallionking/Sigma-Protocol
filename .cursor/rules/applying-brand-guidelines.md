@@ -438,7 +438,7 @@ const voiceRewrites = {
 
 ---
 
-## Integration with SSS Protocol
+## Integration with Sigma Protocol
 
 ### Step 6 (Design System)
 

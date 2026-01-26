@@ -39,7 +39,7 @@ import PptxGenJS from "pptxgenjs";
 const pptx = new PptxGenJS();
 
 // Set metadata
-pptx.author = "SSS Protocol";
+pptx.author = "Sigma Protocol";
 pptx.title = "Project Overview";
 pptx.subject = "Technical Documentation";
 
@@ -510,7 +510,7 @@ slide.addNotes(
 
 ---
 
-## Integration with SSS Protocol
+## Integration with Sigma Protocol
 
 ### @client-handoff
 

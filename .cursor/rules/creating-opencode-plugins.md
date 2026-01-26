@@ -446,7 +446,7 @@ await plugin.event({
 
 ---
 
-## Integration with SSS Protocol
+## Integration with Sigma Protocol
 
 ### Security Enforcement
 

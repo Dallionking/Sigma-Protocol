@@ -175,7 +175,7 @@ sigma-ralph auto-detects project type:
 |---------|-----------|----------|
 | Ball.AI | `docs/ralph/ios/` + `docs/ralph/web/` | ios, web |
 | SigmaView | `.sigma/orchestration/streams.json` | Streams from config |
-| SSS-Protocol | `docs/ralph/prototype/` | prototype |
+| Sigma-Protocol | `docs/ralph/prototype/` | prototype |
 | Generic | `docs/ralph/*/prd.json` | All discovered |
 
 ## Skill Delegation

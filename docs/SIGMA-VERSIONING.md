@@ -1,4 +1,4 @@
-# SSS Protocol Versioning
+# Sigma Protocol Versioning
 
 **Version:** 5.0
 **Last Updated:** 2026-01-25
@@ -8,7 +8,7 @@
 
 ## Overview
 
-SSS Protocol follows semantic versioning with major releases representing significant methodology changes, new platform support, or architectural improvements.
+Sigma Protocol follows semantic versioning with major releases representing significant methodology changes, new platform support, or architectural improvements.
 
 ---
 
@@ -26,7 +26,7 @@ SSS Protocol follows semantic versioning with major releases representing signif
 
 ## Step Registry
 
-The SSS Protocol consists of 18 steps (13 core + 5 auxiliary).
+The Sigma Protocol consists of 18 steps (13 core + 5 auxiliary).
 
 ### Core Steps
 
@@ -56,7 +56,7 @@ The SSS Protocol consists of 18 steps (13 core + 5 auxiliary).
 
 ## Semantic Versioning
 
-SSS Protocol follows [Semantic Versioning 2.0.0](https://semver.org/):
+Sigma Protocol follows [Semantic Versioning 2.0.0](https://semver.org/):
 
 ```
 MAJOR.MINOR.PATCH

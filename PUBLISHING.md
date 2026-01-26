@@ -1,6 +1,6 @@
 # Publishing Policy
 
-This document defines what is included in the public SSS Protocol repository vs what is excluded.
+This document defines what is included in the public Sigma Protocol repository vs what is excluded.
 
 ## Public Content (Committed to GitHub)
 

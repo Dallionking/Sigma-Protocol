@@ -483,7 +483,7 @@ validate_requirements() {
 
     # NEW v2.1.0: Build dynamic skill registry for intelligent skill matching
     if [[ "$SKILL_REGISTRY_AVAILABLE" == true ]]; then
-        log_info "Building skill registry from workspace and SSS Protocol..."
+        log_info "Building skill registry from workspace and Sigma Protocol..."
         build_skill_registry "$WORKSPACE" "$SIGMA_PROTOCOL_DIR"
     fi
 
@@ -558,7 +558,7 @@ validate_sandbox_provider() {
     # Check if ralph-bridge.js exists
     if [[ ! -f "$RALPH_BRIDGE" ]]; then
         log_error "ralph-bridge.js not found at: $RALPH_BRIDGE"
-        log_info "Make sure SSS Protocol is properly installed"
+        log_info "Make sure Sigma Protocol is properly installed"
         return 1
     fi
 

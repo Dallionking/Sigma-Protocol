@@ -391,7 +391,7 @@ type Mutation {
 
 ---
 
-## Integration with SSS Protocol
+## Integration with Sigma Protocol
 
 ### Step 2 (Architecture)
 

@@ -1276,7 +1276,7 @@ Proceed with sync? (yes/no/select)
 Commands are re-run based on dependency cascade rules:
 
 ```typescript
-// See docs/mcp/SSS-VERSIONING.md for canonical cascade rules
+// See docs/mcp/SIGMA-VERSIONING.md for canonical cascade rules
 const CASCADE_RULES = {
   'step-1': ['step-1.5', 'step-2', 'step-3', 'step-4', 'step-10', 'step-11'],
   'step-1.5': ['step-2', 'step-9'],  // Offer Architecture affects Architecture + Landing Page
@@ -1619,7 +1619,7 @@ When a command is updated and re-run, downstream commands may need to be re-run 
 ### Cascade Rule Matrix
 
 ```typescript
-// See docs/mcp/SSS-VERSIONING.md for canonical cascade rules
+// See docs/mcp/SIGMA-VERSIONING.md for canonical cascade rules
 const CASCADE_RULES: Record<string, string[]> = {
   // Core Documentation Steps
   'step-0-environment-setup': [],  // Foundation - no cascades

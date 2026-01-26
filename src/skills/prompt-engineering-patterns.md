@@ -357,7 +357,7 @@ You are a {role} specializing in {domain}.
 
 ---
 
-## Integration with SSS Protocol
+## Integration with Sigma Protocol
 
 ### Agent Development
 
