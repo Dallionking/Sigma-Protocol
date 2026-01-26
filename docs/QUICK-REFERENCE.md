@@ -1,4 +1,4 @@
-# SSS Quick Reference Card
+# Sigma Quick Reference Card
 
 **Version:** 5.0  
 **Last Updated:** 2025-12-29
@@ -88,8 +88,8 @@
 |------|---------|-------------|
 | **Check status** | `@status` | Workflow progress |
 | **Orchestrate PRDs** | `@prd-orchestrate` | Swarm PRDs for parallel dev |
-| **Retrofit existing** | `@retrofit-analyze` | Analyze for SSS adoption |
-| **Generate SSS docs** | `@retrofit-generate` | Create missing docs |
+| **Retrofit existing** | `@retrofit-analyze` | Analyze for Sigma adoption |
+| **Generate Sigma docs** | `@retrofit-generate` | Create missing docs |
 | **Clean repo** | `@maid` | Content-aware cleanup + code simplification |
 | **Update docs** | `@docs-update` | Sync documentation |
 | **Client handoff** | `@client-handoff` | Handoff package |
@@ -214,7 +214,7 @@ sigma f-thread --aggregate=best       # Pick the best
 | **Swarm Folders** | `docs/prds/swarm-[N]/` *(Step 11b)* |
 | **PRD Status** | `docs/prds/.prd-status.json` *(Step 11b)* |
 | Cursor Rules | `.cursorrules` |
-| **SSS Manifest** | `.sigma-manifest.json` *(Version tracking)* |
+| **Sigma Manifest** | `.sigma-manifest.json` *(Version tracking)* |
 | **Agentic Tools** | `.sigma/tools/` *(Grade 3 - typecheck, lint, test, build)* |
 | **Active Task** | `.sigma/memory/active_task.md` *(Grade 4 - resume support)* |
 

@@ -11,7 +11,7 @@ Sigma Protocol includes **163 skills total** (39 Foundation Skills + 124 Externa
 
 ## Overview
 
-Foundation Skills are installed at **Step 0** (Environment Setup) and provide capabilities that enhance every step of the SSS workflow. They are **universal** and **project-agnostic**.
+Foundation Skills are installed at **Step 0** (Environment Setup) and provide capabilities that enhance every step of the Sigma workflow. They are **universal** and **project-agnostic**.
 
 **External Skills** (Tier 2) provide domain-specific expertise for security, mobile development, 3D graphics, marketing, and more.
 
@@ -82,9 +82,9 @@ See [FACTORY-DROID-INTEGRATION.md](./FACTORY-DROID-INTEGRATION.md) for detailed 
 
 ## Skill Categories
 
-### SSS Core (6 skills)
+### Sigma Core (6 skills)
 
-These skills power the 13-step SSS methodology.
+These skills power the 13-step Sigma methodology.
 
 | Skill                  | Description                                        | Auto-Triggers                               | Used In Steps |
 | ---------------------- | -------------------------------------------------- | ------------------------------------------- | ------------- |

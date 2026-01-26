@@ -11,7 +11,7 @@ version: "1.0.0"
 
 ## Purpose
 
-Verify that SSS step outputs meet quality requirements by checking file existence, content patterns, and section completeness. Generate a score and actionable feedback.
+Verify that Sigma step outputs meet quality requirements by checking file existence, content patterns, and section completeness. Generate a score and actionable feedback.
 
 ## Activation Triggers
 

@@ -741,5 +741,5 @@ Add proper `[data-testid]` attributes or update selectors
 
 ---
 
-*Part of SSS QA System - Next: /qa-report for comprehensive reporting*
+*Part of Sigma QA System - Next: /qa-report for comprehensive reporting*
 

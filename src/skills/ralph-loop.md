@@ -237,7 +237,7 @@ jq '(.stories[] | select(.id == "story-id")).passes = false' prd.json > tmp && m
 
 ```bash
 # Navigate to project
-cd "/Users/dallionking/SSS Projects/Client Projects/Ball-Ai"
+cd "/Users/dallionking/Sigma Projects/Client Projects/Ball-Ai"
 
 # Check available backlogs
 sigma ralph

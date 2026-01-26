@@ -1,8 +1,8 @@
-# SSS File Path Reference
+# Sigma File Path Reference
 
 **Version:** 5.0  
 **Last Updated:** 2025-12-29  
-**Purpose:** Canonical list of all file paths used across the SSS workflow
+**Purpose:** Canonical list of all file paths used across the Sigma workflow
 
 **Changelog:**
 - 3.0: Added tracking, QA, and review system paths
@@ -12,7 +12,7 @@
 
 ## Overview
 
-This document defines the **official file paths** for all outputs created by the SSS workflow (Steps 0-12). All commands MUST reference these exact paths to ensure consistency and prevent broken references.
+This document defines the **official file paths** for all outputs created by the Sigma workflow (Steps 0-12). All commands MUST reference these exact paths to ensure consistency and prevent broken references.
 
 **Rule:** If a command references a file path not listed here, it's an error that needs to be fixed.
 

@@ -627,7 +627,7 @@ A good handoff prompt should enable the next session to:
 
 ## 🔗 Related Commands
 
-- `@status` - Check overall SSS workflow progress
+- `@status` - Check overall Sigma workflow progress
 - `@analyze` - Full codebase health analysis
 - `@implement-prd` - Continue PRD implementation
 - `@client-handoff` - Full project delivery handoff (different use case)

@@ -355,7 +355,7 @@ interface ProposalData {
 // Example extraction
 const proposalData = {
   clientName: "Acme Corp",
-  agencyName: "SSS Digital Agency",
+  agencyName: "Sigma Digital Agency",
   proposalDate: "2025-12-01",
   projectScope: "Full-stack development of e-commerce platform",
   timeline: "13 weeks"
@@ -842,7 +842,7 @@ Date: _________________________________
 
 ---
 
-*This document was generated using the SSS Methodology @nda command.*
+*This document was generated using the Sigma Methodology @nda command.*
 *Document ID: NDA-[DATE]-[CLIENT_ID]*
 ```
 

@@ -319,7 +319,7 @@ Restores context for the specified project.
 
 ### Project Continuity
 
-Use this skill to maintain context across SSS workflow sessions.
+Use this skill to maintain context across Sigma workflow sessions.
 
 ### Decision Tracking
 

@@ -450,11 +450,11 @@ await plugin.event({
 
 ### Security Enforcement
 
-Create plugins to enforce SSS security policies.
+Create plugins to enforce Sigma security policies.
 
 ### Workflow Automation
 
-Automate SSS workflow steps with event hooks.
+Automate Sigma workflow steps with event hooks.
 
 ### Quality Gates
 

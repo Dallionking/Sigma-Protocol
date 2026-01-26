@@ -19,7 +19,7 @@ Be respectful, inclusive, and constructive. We're all here to build something gr
 
 1. Open an issue with the `enhancement` label
 2. Describe the use case and expected behavior
-3. Consider if it fits the SSS methodology philosophy
+3. Consider if it fits the Sigma methodology philosophy
 
 ### Submitting Changes
 
@@ -124,7 +124,7 @@ Before submitting:
 
 For significant changes, consider:
 
-1. Does this fit the SSS philosophy?
+1. Does this fit the Sigma philosophy?
 2. Does it work across all platforms?
 3. Does it maintain backward compatibility?
 4. Is it consistent with existing patterns?

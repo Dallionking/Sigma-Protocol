@@ -42,7 +42,7 @@ async function main() {
   console.log('✅ Updated package.json');
 
   // Update provenance
-  const provPath = path.join(process.cwd(), '.sss', 'boilerplate.json');
+  const provPath = path.join(process.cwd(), '.sigma', 'boilerplate.json');
   if (fs.existsSync(provPath)) {
     const prov = JSON.parse(fs.readFileSync(provPath, 'utf8'));
     prov.project_name = projectSlug;

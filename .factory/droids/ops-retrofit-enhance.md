@@ -1,6 +1,6 @@
 ---
 name: retrofit-enhance
-description: "Comprehensive SSS updater: (1) UPDATE existing docs with new frameworks in-place, (2) ENHANCE old workflow to new 13-step, (3) SYNC command versions. Preserves customizations."
+description: "Comprehensive Sigma updater: (1) UPDATE existing docs with new frameworks in-place, (2) ENHANCE old workflow to new 13-step, (3) SYNC command versions. Preserves customizations."
 model: inherit
 tools: ["Read", "LS", "Grep", "Glob"]model: claude-sonnet-4-5-20241022
 tools:
@@ -20,27 +20,27 @@ tools:
 ---
 
 
-# @retrofit-enhance — Comprehensive SSS Update & Enhancement System
+# @retrofit-enhance — Comprehensive Sigma Update & Enhancement System
 
 **Mission**
-A **four-mode command** that intelligently updates your SSS documentation:
+A **four-mode command** that intelligently updates your Sigma documentation:
 
-1. **Update Mode (NEW - v3.0):** For projects that already ran SSS steps but need NEW frameworks/phases added. **Edits existing documents in-place** without losing your customizations.
+1. **Update Mode (NEW - v3.0):** For projects that already ran Sigma steps but need NEW frameworks/phases added. **Edits existing documents in-place** without losing your customizations.
 
-2. **Enhancement Mode:** For codebases that ran the OLD SSS workflow (Steps 0-10), enhances them with NEW frameworks (Flow Tree, Design DNA, IA Frameworks)
+2. **Enhancement Mode:** For codebases that ran the OLD Sigma workflow (Steps 0-10), enhances them with NEW frameworks (Flow Tree, Design DNA, IA Frameworks)
 
-3. **Sync Mode:** For ANY codebase with SSS commands already applied, detects when commands have been updated and re-runs them to propagate improvements
+3. **Sync Mode:** For ANY codebase with Sigma commands already applied, detects when commands have been updated and re-runs them to propagate improvements
 
 4. **Ralph Mode (NEW - v3.1):** Automatically generates `docs/ralph/*/prd.json` backlogs from existing PRDs, enabling autonomous implementation via `sigma ralph`
 
-**Valuation Context:** You are a **Senior Design Systems Architect** at a $500M company, ensuring all projects benefit from the latest SSS methodology improvements.
+**Valuation Context:** You are a **Senior Design Systems Architect** at a $500M company, ensuring all projects benefit from the latest Sigma methodology improvements.
 
 ---
 
 ## 🎯 Purpose
 
 ### Update Mode (--mode=update) ⭐ NEW - Most Common Use Case
-- ✅ **Already ran SSS steps** but protocol has been updated since then
+- ✅ **Already ran Sigma steps** but protocol has been updated since then
 - ✅ **Want to add new frameworks/phases** to existing documents
 - ✅ **Preserve your customizations** - only adds what's missing
 - ✅ **Granular control** - update specific steps or all at once
@@ -54,7 +54,7 @@ A **four-mode command** that intelligently updates your SSS documentation:
 
 ### Sync Mode (--mode=sync)
 - ✅ Any project with `.sigma-manifest.json` tracking previous command runs
-- ✅ Detect when SSS commands have newer versions available
+- ✅ Detect when Sigma commands have newer versions available
 - ✅ Re-run updated commands to get new features/improvements
 - ✅ Works with newly added commands not previously run
 
@@ -67,7 +67,7 @@ A **four-mode command** that intelligently updates your SSS documentation:
 
 **NOT for:**
 - ❌ Brand new projects (use regular steps)
-- ❌ Projects that never ran any SSS commands (use @retrofit-analyze → @retrofit-generate)
+- ❌ Projects that never ran any Sigma commands (use @retrofit-analyze → @retrofit-generate)
 
 ---
 
@@ -76,7 +76,7 @@ A **four-mode command** that intelligently updates your SSS documentation:
 ```
 @retrofit-enhance --mode=auto (default)
     │
-    ├─ Check 1: Do SSS docs exist but have missing sections?
+    ├─ Check 1: Do Sigma docs exist but have missing sections?
     │   │
     │   └─ YES: Run UPDATE Mode
     │       └─ Scan existing docs for section headers
@@ -238,7 +238,7 @@ sigma ralph --all --parallel                   # Run all in parallel tmux panes
 ## 🆕 Update Mode Workflow (--mode=update)
 
 This is the **most common use case** for existing projects. It:
-1. Scans your existing SSS documents
+1. Scans your existing Sigma documents
 2. Detects which sections/frameworks you're missing
 3. **Adds only what's missing** without touching what you've customized
 
@@ -246,7 +246,7 @@ This is the **most common use case** for existing projects. It:
 @retrofit-enhance --mode=update
     │
     ├─ Phase U1: Section-Level Scan
-    │   ├─ Parse all SSS docs for section headers
+    │   ├─ Parse all Sigma docs for section headers
     │   ├─ Build "what you have" inventory
     │   └─ Compare against "what's available" in latest templates
     │
@@ -489,7 +489,7 @@ async function buildUpdateDelta(targetDir: string, steps?: string[]): Promise<Up
 
 ```
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-🔄 SSS UPDATE PLAN (--mode=update)
+🔄 Sigma UPDATE PLAN (--mode=update)
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 ## Summary
@@ -683,7 +683,7 @@ async function updateManifestAfterUpdate(gaps: UpdateGap[]): Promise<void> {
 
 ```
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-✅ SSS UPDATE COMPLETE
+✅ Sigma UPDATE COMPLETE
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 ## Updated Files
@@ -1160,9 +1160,9 @@ After:  24/24 screens documented (100%)
 
 ## 🔄 Phase E: Version Sync Detection (Sync Mode)
 
-### E1: Read SSS Manifest
+### E1: Read Sigma Manifest
 
-Check for `.sss-manifest.json` in target codebase:
+Check for `.sigma-manifest.json` in target codebase:
 
 ```typescript
 interface SSSManifest {
@@ -1228,11 +1228,11 @@ async function compareVersions(manifest: SSSManifest): Promise<VersionComparison
 
 ```
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-🔄 SSS COMMAND SYNC ANALYSIS
+🔄 Sigma COMMAND SYNC ANALYSIS
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 ## Manifest Found
-- Location: .sss-manifest.json
+- Location: .sigma-manifest.json
 - Last Sync: 2025-11-15T10:30:00Z (19 days ago)
 - Commands Tracked: 8
 
@@ -1332,7 +1332,7 @@ async function updateManifest(command: string, version: string) {
 
 ```
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-✅ SSS COMMAND SYNC COMPLETE
+✅ Sigma COMMAND SYNC COMPLETE
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 ## Sync Summary
@@ -1345,7 +1345,7 @@ async function updateManifest(command: string, version: string) {
 | generators/scaffold | RE-RUN | ✅ Updated references |
 
 ## Manifest Updated
-- Location: .sss-manifest.json
+- Location: .sigma-manifest.json
 - New Last Sync: 2025-12-04T15:30:00Z
 - Commands Tracked: 9 (+1 new)
 - All versions current: ✅
@@ -1652,7 +1652,7 @@ const CASCADE_RULES: Record<string, string[]> = {
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
-│               SSS DEPENDENCY CASCADE FLOW                    │
+│               Sigma DEPENDENCY CASCADE FLOW                    │
 ├─────────────────────────────────────────────────────────────┤
 │                                                             │
 │  Step 1 (Ideation)                                          │
@@ -1766,13 +1766,13 @@ The animation quality reference from `MOBILE_APP_DESIGN_LEARNINGS.md` is now int
 │                    RETROFIT FAMILY                          │
 ├─────────────────────────────────────────────────────────────┤
 │                                                             │
-│  @retrofit-analyze     →  Legacy codebase, no SSS           │
+│  @retrofit-analyze     →  Legacy codebase, no Sigma           │
 │         ↓                                                   │
-│  @retrofit-generate    →  Generate all missing SSS docs     │
+│  @retrofit-generate    →  Generate all missing Sigma docs     │
 │         ↓                                                   │
 │  @retrofit-enhance     →  Two modes:                        │
 │    --mode=enhance      →  OLD workflow → NEW 13-step        │
-│    --mode=sync         →  Keep SSS commands up-to-date      │
+│    --mode=sync         →  Keep Sigma commands up-to-date      │
 │                                                             │
 └─────────────────────────────────────────────────────────────┘
 ```
@@ -1784,8 +1784,8 @@ The animation quality reference from `MOBILE_APP_DESIGN_LEARNINGS.md` is now int
 ### Example 1: Sync Mode (Keeping Commands Updated)
 
 ```bash
-# 1. User has project with .sss-manifest.json
-$ cat .sss-manifest.json
+# 1. User has project with .sigma-manifest.json
+$ cat .sigma-manifest.json
 # Shows commands run 3 weeks ago
 
 # 2. Check for updates (dry run)
@@ -1809,7 +1809,7 @@ $ cat .sss-manifest.json
 ### Example 2: Enhancement Mode (Legacy Upgrade)
 
 ```bash
-# 1. User has existing project with old SSS docs (no manifest)
+# 1. User has existing project with old Sigma docs (no manifest)
 $ ls docs/
 ux/  wireframes/  prds/  architecture/  technical/
 
@@ -1847,4 +1847,4 @@ ux/  wireframes/  prds/  architecture/  technical/
 
 ---
 
-*Context improved by Giga AI - Hybrid SSS enhancement and command sync system ensuring all projects benefit from the latest methodology improvements with version tracking and intelligent cascade updates*
+*Context improved by Giga AI - Hybrid Sigma enhancement and command sync system ensuring all projects benefit from the latest methodology improvements with version tracking and intelligent cascade updates*

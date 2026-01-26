@@ -485,9 +485,9 @@ You research technical topics and provide comprehensive summaries.
 
 ## Integration with Sigma Protocol
 
-### SSS Workflow Agents
+### Sigma Workflow Agents
 
-Create agents for specific SSS workflow steps:
+Create agents for specific Sigma workflow steps:
 
 - `ideation-agent` - Step 1 ideation support
 - `architecture-agent` - Step 2 architecture design

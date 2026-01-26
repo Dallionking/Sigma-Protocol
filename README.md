@@ -1,9 +1,21 @@
 # Sigma Protocol
 
+```
+  ███████╗██╗ ██████╗ ███╗   ███╗ █████╗
+  ██╔════╝██║██╔════╝ ████╗ ████║██╔══██╗
+  ███████╗██║██║  ███╗██╔████╔██║███████║
+  ╚════██║██║██║   ██║██║╚██╔╝██║██╔══██║
+  ███████║██║╚██████╔╝██║ ╚═╝ ██║██║  ██║
+  ╚══════╝╚═╝ ╚═════╝ ╚═╝     ╚═╝╚═╝  ╚═╝ PROTOCOL
+```
+
+**The AI-Native Development Workflow**
+
 A platform-agnostic 13-step product development methodology for AI-assisted development.
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![Platforms](https://img.shields.io/badge/Platforms-Claude%20Code%20%7C%20Cursor%20%7C%20OpenCode%20%7C%20Factory%20Droid-green.svg)](#supported-platforms)
+[![Version](https://img.shields.io/badge/Version-5.0-purple.svg)](#)
 
 ---
 
@@ -12,6 +24,8 @@ A platform-agnostic 13-step product development methodology for AI-assisted deve
 Sigma Protocol guides AI assistants through a complete product development workflow - from ideation to deployment. It provides:
 
 - **13 structured steps** from idea to shipping
+- **185 commands** across 7 categories
+- **163 skills** for specialized tasks
 - **Quality gates** with verification scoring (target: 80+)
 - **Human-in-the-loop checkpoints** for critical decisions
 - **Ralph Loop** for autonomous task execution
@@ -19,36 +33,107 @@ Sigma Protocol guides AI assistants through a complete product development workf
 
 ---
 
-## Quick Start
+## How to Use
 
-### Install
+### For New Projects
 
+**Step 1: Install Sigma Protocol**
 ```bash
-npm install -g sigma-protocol
+# Clone the repo
+git clone https://github.com/Dallionking/Sigma-Protocol.git
+cd Sigma-Protocol
+
+# Install dependencies
+npm install
+
+# Run the CLI
+node cli/sigma-cli.js
 ```
 
-### Launch
-
+**Step 2: Create a New Project**
 ```bash
-sigma
+# Interactive project wizard
+node cli/sigma-cli.js new
+
+# Or manually create project structure
+mkdir my-project && cd my-project
+node ../Sigma-Protocol/cli/sigma-cli.js retrofit
 ```
 
-### Direct Commands
+**Step 3: Start the Workflow in Your AI Assistant**
 
+Open your project in Claude Code, Cursor, or OpenCode and run:
 ```bash
-sigma new          # Create new project wizard
-sigma retrofit     # Add to existing project
-sigma doctor       # System health check
-sigma tutorial     # Interactive tutorial
+/step-1-ideation "Your product idea here"
 ```
 
-### Start the Workflow
+The AI will guide you through:
+1. Market research and validation
+2. Creating MASTER_PRD.md
+3. Checkpoints for your approval
+4. Next step recommendations
+
+**Step 4: Continue Through the Steps**
+```bash
+/step-2-architecture    # Design system architecture
+/step-3-ux-design       # Plan user experience
+/step-4-flow-tree       # Map all screens and flows
+/step-5-wireframe-prototypes  # Create wireframes
+# ... continue through step 13
+```
+
+### For Existing Projects
+
+**Option 1: Full Retrofit**
+```bash
+cd your-existing-project
+node /path/to/Sigma-Protocol/cli/sigma-cli.js retrofit
+```
+
+This will:
+- Analyze your codebase structure
+- Create `.claude/` configuration directory
+- Generate `CLAUDE.md` with project context
+- Install relevant skills
+
+**Option 2: Manual Setup**
+
+Copy these to your project:
+```bash
+# Required
+cp -r Sigma-Protocol/.claude your-project/
+cp Sigma-Protocol/CLAUDE.md your-project/
+
+# Optional (for Cursor)
+cp -r Sigma-Protocol/.cursor your-project/
+```
+
+**Option 3: Start from Any Step**
+```bash
+# Already have a PRD? Start at architecture
+/step-2-architecture
+
+# Have wireframes? Start at design system
+/step-6-design-system
+
+# Ready to implement? Generate PRDs
+/step-11-prd-generation
+```
+
+### Daily Workflow
 
 ```bash
-# In your AI assistant (Claude Code, Cursor, or OpenCode)
-@step-1-ideation   # Start with product ideation
-@step-2-architecture   # Continue to architecture
-# ... follow the 13-step workflow
+# Check project health
+/status
+
+# Continue unfinished work
+/continue
+
+# Implement a specific feature
+/implement-prd PRD-001
+
+# Run quality checks before shipping
+/ship-check
 ```
 
 ---
@@ -57,116 +142,100 @@ sigma tutorial     # Interactive tutorial
 
 | Platform | Command Style | Configuration | Skills |
 |----------|---------------|---------------|--------|
-| **Claude Code** | `/command-name` | `.claude/` + `CLAUDE.md` | 162 |
-| **Cursor** | `@command-name` | `.cursor/commands/` | 149 |
-| **OpenCode** | `/command-name` | `.opencode/` + `AGENTS.md` | 149 |
-| **Factory Droid** | `/command-name` | `.factory/` + `AGENTS.md` | 158 |
+| **Claude Code** | `/command` | `.claude/` + `CLAUDE.md` | 162 |
+| **Cursor** | `@command` | `.cursor/rules/` | 149 |
+| **OpenCode** | `/command` | `.opencode/` + `AGENTS.md` | 149 |
+| **Factory Droid** | `/command` | `.factory/` + `AGENTS.md` | 158 |
 
 ---
 
 ## The 13-Step Workflow
 
 ```
-Step 0: Environment Setup
-    |
-Step 1: Ideation --> MASTER_PRD.md
-    |
-Step 1.5: Offer Architecture (if monetized)
-    |
-Step 2: Architecture --> ARCHITECTURE.md
-    |
-Step 3: UX Design --> UX-DESIGN.md
-    |
-Step 4: Flow Tree --> Navigation & Screen Inventory
-    |
-Step 5: Wireframes --> docs/prds/flows/
-    |
-Step 6: Design System --> DESIGN-SYSTEM.md
-    |
-Step 7: Interface States --> STATE-SPEC.md
-    |
-Step 8: Technical Spec --> TECHNICAL-SPEC.md
-    |
-Step 9: Landing Page (optional)
-    |
-Step 10: Feature Breakdown --> FEATURE-BREAKDOWN.md
-    |
-Step 11: PRD Generation --> docs/prds/*.md
-    |
-Step 12: Context Engine --> .cursorrules
-    |
-Step 13: Skillpack Generator --> Project-specific skills
-    |
-[Ralph Loop] --> Autonomous implementation
+Step 0: Environment Setup ─────────────────────────────────────┐
+    │                                                          │
+Step 1: Ideation ──────────────────────> MASTER_PRD.md         │
+    │                                                          │
+Step 1.5: Offer Architecture (if monetized)                    │ PLANNING
+    │                                                          │
+Step 2: Architecture ──────────────────> ARCHITECTURE.md       │
+    │                                                          │
+Step 3: UX Design ─────────────────────> UX-DESIGN.md          │
+    │                                                          │
+Step 4: Flow Tree ─────────────────────> Screen Inventory ─────┘
+    │
+Step 5: Wireframes ────────────────────> docs/prds/flows/ ─────┐
+    │                                                          │
+Step 6: Design System ─────────────────> DESIGN-SYSTEM.md      │ DESIGN
+    │                                                          │
+Step 7: Interface States ──────────────> STATE-SPEC.md         │
+    │                                                          │
+Step 8: Technical Spec ────────────────> TECHNICAL-SPEC.md ────┘
+    │
+Step 9: Landing Page (optional) ───────────────────────────────┐
+    │                                                          │
+Step 10: Feature Breakdown ────────────> FEATURE-BREAKDOWN.md  │ BUILD
+    │                                                          │
+Step 11: PRD Generation ───────────────> docs/prds/*.md        │
+    │                                                          │
+Step 12: Context Engine ───────────────> .cursorrules          │
+    │                                                          │
+Step 13: Skillpack Generator ──────────> Project skills ───────┘
+    │
+[Ralph Loop] ──────────────────────────> Autonomous Implementation
 ```
 
 ---
 
 ## Core Commands
 
-### Step Commands
-
+### Step Commands (13)
 | Command | Description |
 |---------|-------------|
-| `@step-1-ideation` | Product ideation with Hormozi Value Equation |
-| `@step-2-architecture` | System architecture design |
-| `@step-3-ux-design` | UX/UI design & user flows |
-| `@step-4-flow-tree` | Navigation flow & screen inventory |
-| `@step-5-wireframe-prototypes` | Wireframe prototypes |
-| `@step-6-design-system` | Design system & tokens |
-| `@step-7-interface-states` | Interface state specifications |
-| `@step-8-technical-spec` | Technical specifications |
-| `@step-9-landing-page` | Landing page design |
-| `@step-10-feature-breakdown` | Feature breakdown |
-| `@step-11-prd-generation` | PRD generation |
-| `@step-12-context-engine` | Context engine setup |
-| `@step-13-skillpack-generator` | Generate project skillpack |
+| `/step-1-ideation` | Product ideation with Hormozi Value Equation |
+| `/step-2-architecture` | System architecture design |
+| `/step-3-ux-design` | UX/UI design & user flows |
+| `/step-4-flow-tree` | Navigation flow & screen inventory |
+| `/step-5-wireframe-prototypes` | Wireframe prototypes |
+| `/step-6-design-system` | Design system & tokens |
+| `/step-7-interface-states` | Interface state specifications |
+| `/step-8-technical-spec` | Technical specifications |
+| `/step-9-landing-page` | Landing page design |
+| `/step-10-feature-breakdown` | Feature breakdown |
+| `/step-11-prd-generation` | PRD generation |
+| `/step-12-context-engine` | Context engine setup |
+| `/step-13-skillpack-generator` | Generate project skillpack |
 
-### Audit Commands
-
+### Quality & Audit Commands
 | Command | Description |
 |---------|-------------|
-| `@security-audit` | Security vulnerability assessment |
-| `@accessibility-audit` | WCAG compliance check |
-| `@performance-check` | Performance analysis |
-| `@gap-analysis` | PRD coverage analysis |
-| `@verify-prd` | PRD implementation scoring |
+| `/step-verify` | Deep verification with 100-point scoring |
+| `/security-audit` | Security vulnerability assessment |
+| `/accessibility-audit` | WCAG compliance check |
+| `/performance-check` | Performance analysis |
+| `/gap-analysis` | PRD coverage analysis |
 
-### Dev Commands
-
+### Development Commands
 | Command | Description |
 |---------|-------------|
-| `@implement-prd` | Implement a PRD feature |
-| `@plan` | Create implementation plan |
-| `@simplify` | Code simplification |
+| `/implement-prd` | Implement a PRD feature |
+| `/plan` | Create implementation plan |
+| `/scaffold` | Generate project scaffolding |
+| `/test-gen` | Generate tests from PRD |
 
-### Ops Commands
-
+### Operations Commands
 | Command | Description |
 |---------|-------------|
-| `@status` | Project health overview |
-| `@continue` | Resume unfinished work |
-| `@pr-review` | Pull request review |
-| `@sprint-plan` | Sprint planning |
-| `@daily-standup` | Daily standup report |
+| `/status` | Project health overview |
+| `/continue` | Resume unfinished work |
+| `/doctor` | System health check |
 
-### Deploy Commands
-
+### Deployment Commands
 | Command | Description |
 |---------|-------------|
-| `@ship-check` | Pre-deployment validation |
-| `@ship-stage` | Deploy to staging |
-| `@ship-prod` | Deploy to production |
-| `@client-handoff` | Client delivery documentation |
-
-### Generator Commands
-
-| Command | Description |
-|---------|-------------|
-| `@scaffold` | Generate project scaffolding |
-| `@new-feature` | Create new feature PRD |
-| `@test-gen` | Generate tests from PRD |
-| `@proposal` | Generate project proposal |
+| `/ship-check` | Pre-deployment validation |
+| `/ship-stage` | Deploy to staging |
+| `/ship-prod` | Deploy to production |
 
 ---
 
@@ -175,10 +244,10 @@ Step 13: Skillpack Generator --> Project-specific skills
 Ralph Loop enables autonomous task execution:
 
 ```bash
-# Convert PRDs to JSON backlog
-@step-5b-prd-to-json --all-prds
+# 1. Convert PRDs to JSON backlog
+/step-5b-prd-to-json --all-prds
 
-# Run Ralph loop
+# 2. Run Ralph loop
 ./scripts/ralph/sigma-ralph.sh . docs/ralph/prototype/prd.json claude-code
 ```
 
@@ -192,36 +261,37 @@ See [RALPH-MODE.md](docs/RALPH-MODE.md) for details.
 
 ---
 
-## CLI Commands
+## CLI Reference
 
-| Command | Description |
-|---------|-------------|
-| `sigma` | Interactive installation menu |
-| `sigma new` | Create new project wizard |
-| `sigma retrofit` | Add Sigma to existing project |
-| `sigma doctor` | Installation health check |
-| `sigma doctor --fix` | Auto-fix common issues |
-| `sigma install-skills` | Install all skills (160+) |
-| `sigma orchestrate` | Multi-agent orchestration |
+```bash
+node cli/sigma-cli.js [command]
+
+Commands:
+  (none)              Interactive installation menu
+  new                 Create new project wizard
+  retrofit            Add Sigma to existing project
+  doctor              Installation health check
+  doctor --fix        Auto-fix common issues
+  install-skills      Install all skills (163)
+  status              Show workflow status
+  search <query>      Search commands and skills
+  help                Show all commands
+```
 
 ---
 
 ## Key Principles
 
 ### Hormozi Value Equation
-
 Every feature is evaluated using:
-
 ```
-Value = (Dream Outcome x Perceived Likelihood) / (Time Delay x Effort & Sacrifice)
+Value = (Dream Outcome × Perceived Likelihood) / (Time Delay × Effort & Sacrifice)
 ```
 
 ### Quality Gates
-
 Each step has verification criteria. Target: **80+/100** score to proceed.
 
 ### HITL Checkpoints
-
 Commands pause for human approval at critical decision points. Never skip these.
 
 ---
@@ -231,14 +301,11 @@ Commands pause for human approval at critical decision points. Never skip these.
 | Document | Description |
 |----------|-------------|
 | [WORKFLOW-OVERVIEW.md](docs/WORKFLOW-OVERVIEW.md) | Complete workflow guide |
-| [FOUNDATION-SKILLS.md](docs/FOUNDATION-SKILLS.md) | 39 core skills reference |
-| [EXTERNAL-SKILLS.md](docs/EXTERNAL-SKILLS.md) | 120+ external skills |
+| [FOUNDATION-SKILLS.md](docs/FOUNDATION-SKILLS.md) | 39 Foundation skills |
+| [EXTERNAL-SKILLS.md](docs/EXTERNAL-SKILLS.md) | 124 external skills |
 | [PLATFORMS.md](docs/PLATFORMS.md) | Platform configuration |
 | [RALPH-MODE.md](docs/RALPH-MODE.md) | Autonomous implementation |
-| [COMMANDS.md](docs/COMMANDS.md) | Full command catalog (122 commands) |
-| [GETTING-STARTED.md](docs/GETTING-STARTED.md) | Quick start guide |
-| [RETROFIT-GUIDE.md](docs/RETROFIT-GUIDE.md) | Add Sigma to existing projects |
-| [ORCHESTRATION.md](docs/ORCHESTRATION.md) | Multi-agent parallel development |
+| [COMMANDS.md](docs/COMMANDS.md) | Full command catalog (185 commands) |
 
 ---
 
@@ -246,21 +313,45 @@ Commands pause for human approval at critical decision points. Never skip these.
 
 ```
 sigma-protocol/
-├── steps/              # Core 13-step methodology
-├── audit/              # Quality assurance commands
-├── dev/                # Development workflow
-├── ops/                # Operations commands
-├── deploy/             # Deployment commands
-├── generators/         # Code generators
-├── marketing/          # GTM workflow (25 commands)
+├── .claude/            # Claude Code configuration
+│   ├── commands/       # All command definitions
+│   ├── skills/         # Skill files
+│   └── agents-legacy/  # Deprecated agent files
+├── .cursor/            # Cursor configuration
+│   └── rules/          # Cursor rule files (.mdc)
+├── .factory/           # Factory Droid configuration
 ├── platforms/          # Platform-specific configs
 │   ├── claude-code/
 │   ├── cursor/
 │   ├── opencode/
 │   └── factory-droid/
+├── templates/
+│   ├── steps/          # Canonical step definitions
+│   └── boilerplates/   # Project starter templates
 ├── scripts/ralph/      # Ralph loop scripts
 ├── cli/                # CLI entry point
 └── docs/               # Documentation
+```
+
+---
+
+## Boilerplate Templates
+
+Start new projects with pre-configured templates:
+
+| Template | Description |
+|----------|-------------|
+| `nextjs-saas` | Full SaaS starter with auth, payments |
+| `nextjs-ai` | AI-powered app with Convex |
+| `expo-mobile` | React Native mobile app |
+| `tanstack-saas` | TanStack Start SaaS |
+| `nextjs-portable` | Portable Next.js template |
+
+```bash
+# Use a boilerplate
+cp -r templates/boilerplates/nextjs-saas my-new-project
+cd my-new-project
+npm install
 ```
 
 ---
@@ -272,3 +363,12 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
 ## License
 
 MIT License - see [LICENSE](LICENSE) for details.
+
+---
+
+<p align="center">
+  <b>Built for AI-Native Development</b><br>
+  <a href="https://github.com/Dallionking/Sigma-Protocol">GitHub</a> •
+  <a href="docs/WORKFLOW-OVERVIEW.md">Documentation</a> •
+  <a href="docs/COMMANDS.md">Commands</a>
+</p>

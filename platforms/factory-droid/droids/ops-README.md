@@ -18,7 +18,7 @@ tools:
 
 ---
 
-# SSS Ops Commands
+# Sigma Ops Commands
 
 Operations and project management commands.
 
@@ -61,7 +61,7 @@ Ops commands provide "senior engineering team" workflows: sprint planning, stand
 | `@dependency-update` | Update dependencies safely |
 | `@maintenance-plan` | Create maintenance schedule |
 | `@cleanup-repo` | Repository cleanup |
-| `@lint-commands` | Lint SSS command files |
+| `@lint-commands` | Lint Sigma command files |
 
 ## Usage
 

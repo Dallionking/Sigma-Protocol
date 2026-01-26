@@ -1,4 +1,4 @@
-# SSS Next.js Portable Starter
+# Sigma Next.js Portable Starter
 
 > Self-hostable Next.js SaaS with Drizzle ORM - deploy anywhere with any Postgres database.
 
@@ -234,7 +234,7 @@ npm start
 |------|-----|
 | `db/migrations/` | Auto-generated |
 | `components/ui/` | shadcn managed |
-| SSS Commands | Methodology source |
+| Sigma Commands | Methodology source |
 
 ## License
 

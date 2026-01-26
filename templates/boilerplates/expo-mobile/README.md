@@ -1,6 +1,6 @@
-# SSS Expo Mobile Starter
+# Sigma Expo Mobile Starter
 
-> Production-ready mobile app boilerplate with Supabase auth, RevenueCat subscriptions, and SSS methodology.
+> Production-ready mobile app boilerplate with Supabase auth, RevenueCat subscriptions, and Sigma methodology.
 
 ## Quick Start
 
@@ -45,7 +45,7 @@ npm run dev
 - **State**: Zustand
 - **Analytics**: PostHog
 
-### SSS Commands (Bundled)
+### Sigma Commands (Bundled)
 
 ```
 .cursor/commands/
@@ -55,7 +55,7 @@ npm run dev
 ├── generators/     # Code generators
 ├── marketing/      # Marketing workflows
 ├── ops/            # Operations & maintenance
-├── steps/          # SSS methodology (Steps 0-12)
+├── steps/          # Sigma methodology (Steps 0-12)
 └── Magic UI/       # UI templates
 ```
 
@@ -130,11 +130,11 @@ eas build --profile development
 | Supabase Client | `lib/supabase/` | Core infrastructure |
 | RevenueCat Config | `lib/revenuecat/` | Payment infrastructure |
 | Base UI | `components/ui/` | Shared components |
-| SSS Commands | `.cursor/commands/` | Methodology source |
+| Sigma Commands | `.cursor/commands/` | Methodology source |
 
-## SSS Workflow
+## Sigma Workflow
 
-This boilerplate works with the SSS methodology:
+This boilerplate works with the Sigma methodology:
 
 1. **Step 1-2**: Already decided (Expo + Supabase + RevenueCat)
 2. **Step 3-7**: Design your UX and screens

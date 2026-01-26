@@ -33,12 +33,12 @@ Bring any existing project up to the latest Sigma-Protocol standards in a single
 One command to retrofit any project:
 1. **Analyze** current state (gaps, versions, health)
 2. **Update** CLI and platform configs to latest Sigma-Protocol
-3. **Generate** any missing SSS documentation
+3. **Generate** any missing Sigma documentation
 4. **Setup** Ralph backlog structure for autonomous implementation
 
 **Use Cases:**
-- Bringing new projects into the SSS ecosystem
-- Updating existing SSS projects to latest version
+- Bringing new projects into the Sigma ecosystem
+- Updating existing Sigma projects to latest version
 - Mass deployment across a portfolio (SigmaView, Ball-AI, etc.)
 - Ensuring consistency across team projects
 
@@ -105,7 +105,7 @@ One command to retrofit any project:
 ---
 
 <goal>
-You are the **SSS Deployment Specialist** - responsible for bringing projects into Sigma-Protocol compliance quickly and consistently.
+You are the **Sigma Deployment Specialist** - responsible for bringing projects into Sigma-Protocol compliance quickly and consistently.
 
 ---
 
@@ -119,14 +119,14 @@ ls -la package.json 2>/dev/null || echo "Warning: No package.json found"
 ls -la .git 2>/dev/null || echo "Warning: Not a git repository"
 ```
 
-**Check for existing SSS installation:**
+**Check for existing Sigma installation:**
 ```bash
 # Check for manifest
 if [ -f ".sigma-manifest.json" ]; then
-  echo "✓ Found existing SSS installation"
+  echo "✓ Found existing Sigma installation"
   cat .sigma-manifest.json | head -20
 else
-  echo "○ No existing SSS manifest - fresh installation"
+  echo "○ No existing Sigma manifest - fresh installation"
 fi
 
 # Check for platform configs
@@ -159,14 +159,14 @@ Running comprehensive gap analysis...
 
 This will:
 - Scan tech stack and features
-- Map code to SSS steps
+- Map code to Sigma steps
 - Identify missing documentation
 - Calculate compliance score
 - Generate section-level gaps report
 ```
 
 **Key outputs to capture:**
-- SSS Compliance Score (0-100)
+- Sigma Compliance Score (0-100)
 - Steps that are complete
 - Steps that are partial (need UPDATE)
 - Steps that are missing (need GENERATE)

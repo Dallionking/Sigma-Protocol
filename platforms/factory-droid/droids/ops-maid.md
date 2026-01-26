@@ -426,7 +426,7 @@ root_allowed_files:
   - .nvmrc
   - .node-version
   
-  # SSS Meta-files
+  # Sigma Meta-files
   - .sigma-manifest.json
   - .mcp.json
 
@@ -545,9 +545,9 @@ middleware.ts, jest.config.js, jest.setup.js
 postcss.config.mjs, components.json
 ```
 
-### **SSS Meta-Files (CRITICAL - NEVER DELETE)**
+### **Sigma Meta-Files (CRITICAL - NEVER DELETE)**
 ```
-.sigma-manifest.json   → SSS command version tracking
+.sigma-manifest.json   → Sigma command version tracking
 .mcp.json            → MCP tool configuration
 .cursorrules         → Cursor AI context file
 ```
@@ -567,7 +567,7 @@ postcss.config.mjs, components.json
 /actions/**          → Server actions
 /hooks/**            → React hooks
 /types/**            → TypeScript types
-/docs/**             → Documentation (PRDs, SSS artifacts)
+/docs/**             → Documentation (PRDs, Sigma artifacts)
 /PRD/**              → Legacy PRDs
 /.cursor/**          → Cursor commands and rules
 /.claude/**          → Claude Code agents, commands, hooks

@@ -147,7 +147,7 @@ This command produces a **single, comprehensive implementation plan** that is:
 For each selected skill, load constraints from:
 1. `.claude/skills/<skill>/SKILL.md` (project-local, preferred)
 2. `.cursor/rules/*<skill>*.mdc` (Cursor rules)
-3. `claude-code/plugins/sss-skillpack/skills/<skill>/SKILL.md` (if using SSS plugin)
+3. `claude-code/plugins/sss-skillpack/skills/<skill>/SKILL.md` (if using Sigma plugin)
 
 If a requested skill cannot be found, do **not** proceed silently. Ask the user whether to:
 - provide the skill file/path, or

@@ -1,4 +1,4 @@
-# SSS TanStack SaaS - Features
+# Sigma TanStack SaaS - Features
 
 > Modern full-stack SaaS with TanStack Start SSR and type-safe routing.
 

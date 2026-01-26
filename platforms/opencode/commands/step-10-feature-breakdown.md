@@ -37,9 +37,9 @@ Run a complete, interactive **Step-8: Feature Shaping → Story Map → Betting 
 
 ---
 
-## BOILERPLATE PRE-BUILT FEATURES (NEW - If Using SSS Boilerplate)
+## BOILERPLATE PRE-BUILT FEATURES (NEW - If Using Sigma Boilerplate)
 
-**If your project uses an SSS boilerplate, many features are already built. Focus shaping on unique product features.**
+**If your project uses an Sigma boilerplate, many features are already built. Focus shaping on unique product features.**
 
 ### Detection
 

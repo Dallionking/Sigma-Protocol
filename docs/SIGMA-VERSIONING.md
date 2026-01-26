@@ -89,7 +89,7 @@ Optional build metadata for CI/CD:
 
 ## Compatibility Matrix
 
-| SSS Version | Claude Code | OpenCode | Cursor | Factory Droid |
+| Sigma Version | Claude Code | OpenCode | Cursor | Factory Droid |
 |-------------|-------------|----------|--------|---------------|
 | 5.0 | 1.0+ | 1.0+ | 0.40+ | 1.0+ |
 | 4.0 | 1.0+ | 1.0+ | 0.38+ | - |

@@ -1,4 +1,4 @@
-# SSS Expo Mobile - Features
+# Sigma Expo Mobile - Features
 
 > Production-ready mobile app with Supabase auth and RevenueCat purchases.
 

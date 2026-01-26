@@ -489,5 +489,5 @@ Then run `/backlog-groom --refresh` to regenerate BACKLOG.md
 
 ---
 
-*Part of SSS Tracking System - see /docs/tracking/TRACKING-SYSTEM.md*
+*Part of Sigma Tracking System - see /docs/tracking/TRACKING-SYSTEM.md*
 

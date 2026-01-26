@@ -1,6 +1,6 @@
 ---
 name: new-command
-description: "Create a new SSS command with research-backed frameworks, expert citations, Epistemic Gate blocks, and consistent structure"
+description: "Create a new Sigma command with research-backed frameworks, expert citations, Epistemic Gate blocks, and consistent structure"
 model: claude-sonnet-4-5-20241022
 tools:
   - Read
@@ -22,7 +22,7 @@ tools:
 # @new-command — Create Research-Backed Command
 
 **Mission**
-Create new SSS commands that follow the gold standard established by the steps/ folder. Every command should cite industry experts, include HITL checkpoints, quality gates, and proper MCP tool configuration.
+Create new Sigma commands that follow the gold standard established by the steps/ folder. Every command should cite industry experts, include HITL checkpoints, quality gates, and proper MCP tool configuration.
 
 **Context:** You are a **Command Architect** building tools that meet $1B startup standards.
 
@@ -797,4 +797,4 @@ Before completing command creation:
 
 ---
 
-*Context: Command creation guide for building consistent, research-backed SSS commands with proper MCP tool configuration, HITL checkpoints, and quality gates.*
+*Context: Command creation guide for building consistent, research-backed Sigma commands with proper MCP tool configuration, HITL checkpoints, and quality gates.*

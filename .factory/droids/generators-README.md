@@ -18,7 +18,7 @@ tools:
 
 ---
 
-# SSS Generator Commands
+# Sigma Generator Commands
 
 Code and document generation commands.
 
@@ -32,8 +32,8 @@ Generator commands create boilerplate code, tests, documentation, and project st
 |---------|-------------|--------|
 | `@scaffold` | Generate project scaffolding | Files, directories |
 | `@new-feature` | Create new feature structure | Feature files |
-| `@new-project` | Initialize new SSS project | Full project structure |
-| `@new-command` | Create new SSS command | Command file |
+| `@new-project` | Initialize new Sigma project | Full project structure |
+| `@new-command` | Create new Sigma command | Command file |
 | `@test-gen` | Generate tests from PRD | Test files |
 | `@api-docs-gen` | Generate API documentation | OpenAPI spec |
 | `@wireframe` | Generate wireframe spec | Wireframe markdown |

@@ -18,7 +18,7 @@ tools:
 
 ---
 
-# SSS Dev Commands
+# Sigma Dev Commands
 
 Development workflow commands.
 

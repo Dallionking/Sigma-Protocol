@@ -41,7 +41,7 @@ Run the GitHub Action manually:
 For each boilerplate repo, verify:
 
 - [ ] App code present in root
-- [ ] SSS commands in `.cursor/commands/`
+- [ ] Sigma commands in `.cursor/commands/`
 - [ ] `.sigma/boilerplate.json` present
 - [ ] `scripts/setup.js` present
 - [ ] README updated
@@ -100,7 +100,7 @@ npm run typecheck
 # Should complete without errors
 ```
 
-#### 6. SSS Commands Test
+#### 6. Sigma Commands Test
 
 Verify commands are bundled:
 

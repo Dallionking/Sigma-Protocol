@@ -40,11 +40,11 @@ parameters:
 
 # /lint-commands
 
-**Validate all SSS command files for consistency and quality**
+**Validate all Sigma command files for consistency and quality**
 
 ## 🎯 Purpose
 
-**Role Context:** You are a **Technical Documentation Auditor** ensuring command files meet SSS standards.
+**Role Context:** You are a **Technical Documentation Auditor** ensuring command files meet Sigma standards.
 
 This command:
 - Validates YAML frontmatter completeness
@@ -152,7 +152,7 @@ For each command file:
 **Terminal Output:**
 
 ```
-🔍 SSS Commands Linter
+🔍 Sigma Commands Linter
 
 📁 Checking .cursor/commands/
   ✅ step-1-ideation.md
@@ -240,7 +240,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - name: Lint SSS Commands
+      - name: Lint Sigma Commands
         run: pwsh scripts/lint-sss-commands.ps1 --strict
 ```
 
@@ -452,7 +452,7 @@ async function validateEpistemicGate(filePath: string, content: string): Promise
 ### Output with Epistemic Validation
 
 ```
-🔍 SSS Commands Linter (with Epistemic Gate)
+🔍 Sigma Commands Linter (with Epistemic Gate)
 
 📁 Checking steps/
   ✅ step-1-ideation (Tier 1)
@@ -505,5 +505,5 @@ Use `--skip-epistemic` to bypass Epistemic Gate checks:
 
 ---
 
-*Part of SSS Command Pack infrastructure*
+*Part of Sigma Command Pack infrastructure*
 

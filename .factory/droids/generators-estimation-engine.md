@@ -66,8 +66,8 @@ Automate project estimation using AI analysis of requirements. Research shows **
 
 This command is **format-agnostic** and can parse:
 
-### 1. SSS Master PRD (Future)
-When SSS platform generates Master PRDs for clients:
+### 1. Sigma Master PRD (Future)
+When Sigma platform generates Master PRDs for clients:
 ```markdown
 # Master PRD: [Project Name]
 ## Problem & Goal
@@ -394,7 +394,7 @@ $END$
 #### Step 1: Detect Input Format
 ```typescript
 function detectInputFormat(content: string): 'master-prd' | 'generic-prd' | 'json' | 'plain-text' | 'user-stories' {
-  // Check for SSS Master PRD structure
+  // Check for Sigma Master PRD structure
   if (content.includes('# Master PRD:') && content.includes('## Users & Jobs-to-be-Done')) {
     return 'master-prd';
   }

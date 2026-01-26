@@ -33,9 +33,9 @@ This command:
 
 ---
 
-## BOILERPLATE FOUNDATION (NEW - If Using SSS Boilerplate)
+## BOILERPLATE FOUNDATION (NEW - If Using Sigma Boilerplate)
 
-**If your project uses an SSS boilerplate, technical specs document EXTENSIONS, not the entire system.**
+**If your project uses an Sigma boilerplate, technical specs document EXTENSIONS, not the entire system.**
 
 ### Detection
 

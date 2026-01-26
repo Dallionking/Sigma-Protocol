@@ -679,5 +679,5 @@ describe('Session Persistence', () => {
 
 ---
 
-*Part of SSS Review Workflows - Phase 3*
+*Part of Sigma Review Workflows - Phase 3*
 

@@ -18,7 +18,7 @@ tools:
 
 ---
 
-# SSS Deploy Commands
+# Sigma Deploy Commands
 
 Deployment and shipping commands.
 

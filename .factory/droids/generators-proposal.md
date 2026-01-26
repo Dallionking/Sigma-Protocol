@@ -1386,7 +1386,7 @@ Reply to this proposal or book a call: [calendar link]
 
 ---
 
-*This proposal was generated using the SSS Methodology — a research-backed framework for building $1B-scale software.*
+*This proposal was generated using the Sigma Methodology — a research-backed framework for building $1B-scale software.*
 ```
 
 ---

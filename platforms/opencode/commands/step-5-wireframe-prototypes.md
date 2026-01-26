@@ -130,7 +130,7 @@ After using Superdesign:
 
 ## PHASE 0: BOILERPLATE SCAFFOLDING (OPTIONAL)
 
-**If using SSS boilerplates, scaffold the project BEFORE generating wireframe PRDs.**
+**If using Sigma boilerplates, scaffold the project BEFORE generating wireframe PRDs.**
 
 ### Boilerplate Detection
 
@@ -150,11 +150,11 @@ cat .sigma/boilerplate.json 2>/dev/null
 **Ask User:**
 
 ```
-Do you want to use an SSS boilerplate template?
+Do you want to use an Sigma boilerplate template?
 
 Benefits of boilerplates:
 ✅ Auth, payments, AI already configured
-✅ SSS commands bundled
+✅ Sigma commands bundled
 ✅ Production-ready from day 1
 ✅ 5-minute setup
 
@@ -188,7 +188,7 @@ npm run dev
 
 **After scaffolding:**
 - Provenance file created at `.sigma/boilerplate.json`
-- SSS commands available in `.cursor/commands/`
+- Sigma commands available in `.cursor/commands/`
 - Auth, payments, and base UI ready to extend
 
 ### PRD Guidance for Boilerplate Projects
@@ -228,7 +228,7 @@ This flow extends the `nextjs-saas` boilerplate (v1.0.0).
 
 ## PHASE 0.5: MODULE RECONCILIATION (BOILERPLATE PROJECTS ONLY)
 
-**If using SSS boilerplates, reconcile modules when flows evolve from Step 4.**
+**If using Sigma boilerplates, reconcile modules when flows evolve from Step 4.**
 
 This phase compares the project's selected modules (from initial scaffolding) against the current flow-tree.json to detect drift.
 

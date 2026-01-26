@@ -1,4 +1,4 @@
-# SSS Next.js AI - Features
+# Sigma Next.js AI - Features
 
 > AI-first application with Convex backend and real-time capabilities.
 

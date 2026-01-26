@@ -1309,7 +1309,7 @@ Date: _________________________________
 
 ---
 
-*This document was generated using the SSS Methodology @contract command.*
+*This document was generated using the Sigma Methodology @contract command.*
 *Contract ID: SDC-[DATE]-[CLIENT_ID]*
 ```
 

@@ -359,5 +359,5 @@ docker rm $(docker ps -aq --filter "name=sigma-sandbox")
 ## Related Documentation
 
 - [Ralph Mode](RALPH-MODE.md) - Ralph loop overview
-- [Workflow Overview](WORKFLOW-OVERVIEW.md) - Full SSS methodology
+- [Workflow Overview](WORKFLOW-OVERVIEW.md) - Full Sigma methodology
 - [Foundation Skills](FOUNDATION-SKILLS.md) - Available skills

@@ -1,6 +1,6 @@
 ---
 name: retrofit-generate
-description: "Generate missing SSS documentation for existing codebases - creates Steps 0-12 (+ conditional 1.5) docs and feature PRDs"
+description: "Generate missing Sigma documentation for existing codebases - creates Steps 0-12 (+ conditional 1.5) docs and feature PRDs"
 model: claude-sonnet-4-5-20241022
 tools:
   - Read
@@ -19,10 +19,10 @@ tools:
 ---
 
 
-# /retrofit-generate — Generate SSS Documentation for Existing Codebases
+# /retrofit-generate — Generate Sigma Documentation for Existing Codebases
 
 **Mission**  
-Generate missing SSS (Scalable Startup System) documentation for an existing codebase. This command reads the analysis from `@retrofit-analyze` and creates the appropriate documentation following the SSS methodology (Steps 0-12).
+Generate missing Sigma (Scalable Startup System) documentation for an existing codebase. This command reads the analysis from `@retrofit-analyze` and creates the appropriate documentation following the Sigma methodology (Steps 0-12).
 
 **Valuation Context:** You are a **Staff Technical Writer** at a \$1B unicorn, transforming inherited codebases into fully-documented, investor-ready projects. Your documentation must be comprehensive enough to onboard new engineers in < 1 day.
 
@@ -99,7 +99,7 @@ Generate SSS-compliant documentation by:
 
 ### **Run After This Command:**
 - \`@verify-prd\` - Validate generated PRDs
-- \`@status\` - Check SSS workflow progress
+- \`@status\` - Check Sigma workflow progress
 - \`@implement-prd\` - Start implementing features
 
 ---
@@ -529,7 +529,7 @@ If \`--verify\` flag is set (default: true):
 interface QualityCheck {
   completeness: number;  // All sections present
   accuracy: number;      // Code references valid
-  consistency: number;   // Follows SSS format
+  consistency: number;   // Follows Sigma format
   actionability: number; // Clear next steps
 }
 
@@ -602,7 +602,7 @@ Step 12: Cursor Rules
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-SSS Compliance: 45/100 → 92/100 🎉
+Sigma Compliance: 45/100 → 92/100 🎉
 
 Next Steps:
 1. Review generated PRDs
@@ -621,7 +621,7 @@ Next Steps:
 - **Completeness:** All requested docs generated
 - **Quality:** PRDs score 8+/10 on @verify-prd
 - **Accuracy:** Code references are valid
-- **Format:** Follows SSS canonical paths
+- **Format:** Follows Sigma canonical paths
 
 ---
 
@@ -671,4 +671,4 @@ Did you mean: @retrofit-generate --feature="authentication"
 
 ---
 
-*Generate SSS documentation for existing codebases*
+*Generate Sigma documentation for existing codebases*

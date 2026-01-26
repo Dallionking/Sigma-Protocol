@@ -249,7 +249,7 @@ async function findSssProtocolDir(): Promise<string> {
 **Manual Installation (Alternative):**
 
 ```bash
-# Via SSS CLI
+# Via Sigma CLI
 npx sigma-protocol install-skills --platform [cursor|claude-code|opencode]
 
 # Or copy manually for Cursor

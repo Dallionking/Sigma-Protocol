@@ -18,13 +18,13 @@ tools:
 
 ---
 
-# SSS Steps Commands
+# Sigma Steps Commands
 
 The core 13-step product development methodology.
 
 ## Overview
 
-These commands guide you through the complete SSS workflow, from ideation to deployment.
+These commands guide you through the complete Sigma workflow, from ideation to deployment.
 
 ## Command List
 

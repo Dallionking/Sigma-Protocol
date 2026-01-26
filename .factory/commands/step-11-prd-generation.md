@@ -88,9 +88,9 @@ The hook returns a JSON response with:
 
 ---
 
-## BOILERPLATE STABLE API REFERENCES (NEW - If Using SSS Boilerplate)
+## BOILERPLATE STABLE API REFERENCES (NEW - If Using Sigma Boilerplate)
 
-**If your project uses an SSS boilerplate, PRDs should reference stable APIs rather than re-specifying foundation components.**
+**If your project uses an Sigma boilerplate, PRDs should reference stable APIs rather than re-specifying foundation components.**
 
 ### Detection
 

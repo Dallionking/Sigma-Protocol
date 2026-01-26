@@ -1,6 +1,6 @@
-# SSS Boilerplate System
+# Sigma Boilerplate System
 
-Pre-built, production-ready templates that bundle both **app code** AND **SSS commands** for an instant start on new projects.
+Pre-built, production-ready templates that bundle both **app code** AND **Sigma commands** for an instant start on new projects.
 
 ## Available Templates
 
@@ -193,7 +193,7 @@ Each boilerplate ships with:
 - ✅ Theme toggle (light/dark)
 - ✅ Accessibility baseline
 
-### SSS Commands (Bundled)
+### Sigma Commands (Bundled)
 ```
 .cursor/commands/
 ├── audit/          # Quality & security audits
@@ -202,7 +202,7 @@ Each boilerplate ships with:
 ├── generators/     # Code generation
 ├── marketing/      # Marketing workflows
 ├── ops/            # Operations & maintenance
-├── steps/          # SSS methodology steps
+├── steps/          # Sigma methodology steps
 └── Magic UI/       # Template resources
 ```
 
@@ -226,7 +226,7 @@ Every project created from a boilerplate includes `.sigma/boilerplate.json`:
 }
 ```
 
-This file enables SSS steps (5, 6, 8, 10, 11, 12) to adapt their behavior based on what's already built.
+This file enables Sigma steps (5, 6, 8, 10, 11, 12) to adapt their behavior based on what's already built.
 
 ## Extension Guidelines
 
@@ -256,9 +256,9 @@ This file enables SSS steps (5, 6, 8, 10, 11, 12) to adapt their behavior based 
 | Supabase Client | `lib/supabase/` | Core infrastructure |
 | AI Client | `lib/ai/` | Core infrastructure |
 | Base UI | `components/ui/` | shadcn managed |
-| SSS Commands | `.cursor/commands/` | Methodology source |
+| Sigma Commands | `.cursor/commands/` | Methodology source |
 
-## SSS Workflow Integration
+## Sigma Workflow Integration
 
 | Step | Boilerplate Behavior |
 |------|---------------------|
@@ -273,7 +273,7 @@ This file enables SSS steps (5, 6, 8, 10, 11, 12) to adapt their behavior based 
 
 ## Custom Build Path
 
-If your project doesn't fit any boilerplate (exotic stack, special requirements), the SSS workflow still works exactly as before. Steps detect the absence of `.sigma/boilerplate.json` and operate in "custom build" mode.
+If your project doesn't fit any boilerplate (exotic stack, special requirements), the Sigma workflow still works exactly as before. Steps detect the absence of `.sigma/boilerplate.json` and operate in "custom build" mode.
 
 ## Distribution
 

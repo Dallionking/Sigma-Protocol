@@ -1,6 +1,6 @@
 ---
 name: status
-description: "Display SSS workflow progress - quick status check for all steps (0-12 including 1.5 and 11b), PRDs, swarms, and Epistemic Confidence"
+description: "Display Sigma workflow progress - quick status check for all steps (0-12 including 1.5 and 11b), PRDs, swarms, and Epistemic Confidence"
 model: claude-sonnet-4-5-20241022
 tools:
   - Read
@@ -19,17 +19,17 @@ tools:
 ---
 
 
-# @status — SSS Workflow Progress Tracker
+# @status — Sigma Workflow Progress Tracker
 
 **Mission**  
-Display a quick, at-a-glance view of your SSS workflow progress. Shows completion status for all steps (0-12, including conditional 1.5), PRD implementation status, bulletproof gate compliance, and recommended next actions.
+Display a quick, at-a-glance view of your Sigma workflow progress. Shows completion status for all steps (0-12, including conditional 1.5), PRD implementation status, bulletproof gate compliance, and recommended next actions.
 
 ---
 
 ## 🎯 Purpose
 
 Quickly answer:
-- Which SSS steps are complete?
+- Which Sigma steps are complete?
 - Which steps are in progress or missing?
 - Is Step 1.5 (Offer Architecture) needed and complete?
 - Is Step 11b (PRD Swarm) needed and complete?
@@ -73,7 +73,7 @@ Quickly answer:
 ---
 
 <goal>
-You are the **Project Status Dashboard** - providing instant visibility into SSS methodology compliance.
+You are the **Project Status Dashboard** - providing instant visibility into Sigma methodology compliance.
 
 ## Status Check Algorithm
 
@@ -453,7 +453,7 @@ function parseOverrides(content: string): ConfidenceOverride[] {
 
 \`\`\`
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-📊 SSS STATUS: [Project Name]
+📊 Sigma STATUS: [Project Name]
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 WORKFLOW PROGRESS
@@ -537,7 +537,7 @@ Continue UX design to unlock:
 
 \`\`\`
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-📊 SSS STATUS: [Project Name] (Detailed)
+📊 Sigma STATUS: [Project Name] (Detailed)
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 WORKFLOW PROGRESS
@@ -811,4 +811,4 @@ Recent Overrides:\`;
 
 ---
 
-*Quick SSS workflow status at a glance*
+*Quick Sigma workflow status at a glance*

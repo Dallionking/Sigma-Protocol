@@ -1,4 +1,4 @@
-# SSS Development Workflow: Complete Guide (Steps 0-12 + Conditional 1.5)
+# Sigma Development Workflow: Complete Guide (Steps 0-12 + Conditional 1.5)
 
 **Last Updated:** 2026-01-23
 **Version:** 5.0 (with Agentic Layer, Self-Correcting Dev Loop, Grade 4 Tooling, Factory Droid Support)
@@ -7,7 +7,7 @@
 
 ## 🎯 Overview
 
-The SSS (Sigma Software Solutions) workflow is a **comprehensive, 14-step process (Steps 0-12 plus conditional Step 1.5)** that takes you from initial idea to production-ready code with complete documentation. Think of it as building a house - you don't start with the roof, you follow a specific order.
+The Sigma (Sigma Software Solutions) workflow is a **comprehensive, 14-step process (Steps 0-12 plus conditional Step 1.5)** that takes you from initial idea to production-ready code with complete documentation. Think of it as building a house - you don't start with the roof, you follow a specific order.
 
 **Workflow Order:** `0 → 1 → 1.5 (conditional) → 2 → 3 → 4 → 5 → 6 → 7 → 8 → 9 → 10 → 11 → 11b (optional) → 12`
 
@@ -29,15 +29,15 @@ See `docs/mcp/SIGMA-VERSIONING.md` for the canonical step registry.
 
 ## 🎯 Foundation Skills System (v5.0)
 
-SSS includes a **three-tier skill system** that provides AI capabilities at different levels:
+Sigma includes a **three-tier skill system** that provides AI capabilities at different levels:
 
 ### Tier 1: Foundation Skills (Step 0)
 
-**39 Foundation skills** installed at Step 0 that provide domain-agnostic capabilities. These power the 13-step SSS workflow. Combined with 124 external skills, SSS provides **163 total skills**.
+**39 Foundation skills** installed at Step 0 that provide domain-agnostic capabilities. These power the 13-step Sigma workflow. Combined with 124 external skills, Sigma provides **163 total skills**.
 
 | Category               | Skills                                                                                        | Purpose                      |
 | ---------------------- | --------------------------------------------------------------------------------------------- | ---------------------------- |
-| **SSS Core** (6)       | research, verification, bdd-scenarios, hormozi-frameworks, output-generation, frontend-design | Power the 13-step workflow   |
+| **Sigma Core** (6)       | research, verification, bdd-scenarios, hormozi-frameworks, output-generation, frontend-design | Power the 13-step workflow   |
 | **Design & Dev** (4)   | ux-designer, architecture-patterns, api-design-principles, web-artifacts-builder              | Architecture and UI patterns |
 | **Quality** (5)        | brainstorming, systematic-debugging, quality-gates, senior-qa, senior-architect               | Testing and code quality     |
 | **Productivity** (5)   | prompt-engineering-patterns, xlsx, pptx, applying-brand-guidelines, remembering-conversations | Documents and productivity   |
@@ -100,11 +100,11 @@ See:
 
 ## 🤖 Agentic Layer (v4.0)
 
-SSS now includes a **Grade 4 Agentic Layer** that enables AI agents to operate, maintain, and self-correct implementations autonomously.
+Sigma now includes a **Grade 4 Agentic Layer** that enables AI agents to operate, maintain, and self-correct implementations autonomously.
 
 ### The Agentic Layer Framework
 
-Based on the "Building Agentic Layers" methodology, SSS separates:
+Based on the "Building Agentic Layers" methodology, Sigma separates:
 
 | Layer                 | Location                      | Purpose                           |
 | --------------------- | ----------------------------- | --------------------------------- |
@@ -128,7 +128,7 @@ Based on the "Building Agentic Layers" methodology, SSS separates:
 
 ### Agentic Maturity Grades
 
-| Grade       | Feature               | SSS Implementation                               |
+| Grade       | Feature               | Sigma Implementation                               |
 | ----------- | --------------------- | ------------------------------------------------ |
 | **Grade 1** | Prime Prompt + Memory | `.cursorrules` + `.sigma-manifest.json`            |
 | **Grade 2** | Specialized Agents    | `@implement-prd`, `@verify-prd`, `@gap-analysis` |
@@ -174,7 +174,7 @@ The `@dev-loop` command now operates in Grade 4 mode:
 
 ### Active Task Memory
 
-For multi-session continuity, SSS maintains `.sigma/memory/active_task.md`:
+For multi-session continuity, Sigma maintains `.sigma/memory/active_task.md`:
 
 ```markdown
 # Active Task
@@ -222,7 +222,7 @@ This enables the AI to resume work after context window resets.
 
 ## 🧵 Thread-Based Engineering
 
-SSS integrates **Thread-Based Engineering** - a framework for measuring and scaling your agentic engineering capabilities.
+Sigma integrates **Thread-Based Engineering** - a framework for measuring and scaling your agentic engineering capabilities.
 
 ### What is a Thread?
 
@@ -239,7 +239,7 @@ A **Thread** is a unit of engineering work bookended by human actions:
 
 ### Thread Types in SSS
 
-| Type | Symbol | SSS Implementation |
+| Type | Symbol | Sigma Implementation |
 |------|--------|-------------------|
 | **Base Thread** | B | Any `@step-X` command |
 | **P-Thread** | P | `sigma orchestrate` - multi-agent streams |
@@ -248,7 +248,7 @@ A **Thread** is a unit of engineering work bookended by human actions:
 | **B-Thread** | B+ | Ralph Loop - agents prompting agents |
 | **L-Thread** | L | Long-running `@dev-loop` sessions |
 
-### How SSS Uses Threads
+### How Sigma Uses Threads
 
 1. **Base Threads**: Every individual command (`@implement-prd F03`)
 2. **C-Threads**: The 13-step workflow is one long chained thread

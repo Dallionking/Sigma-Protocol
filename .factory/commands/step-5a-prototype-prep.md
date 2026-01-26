@@ -257,7 +257,7 @@ async function findSssProtocolDir(): Promise<string> {
 **Manual Installation (Alternative):**
 
 ```bash
-# Via SSS CLI
+# Via Sigma CLI
 npx sigma-protocol install-skills --platform [cursor|claude-code|opencode]
 
 # Or copy manually for Cursor
@@ -439,7 +439,7 @@ After each PRD implementation:
 
 1. Run `/step-5b-prd-to-json` to convert PRDs to Ralph backlog
 2. Run `sigma ralph` to start autonomous implementation
-3. Monitor progress in `.sss/ralph-backlog.json`
+3. Monitor progress in `.sigma/ralph-backlog.json`
 ```
 
 ### D.2 Write Guide to File
@@ -498,7 +498,7 @@ Verify the ralph-backlog schema is available:
 
 ```bash
 # Check for schema files
-ls schemas/ralph-backlog.schema.json 2>/dev/null || ls .sss/schemas/ralph-backlog.schema.json 2>/dev/null
+ls schemas/ralph-backlog.schema.json 2>/dev/null || ls .sigma/schemas/ralph-backlog.schema.json 2>/dev/null
 ```
 
 ### E.5 Generate Readiness Report
@@ -592,7 +592,7 @@ After passing this step:
 
 3. **Monitor Progress:** Check backlog status
    ```bash
-   cat .sss/ralph-backlog.json | jq '.stories[] | select(.passes == false) | .title'
+   cat .sigma/ralph-backlog.json | jq '.stories[] | select(.passes == false) | .title'
    ```
 
 ---

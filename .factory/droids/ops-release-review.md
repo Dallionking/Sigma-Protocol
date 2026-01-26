@@ -913,5 +913,5 @@ None for this release.
 
 ---
 
-*Part of SSS Review Workflows - Phase 3*
+*Part of Sigma Review Workflows - Phase 3*
 

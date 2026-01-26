@@ -604,7 +604,7 @@ graph TB
 
 ## Boilerplate Selection (NEW - Phase C.0)
 
-**If using SSS boilerplates, architecture is pre-decided. This section helps select the right template.**
+**If using Sigma boilerplates, architecture is pre-decided. This section helps select the right template.**
 
 ### Boilerplate Decision Matrix
 

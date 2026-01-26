@@ -409,9 +409,9 @@ Define explicit communication protocols for swarm coordination.
 
 ## Integration with Sigma Protocol
 
-### SSS Workflow Agents
+### Sigma Workflow Agents
 
-Create agents for SSS workflow support:
+Create agents for Sigma workflow support:
 
 - `sss-planner` - Workflow planning and coordination
 - `sss-researcher` - Research and context gathering

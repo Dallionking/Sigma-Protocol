@@ -25,7 +25,7 @@ tools:
 
 ## 🎯 Purpose
 
-Verify that the SSS project system is "bulletproof" by checking:
+Verify that the Sigma project system is "bulletproof" by checking:
 1. MCP Configuration & Connectivity
 2. File Structure & Organization
 3. Documentation Completeness (Steps 0-12)

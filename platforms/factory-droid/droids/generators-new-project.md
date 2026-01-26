@@ -1,6 +1,6 @@
 ---
 name: new-project
-description: "Scaffold new projects from SSS boilerplate templates with flow-tree driven module selection"
+description: "Scaffold new projects from Sigma boilerplate templates with flow-tree driven module selection"
 model: claude-sonnet-4-5-20241022
 tools:
   - Read
@@ -21,13 +21,13 @@ tools:
 
 # @new-project (Boilerplate Scaffolding)
 
-**Create new projects from SSS boilerplate templates with flow-tree driven module selection**
+**Create new projects from Sigma boilerplate templates with flow-tree driven module selection**
 
 ## 🎯 Mission
 
-Scaffold production-ready projects from SSS boilerplate templates. Each template includes:
+Scaffold production-ready projects from Sigma boilerplate templates. Each template includes:
 - Complete app code (auth, payments, AI, etc.)
-- Bundled SSS commands
+- Bundled Sigma commands
 - Setup script for customization
 - Provenance tracking
 - **Flow-tree driven module selection** (NEW)
@@ -266,7 +266,7 @@ npm run setup
 const provenancePath = path.join(projectPath, '.sigma', 'boilerplate.json');
 const provenance = JSON.parse(fs.readFileSync(provenancePath));
 
-// Verify SSS commands bundled
+// Verify Sigma commands bundled
 const commandsPath = path.join(projectPath, '.cursor', 'commands');
 const hasCommands = fs.existsSync(commandsPath);
 
@@ -329,7 +329,7 @@ Next: cd ${projectName} && npm run dev
 
 [ ] 8. Verification
     - Check provenance file
-    - Verify SSS commands bundled
+    - Verify Sigma commands bundled
     - List active modules
     - Test npm run dev works
 
@@ -416,7 +416,7 @@ If no flow-tree exists, generator can create a starter:
 
 ## 🎯 Post-Scaffolding Workflow
 
-After scaffolding, continue with SSS methodology:
+After scaffolding, continue with Sigma methodology:
 
 1. **Step 1** - Refine your product idea
 2. **Step 2** - Architecture is pre-decided by template

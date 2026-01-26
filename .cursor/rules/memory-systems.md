@@ -408,7 +408,7 @@ When project structure changes:
 
 ---
 
-## Integration with SSS Commands
+## Integration with Sigma Commands
 
 ### `/status` Command Integration
 

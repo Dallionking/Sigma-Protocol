@@ -1,4 +1,4 @@
-# SSS Next.js AI Starter
+# Sigma Next.js AI Starter
 
 > AI-first Next.js app with Convex backend for real-time collaboration and AI features.
 
@@ -181,7 +181,7 @@ npx convex env set OPENAI_API_KEY sk-...
 |------|-----|
 | `convex/_generated/` | Auto-generated |
 | `components/ui/` | shadcn managed |
-| SSS Commands | Methodology source |
+| Sigma Commands | Methodology source |
 
 ## License
 

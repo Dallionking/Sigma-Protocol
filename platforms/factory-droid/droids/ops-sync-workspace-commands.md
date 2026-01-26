@@ -1,6 +1,6 @@
 ---
 name: sync-workspace-commands
-description: "Sync canonical SSS commands from this repo to a target workspace's docs/.cursor/commands/ and optionally run workspace fan-out script"
+description: "Sync canonical Sigma commands from this repo to a target workspace's docs/.cursor/commands/ and optionally run workspace fan-out script"
 model: claude-sonnet-4-5-20241022
 tools:
   - Read
@@ -22,7 +22,7 @@ tools:
 # @sync-workspace-commands — Sync Canonical Commands to Workspace
 
 **Mission**  
-Sync the canonical SSS commands from this repository to a target workspace's `docs/.cursor/commands/` directory, maintaining a single source of truth while supporting multi-repo workspace architectures.
+Sync the canonical Sigma commands from this repository to a target workspace's `docs/.cursor/commands/` directory, maintaining a single source of truth while supporting multi-repo workspace architectures.
 
 **Context:** You are a **DevOps Engineer** managing command distribution across multiple repositories in a workspace. This command ensures all repos stay in sync with the canonical command set.
 
@@ -31,7 +31,7 @@ Sync the canonical SSS commands from this repository to a target workspace's `do
 ## 🎯 Purpose
 
 This command:
-1. **Mirrors** canonical SSS commands to `WORKSPACE_ROOT/docs/.cursor/commands/`
+1. **Mirrors** canonical Sigma commands to `WORKSPACE_ROOT/docs/.cursor/commands/`
 2. **Syncs only command directories** (excludes private docs)
 3. **Optionally runs** the workspace's fan-out script to sync to individual repos
 4. **Provides** dry-run preview before making changes
@@ -94,7 +94,7 @@ fi
 
 ### 2) Identify Canonical Source
 
-**Canonical source:** Current repository root (`/Users/dallionking/SSS Projects/commands/`)
+**Canonical source:** Current repository root (`/Users/dallionking/Sigma Projects/commands/`)
 
 **Command directories to sync:**
 - `audit/`
@@ -132,10 +132,10 @@ fi
 ```bash
 # Example dry-run output
 echo "═══════════════════════════════════════════════════════════════"
-echo "  SSS Commands Sync - DRY RUN"
+echo "  Sigma Commands Sync - DRY RUN"
 echo "═══════════════════════════════════════════════════════════════"
 echo ""
-echo "Source:      /Users/dallionking/SSS Projects/commands/"
+echo "Source:      /Users/dallionking/Sigma Projects/commands/"
 echo "Target:      $WORKSPACE_ROOT/docs/.cursor/commands/"
 echo ""
 echo "Directories to sync:"
@@ -178,7 +178,7 @@ mkdir -p "$TARGET_DIR"
 **Use rsync to sync each directory:**
 
 ```bash
-CANONICAL_ROOT="/Users/dallionking/SSS Projects/commands"
+CANONICAL_ROOT="/Users/dallionking/Sigma Projects/commands"
 
 # Directories to sync (excluding ops/sync-workspace-commands)
 DIRS=("audit" "deploy" "dev" "generators" "marketing" "steps" "Magic UI")
@@ -213,15 +213,15 @@ fi
 ```markdown
 # ⚠️ AUTO-SYNCED DIRECTORY - DO NOT EDIT
 
-This directory is automatically synced from the canonical SSS commands repository:
+This directory is automatically synced from the canonical Sigma commands repository:
 
 ```
-/Users/dallionking/SSS Projects/commands/
+/Users/dallionking/Sigma Projects/commands/
 ```
 
 ## How to Make Changes
 
-1. **Edit canonical source:** Make changes in `/Users/dallionking/SSS Projects/commands/`
+1. **Edit canonical source:** Make changes in `/Users/dallionking/Sigma Projects/commands/`
 2. **Sync to workspace:** Run `@sync-workspace-commands --workspace-root=$WORKSPACE_ROOT`
 3. **Fan out to repos:** Run `scripts/sync-ai-config.sh` (if available)
 
@@ -328,7 +328,7 @@ if [[ "$FANOUT_AVAILABLE" == "true" && "$SKIP_FANOUT" == "true" ]]; then
 else
   echo "  2. Commands are ready to use in workspace"
 fi
-echo "  3. Commit changes: git add -A && git commit -m 'sync: SSS commands from canonical repo'"
+echo "  3. Commit changes: git add -A && git commit -m 'sync: Sigma commands from canonical repo'"
 echo ""
 ```
 
@@ -373,9 +373,9 @@ fi
 
 ## 🔗 Related Commands
 
-- `@status` - Check workspace SSS compliance
+- `@status` - Check workspace Sigma compliance
 - `@retrofit-analyze` - Analyze existing workspace structure
-- `@retrofit-generate` - Generate missing SSS docs
+- `@retrofit-generate` - Generate missing Sigma docs
 
 ---
 

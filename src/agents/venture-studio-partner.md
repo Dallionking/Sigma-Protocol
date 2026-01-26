@@ -106,7 +106,7 @@ This agent should pause for human input at:
 
 ## Output Format
 
-All outputs should follow the SSS documentation standards:
+All outputs should follow the Sigma documentation standards:
 - Markdown with proper headings
 - Tables for structured data
 - Mermaid diagrams where helpful

@@ -18,7 +18,7 @@ tools:
 
 ---
 
-# SSS Audit Commands
+# Sigma Audit Commands
 
 Quality assurance and verification commands.
 

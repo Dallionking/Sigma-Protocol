@@ -48,7 +48,7 @@ Sigma-Protocol/
 ├── audit/                     # Audit/analysis commands
 ├── generators/                # Code generation
 ├── marketing/                 # Marketing content commands
-├── steps/                     # 13-step SSS methodology
+├── steps/                     # 13-step Sigma methodology
 └── docs/                      # Documentation
 ```
 

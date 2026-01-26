@@ -68,7 +68,7 @@
 - [x] Accessibility baseline
 - [x] Setup script
 - [x] Provenance file
-- [x] Bundle SSS commands
+- [x] Bundle Sigma commands
 
 ### Components Inventory
 
@@ -191,7 +191,7 @@
 If boilerplate system causes issues:
 
 1. Students can always use "custom build" path (no boilerplate)
-2. SSS commands continue working independently
+2. Sigma commands continue working independently
 3. Step detection gracefully falls back when `.sigma/boilerplate.json` missing
 
 ---
@@ -226,10 +226,10 @@ If boilerplate system causes issues:
 - [ ] Clone → setup → dev for nextjs-ai
 - [ ] Clone → setup → dev for nextjs-portable
 - [ ] Clone → setup → dev for tanstack-saas
-- [ ] Verify SSS commands work in each
+- [ ] Verify Sigma commands work in each
 
 ### Documentation
 
-- [ ] Update main SSS documentation
+- [ ] Update main Sigma documentation
 - [ ] Create video walkthrough
 - [ ] Add to course materials

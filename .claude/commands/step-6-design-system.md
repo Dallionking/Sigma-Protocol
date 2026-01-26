@@ -40,9 +40,9 @@ The UI must *look* expensive to justify "Grand Slam Pricing".
 
 ---
 
-## BOILERPLATE THEMING (NEW - If Using SSS Boilerplate)
+## BOILERPLATE THEMING (NEW - If Using Sigma Boilerplate)
 
-**If your project uses an SSS boilerplate, the design system EXTENDS (not replaces) the foundation.**
+**If your project uses an Sigma boilerplate, the design system EXTENDS (not replaces) the foundation.**
 
 ### Detection
 
@@ -119,7 +119,7 @@ const outfit = Outfit({
 | `components/ui/button.tsx` | shadcn managed - use variants instead |
 | `components/ui/input.tsx` | shadcn managed |
 | `lib/supabase/*` | Core infrastructure |
-| `.cursor/commands/*` | SSS methodology |
+| `.cursor/commands/*` | Sigma methodology |
 
 ### What TO Create
 

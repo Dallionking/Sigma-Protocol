@@ -361,7 +361,7 @@ You are a {role} specializing in {domain}.
 
 ### Agent Development
 
-Use these patterns when creating AI agents for the SSS workflow.
+Use these patterns when creating AI agents for the Sigma workflow.
 
 ### LLM-Powered Features
 

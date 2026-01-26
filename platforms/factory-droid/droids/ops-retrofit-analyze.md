@@ -1,6 +1,6 @@
 ---
 name: retrofit-analyze
-description: "Analyze existing codebase for SSS methodology adoption - comprehensive gap analysis with section-level detection and update recommendations"
+description: "Analyze existing codebase for Sigma methodology adoption - comprehensive gap analysis with section-level detection and update recommendations"
 model: claude-sonnet-4-5-20241022
 tools:
   - Read
@@ -19,10 +19,10 @@ tools:
 ---
 
 
-# /retrofit-analyze — Existing Codebase Analysis for SSS Adoption
+# /retrofit-analyze — Existing Codebase Analysis for Sigma Adoption
 
 **Mission**  
-Analyze an existing codebase (forked repo, legacy project, or inherited code) and generate a comprehensive report on how to adopt the **SSS (Scalable Startup System)** methodology. This command identifies what exists, what's missing at both **file-level AND section-level**, and creates a prioritized roadmap.
+Analyze an existing codebase (forked repo, legacy project, or inherited code) and generate a comprehensive report on how to adopt the **Sigma (Scalable Startup System)** methodology. This command identifies what exists, what's missing at both **file-level AND section-level**, and creates a prioritized roadmap.
 
 **New in v3.0:** Section-level analysis detects which **specific frameworks/phases** are missing within existing documents, enabling `@retrofit-enhance --mode=update` to surgically add only what's missing.
 
@@ -34,14 +34,14 @@ Analyze an existing codebase (forked repo, legacy project, or inherited code) an
 
 Transform any existing codebase into an SSS-compliant project by:
 1. **Discovering** current project structure, tech stack, and architecture
-2. **Mapping** existing code to SSS steps (0-12)
+2. **Mapping** existing code to Sigma steps (0-12)
 3. **Identifying** gaps in documentation and methodology
 4. **Generating** a prioritized remediation roadmap
 
 **Use Cases:**
 - Forked open-source projects
 - Inherited legacy codebases
-- Projects started without SSS methodology
+- Projects started without Sigma methodology
 - Due diligence for acquisitions
 
 ---
@@ -86,12 +86,12 @@ Transform any existing codebase into an SSS-compliant project by:
 ## 🔗 Related Commands
 
 ### **Run After This Command:**
-- \`@retrofit-generate\` - Generate missing SSS documentation
-- \`@status\` - Check SSS workflow progress
+- \`@retrofit-generate\` - Generate missing Sigma documentation
+- \`@status\` - Check Sigma workflow progress
 
 ### **Alternative Entry Points:**
 - \`@analyze\` - General codebase health (less SSS-focused)
-- \`@validate-methodology\` - Check existing SSS compliance
+- \`@validate-methodology\` - Check existing Sigma compliance
 
 ---
 
@@ -174,7 +174,7 @@ find actions -name "*.ts" 2>/dev/null
 
 ### A4: Existing Documentation Check
 
-**Check for SSS Documentation:**
+**Check for Sigma Documentation:**
 \`\`\`typescript
 const sssDocPaths = {
   // Step 1: Ideation
@@ -440,9 +440,9 @@ async function analyzeSectionLevel(targetDir: string): Promise<SectionAnalysis[]
 
 ## Phase B: Gap Analysis
 
-### B1: Map Code to SSS Steps
+### B1: Map Code to Sigma Steps
 
-**Generate SSS Compliance Matrix:**
+**Generate Sigma Compliance Matrix:**
 \`\`\`typescript
 interface SSSComplianceMatrix {
   step: string;
@@ -459,7 +459,7 @@ interface SSSComplianceMatrix {
 }
 \`\`\`
 
-### B2: Calculate SSS Compliance Score
+### B2: Calculate Sigma Compliance Score
 
 **Scoring Algorithm:**
 \`\`\`typescript
@@ -505,20 +505,20 @@ function calculateTotalWeight(isMonetized: boolean): number {
 ### C2: Report Format (Updated for v3.0)
 
 \`\`\`markdown
-# SSS Retrofit Analysis Report
+# Sigma Retrofit Analysis Report
 
 ## Executive Summary
 
 | Metric | Value |
 |--------|-------|
-| **SSS Compliance Score** | [X]/100 ([Grade]) |
+| **Sigma Compliance Score** | [X]/100 ([Grade]) |
 | **Steps Complete** | [N]/13 |
 | **Steps Partial (need UPDATE)** | [N] |
 | **Steps Missing (need GENERATE)** | [N] |
 | **Features Discovered** | [N] |
 | **Est. Retrofit Effort** | [X] hours |
 
-## SSS Step Compliance
+## Sigma Step Compliance
 
 | Step | Name | Status | Sections | Action Required |
 |------|------|--------|----------|-----------------|
@@ -571,7 +571,7 @@ function calculateTotalWeight(isMonetized: boolean): number {
 **Present Analysis Summary:**
 \`\`\`
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-📊 SSS RETROFIT ANALYSIS COMPLETE
+📊 Sigma RETROFIT ANALYSIS COMPLETE
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 Project: [Name]
@@ -623,4 +623,4 @@ Features Found: [N]
 
 ---
 
-*Analyze existing codebases for SSS methodology adoption*
+*Analyze existing codebases for Sigma methodology adoption*

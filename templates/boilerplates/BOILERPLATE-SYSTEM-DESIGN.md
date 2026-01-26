@@ -4,7 +4,7 @@
 
 ### 1. Backward Compatible by Default
 
-Every SSS step must have a clear branch:
+Every Sigma step must have a clear branch:
 - **If boilerplate detected** → reuse/extend boilerplate patterns
 - **If custom build** → proceed exactly as before
 
@@ -24,7 +24,7 @@ Components and hooks exposed for Step 11 PRDs must have stable, documented prop 
 
 ### 5. Commands Bundled
 
-Every boilerplate includes SSS commands so the methodology is immediately available after cloning.
+Every boilerplate includes Sigma commands so the methodology is immediately available after cloning.
 
 ---
 
@@ -34,7 +34,7 @@ Every boilerplate includes SSS commands so the methodology is immediately availa
 
 ```
 github.com/your-org/
-├── commands                    ← Private (SSS methodology source)
+├── commands                    ← Private (Sigma methodology source)
 │   ├── audit/
 │   ├── deploy/
 │   ├── dev/
@@ -141,7 +141,7 @@ interface BoilerplateProvenance {
     email?: string;              // "resend" | "postmark" | "custom"
   };
   
-  // SSS commands version bundled
+  // Sigma commands version bundled
   commands_version: string;      // semver
   
   // Customization tracking (optional)
@@ -206,7 +206,7 @@ function detectBoilerplate(projectRoot: string): BoilerplateProvenance | null {
 | Payment infrastructure | `lib/stripe/`, `components/payments/` | Stable APIs |
 | AI infrastructure | `lib/ai/`, `hooks/use-ai.ts` | Stable APIs |
 | Base UI | `components/ui/` | shadcn managed |
-| SSS Commands | `.cursor/commands/` | Methodology |
+| Sigma Commands | `.cursor/commands/` | Methodology |
 
 ### Project Owns
 
@@ -347,7 +347,7 @@ Each boilerplate must pass:
 4. `npm run setup` → Completes without errors
 5. `npm run dev` → Server starts
 
-### SSS Command Integration
+### Sigma Command Integration
 
 Commands must work after bundling:
 - Step 11 generates valid PRDs
@@ -392,7 +392,7 @@ A: Not automatically. Review release notes and manually apply relevant changes. 
 
 ### Q: What if I need a stack not covered by templates?
 
-A: Use the "custom build" path. All SSS steps work without boilerplates—they detect this automatically.
+A: Use the "custom build" path. All Sigma steps work without boilerplates—they detect this automatically.
 
 ### Q: Can I contribute a new boilerplate?
 

@@ -926,5 +926,5 @@ npx playwright install
 
 ---
 
-*Part of SSS QA System - see /qa-run to execute tests*
+*Part of Sigma QA System - see /qa-run to execute tests*
 

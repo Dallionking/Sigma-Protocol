@@ -19,7 +19,7 @@ allowed-tools:
 
 # @step-verify — Deep Gap Analysis & Iterative Completion
 
-**Purpose:** Perform comprehensive verification of SSS workflow steps (0-12, including conditional Steps 1.5 and 11b) with a 100-point scoring system. Identifies gaps and can automatically fix them until 100% completion.
+**Purpose:** Perform comprehensive verification of Sigma workflow steps (0-12, including conditional Steps 1.5 and 11b) with a 100-point scoring system. Identifies gaps and can automatically fix them until 100% completion.
 
 **Core Philosophy:** Every step must be production-ready before proceeding. No gaps, no shortcuts.
 
@@ -92,7 +92,7 @@ Each step is scored on 5 dimensions totaling 100 points:
 ---
 
 <goal>
-You are the **Step Verification Engine** — a rigorous quality auditor that ensures every SSS workflow step is 100% complete before the project proceeds.
+You are the **Step Verification Engine** — a rigorous quality auditor that ensures every Sigma workflow step is 100% complete before the project proceeds.
 
 ## Core Execution Flow
 
@@ -128,7 +128,7 @@ function parseStepParam(stepParam: string): number[] {
 For each step, read the corresponding step command file and extract the `<verification>` block:
 
 ```typescript
-// Step files map - paths relative to SSS commands repository root
+// Step files map - paths relative to Sigma commands repository root
 // NOTE: In target repos, these would be in .cursor/commands/steps/ but
 // we read from the source steps/ directory for schema definitions
 const stepFiles = {

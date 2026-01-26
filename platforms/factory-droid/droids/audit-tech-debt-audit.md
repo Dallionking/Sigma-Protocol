@@ -715,7 +715,7 @@ ${prediction.recommendations.map((r, i) => `${i + 1}. ${r}`).join('\n')}
 # Technical Debt Audit Report
 
 **Generated:** 2025-12-24 14:32:00 UTC  
-**Codebase:** SSS (Sigma Software Solutions)  
+**Codebase:** Sigma (Sigma Software Solutions)  
 **Total Debt Score:** 42/100 (Fair)
 **Platform:** ${platform.platform}
 

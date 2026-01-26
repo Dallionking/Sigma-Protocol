@@ -908,7 +908,7 @@ Before running `@dev-loop`, ensure all planning steps (1-11) are 100% complete:
 
 ## Expected Timeline
 
-**For 15 PRDs (typical SSS project):**
+**For 15 PRDs (typical Sigma project):**
 
 | Phase | Time | Description |
 |-------|------|-------------|

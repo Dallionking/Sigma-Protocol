@@ -1,6 +1,6 @@
-# SSS TanStack Start Starter
+# Sigma TanStack Start Starter
 
-> Modern full-stack SaaS with TanStack Start, type-safe routing, and SSS methodology.
+> Modern full-stack SaaS with TanStack Start, type-safe routing, and Sigma methodology.
 
 ## Quick Start
 
@@ -186,7 +186,7 @@ OPENAI_API_KEY=sk-...
 |------|-----|
 | `app/components/ui/` | shadcn managed |
 | `app/lib/supabase/` | Core infrastructure |
-| SSS Commands | Methodology source |
+| Sigma Commands | Methodology source |
 
 ## Deployment
 

@@ -1,4 +1,4 @@
-# SSS Next.js Portable - Features
+# Sigma Next.js Portable - Features
 
 > Self-hostable SaaS with Drizzle ORM and flexible database support.
 

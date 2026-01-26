@@ -109,7 +109,7 @@ updateManifest('@license-check', '/docs/legal/LICENSE-COMPLIANCE-[DATE].md', 'ap
 ```markdown
 # License Compliance Report
 **Date:** November 6, 2025  
-**Project:** SSS Platform  
+**Project:** Sigma Platform  
 **Total Dependencies:** 427
 
 ---

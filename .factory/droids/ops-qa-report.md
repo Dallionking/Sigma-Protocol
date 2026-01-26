@@ -757,5 +757,5 @@ open docs/qa/reports/F1-QA-REPORT-2025-12-28.html
 
 ---
 
-*Part of SSS QA System*
+*Part of Sigma QA System*
 

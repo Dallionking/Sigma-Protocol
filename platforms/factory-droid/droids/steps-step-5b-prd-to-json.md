@@ -242,7 +242,7 @@ Phase C: Story Generation
   [ ] C1: Convert PRD sections to atomic stories
   [ ] C2: Apply story-splitting rules (max-story-size)
   [ ] C3: Generate verifiable acceptance criteria
-  [ ] C4: Map SSS verification commands to criteria
+  [ ] C4: Map Sigma verification commands to criteria
   [ ] C5: Assign priority based on journey/dependency order
   ⏸️  CHECKPOINT: Review generated stories
 
