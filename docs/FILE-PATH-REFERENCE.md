@@ -1,6 +1,6 @@
 # SSS File Path Reference
 
-**Version:** 3.0  
+**Version:** 5.0  
 **Last Updated:** 2025-12-29  
 **Purpose:** Canonical list of all file paths used across the SSS workflow
 

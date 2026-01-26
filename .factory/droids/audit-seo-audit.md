@@ -1,0 +1,946 @@
+---
+name: seo-audit
+description: "SEO best practices validation - meta tags, Core Web Vitals, structured data, sitemap verification"
+model: claude-sonnet-4-5-20241022
+tools:
+  - Read
+  - Write
+  - Edit
+  - Bash
+  - WebFetch
+  # MCP tools inherited from original command
+---
+
+# seo-audit
+
+**Source:** Sigma Protocol audit module
+**Version:** 2.0.0
+
+---
+
+
+# @seo-audit
+
+**Comprehensive SEO audit with automated fixes and recommendations**
+
+## 🎯 Purpose
+
+Maximize organic search visibility and ensure Google can properly index your site. **75% of users never scroll past the first page of search results**, and **53% of mobile users abandon sites that take >3 seconds to load**. This command identifies SEO issues and provides actionable fixes.
+
+**For agencies:** Improves client's search rankings, increases organic traffic, demonstrates marketing value.
+
+---
+
+## 📋 Command Usage
+
+```bash
+@seo-audit
+@seo-audit --fix-auto
+@seo-audit --output=/docs/seo/
+```
+
+### Parameters
+
+| Parameter | Description | Default |
+|-----------|-------------|---------|
+| `--fix-auto` | Auto-fix simple issues | `false` |
+| `--output` | Custom output directory | `/docs/seo/` |
+
+---
+
+## 📁 File Management (CRITICAL)
+
+**File Strategy**: `append-dated` - Track SEO improvements
+
+**Output**: `/docs/seo/SEO-AUDIT-2025-11-06.md`
+
+**Manifest**: `updateManifest('@seo-audit', filePath, 'append-dated')`
+
+---
+
+## 📦 What Gets Checked
+
+### 1. Technical SEO
+- ✅ Robots.txt exists and configured
+- ✅ Sitemap.xml generated and submitted
+- ✅ Meta robots tags
+- ✅ Canonical URLs
+- ✅ HTTPS enabled
+- ✅ 404 page exists
+
+### 2. On-Page SEO
+- ✅ Title tags (unique, optimal length)
+- ✅ Meta descriptions (compelling, optimal length)
+- ✅ Heading hierarchy (H1-H6)
+- ✅ Image alt text
+- ✅ Internal linking
+- ✅ URL structure
+
+### 3. Performance (Core Web Vitals)
+- ✅ LCP (Largest Contentful Paint) <2.5s
+- ✅ FID (First Input Delay) <100ms
+- ✅ CLS (Cumulative Layout Shift) <0.1
+- ✅ Page speed score >90
+
+### 4. Mobile SEO
+- ✅ Mobile-friendly design
+- ✅ Responsive viewport
+- ✅ Touch targets adequate size
+- ✅ Text readable without zoom
+
+### 5. Structured Data
+- ✅ Schema.org markup
+- ✅ Open Graph tags (social sharing)
+- ✅ Twitter Card meta tags
+- ✅ JSON-LD structured data
+
+### 6. Content Quality
+- ✅ Unique, valuable content
+- ✅ Keyword optimization
+- ✅ Readability (Flesch-Kincaid)
+- ✅ Content freshness
+
+---
+
+## 📄 SEO Audit Report
+
+```markdown
+# SEO Audit Report
+**Date:** November 6, 2025  
+**Overall Score:** 82/100 (Good)
+
+---
+
+## 📊 Summary
+
+**SEO Health:** Good (near optimal)  
+**Critical Issues:** 0  
+**High Priority:** 3  
+**Medium Priority:** 5  
+**Low Priority:** 8
+
+**Core Web Vitals:** ✅ Passing  
+**Mobile-Friendly:** ✅ Yes  
+**Indexable:** ✅ Yes
+
+---
+
+## 🎯 Category Scores
+
+| Category | Score | Grade | Status |
+|----------|-------|-------|--------|
+| Technical SEO | 95/100 | A | ✅ Excellent |
+| On-Page SEO | 78/100 | B+ | ⚠️ Good |
+| Performance | 88/100 | A- | ✅ Excellent |
+| Mobile SEO | 92/100 | A | ✅ Excellent |
+| Structured Data | 65/100 | C+ | ⚠️ Needs Work |
+| **Overall** | **82/100** | **B+** | ✅ Good |
+
+---
+
+## 🚨 Critical Issues (0)
+
+None found! 🎉
+
+---
+
+## ⚠️ High Priority Issues (3)
+
+### 1. Missing Meta Descriptions (8 pages)
+
+**Impact:** Lower click-through rates from search results  
+**Severity:** High
+
+**Affected Pages:**
+- `/dashboard` - No meta description
+- `/pricing` - No meta description
+- `/admin/leads` - No meta description
+- `/admin/projects` - No meta description
+- `/admin/proposals` - No meta description
+- `/admin/analytics` - No meta description
+- `/admin/settings` - No meta description
+- `/pay/[id]` - No meta description
+
+**Fix:**
+\`\`\`tsx
+// app/dashboard/page.tsx
+export const metadata = {
+  title: 'Dashboard | Sigma Software Solutions',
+  description: 'View your projects, track progress, and manage your software development workflow in one place.',
+};
+\`\`\`
+
+**Best Practices:**
+- Length: 150-160 characters
+- Include primary keyword
+- Compelling call-to-action
+- Unique per page
+
+**Estimated Fix Time:** 20 minutes
+
+---
+
+### 2. Duplicate Title Tags (4 pages)
+
+**Impact:** Confuses search engines, dilutes ranking  
+**Severity:** High
+
+**Duplicate Title:** "Dashboard - Sigma Software Solutions"
+- `/dashboard`
+- `/dashboard/projects`
+- `/dashboard/leads`
+- `/dashboard/settings`
+
+**Fix:**
+\`\`\`tsx
+// Make each title unique
+export const metadata = {
+  title: 'Projects Dashboard | Sigma Software Solutions',
+  title: 'Leads Dashboard | Sigma Software Solutions',
+  title: 'Settings | Sigma Software Solutions',
+};
+\`\`\`
+
+**Estimated Fix Time:** 10 minutes
+
+---
+
+### 3. Missing Structured Data (Schema.org)
+
+**Impact:** Lost rich snippet opportunities, lower CTR  
+**Severity:** High
+
+**Missing Schema Types:**
+- Organization
+- WebSite
+- BreadcrumbList
+- Article (for blog posts)
+- Service (for service pages)
+
+**Fix:**
+\`\`\`tsx
+// app/layout.tsx - Add Organization schema
+export default function RootLayout({ children }) {
+  const organizationSchema = {
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    "name": "Sigma Software Solutions",
+    "url": "https://sigmasoftware.com",
+    "logo": "https://sigmasoftware.com/logo.png",
+    "sameAs": [
+      "https://twitter.com/sigmasoftware",
+      "https://linkedin.com/company/sigmasoftware"
+    ]
+  };
+  
+  return (
+    <html>
+      <head>
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationSchema) }}
+        />
+      </head>
+      <body>{children}</body>
+    </html>
+  );
+}
+\`\`\`
+
+**Estimated Fix Time:** 30 minutes
+
+---
+
+## ⚠️ Medium Priority Issues (5)
+
+### 4. Suboptimal Title Tag Length (6 pages)
+
+**Issue:** Title tags too short (<30 chars) or too long (>60 chars)
+
+**Too Short:**
+- `/` - "Sigma" (5 chars) → "Sigma Software Solutions - AI-Powered Development" (50 chars)
+
+**Too Long:**
+- `/pricing` - "Pricing Plans for Sigma Software Solutions - Affordable Development" (68 chars)
+  → "Pricing Plans | Sigma Software Solutions" (45 chars)
+
+**Optimal:** 50-60 characters
+
+**Estimated Fix Time:** 15 minutes
+
+---
+
+### 5. Missing Canonical URLs (12 pages)
+
+**Impact:** Duplicate content issues, split page authority
+
+**Fix:**
+\`\`\`tsx
+// app/layout.tsx - Add canonical globally
+import { headers } from 'next/headers';
+
+export default function RootLayout({ children }) {
+  const headersList = headers();
+  const domain = headersList.get('host') || 'sigmasoftware.com';
+  const protocol = process.env.NODE_ENV === 'production' ? 'https' : 'http';
+  const pathname = headersList.get('x-pathname') || '/';
+  const canonical = \`\${protocol}://\${domain}\${pathname}\`;
+  
+  return (
+    <html>
+      <head>
+        <link rel="canonical" href={canonical} />
+      </head>
+      <body>{children}</body>
+    </html>
+  );
+}
+\`\`\`
+
+**Estimated Fix Time:** 20 minutes
+
+---
+
+### 6. Slow Image Loading (15 images not optimized)
+
+**Impact:** Slower page speed, worse Core Web Vitals
+
+**Issues:**
+- Not using Next.js Image component (loses automatic optimization)
+- Missing width/height attributes (causes layout shift)
+- No lazy loading
+
+**Fix:**
+\`\`\`tsx
+// ❌ Bad
+<img src="/hero.jpg" alt="Hero image" />
+
+// ✅ Good
+import Image from 'next/image';
+
+<Image
+  src="/hero.jpg"
+  alt="Hero image"
+  width={1200}
+  height={600}
+  priority // For above-the-fold images
+/>
+\`\`\`
+
+**Estimated Fix Time:** 25 minutes
+
+---
+
+### 7. Missing Open Graph Tags (8 pages)
+
+**Impact:** Poor social media sharing appearance
+
+**Fix:**
+\`\`\`tsx
+export const metadata = {
+  title: 'Dashboard',
+  description: '...',
+  openGraph: {
+    title: 'Dashboard | Sigma Software Solutions',
+    description: '...',
+    url: 'https://sigmasoftware.com/dashboard',
+    siteName: 'Sigma Software Solutions',
+    images: [
+      {
+        url: 'https://sigmasoftware.com/og-image.jpg',
+        width: 1200,
+        height: 630,
+      },
+    ],
+    type: 'website',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Dashboard | Sigma Software Solutions',
+    description: '...',
+    images: ['https://sigmasoftware.com/og-image.jpg'],
+  },
+};
+\`\`\`
+
+**Estimated Fix Time:** 20 minutes
+
+---
+
+### 8. Heading Hierarchy Issues (3 pages)
+
+**Impact:** Confuses search engines, poor content structure
+
+**Issues:**
+- `/pricing` - Skips from H1 to H3 (missing H2)
+- `/dashboard` - Multiple H1 tags (should be only one)
+- `/admin/leads` - H4 before H3
+
+**Fix:** Ensure proper hierarchy (H1 → H2 → H3 → H4)
+
+**Estimated Fix Time:** 15 minutes
+
+---
+
+## 💡 Low Priority Issues (8)
+
+1. **Missing alt text** (3 decorative images)
+   - Add alt="" for decorative images (tells search engines to ignore)
+   - Time: 2 minutes
+
+2. **Sitemap not submitted to Google Search Console**
+   - Submit at https://search.google.com/search-console
+   - Time: 5 minutes
+
+3. **Missing robots.txt directives**
+   - Add Sitemap URL to robots.txt
+   - Time: 2 minutes
+
+4. **Internal links use absolute URLs**
+   - Use relative URLs for better portability
+   - Time: 10 minutes
+
+5. **Missing hreflang tags** (if multi-language)
+   - Not applicable (single language site)
+   - Time: N/A
+
+6. **Broken links detected** (2 links)
+   - `/old-page` → 404
+   - `/legacy/dashboard` → 404
+   - Time: 5 minutes
+
+7. **Image file names not SEO-friendly**
+   - `IMG_1234.jpg` → `software-development-team.jpg`
+   - Time: 10 minutes
+
+8. **Missing Favicon variants**
+   - Add apple-touch-icon, manifest.json
+   - Time: 10 minutes
+
+---
+
+## 🚀 Core Web Vitals
+
+### Performance Metrics
+
+| Metric | Value | Target | Status |
+|--------|-------|--------|--------|
+| LCP (Largest Contentful Paint) | 1.8s | <2.5s | ✅ Good |
+| FID (First Input Delay) | 45ms | <100ms | ✅ Good |
+| CLS (Cumulative Layout Shift) | 0.05 | <0.1 | ✅ Good |
+| TTFB (Time to First Byte) | 320ms | <600ms | ✅ Good |
+| Speed Index | 2.1s | <3.4s | ✅ Good |
+
+**Overall:** ✅ Passing Core Web Vitals
+
+### Page Speed by Route
+
+| Route | Desktop | Mobile | Status |
+|-------|---------|--------|--------|
+| / | 94 | 82 | ✅ Good |
+| /pricing | 91 | 78 | ✅ Good |
+| /dashboard | 88 | 71 | ⚠️ Needs Work |
+| /admin/leads | 85 | 68 | ⚠️ Needs Work |
+
+**Recommendations:**
+- Optimize dashboard images (use WebP)
+- Reduce JavaScript bundle size
+- Enable caching headers
+
+---
+
+## 📱 Mobile SEO
+
+**Mobile-Friendly Test:** ✅ Passing
+
+**Mobile Usability:**
+- ✅ Viewport configured correctly
+- ✅ Text readable without zoom
+- ✅ Touch targets adequate size (>48px)
+- ✅ No horizontal scrolling
+- ⚠️ Some buttons small on mobile (<44px)
+
+**Fix:**
+\`\`\`css
+/* Ensure minimum touch target size */
+button, a {
+  min-height: 44px;
+  min-width: 44px;
+}
+\`\`\`
+
+---
+
+## 🔍 Indexability Check
+
+### Robots.txt
+\`\`\`
+User-agent: *
+Allow: /
+
+Sitemap: https://sigmasoftware.com/sitemap.xml
+\`\`\`
+✅ Status: Good
+
+### Sitemap.xml
+- **Pages:** 47 pages
+- **Last Updated:** November 1, 2025
+- **Status:** ✅ Valid
+
+**Recommendation:** Add `lastmod` dates for better crawl priority
+
+---
+
+## 🔗 Backlink Profile (External Tool Required)
+
+**Note:** Use external tools for backlink analysis:
+- Ahrefs
+- Moz
+- SEMrush
+- Google Search Console
+
+This audit focuses on on-page SEO only.
+
+---
+
+## 📈 Historical Comparison
+
+**Previous Audit:** October 1, 2025
+
+| Metric | Oct 1 | Nov 6 | Change |
+|--------|-------|-------|--------|
+| Overall Score | 74 | 82 | +8 ↑ |
+| Technical SEO | 88 | 95 | +7 ↑ |
+| On-Page SEO | 72 | 78 | +6 ↑ |
+| Performance | 85 | 88 | +3 ↑ |
+| Core Web Vitals | Pass | Pass | ✅ |
+
+**Trend:** ↑ Improving consistently
+
+---
+
+## 🎯 Action Plan
+
+### Week 1 (High Priority)
+1. Add meta descriptions (20min)
+2. Fix duplicate titles (10min)
+3. Add structured data (30min)
+
+**Total:** ~60 minutes
+
+### Week 2 (Medium Priority)
+4. Fix title lengths (15min)
+5. Add canonical URLs (20min)
+6. Optimize images (25min)
+7. Add Open Graph tags (20min)
+8. Fix heading hierarchy (15min)
+
+**Total:** ~95 minutes
+
+### Week 3 (Low Priority)
+9. Fix broken links (5min)
+10. Submit sitemap (5min)
+11. Update robots.txt (2min)
+12. Other minor fixes (27min)
+
+**Total:** ~39 minutes
+
+**Grand Total:** ~194 minutes (~3 hours)
+
+---
+
+## 🔧 Auto-Fixable Issues
+
+Run with `--fix-auto` to automatically fix:
+
+✅ Missing canonical URLs  
+✅ Robots.txt sitemap directive  
+✅ Alt text for decorative images (alt="")  
+✅ Favicon variants  
+✅ Basic structured data
+
+**Auto-fix time:** ~5 minutes
+
+---
+
+## 📚 SEO Best Practices Checklist
+
+### Content
+- [ ] Unique, valuable content on each page
+- [ ] Target keywords naturally integrated
+- [ ] Content >300 words per page
+- [ ] Updated regularly (blog posts)
+
+### Technical
+- [ ] HTTPS enabled
+- [ ] Fast loading (<3s)
+- [ ] Mobile-friendly
+- [ ] No 404 errors
+- [ ] Clean URL structure
+
+### On-Page
+- [ ] Unique title tags
+- [ ] Compelling meta descriptions
+- [ ] Proper heading hierarchy
+- [ ] Internal linking
+- [ ] Image alt text
+
+### Advanced
+- [ ] Structured data markup
+- [ ] Open Graph tags
+- [ ] XML sitemap
+- [ ] Robots.txt configured
+- [ ] Core Web Vitals passing
+
+---
+
+## 🔗 Resources
+
+- [Google Search Console](https://search.google.com/search-console)
+- [PageSpeed Insights](https://pagespeed.web.dev/)
+- [Schema.org Validator](https://validator.schema.org/)
+- [Open Graph Debugger](https://developers.facebook.com/tools/debug/)
+- [Rich Results Test](https://search.google.com/test/rich-results)
+
+---
+
+## 📊 Competitive Analysis (Manual)
+
+**Recommendation:** Research competitors with tools like:
+- Ahrefs Site Explorer
+- SEMrush Domain Overview
+- Moz Link Explorer
+
+**Compare:**
+- Domain authority
+- Backlink profile
+- Top-ranking keywords
+- Content strategy
+
+---
+
+**Next Audit:** December 6, 2025 (monthly)
+
+$END$
+```
+
+---
+
+## 🛠️ Implementation Phases
+
+### Phase 1: Technical SEO Scan
+
+**Check robots.txt:**
+```bash
+curl https://localhost:3000/robots.txt
+```
+
+**Check sitemap.xml:**
+```bash
+curl https://localhost:3000/sitemap.xml
+```
+
+**Verify HTTPS:**
+```typescript
+function checkHTTPS(url: string): boolean {
+  return url.startsWith('https://');
+}
+```
+
+---
+
+### Phase 2: On-Page SEO Analysis
+
+**Extract meta tags:**
+```typescript
+async function extractMetaTags(html: string) {
+  const $ = cheerio.load(html);
+  
+  return {
+    title: $('title').text(),
+    titleLength: $('title').text().length,
+    description: $('meta[name="description"]').attr('content'),
+    descriptionLength: $('meta[name="description"]').attr('content')?.length || 0,
+    canonical: $('link[rel="canonical"]').attr('href'),
+    robots: $('meta[name="robots"]').attr('content'),
+    ogTitle: $('meta[property="og:title"]').attr('content'),
+    ogDescription: $('meta[property="og:description"]').attr('content'),
+    ogImage: $('meta[property="og:image"]').attr('content'),
+  };
+}
+```
+
+**Check heading hierarchy:**
+```typescript
+function analyzeHeadings(html: string): HeadingIssue[] {
+  const $ = cheerio.load(html);
+  const headings = [];
+  
+  $('h1, h2, h3, h4, h5, h6').each((i, el) => {
+    headings.push({
+      level: parseInt(el.name[1]),
+      text: $(el).text(),
+    });
+  });
+  
+  const issues: HeadingIssue[] = [];
+  
+  // Check for multiple H1s
+  const h1Count = headings.filter(h => h.level === 1).length;
+  if (h1Count > 1) {
+    issues.push({
+      type: 'multiple-h1',
+      message: `Found ${h1Count} H1 tags (should be 1)`,
+    });
+  }
+  
+  // Check for skipped levels
+  for (let i = 1; i < headings.length; i++) {
+    if (headings[i].level - headings[i - 1].level > 1) {
+      issues.push({
+        type: 'skipped-level',
+        message: `Skipped from H${headings[i - 1].level} to H${headings[i].level}`,
+      });
+    }
+  }
+  
+  return issues;
+}
+```
+
+---
+
+### Phase 3: Core Web Vitals Check
+
+**Run Lighthouse:**
+```bash
+npx lighthouse https://localhost:3000 \
+  --only-categories=performance \
+  --output=json \
+  --output-path=/tmp/lighthouse-perf.json
+```
+
+**Parse metrics:**
+```typescript
+interface CoreWebVitals {
+  lcp: number;  // ms
+  fid: number;  // ms
+  cls: number;  // score
+  ttfb: number; // ms
+}
+
+function parseCoreWebVitals(lighthouseJson: any): CoreWebVitals {
+  return {
+    lcp: lighthouseJson.audits['largest-contentful-paint'].numericValue,
+    fid: lighthouseJson.audits['max-potential-fid'].numericValue,
+    cls: lighthouseJson.audits['cumulative-layout-shift'].numericValue,
+    ttfb: lighthouseJson.audits['server-response-time'].numericValue,
+  };
+}
+
+function assessCoreWebVitals(cwv: CoreWebVitals): string {
+  if (cwv.lcp > 4000 || cwv.fid > 300 || cwv.cls > 0.25) return 'Poor';
+  if (cwv.lcp > 2500 || cwv.fid > 100 || cwv.cls > 0.1) return 'Needs Improvement';
+  return 'Good';
+}
+```
+
+---
+
+### Phase 4: Structured Data Validation
+
+**Extract JSON-LD:**
+```typescript
+function extractStructuredData(html: string): object[] {
+  const $ = cheerio.load(html);
+  const schemas: object[] = [];
+  
+  $('script[type="application/ld+json"]').each((i, el) => {
+    try {
+      schemas.push(JSON.parse($(el).html() || '{}'));
+    } catch (e) {
+      console.error('Invalid JSON-LD:', e);
+    }
+  });
+  
+  return schemas;
+}
+
+function validateSchema(schema: object): ValidationResult {
+  // Check required properties based on @type
+  const type = schema['@type'];
+  const required = REQUIRED_PROPERTIES[type] || [];
+  
+  const missing = required.filter(prop => !schema[prop]);
+  
+  return {
+    valid: missing.length === 0,
+    missing,
+  };
+}
+```
+
+---
+
+### Phase 5: Mobile-Friendly Test
+
+**Check viewport:**
+```typescript
+function checkMobileFriendly(html: string): MobileIssue[] {
+  const $ = cheerio.load(html);
+  const issues: MobileIssue[] = [];
+  
+  // Check viewport meta
+  const viewport = $('meta[name="viewport"]').attr('content');
+  if (!viewport || !viewport.includes('width=device-width')) {
+    issues.push({
+      type: 'viewport',
+      message: 'Missing or incorrect viewport meta tag',
+    });
+  }
+  
+  // Check for horizontal scrolling (CSS)
+  // This requires browser automation
+  
+  return issues;
+}
+```
+
+---
+
+### Phase 6: Calculate SEO Score
+
+**Weighted scoring:**
+```typescript
+interface SEOScores {
+  technical: number;
+  onPage: number;
+  performance: number;
+  mobile: number;
+  structuredData: number;
+}
+
+function calculateOverallScore(scores: SEOScores): number {
+  const weights = {
+    technical: 0.25,
+    onPage: 0.30,
+    performance: 0.20,
+    mobile: 0.15,
+    structuredData: 0.10,
+  };
+  
+  return Math.round(
+    scores.technical * weights.technical +
+    scores.onPage * weights.onPage +
+    scores.performance * weights.performance +
+    scores.mobile * weights.mobile +
+    scores.structuredData * weights.structuredData
+  );
+}
+```
+
+---
+
+### Phase 7: Auto-Fix Simple Issues
+
+**If `--fix-auto`:**
+```typescript
+async function autoFixSEOIssues(): Promise<void> {
+  // Fix 1: Add canonical URLs
+  await addCanonicalURLs();
+  
+  // Fix 2: Update robots.txt
+  await updateRobotsTxt();
+  
+  // Fix 3: Add basic structured data
+  await addBasicStructuredData();
+  
+  // Fix 4: Fix alt text for decorative images
+  await fixDecorativeAltText();
+  
+  // Fix 5: Generate sitemap if missing
+  await generateSitemap();
+}
+```
+
+---
+
+### Phase 8: Validation & Output
+
+**Final checks:**
+- [ ] All pages scanned
+- [ ] Meta tags analyzed
+- [ ] Core Web Vitals measured
+- [ ] Structured data validated
+- [ ] Mobile-friendliness checked
+- [ ] SEO score calculated
+
+**Output summary:**
+```
+✅ SEO Audit Complete
+
+📊 Overall Score: 82/100 (B+ - Good)
+✅ Core Web Vitals: Passing
+✅ Mobile-Friendly: Yes
+✅ Indexable: Yes
+
+Category Scores:
+  ✅ Technical SEO: 95/100 (A)
+  ⚠️ On-Page SEO: 78/100 (B+)
+  ✅ Performance: 88/100 (A-)
+  ✅ Mobile SEO: 92/100 (A)
+  ⚠️ Structured Data: 65/100 (C+)
+
+Issues Found:
+  ✅ Critical: 0
+  ⚠️ High: 3
+  ⚠️ Medium: 5
+  💡 Low: 8
+
+🔧 Auto-fixable: 5 issues
+   Run: @seo-audit --fix-auto
+
+📄 Report: /docs/seo/SEO-AUDIT-2025-11-06.md
+
+🎯 Top 3 Priorities:
+  1. Add meta descriptions (20min)
+  2. Fix duplicate titles (10min)
+  3. Add structured data (30min)
+
+📅 Estimated fix time: ~194 minutes (~3 hours)
+
+Next Audit: December 6, 2025 (monthly)
+```
+
+---
+
+## 🎯 Success Metrics
+
+**SEO Quality Indicators:**
+- Score >80 (Good) ✅
+- Core Web Vitals passing ✅
+- Mobile-friendly ✅
+- Indexed by Google ✅
+- Structured data valid ✅
+
+---
+
+## 🔄 Maintenance
+
+**Run monthly** to track progress and catch regressions.
+
+---
+
+## 💡 Pro Tips
+
+1. **Submit sitemap** to Google Search Console
+2. **Monitor rankings** with SEO tools (Ahrefs, SEMrush)
+3. **Update content** regularly for freshness
+4. **Build backlinks** for authority
+5. **Track conversions** not just traffic
+6. **Local SEO** (Google My Business if applicable)
+7. **Page speed matters** - optimize images and code
+
+---
+
+$END$

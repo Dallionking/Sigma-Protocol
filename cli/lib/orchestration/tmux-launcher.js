@@ -420,8 +420,10 @@ export async function quickLaunch(targetDir, numAgents = 2) {
   // Kill existing
   try {
     execSync(`tmux kill-session -t ${sessionName}`, { stdio: 'pipe' });
-  } catch {}
-  
+  } catch {
+    // No existing session - intentionally empty
+  }
+
   // Create session with first window
   execSync(`tmux new-session -d -s ${sessionName} -n "Agent-1" -c "${targetDir}"`, { stdio: 'pipe' });
   execSync(`tmux send-keys -t ${sessionName}:0 'claude --dangerously-skip-permissions' Enter`, { stdio: 'pipe' });
@@ -460,8 +462,10 @@ export async function quickLaunchPanes(targetDir, numAgents = 2) {
   // Kill existing
   try {
     execSync(`tmux kill-session -t ${sessionName}`, { stdio: 'pipe' });
-  } catch {}
-  
+  } catch {
+    // No existing session - intentionally empty
+  }
+
   // Create session
   execSync(`tmux new-session -d -s ${sessionName} -c "${targetDir}" -n "sigma"`, { stdio: 'pipe' });
   

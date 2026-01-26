@@ -1,6 +1,6 @@
 # Sigma Protocol Command Catalog
 
-**Version:** 2.0.0
+**Version:** 5.0
 **Last Updated:** 2026-01-21
 
 Complete index of all Sigma Protocol commands, organized by category.
@@ -465,7 +465,7 @@ Go-to-market workflow — **25 commands**.
 
 ## Foundation Skills (`src/skills/`)
 
-Skills provide reusable capabilities — **39 skills**. See [FOUNDATION-SKILLS.md](FOUNDATION-SKILLS.md) for complete reference.
+Skills provide reusable capabilities — **163 skills** (39 Foundation + 124 external). See [FOUNDATION-SKILLS.md](FOUNDATION-SKILLS.md) for complete reference.
 
 ### Sigma Core (6)
 

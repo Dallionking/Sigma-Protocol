@@ -4,12 +4,59 @@
 
 import path from "path";
 import { fileURLToPath } from "url";
+import fs from "fs";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
+/**
+ * Resolve the source root directory with validation
+ * This handles the case where CLI runs from installed package vs local dev
+ * @returns {string} - Resolved root directory path
+ */
+function resolveSourceRoot() {
+  // Standard relative path (works for local dev)
+  const localRoot = path.resolve(__dirname, "../..");
+
+  // Key directories that must exist for a valid source installation
+  // These match the MODULES structure: steps + module directories
+  const requiredDirs = ["steps", "audit", "dev", "ops"];
+
+  // Check if key directories exist at the expected location
+  const existingDirs = requiredDirs.filter((dir) =>
+    fs.existsSync(path.join(localRoot, dir))
+  );
+
+  // If most required directories exist, use this location
+  if (existingDirs.length >= 2) {
+    return localRoot;
+  }
+
+  // Return local anyway - the build functions will handle the error
+  // This allows for better error messages at build time
+  return localRoot;
+}
+
 // Root directory of SSS-Protocol
-export const ROOT_DIR = path.resolve(__dirname, "../..");
+export const ROOT_DIR = resolveSourceRoot();
+
+/**
+ * Check if source files are available at ROOT_DIR
+ * @returns {{ valid: boolean, missingDirs: string[], rootDir: string }}
+ */
+export function checkSourceAvailability() {
+  // Check for the key module directories that the build functions expect
+  const requiredDirs = ["steps", "audit", "dev", "ops"];
+  const missingDirs = requiredDirs.filter(
+    (dir) => !fs.existsSync(path.join(ROOT_DIR, dir))
+  );
+
+  return {
+    valid: missingDirs.length === 0,
+    missingDirs,
+    rootDir: ROOT_DIR,
+  };
+}
 
 // Platform configurations
 export const PLATFORMS = {
@@ -84,7 +131,7 @@ export const COMMAND_ALIASES = {
 
 // Resolve alias to canonical command name
 export function resolveAlias(input) {
-  const normalized = input.toLowerCase().replace(/^[@\/]/, "");
+  const normalized = input.toLowerCase().replace(/^[@/]/, "");
   return COMMAND_ALIASES[normalized] || normalized;
 }
 

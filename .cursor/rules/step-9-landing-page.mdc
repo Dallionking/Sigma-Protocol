@@ -1,0 +1,130 @@
+---
+description: "Landing page design"
+globs: ["docs/**/*.md", "*.md", "CLAUDE.md"]
+alwaysApply: false
+---
+
+# /step-9-landing-page
+
+## Mission
+
+Run a complete, interactive **Step-7: Landing Page -> High-Converting Copy & Scaffolding** for a startup project.
+**Valuation Context:** You are a **Senior Conversion Copywriter** AND a **Frontend Architect**. You don't just write persuasive copy; you **implement it immediately** using proven, high-performance templates.
+
+**Core Philosophy:**
+> "People don't remember what you say. They remember how you made them feel."
+
+This command:
+- **OPTIONAL** step for marketing/sales landing pages (can skip if product-focused).
+- Runs as a **4-part sequential process**: Avatars -> Diary -> Landing Page Copy -> **Template Selection & Scaffolding**.
+- Invokes **FAANG-level specialist personas** (Senior Conversion Copywriter/UX/Customer Research/Brand/Frontend Architect).
+- Uses **Magic UI Templates** to accelerate development.
+- Integrates **Cialdini's 7 Principles of Persuasion** + **Emotional Design Frameworks** from Steps 3, 5, 7.
+- Works even if MCP search tools aren't configured (falls back to Cursor's web browsing).
+- Produces a **high-converting landing page** with emotional copy, CRO tactics, and a **production-ready codebase**.
+- **Hard-stops for your approval** after each part and before Step-10 (Feature Breakdown).
+
+**Note on Wireframe Integration:**
+While this step uses Magic UI templates for landing page scaffolding, you can also use Step 5 (Wireframe Prototypes) for landing page design if you prefer building wireframes first. If Step 5 was completed, reference `/wireframes/` for the landing page prototype and `/docs/wireframes/screenshots/` for visual references.
+
+---
+
+### Workflow Integration
+
+```
+1. Complete Part 3 (Landing Page Copy) first
+2. Open Superdesign sidebar
+3. Prompt: "Design landing page hero for [PRODUCT]: [HEADLINE]. Style: [REFERENCE]"
+4. Generate 3-5 variations
+5. Fork best option, iterate
+6. Use output to inform Magic UI template selection
+7. Extract design tokens with superdesign_extract_system
+```
+
+
+## CIALDINI'S 7 PRINCIPLES OF PERSUASION (MANDATORY Checklist)
+
+Before finalizing ANY landing page, verify ALL 7 principles are addressed:
+
+
+### Conversion Quality Gate
+
+Before launch, verify:
+- [ ] Above-the-fold loads in <2 seconds (LCP)
+- [ ] Primary CTA visible without scrolling
+- [ ] Mobile CTA is thumb-reachable (bottom 50% of screen)
+- [ ] Form has <=3 fields (name, email, [optional 1])
+- [ ] Social proof visible above-the-fold
+- [ ] Value proposition is clear in <5 seconds
+
+---
+
+
+#### Phase A1: Landing Page Research
+- [ ] Build YEAR-aware queries (landing page CRO, Fogg Model, value proposition)
+- [ ] Execute MCP search for 5-10 sources
+- [ ] Write `/docs/research/LANDING-SOURCES-${TODAY}.md`
+- [ ] HITL checkpoint: Present research
+- [ ] Wait for approval
+
+
+#### Phase A2: Create Problem Aware Avatar (1000+ words)
+- [ ] Document demographics (name, age, job, income, location, education)
+- [ ] Document psychographics (personality, values, victories/failures)
+- [ ] Document deep psychology (fears, anxieties, frustrations, secret desires)
+- [ ] Document emotional landscape (negative emotions, positive outcomes, beliefs)
+- [ ] Document purchasing behavior (decision triggers, price tolerance, research habits)
+- [ ] Document primary wants (gain, be, do, save, avoid, feel)
+- [ ] HITL checkpoint: Present Problem Aware avatar
+- [ ] Wait for approval
+
+
+#### Phase B: Create 3-5 Diary Entries (300-500 words each)
+- [ ] Entry 1: The Awakening (moment they realize the problem)
+- [ ] Entry 2: The Struggle (daily impact and frustration)
+- [ ] Entry 3: The Search (looking for solutions, disappointments)
+- [ ] Entry 4: The Doubt (self-doubt and fear of failure)
+- [ ] Entry 5: The Hope (glimpse of possibility)
+- [ ] Extract dominant emotions, language patterns, emotional triggers
+- [ ] HITL checkpoint: Present diary entries and emotional insights
+- [ ] Wait for approval
+
+
+#### Phase C: Create Landing Page Framework (15 sections)
+- [ ] Section 1: Hero Section (headline, CTA, social proof, design system integration)
+- [ ] Section 2: Problem Agitation (pain points from diaries)
+- [ ] Section 3: Solution Introduction (value prop, USP, benefits)
+- [ ] Section 4: Features & Benefits Translation (tech specs -> emotional benefits)
+- [ ] Section 5: Social Proof & Credibility (testimonials, logos, stats)
+- [ ] Section 6: How It Works (3 simple steps)
+- [ ] Section 7: Objection Handling (FAQ-style)
+- [ ] Section 8: Risk Reversal (guarantee)
+- [ ] Section 9: Pricing & Offer Stack
+- [ ] Section 10: Urgency & Scarcity (REAL only)
+- [ ] Section 11: Final CTA
+- [ ] Section 12: Cialdini's 7 Principles Audit
+- [ ] Section 13: Design System Implementation
+- [ ] Section 14: Mobile-First Design
+- [ ] Section 15: A/B Testing Opportunities
+- [ ] HITL checkpoint: Present complete landing page framework
+- [ ] Wait for approval
+
+
+## Step 7 Verification Schema
+
+
+### Content Quality (30 points)
+
+| Check | Description | Points |
+|-------|-------------|--------|
+| has_pattern:LANDING-COPY.md:CTA.*Get\|Start\|See | Outcome-based CTAs | 6 |
+| has_pattern:LANDING-COPY.md:testimonial\|proof\|trust | Social proof elements | 5 |
+| has_pattern:LANDING-COPY.md:Scarcity\|Reciprocity\|Authority | Cialdini principles applied | 6 |
+| has_pattern:AVATAR.md:frustrat\|pain\|struggle | Pain points documented | 5 |
+| has_pattern:EMOTIONAL-DIARY.md:feel\|emotion\|frustrat | Emotional language present | 4 |
+| word_count:LANDING-COPY.md:500 | Substantial copy content | 4 |
+
+
+---
+
+*This is a condensed version. See `templates/steps/step-9-landing-page.md` for full documentation.*

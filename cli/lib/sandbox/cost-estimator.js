@@ -301,3 +301,89 @@ export function roundCurrency(value) {
 function padRight(str, length) {
   return str.padEnd(length);
 }
+
+/**
+ * Show formatted cost report for CLI command
+ * @param {string} projectRoot - Project root directory
+ * @param {string} period - 'day', 'week', 'month', 'all'
+ * @returns {Promise<Object>} - Cost report object
+ */
+export async function showCostReport(projectRoot, period = 'all') {
+  const { loadSandboxConfig, getRemainingBudget } = await import('./config.js');
+
+  const config = await loadSandboxConfig(projectRoot);
+  const estimator = new CostEstimator(projectRoot, config);
+
+  const summary = await estimator.getCostSummary(period);
+  const remainingBudget = await getRemainingBudget(projectRoot, config);
+  const budgetLimit = config?.budget?.max_spend_usd || 50;
+  const budgetUsed = budgetLimit - remainingBudget;
+  const budgetPercent = Math.round((budgetUsed / budgetLimit) * 100);
+
+  return {
+    ...summary,
+    remainingBudget: roundCurrency(remainingBudget),
+    budgetLimit,
+    budgetUsed: roundCurrency(budgetUsed),
+    budgetPercent
+  };
+}
+
+/**
+ * Display formatted cost report
+ * @param {string} projectRoot - Project root directory
+ * @param {string} period - 'day', 'week', 'month', 'all'
+ */
+export async function displayCostReport(projectRoot, period = 'all') {
+  const report = await showCostReport(projectRoot, period);
+
+  const width = 55;
+  const border = '═'.repeat(width);
+
+  console.log('\n╔' + border + '╗');
+  console.log('║' + centerText('SANDBOX COST REPORT', width) + '║');
+  console.log('╠' + border + '╣');
+
+  console.log('║' + padRight(`  Period: ${report.period}`, width) + '║');
+  console.log('║' + padRight('', width) + '║');
+  console.log('║' + padRight(`  Total spent:     $${report.totalCost}`, width) + '║');
+  console.log('║' + padRight(`  Total sandboxes: ${report.totalSandboxes}`, width) + '║');
+  console.log('║' + padRight(`  Total runtime:   ${report.totalHours} hours`, width) + '║');
+  console.log('║' + padRight('', width) + '║');
+
+  // Budget bar
+  const barWidth = 30;
+  const filledWidth = Math.min(barWidth, Math.round((report.budgetPercent / 100) * barWidth));
+  const emptyWidth = barWidth - filledWidth;
+  const bar = '█'.repeat(filledWidth) + '░'.repeat(emptyWidth);
+
+  console.log('║' + padRight(`  Budget: [${bar}] ${report.budgetPercent}%`, width) + '║');
+  console.log('║' + padRight(`          $${report.budgetUsed} / $${report.budgetLimit} used`, width) + '║');
+  console.log('║' + padRight(`          $${report.remainingBudget} remaining`, width) + '║');
+
+  // Provider breakdown
+  if (Object.keys(report.byProvider).length > 0) {
+    console.log('║' + padRight('', width) + '║');
+    console.log('║' + padRight('  By Provider:', width) + '║');
+    for (const [provider, data] of Object.entries(report.byProvider)) {
+      const line = `    ${provider}: $${data.cost.toFixed(2)} (${data.sandboxes} runs, ${(data.minutes / 60).toFixed(1)}h)`;
+      console.log('║' + padRight(line, width) + '║');
+    }
+  }
+
+  console.log('╚' + border + '╝\n');
+
+  return report;
+}
+
+/**
+ * Center text in width
+ * @param {string} text
+ * @param {number} width
+ * @returns {string}
+ */
+function centerText(text, width) {
+  const padding = Math.max(0, width - text.length);
+  const left = Math.floor(padding / 2);
+  return ' '.repeat(left) + text + ' '.repeat(padding - left);
+}

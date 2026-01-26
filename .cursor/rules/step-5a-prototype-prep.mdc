@@ -1,0 +1,43 @@
+---
+description: "Prototype preparation and component mapping"
+globs: ["docs/**/*.md", "*.md", "CLAUDE.md"]
+alwaysApply: false
+---
+
+# /step-5a-prototype-prep
+
+## Mission
+
+Ensure the development environment is properly configured with Foundation Skills and dependencies before implementing Step 5b prototype PRDs via the Ralph Loop. **Auto-installs missing skills** when detected.
+
+**Context:**
+- **Step 5** generated wireframe PRDs for each user flow
+- **Step 5b** converts those PRDs to `ralph-backlog.json` format
+- **This Step (5a)** validates that skills, environment, and dependencies are ready; **auto-installs missing skills**
+- **Ralph Loop** will autonomously implement the stories from the backlog
+
+**When to Run:**
+- After completing Step 5 wireframe PRD generation
+- Before running Step 5b PRD-to-JSON conversion
+- When troubleshooting Ralph Loop implementation failures
+
+---
+
+
+### C.1 Core Required Skills
+
+These skills are **mandatory** for successful prototype implementation:
+
+
+## Quality Gates
+
+After each PRD implementation:
+1. ✓ `npm run lint` passes
+2. ✓ `npm run build` succeeds
+3. ✓ UI renders at expected route
+4. ✓ No console errors
+
+
+---
+
+*This is a condensed version. See `templates/steps/step-5a-prototype-prep.md` for full documentation.*

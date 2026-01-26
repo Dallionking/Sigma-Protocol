@@ -1,0 +1,75 @@
+{
+  "name": "@sigma-protocol/core",
+  "version": "1.0.0-alpha.1",
+  "description": "Platform-agnostic core for Sigma Protocol workflow execution",
+  "type": "module",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "bin": {
+    "sigma-generate": "./dist/generators/cli/generate.js"
+  },
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    },
+    "./types": {
+      "import": "./dist/types/index.js",
+      "types": "./dist/types/index.d.ts"
+    },
+    "./steps": {
+      "import": "./dist/steps/index.js",
+      "types": "./dist/steps/index.d.ts"
+    },
+    "./skills": {
+      "import": "./dist/skills/index.js",
+      "types": "./dist/skills/index.d.ts"
+    },
+    "./quality": {
+      "import": "./dist/quality/index.js",
+      "types": "./dist/quality/index.d.ts"
+    },
+    "./state": {
+      "import": "./dist/state/index.js",
+      "types": "./dist/state/index.d.ts"
+    },
+    "./generators": {
+      "import": "./dist/generators/index.js",
+      "types": "./dist/generators/index.d.ts"
+    }
+  },
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "test": "vitest",
+    "test:coverage": "vitest --coverage",
+    "clean": "rm -rf dist"
+  },
+  "files": [
+    "dist",
+    "src"
+  ],
+  "keywords": [
+    "sigma-protocol",
+    "workflow",
+    "ai-agent",
+    "platform-agnostic"
+  ],
+  "author": "Sigma Protocol Team",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/dallionking/sigma-protocol.git",
+    "directory": "packages/sigma-protocol-core"
+  },
+  "dependencies": {},
+  "peerDependencies": {},
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "typescript": "^5.0.0",
+    "vitest": "^1.0.0"
+  },
+  "engines": {
+    "node": ">=20.0.0"
+  }
+}

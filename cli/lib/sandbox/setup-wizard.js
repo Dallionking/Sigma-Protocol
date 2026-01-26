@@ -373,21 +373,99 @@ export async function setupDaytona(rl, projectRoot) {
  */
 export async function quickSetup(projectRoot, providerName, options = {}) {
   const providerInfo = PROVIDERS[providerName];
-  
+
   if (!providerInfo) {
     throw new Error(`Unknown provider: ${providerName}`);
   }
-  
+
   // Load existing config or use defaults
   const existingConfig = await loadSandboxConfig(projectRoot) || DEFAULT_CONFIG;
-  
+
   const config = {
     ...existingConfig,
     provider: providerName,
     ...options
   };
-  
+
   await saveSandboxConfig(projectRoot, config);
-  
+
   return { provider: providerName, config };
+}
+
+/**
+ * Show sandbox configuration and status (for CLI status command)
+ * @param {string} projectRoot - Project root directory
+ * @returns {Promise<Object>} - Status object
+ */
+export async function showSandboxStatus(projectRoot) {
+  const config = await loadSandboxConfig(projectRoot);
+
+  const status = {
+    configured: config !== null,
+    provider: config?.provider || 'none',
+    forks: config?.defaults?.forks_per_story || 3,
+    reviewStrategy: config?.best_of_n?.review_strategy || 'hybrid',
+    budget: {
+      max: config?.budget?.max_spend_usd || 50,
+      warn: config?.budget?.warn_at_usd || 25
+    }
+  };
+
+  // Check provider availability
+  if (config?.provider) {
+    const providerInfo = PROVIDERS[config.provider];
+    if (providerInfo) {
+      try {
+        const { default: Provider } = await import(`./providers/${config.provider}.js`);
+        const instance = new Provider(config);
+        status.providerAvailable = await instance.isAvailable();
+
+        const validation = await instance.validateCredentials();
+        status.credentialsValid = validation.valid;
+        status.credentialsError = validation.error || null;
+        status.warnings = validation.warnings || [];
+      } catch (error) {
+        status.providerAvailable = false;
+        status.credentialsValid = false;
+        status.credentialsError = error.message;
+      }
+    }
+  }
+
+  return status;
+}
+
+/**
+ * Display formatted sandbox status
+ * @param {string} projectRoot - Project root directory
+ */
+export async function displaySandboxStatus(projectRoot) {
+  const status = await showSandboxStatus(projectRoot);
+
+  console.log('\n' + '═'.repeat(50));
+  console.log('  SANDBOX CONFIGURATION STATUS');
+  console.log('═'.repeat(50));
+
+  if (!status.configured) {
+    console.log('\n  ⚠️  No sandbox configured');
+    console.log('  Run: sigma sandbox setup');
+  } else {
+    console.log(`\n  Provider:        ${status.provider}`);
+    console.log(`  Available:       ${status.providerAvailable ? '✓' : '✗'}`);
+    console.log(`  Credentials:     ${status.credentialsValid ? '✓ Valid' : '✗ ' + status.credentialsError}`);
+    console.log(`  Forks/story:     ${status.forks}`);
+    console.log(`  Review strategy: ${status.reviewStrategy}`);
+    console.log(`  Budget:          $${status.budget.max} max, $${status.budget.warn} warn`);
+
+    if (status.warnings?.length > 0) {
+      console.log('\n  Warnings:');
+      for (const w of status.warnings) {
+        console.log(`    ⚠️  ${w}`);
+      }
+    }
+  }
+
+  console.log('\n' + '═'.repeat(50) + '\n');
+
+  return status;
 }

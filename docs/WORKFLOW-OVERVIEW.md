@@ -1,7 +1,7 @@
 # SSS Development Workflow: Complete Guide (Steps 0-12 + Conditional 1.5)
 
-**Last Updated:** 2025-12-29  
-**Version:** 4.0 (with Agentic Layer, Self-Correcting Dev Loop, Grade 4 Tooling)
+**Last Updated:** 2026-01-23
+**Version:** 5.0 (with Agentic Layer, Self-Correcting Dev Loop, Grade 4 Tooling, Factory Droid Support)
 
 ---
 
@@ -27,13 +27,13 @@ See `docs/mcp/SSS-VERSIONING.md` for the canonical step registry.
 
 ---
 
-## 🎯 Foundation Skills System (v4.1)
+## 🎯 Foundation Skills System (v5.0)
 
-SSS includes a **two-tier skill system** that provides AI capabilities at different levels:
+SSS includes a **three-tier skill system** that provides AI capabilities at different levels:
 
 ### Tier 1: Foundation Skills (Step 0)
 
-**24 universal skills** installed at Step 0 that provide domain-agnostic capabilities:
+**39 Foundation skills** installed at Step 0 that provide domain-agnostic capabilities. These power the 13-step SSS workflow. Combined with 124 external skills, SSS provides **163 total skills**.
 
 | Category               | Skills                                                                                        | Purpose                      |
 | ---------------------- | --------------------------------------------------------------------------------------------- | ---------------------------- |
@@ -43,7 +43,19 @@ SSS includes a **two-tier skill system** that provides AI capabilities at differ
 | **Productivity** (5)   | prompt-engineering-patterns, xlsx, pptx, applying-brand-guidelines, remembering-conversations | Documents and productivity   |
 | **Platform Tools** (4) | skill-creator, agent-development, opencode-agent-generator, creating-opencode-plugins         | Create custom skills/agents  |
 
-### Tier 2: Project Overlays (Step 13)
+### Tier 2: External Skills (Step 0)
+
+**120+ specialized skills** from the [skills.sh](https://skills.sh) ecosystem:
+
+- **Security & Fuzzing:** 42 skills (semgrep, codeql, fuzzing tools)
+- **Mobile Development:** 19 skills (Expo, React Native)
+- **3D Graphics:** 10 skills (Three.js)
+- **Marketing & CRO:** 24 skills (conversion, ads, SEO)
+- **And more:** Authentication, payments, video production
+
+See [EXTERNAL-SKILLS.md](./EXTERNAL-SKILLS.md) for the complete external skills reference.
+
+### Tier 3: Project Overlays (Step 13)
 
 **Project-specific skills** generated at Step 13 that inject your project context:
 
@@ -53,11 +65,12 @@ SSS includes a **two-tier skill system** that provides AI capabilities at differ
 
 ### Platform Installation
 
-| Platform        | Foundation Skills            | Project Overlays                               |
-| --------------- | ---------------------------- | ---------------------------------------------- |
-| **Cursor**      | `.cursor/rules/sss-*.mdc`    | `.cursor/rules/frontend-aesthetics.mdc`        |
-| **Claude Code** | `.claude/skills/*/SKILL.md`  | `.claude/skills/frontend-aesthetics/SKILL.md`  |
-| **OpenCode**    | `.opencode/skill/*/SKILL.md` | `.opencode/skill/frontend-aesthetics/SKILL.md` |
+| Platform           | Foundation Skills              | External Skills             | Project Overlays                               |
+| ------------------ | ------------------------------ | --------------------------- | ---------------------------------------------- |
+| **Cursor**         | `.cursor/rules/sss-*.mdc`      | `.cursor/rules/<cat>/*.mdc` | `.cursor/rules/frontend-aesthetics.mdc`        |
+| **Claude Code**    | `.claude/skills/*/SKILL.md`    | Same location (162 total)   | `.claude/skills/frontend-aesthetics/SKILL.md`  |
+| **OpenCode**       | `.opencode/skill/*/SKILL.md`   | Same location (149 total)   | `.opencode/skill/frontend-aesthetics/SKILL.md` |
+| **Factory Droid**  | `.factory/skills/*/SKILL.md`   | Same location (158 total)   | `.factory/skills/frontend-aesthetics/SKILL.md` |
 
 ### How They Work Together
 
@@ -66,14 +79,22 @@ SSS includes a **two-tier skill system** that provides AI capabilities at differ
 │           PROJECT-SPECIFIC OVERLAYS (Step 13)          │
 │  Injects: Your PRD, design system, stack, conventions  │
 ├─────────────────────────────────────────────────────────┤
-│           FOUNDATION SKILLS (Step 0)                   │
+│           EXTERNAL SKILLS (Step 0, 120+ skills)        │
+│  Provides: Security, mobile, 3D, marketing, payments   │
+├─────────────────────────────────────────────────────────┤
+│       FOUNDATION SKILLS (Step 0, 39 Foundation skills) │
 │  Provides: Universal best practices, patterns, tools   │
 └─────────────────────────────────────────────────────────┘
 ```
 
-Foundation skills provide the **base capabilities**. Project overlays add **your specific context**. Combined, the AI gets expert-level knowledge of YOUR codebase.
+Foundation skills provide the **base capabilities**. External skills add **domain-specific expertise**. Project overlays add **your specific context**. Combined, the AI gets expert-level knowledge of YOUR codebase.
 
-See [FOUNDATION-SKILLS.md](./FOUNDATION-SKILLS.md) for the complete skill reference.
+**Total Skills Available:** 160+ (39 Foundation + 120+ External + Project Overlays)
+
+See:
+- [FOUNDATION-SKILLS.md](./FOUNDATION-SKILLS.md) - 39 Foundation skills
+- [EXTERNAL-SKILLS.md](./EXTERNAL-SKILLS.md) - 120+ specialized skills
+- [PLATFORMS.md](./PLATFORMS.md) - Platform-specific configuration
 
 ---
 

@@ -1,0 +1,111 @@
+---
+description: "Navigation flow and screen inventory"
+globs: ["docs/**/*.md", "*.md", "CLAUDE.md"]
+alwaysApply: false
+---
+
+# /step-4-flow-tree — Flow Tree & Screen Architecture (Product Director + $1B Valuation Context)
+
+## Mission
+
+Create a comprehensive **Mobbin-style Flow Tree** showing **every single screen** in your application before any wireframes are built.
+
+**Valuation Context:** You are a **Product Director at a $1 Billion Company**. You've seen how "lazy screen mapping" kills products. Every screen must be accounted for. No shortcuts. No "we'll add login later." This is the **complete blueprint** of your product's interface.
+
+**Why This Step Exists:**
+- **Prevents lazy screens** — Forces enumeration of EVERY screen before building
+- **Mobbin-level detail** — Creates a professional flow tree like top apps document
+- **Clear scope** — Know exactly what you're building before writing any code
+- **Stakeholder alignment** — Visual representation everyone can understand
+
+---
+
+
+### Core Personas
+- **Product Director** – Complete product vision, no shortcuts, every screen matters.
+- **UX Architect** – Information architecture, navigation patterns, user flows.
+- **Mobile Platform Expert** – iOS HIG, Material Design, platform conventions.
+- **Web Platform Expert** – Page types, SEO considerations, responsive breakpoints.
+- **QA Lead** – Edge cases, error states, what screens are missing?
+
+
+### A.1 Read Previous Step Outputs
+
+**Read and extract from PRD (Step 1):**
+- All features listed
+- User stories
+- MVP scope vs. future features
+- Target users
+
+**Read and extract from User Journeys (Step 3):**
+- Primary user journey (screens mentioned)
+- Secondary user journeys
+- Entry points
+- Exit points
+
+**Read and extract from Architecture (Step 2):**
+- Platform type (web/mobile/both)
+- Authentication approach
+- Key integrations that need screens
+
+
+### Quality Gates (Must Pass)
+
+- [ ] **Complete Coverage**: Every feature in PRD has corresponding screens
+- [ ] **No Orphan Screens**: Every screen has entry and exit points
+- [ ] **Priority Assigned**: All screens have P0/P1/P2/P3 priority
+- [ ] **Complexity Rated**: All screens have Simple/Medium/Complex rating
+- [ ] **Naming Convention**: All screen IDs follow `flow-subflow-screen` format
+- [ ] **Count Verified**: Screen counts per flow are accurate
+- [ ] **Transitions Mapped**: All screen-to-screen transitions documented
+- [ ] **Deep Links**: Entry points via deep links documented
+- [ ] **Error States**: All error/empty states accounted for
+- [ ] **Mobile Specifics**: Launch, permissions, offline states included (if mobile)
+- [ ] **Web Specifics**: Marketing pages, SEO pages included (if web)
+
+---
+
+
+## Verification Summary
+
+| Metric | Count |
+|--------|-------|
+| Total PRD Features | [X] |
+| Features with Screens Mapped | [Y] |
+| Features WITHOUT Screens | [Z] ← **MUST BE ZERO** |
+| Total Screens in Flow Tree | [N] |
+
+**⚠️ IF "Features WITHOUT Screens" > 0, DO NOT PROCEED. Add missing screens first.**
+
+---
+
+
+## Verification Formulas
+
+
+### G.3 Screen Count Verification
+
+**Mathematical proof that screen count is reasonable:**
+
+```markdown
+
+## Screen Count Verification
+
+
+## Step 4 Verification Schema
+
+
+### Content Quality (30 points)
+
+| Check | Description | Points |
+|-------|-------------|--------|
+| has_pattern:FLOW-TREE.md:├──\|└── | Hierarchical tree structure | 8 |
+| has_pattern:SCREEN-INVENTORY.md:P0\|P1\|P2 | Priority ratings assigned | 6 |
+| has_pattern:SCREEN-INVENTORY.md:Simple\|Medium\|Complex | Complexity ratings | 6 |
+| has_mermaid:TRANSITION-MAP.md | Flow diagram present | 5 |
+| has_table:SCREEN-INVENTORY.md | Screen table present | 5 |
+
+
+---
+
+*This is a condensed version. See `templates/steps/step-4-flow-tree.md` for full documentation.*

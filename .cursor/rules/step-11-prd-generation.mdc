@@ -1,0 +1,243 @@
+---
+description: "PRD generation for implementation"
+globs: ["docs/**/*.md", "*.md", "CLAUDE.md"]
+alwaysApply: false
+---
+
+# step-11-prd-generation
+
+## Mission
+
+Generate comprehensive, implementation-ready PRDs (600-1000 lines) that consume Step 8's Shaped Projects and produce executable specifications developers can build from directly.
+
+**Context:** You are the **Chief Product Officer** and **Lead Architect**. You enforce a **"Deep Spec"** methodology where PRDs are technical blueprints validated against multiple quality frameworks.
+
+**Core Philosophy:**
+1. **Unified Document:** Single PRD contains frontend + backend + database + testing in one cohesive document. No frontend-only PRDs.
+2. **No Hand-Waving:** Every statement must be actionable with actual code. No "TBD" or "to be determined."
+3. **Code-First:** Include TypeScript interfaces, SQL DDL, Zod schemas, React component signatures, and complete server actions.
+4. **Vertical Slice:** Each PRD specifies the complete feature: database schema → server actions → UI components → tests.
+5. **Security-First:** OWASP API Security, RLS policies, auth checks specified upfront—not as afterthoughts.
+6. **Agentic-Ready:** PRDs written so AI coding agents can implement without ambiguity. Explicit file paths, complete imports, typed return values.
+7. **MCP-Driven Research:** Use MCPs to validate syntax and find real-world patterns.
+8. **Auto-Verification:** Every PRD must pass `@verify-prd` with score 8+/10 (70+ points) including backend and agentic gates.
+
+---
+
+
+### Example Validation Output
+
+```json
+{
+  "status": "fail",
+  "errors": [
+    {
+      "line": 0,
+      "code": "MISSING_SECTION",
+      "message": "Missing: ## BDD Scenarios",
+      "fix_suggestion": "Add '## BDD Scenarios' section with Given/When/Then"
+    }
+  ],
+  "agent_instruction": "VALIDATION FAILED: 1 error(s)..."
+}
+```
+
+**See @specialized-validation skill for details on the Closed Loop Prompt pattern.**
+
+---
+
+
+### Quality Gate Status (From Step 10)
+- [ ] INVEST Validation: Passed
+- [ ] Vertical Slice: Confirmed (DB + API + UI)
+- [ ] Boundaries Defined: IN/OUT scope clear
+- [ ] Rabbit Holes: Identified and documented
+
+---
+
+
+### 5.1 [Core Feature Area]
+
+**Input:**
+- `fieldName` (type: `string`) - [Description, constraints]
+- `fieldName2` (type: `number`) - [Description, min/max]
+
+**Processing Logic:**
+
+```typescript
+// Algorithm pseudocode or actual implementation
+function processFeature(input: InputType): OutputType {
+  // Step 1: Validate input
+  if (!isValid(input)) {
+    throw new ValidationError("Specific error message");
+  }
+  
+  // Step 2: Transform data
+  const transformed = transform(input);
+  
+  // Step 3: Apply business rules
+  if (condition) {
+    return resultA;
+  } else {
+    return resultB;
+  }
+}
+```
+
+**Logic Table:**
+| Input Condition | Business Rule | Output | Notes |
+|-----------------|---------------|--------|-------|
+| X > 10 | Apply discount | Y | [Explanation] |
+| X <= 10 | Standard price | Z | [Explanation] |
+| X is null | Use default | W | [Fallback behavior] |
+
+**Output:**
+- `resultField` (type: `ResultType`) - [Description]
+
+
+#### Component Refinement Checklist
+
+**For EACH component from Wireframes:**
+
+**Atoms (Buttons, Inputs, Labels, Icons):**
+- [ ] Review wireframe component structure
+- [ ] Add full TypeScript Props interface
+- [ ] Formalize styles as design system tokens
+- [ ] Define all component variants
+- [ ] Add states: default, hover, active, disabled, loading
+- [ ] Test against wireframe screenshot
+- [ ] Validate accessibility (WCAG AA)
+- [ ] Add unit tests
+
+**Molecules (Form Fields, Cards, CTA Blocks):**
+- [ ] Identify component composition (which atoms)
+- [ ] Review wireframe component structure
+- [ ] Add TypeScript Props interface
+- [ ] Implement component logic refinements
+- [ ] Add state management (if needed)
+- [ ] Test against wireframe screenshot
+- [ ] Validate responsive behavior
+- [ ] Add integration tests
+
+**Organisms (Complex Components):**
+- [ ] Break down into molecules and atoms
+
+#### Wireframe Quality Gates
+
+Before marking component refinement complete:
+- [ ] **Visual Match:** Production component matches wireframe screenshot (90%+ similarity)
+- [ ] **Responsive:** Works on mobile (375px), tablet (768px), desktop (1280px+)
+- [ ] **States:** All states implemented (default, hover, active, disabled, loading, error, success)
+- [ ] **Accessibility:** WCAG AA compliant (color contrast, keyboard nav, ARIA labels)
+- [ ] **Performance:** No layout shifts, fast render (<100ms)
+- [ ] **Type-Safe:** Full TypeScript coverage, no `any` types
+- [ ] **Design System:** Uses design system tokens (no hardcoded values)
+- [ ] **UI Profile Compliance:** Matches `/docs/design/UI-PROFILE.md` guardrails (accent limits, motion damping, gradients/shadows limits) and cool-layer allow-list
+- [ ] **Tested:** Unit tests for logic, visual regression tests for UI
+
+---
+
+
+### Core Components
+
+
+### Phase 1: Foundation (Days 1-3)
+- [ ] Database migration applied
+- [ ] Schema types generated
+- [ ] Server actions implemented
+- [ ] Unit tests passing (80%+)
+
+
+### Phase 2: UI Implementation (Days 4-7)
+- [ ] Page components built
+- [ ] Loading/error states implemented
+- [ ] Form validation working
+- [ ] Integration tests passing
+
+
+### Phase 3: Polish & Testing (Days 8-10)
+- [ ] E2E tests passing
+- [ ] Accessibility audit passed
+- [ ] Performance benchmarks met
+- [ ] Error tracking configured
+
+
+### Phase 4: Deploy (Days 11-12)
+- [ ] Staging deployment
+- [ ] QA sign-off
+- [ ] Production deployment
+- [ ] Monitoring dashboards configured
+
+---
+
+
+## SECTION 16: RALPH LOOP TASKS (Auto-Generated Checklist)
+
+**Purpose:** Machine-readable task checklist for Ralph Loop autonomous implementation. Each task maps to a story in `ralph-backlog.json`.
+
+
+### Task Checklist (22 Tasks Across 6 Phases)
+
+<!-- Auto-generated by Step 11.25 PRD-to-JSON conversion. Each checkbox = one Ralph Loop story. -->
+
+**Phase 1: Database Layer**
+- [ ] **DB-001:** Create database schema (`db/schema/[feature].ts`)
+- [ ] **DB-002:** Run migration (`npx drizzle-kit push`)
+- [ ] **DB-003:** Configure RLS policies (Supabase dashboard or SQL)
+- [ ] **DB-004:** Add database indexes for query optimization
+
+**Phase 2: Server Actions (API Layer)**
+- [ ] **API-001:** Create server action: `create[Feature]` (`actions/[feature]/create.ts`)
+- [ ] **API-002:** Create server action: `get[Feature]s` (`actions/[feature]/get.ts`)
+- [ ] **API-003:** Create server action: `get[Feature]ById` (`actions/[feature]/get-by-id.ts`)
+- [ ] **API-004:** Create server action: `update[Feature]` (`actions/[feature]/update.ts`)
+- [ ] **API-005:** Create server action: `delete[Feature]` (`actions/[feature]/delete.ts`)
+
+**Phase 3: UI Components**
+- [ ] **UI-001:** Create form component (`components/[feature]/[Name]Form.tsx`)
+- [ ] **UI-002:** Create list component (`components/[feature]/[Name]List.tsx`)
+- [ ] **UI-003:** Create card/item component (`components/[feature]/[Name]Card.tsx`)
+- [ ] **UI-004:** Create detail view component (`components/[feature]/[Name]Detail.tsx`)
+- [ ] **UI-005:** Create loading skeleton (`components/[feature]/[Name]Skeleton.tsx`)
+
+**Phase 4: Page Routes**
+- [ ] **PAGE-001:** Create page route (`app/[feature]/page.tsx`)
+
+## Auto-Verification Step
+
+**After PRD generation, automatically run:**
+
+```bash
+@verify-prd --feature=[Feature Name]
+```
+
+**Expected Score:** 8+/10
+
+**If score < 8:**
+1. Read verification feedback
+2. Identify weak sections
+3. Regenerate those sections with more detail
+4. Re-run verification
+5. Repeat until score ≥ 8
+
+---
+
+
+## Step 11 Verification Schema
+
+
+### Content Quality (20 points)
+
+| Check | Description | Points |
+|-------|-------------|--------|
+| has_pattern:F*-*.md:Given.*When.*Then | BDD acceptance criteria | 5 |
+| has_pattern:F*-*.md:interface\|type.*= | TypeScript interfaces present | 4 |
+| has_pattern:F*-*.md:Appetite.*Small\|Big | Appetite defined per Shape Up | 3 |
+| word_count:F*-*.md:1500 | PRD has substantial content (1500+ words) | 4 |
+| json_valid:.prd-status.json | Valid PRD status tracking | 2 |
+| has_table:F*-*.md | Feature tables present | 2 |
+
+
+---
+
+*This is a condensed version. See `templates/steps/step-11-prd-generation.md` for full documentation.*

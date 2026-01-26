@@ -141,6 +141,12 @@ fi
 
 if [ -n "$ESLINT_BIN" ]; then
     # Run ESLint with JSON output
+    :
+else
+    echo "Warning: ESLint not found, skipping lint check" >&2
+fi
+
+if [ -n "$ESLINT_BIN" ]; then
     ESLINT_OUTPUT=$($ESLINT_BIN "$FILE_PATH" --format json 2>/dev/null || true)
 
     if [ -n "$ESLINT_OUTPUT" ]; then
@@ -167,6 +173,10 @@ if [ -f "node_modules/.bin/tsc" ]; then
     TSC_BIN="node_modules/.bin/tsc"
 elif command -v tsc &>/dev/null; then
     TSC_BIN="tsc"
+fi
+
+if [ -z "$TSC_BIN" ] && [[ "$FILE_PATH" == *.ts* ]]; then
+    echo "Warning: TSC not found, skipping TypeScript type check" >&2
 fi
 
 if [ -n "$TSC_BIN" ] && [[ "$FILE_PATH" == *.ts* ]]; then

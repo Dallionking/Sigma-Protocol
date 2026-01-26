@@ -1,0 +1,73 @@
+---
+description: "Convert implementation PRDs to JSON"
+globs: ["docs/**/*.md", "*.md", "CLAUDE.md"]
+alwaysApply: false
+---
+
+# /step-11a-prd-to-json
+
+## Mission
+
+Convert Step 11 implementation PRDs (located in `docs/prds/` or `docs/prds/swarm-*/`) into a machine-readable JSON backlog (`docs/ralph/implementation/prd.json`) that enables Ralph-style autonomous implementation loops.
+
+**Why This Step Exists:**
+Step 11 produces comprehensive, implementation-ready PRDs (600-1000 lines each). These are excellent for human developers but need conversion to the Ralph format for:
+- **Autonomous agent execution** — Each story is scoped for one context window
+- **Full-stack verification** — Backend, frontend, and security criteria are machine-checkable
+- **Stream/swarm integration** — Stories can be organized by Step 11b swarm assignments
+- **Deterministic progress tracking** — `passes: true/false` state prevents "claimed done" failures
+
+**This step ensures you can run the Ralph bash loop on your full implementation PRDs.**
+
+---
+
+
+### Taskmaster Workflow
+
+```bash
+# Use Taskmaster for AI-powered parsing
+@step-11a-prd-to-json --use-taskmaster=true
+
+# With specific model
+@step-11a-prd-to-json --use-taskmaster=true --taskmaster-model=claude-code/opus
+
+# Combine with swarms
+@step-11a-prd-to-json --use-taskmaster=true --include-swarms=true
+```
+
+
+## Phase C.5: Design System Injection (CRITICAL)
+
+**This phase ensures UI tasks carry design constraints from the UI Profile.**
+
+
+## Quality Gates
+
+**Step 11a complete when:**
+
+- [ ] All Step 11 PRDs parsed successfully (Section 0, 0.5, 4, 6, 7, 8, 15)
+- [ ] Each PRD has layered stories (db -> api -> ui -> integration)
+- [ ] All stories have machine-verifiable criteria
+- [ ] Stream/swarm tags assigned (if Step 11b ran)
+- [ ] prd.json validates against ralph-backlog.schema.json
+- [ ] Epistemic Confidence >= 80%
+- [ ] Human approved backlog structure
+
+---
+
+
+## Step 11a Verification Schema
+
+
+### Content Quality (25 points)
+
+| Check | Description | Points |
+|-------|-------------|--------|
+| layered_stories | Each PRD has db/api/ui/integration stories | 10 |
+| all_prds_covered | Every Step 11 PRD has stories | 10 |
+| verifiable_criteria | All stories have machine-verifiable AC | 5 |
+
+
+---
+
+*This is a condensed version. See `templates/steps/step-11a-prd-to-json.md` for full documentation.*

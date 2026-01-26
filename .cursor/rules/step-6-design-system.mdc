@@ -1,0 +1,208 @@
+---
+description: "Design system and tokens"
+globs: ["docs/**/*.md", "*.md", "CLAUDE.md"]
+alwaysApply: false
+---
+
+# /step-6-design-system
+
+## Mission
+
+Run a complete, interactive **Step-4: Design System → Visual Specifications** for a startup project in one go.
+**Valuation Context:** You are a **Senior Design Systems Architect at a FAANG Company**. Your design system must be **scalable, accessible, and visually stunning**. It is the foundation of a **premium product**.
+
+**Perceived Value Principle:**
+The UI must *look* expensive to justify "Grand Slam Pricing".
+- **High Trust**: Professional typography, consistent spacing.
+- **High Status**: "Expensive" whitespace, subtle shadows, refined motion.
+
+---
+
+
+### Emotional Design Quality Gates for Design System
+Before finalizing ANY design system, verify:
+
+- [ ] **Dieter Rams check**: Is this as little design as possible while being complete?
+- [ ] **Visceral check**: Does the palette/typography evoke the intended emotion?
+- [ ] **Craft check**: Does every token feel considered, not generated?
+- [ ] **Premium check**: Would this design system justify $100+/month pricing?
+- [ ] **Personality check**: Can you describe the "character" of this system?
+- [ ] **Consistency check**: Is there a clear, mathematical logic to all values?
+- [ ] **Timelessness check**: Will this look dated in 2 years? (If yes, simplify)
+
+---
+
+This command:
+- Builds on the UX Spec from Step-3 with **current-year design research**.
+- Invokes **FAANG-level specialist personas** (Design Systems Architect/Visual Designer/Accessibility/Performance).
+- Works even if MCP search tools aren't configured (falls back to Cursor's web browsing).
+- Produces development-ready **Design System** and a comprehensive **/docs pack**, with **human-in-the-loop** checkpoints.
+- **Hard-stops for your approval** before Step-7 (Interface States).
+
+---
+
+
+### Phase F.5: Effects Layer (Cool, Not Toy) NEW
+- [ ] Read UI Profile cool layer settings (on/off) and motion intensity
+- [ ] Define **Hover Depth** spec (subtle lift + shadow/border lift)
+- [ ] Define **Border Beam / Focus Trail** spec (hover/focus only for professional profiles)
+- [ ] Define apply-to allow-list (interactive cards, CTAs, inputs only)
+- [ ] Define reduced-motion fallback (beam to border lift)
+- [ ] HITL checkpoint: Present effects layer rules
+- [ ] Wait for approval
+
+### Phase G: Motion & Animation
+- [ ] Define easing functions and durations
+- [ ] Specify component animations
+- [ ] Plan GPU-accelerated properties
+- [ ] Include prefers-reduced-motion support
+- [ ] HITL checkpoint: Present motion system
+- [ ] Wait for approval
+
+### Phase H: Design Tokens
+- [ ] Structure tokens (CSS variables, JSON)
+- [ ] Export for platforms (web, React Native, iOS, Android)
+- [ ] Plan theming support (light/dark)
+- [ ] HITL checkpoint: Present design tokens
+- [ ] Wait for approval
+
+### Phase I: Document Assembly & File Creation
+- [ ] Write `/docs/design/DESIGN-SYSTEM.md`
+- [ ] Write `/docs/design/TOKENS.md` (color, typography, spacing tokens)
+- [ ] Write `/docs/design/COMPONENTS.md` (component library with atoms, molecules, organisms)
+- [ ] Write `/docs/design/MOTION.md` (animation system)
+- [ ] Write `/docs/design/ICONS.md` (icon system)
+- [ ] Verify all quality gates pass
+- [ ] FINAL checkpoint: Present complete design system
+- [ ] Wait for final approval
+```
+
+**Execution Rules**:
+- Check off EACH task as you complete it
+- Do NOT skip ahead - complete tasks in order
+- Do NOT proceed to next phase until user approves
+- Use MCP search for research
+- Take notes to maintain context
+
+## Phase A0 — Extract Tokens from Wireframe Prototypes (If Step 5 Completed)
+
+**Goal:** Use wireframe prototype designs as the foundation for the design system, rather than creating from scratch.
+
+**When to Run:** If Step 5 (Wireframe Prototypes) was completed. If skipped, proceed directly to Phase A.
+
+
+### Step 1: Verify Wireframe Outputs Exist
+
+Check for these files from Step 5:
+- `/docs/wireframes/PROTOTYPE-SUMMARY.md`
+- `/docs/wireframes/screen-prds/` (directory with screen PRDs)
+- `/wireframes/` or `/wireframes-mobile/` (runnable prototype)
+
+If files don't exist, skip to Phase A (traditional design system creation).
+
+
+## Phase F.5 — Effects Layer (Cool, Not Toy) NEW
+
+**Goal:** Define a profile-aware "cool layer" (hover depth + border beam/focus trail) that adds polish without making the UI look like a toy.
+
+
+### G7: Animation Quality Signals (Reference Checklist)
+
+**"Alive" App Indicators** — animations that feel premium:
+
+| Signal | Static/Generic | Alive/Premium |
+|--------|----------------|---------------|
+| **Data changes** | Instant swap | Animated transitions (numbers roll, text morphs) |
+| **Loading** | Basic spinner | Skeleton shimmer + staggered content reveal |
+| **Navigation** | Instant page swap | Smooth transitions with depth |
+| **Interactions** | No feedback | Micro-animations (hover, press, focus) |
+| **Success states** | Text message only | Celebratory animation + haptic (mobile) |
+| **Empty states** | Static illustration | Subtle animation loop |
+
+**Quality Check Questions:**
+- [ ] Do data changes animate smoothly (not instant swap)?
+- [ ] Does navigation have depth and continuity?
+- [ ] Do interactive elements provide immediate visual feedback?
+- [ ] Are success moments celebrated with appropriate animation?
+- [ ] Does the overall feel match the Design DNA from Step 3?
+
+
+## Phase G.5 — Animation Implementation Quality Framework NEW
+
+> **Philosophy:** This section ensures animations are **implemented well** (technical quality), not what animations to use (style is determined by Design DNA in Step 3). High-quality implementation = smooth, performant, accessible.
+
+
+### G.5.2 Animation Implementation Checklist (Per Component)
+
+**For EACH component with animation, verify:**
+
+```markdown
+
+## Animation Implementation Quality Checklist
+
+
+### Code Quality (SHOULD PASS)
+- [ ] **Reusable**: Animation defined as reusable preset/variant
+- [ ] **Consistent**: Uses design system timing tokens
+- [ ] **Documented**: Animation purpose and usage documented
+- [ ] **Tested**: Unit tests verify animation completion callbacks
+
+
+### G.5.6 Animation Quality Gates (For Step 6 Approval)
+
+**Before approving motion & animation section, verify:**
+
+- [ ] **Performance budget defined**: Animation limits documented
+- [ ] **Reduced motion global**: CSS fallback exists for all animations
+- [ ] **Implementation checklist created**: Per-component checklist template ready
+- [ ] **Testing requirements documented**: Animation tests specified
+- [ ] **Animation tokens exported**: Timing, easing as CSS variables
+- [ ] **Documentation template**: Standard format for animation documentation
+
+---
+
+## Phase H — Design Tokens
+1) **Token structure** (CSS variables or JSON):
+   - Colors: `--color-primary-500`, `--color-text-primary`
+   - Typography: `--font-size-lg`, `--font-weight-bold`
+   - Spacing: `--space-4`, `--space-8`
+   - Shadows: `--shadow-sm`, `--shadow-lg`
+   - Radii: `--radius-sm`, `--radius-lg`
+   - Z-index: `--z-modal`, `--z-tooltip`
+
+2) **Platform export**:
+   - CSS custom properties (web)
+   - JSON (React Native, iOS, Android)
+   - SCSS variables (legacy support)
+
+## Step 6 Verification Schema
+
+
+### Content Quality (30 points)
+
+| Check | Description | Points |
+|-------|-------------|--------|
+| has_pattern:COLOR-SYSTEM.md:#[0-9A-Fa-f]{6} | Color hex codes defined | 6 |
+| has_pattern:DESIGN-SYSTEM.md:4\.5:1\|WCAG | Contrast ratios validated | 5 |
+| has_pattern:TYPOGRAPHY.md:rem\|px | Font sizes with units | 4 |
+| has_pattern:DESIGN-SYSTEM.md:Button\|Input\|Card | Core components specified | 5 |
+| json_valid:design-tokens.json | Valid JSON token file | 5 |
+| has_pattern:css-variables.css:--color\|--space | CSS variables defined | 5 |
+
+
+### Animation Implementation Quality (15 bonus points) NEW
+
+| Check | Description | Points |
+|-------|-------------|--------|
+| has_pattern:MOTION.md:transform\|opacity | GPU-only properties specified | 4 |
+| has_pattern:MOTION.md:prefers-reduced-motion | Reduced motion fallback documented | 4 |
+| has_pattern:MOTION.md:60fps\|performance | Performance targets documented | 3 |
+| has_pattern:MOTION.md:checklist\|Implementation | Implementation checklist present | 4 |
+
+</verification>
+
+
+
+---
+
+*This is a condensed version. See `templates/steps/step-6-design-system.md` for full documentation.*

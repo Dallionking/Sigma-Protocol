@@ -1,0 +1,45 @@
+---
+description: "Deep gap analysis for workflow steps (0-12, including conditional 1.5 and 11b) with 100-point scoring and iterative fix loop"
+globs: ["docs/**/*.md", "*.md", "CLAUDE.md"]
+alwaysApply: false
+---
+
+# step-verify — Deep Gap Analysis & Iterative Completion
+
+**Purpose:** Comprehensive verification of SSS workflow steps (0-12, including conditional Steps 1.5 and 11b) with 100-point scoring.
+
+## Command Usage
+
+```bash
+@step-verify --step=1              # Verify Step 1 only
+@step-verify --step=0-12           # Verify all steps
+@step-verify --step=1 --fix        # Verify and fix gaps
+```
+
+## Scoring System (100 Points Total)
+
+| Category | Weight | Description |
+|----------|--------|-------------|
+| Required Files | 20 | Core files exist |
+| Required Sections | 30 | All sections present |
+| Content Quality | 30 | Word count, tables, patterns |
+| Checkpoints | 10 | HITL approval evidence |
+| Success Criteria | 10 | Step-specific requirements |
+
+## Verification Process
+
+1. **Parse step parameter** - Support single step, range, or comma-separated list
+2. **Load step definition** - Get required files, sections, patterns
+3. **Execute checks** - Verify each criterion
+4. **Calculate score** - Sum points from all categories
+5. **Report gaps** - Show what's missing with fixes
+6. **Auto-fix loop** (if --fix) - Iterate until 100% or max 5 iterations
+
+## Score Thresholds
+
+| Score | Status | Action |
+|-------|--------|--------|
+| 95-100 | ✅ Excellent | Ready for production |
+| 80-94 | 🟡 Good | Minor gaps, review recommended |
+| 60-79 | 🟠 Needs Work | Run --fix to address gaps |
+| <60 | 🔴 Incomplete | Re-run the step command |

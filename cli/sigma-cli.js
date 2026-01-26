@@ -38,12 +38,13 @@ import {
   detectMissingAssets,
   checkPlatformPrerequisites,
   validateSourceFiles,
+  validateAllSkills,
   backupFile,
   restoreFromBackup,
   cleanupBackup,
   autoDetectPlatform,
 } from "./lib/utils/index.js";
-import { showBanner } from "./lib/ui/index.js";
+import { showBanner, selectPlatforms, selectModules } from "./lib/ui/index.js";
 import {
   installCursorSkills,
   installClaudeCodeSkills,
@@ -55,7 +56,7 @@ import {
 loadEnvFiles(process.cwd(), 5);
 
 const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+const _dirname = path.dirname(__filename);
 
 // Note: validateJsonSchema is now imported from ./lib/utils/validation.js
 // Note: All utility functions (backup, files, detection, validation) are imported from ./lib/utils/
@@ -63,7 +64,7 @@ const __dirname = path.dirname(__filename);
 // Note: PLATFORMS and MODULES constants are imported from ./lib/constants.js
 
 // Local module selection wrapper for backward compatibility
-async function selectModulesLocal() {
+async function _selectModulesLocal() {
   const moduleChoices = Object.entries(MODULES).map(([id, config]) => ({
     name: `${config.name} - ${config.description}`,
     value: id,
@@ -112,6 +113,7 @@ async function buildCursor(targetDir, modules, spinner) {
   await fs.ensureDir(outputDir);
 
   let totalFiles = 0;
+  const skippedModules = [];
 
   // Copy module commands (original files are already Cursor-formatted)
   for (const module of modules) {
@@ -128,7 +130,26 @@ async function buildCursor(targetDir, modules, spinner) {
 
       const files = await fs.readdir(moduleSource);
       totalFiles += files.filter((f) => !f.startsWith(".")).length;
+    } else {
+      skippedModules.push({ module, expectedPath: moduleSource });
     }
+  }
+
+  // Warn if modules were skipped
+  if (skippedModules.length > 0) {
+    spinner.warn(`Cursor: ${skippedModules.length} module(s) not found`);
+    console.log(chalk.yellow(`\n⚠️  Warning: Source directories not found:`));
+    for (const { module, expectedPath } of skippedModules) {
+      console.log(chalk.gray(`   - ${module}: ${expectedPath}`));
+    }
+    console.log("");
+  }
+
+  // Error if nothing was copied
+  if (totalFiles === 0) {
+    throw new Error(
+      `No files copied for Cursor platform. Source directory issue - ROOT_DIR=${ROOT_DIR}`
+    );
   }
 
   spinner.text = `Cursor: Copied ${totalFiles} commands (full content preserved)`;
@@ -166,6 +187,7 @@ async function buildClaudeCode(targetDir, modules, spinner) {
   await fs.ensureDir(path.join(targetDir, config.hooksDir));
 
   let totalCommands = 0;
+  const skippedModules = [];
 
   // Transform each module's commands to Claude Code format
   for (const module of modules) {
@@ -206,7 +228,26 @@ async function buildClaudeCode(targetDir, modules, spinner) {
 
         totalCommands++;
       }
+    } else {
+      skippedModules.push({ module, expectedPath: moduleSource });
     }
+  }
+
+  // Warn if modules were skipped
+  if (skippedModules.length > 0) {
+    spinner.warn(`Claude Code: ${skippedModules.length} module(s) not found`);
+    console.log(chalk.yellow(`\n⚠️  Warning: Source directories not found:`));
+    for (const { module, expectedPath } of skippedModules) {
+      console.log(chalk.gray(`   - ${module}: ${expectedPath}`));
+    }
+    console.log("");
+  }
+
+  // Error if nothing was copied
+  if (totalCommands === 0) {
+    throw new Error(
+      `No files copied for Claude Code platform. Source directory issue - ROOT_DIR=${ROOT_DIR}`
+    );
   }
 
   spinner.text = `Claude Code: Transformed ${totalCommands} commands (full content preserved)`;
@@ -352,7 +393,7 @@ This command runs the full ${filename} workflow including:
  * Cursor format (.cursor/rules/skill-name.mdc):
  *   description, globs, keywords fields
  */
-function transformToCursorRule(originalContent, filename) {
+function _transformToCursorRule(originalContent, filename) {
   const frontmatterMatch = originalContent.match(
     /^---\n([\s\S]*?)\n---\n([\s\S]*)$/,
   );
@@ -664,6 +705,7 @@ async function buildOpenCode(targetDir, modules, spinner) {
   await fs.ensureDir(path.join(targetDir, config.toolsDir));
 
   let totalCommands = 0;
+  const skippedModules = [];
 
   // Transform each module's commands to OpenCode format
   for (const module of modules) {
@@ -707,7 +749,26 @@ async function buildOpenCode(targetDir, modules, spinner) {
 
         totalCommands++;
       }
+    } else {
+      skippedModules.push({ module, expectedPath: moduleSource });
     }
+  }
+
+  // Warn if modules were skipped
+  if (skippedModules.length > 0) {
+    spinner.warn(`OpenCode: ${skippedModules.length} module(s) not found`);
+    console.log(chalk.yellow(`\n⚠️  Warning: Source directories not found:`));
+    for (const { module, expectedPath } of skippedModules) {
+      console.log(chalk.gray(`   - ${module}: ${expectedPath}`));
+    }
+    console.log("");
+  }
+
+  // Error if nothing was copied
+  if (totalCommands === 0) {
+    throw new Error(
+      `No files copied for OpenCode platform. Source directory issue - ROOT_DIR=${ROOT_DIR}`
+    );
   }
 
   spinner.text = `OpenCode: Transformed ${totalCommands} commands (full content preserved)`;
@@ -1159,7 +1220,7 @@ async function installCommand(options) {
   const installTasks = new Listr(
     platforms.map((platform) => ({
       title: `Installing ${PLATFORMS[platform].name}`,
-      task: async (ctx, task) => {
+      task: async (_ctx, task) => {
         // Create a simple spinner-like object for build functions
         const spinner = {
           text: "",
@@ -1433,7 +1494,7 @@ async function buildCommand(options) {
   const buildTasks = new Listr(
     platforms.map((platform) => ({
       title: `Building for ${PLATFORMS[platform]?.name || platform}`,
-      task: async (ctx, task) => {
+      task: async (_ctx, task) => {
         // Create a simple spinner-like object for compatibility
         const spinner = {
           text: "",
@@ -1507,7 +1568,7 @@ async function installSkillsCommand(options) {
   const skillTasks = new Listr(
     platforms.map((platform) => ({
       title: `Installing skills for ${PLATFORMS[platform]?.name || platform}`,
-      task: async (ctx, task) => {
+      task: async (_ctx, task) => {
         // Create compatibility spinner object
         const spinner = {
           text: "",
@@ -2029,6 +2090,24 @@ async function updateCommand(options) {
     return;
   }
 
+  // Validate source files before updating
+  const allModules = Object.keys(MODULES);
+  const sourceValidation = await validateSourceFiles(allModules);
+  if (!sourceValidation.valid) {
+    console.log(chalk.red("❌ Source files not found:\n"));
+    sourceValidation.issues.forEach((issue) => {
+      console.log(chalk.red(`   • ${issue}`));
+    });
+    console.log("");
+    console.log(chalk.yellow("💡 This usually means the CLI cannot find the Sigma Protocol source files."));
+    console.log(chalk.gray(`   ROOT_DIR: ${ROOT_DIR}`));
+    console.log("");
+    console.log(chalk.white("Solutions:"));
+    console.log(chalk.gray("   1. Run from the SSS-Protocol repository root"));
+    console.log(chalk.gray("   2. Reinstall using: npx sigma-protocol install"));
+    return;
+  }
+
   // Perform update
   console.log(chalk.cyan("🔄 Updating Sigma Protocol...\n"));
 
@@ -2504,16 +2583,17 @@ async function doctorCommand(options) {
     if (await fs.pathExists(fullSkillPath)) {
       const validation = await validateAllSkills(fullSkillPath);
 
-      if (validation.valid.length > 0) {
-        passed.push(`${PLATFORMS[platform].name}: ${validation.valid.length} valid skills`);
+      // validateAllSkills returns { valid: boolean, skills: number, warnings: string[] }
+      if (validation.valid && validation.skills > 0) {
+        passed.push(`${PLATFORMS[platform].name}: ${validation.skills} valid skills`);
       }
 
-      if (validation.invalid.length > 0) {
-        warnings.push(`${PLATFORMS[platform].name}: ${validation.invalid.length} invalid skills missing SKILL.md`);
+      if (validation.warnings && validation.warnings.length > 0) {
+        warnings.push(`${PLATFORMS[platform].name}: ${validation.warnings.length} skill warnings`);
         if (options.verbose) {
-          console.log(chalk.gray("\n  Invalid skills:"));
-          validation.invalid.forEach((s) =>
-            console.log(chalk.gray(`    - ${s.name}: ${s.error}`))
+          console.log(chalk.gray("\n  Skill warnings:"));
+          validation.warnings.forEach((w) =>
+            console.log(chalk.gray(`    - ${w}`))
           );
         }
       }
@@ -2747,7 +2827,7 @@ Documentation: https://github.com/sigma-protocol/cli#doctor
   .action(doctorCommand);
 
 // Detect stream count dynamically from PRDs
-async function detectStreamCount(targetDir) {
+async function _detectStreamCount(targetDir) {
   // 1. Check streams.json for existing config
   const streamsJson = path.join(targetDir, ".sigma", "orchestration", "streams.json");
   if (await fs.pathExists(streamsJson)) {
@@ -2998,7 +3078,7 @@ async function orchestrateCommand(options) {
 async function orchestrateSandboxMode(options, targetDir, prds = null, agent = null, environment = null) {
   console.log(chalk.cyan("\n🐳 Sandbox Orchestration Mode\n"));
   
-  const { SandboxManager, PROVIDERS } = await import("./lib/sandbox/index.js");
+  const { SandboxManager: _SandboxManager, PROVIDERS } = await import("./lib/sandbox/index.js");
   const { loadSandboxConfig } = await import("./lib/sandbox/config.js");
   const { CostEstimator } = await import("./lib/sandbox/cost-estimator.js");
   const { generateStreamsConfig } = await import("./lib/orchestration/index.js");
@@ -3152,7 +3232,7 @@ async function orchestrateSandboxMode(options, targetDir, prds = null, agent = n
 }
 
 // Detect PRD stories for orchestration
-async function detectPRDStories(targetDir) {
+async function _detectPRDStories(targetDir) {
   const stories = {};
   
   // 1. Check docs/prds/*.md
@@ -3720,7 +3800,7 @@ async function configCommand(options) {
 
 // Sandbox command handler
 async function sandboxCommand(action, options) {
-  const targetDir = options.target || process.cwd();
+  const _targetDir = options.target || process.cwd();
   
   switch (action) {
     case "setup":
@@ -5122,6 +5202,11 @@ async function ralphCommand(options) {
           `--engine=${engine}`
         ];
         if (options.observe) itermArgs.push("--observe");
+        // Pass sandbox flags
+        if (options.sandbox) {
+          itermArgs.push("--sandbox");
+          if (options.sandboxProvider) itermArgs.push(`--sandbox-provider=${options.sandboxProvider}`);
+        }
 
         const result = spawnSync(itermScript, itermArgs, { stdio: "inherit" });
         if (result.status === 0) {
@@ -5156,6 +5241,11 @@ async function ralphCommand(options) {
           `--engine=${engine}`
         ];
         if (options.noAttach) tmuxArgs.push("--no-attach");
+        // Pass sandbox flags
+        if (options.sandbox) {
+          tmuxArgs.push("--sandbox");
+          if (options.sandboxProvider) tmuxArgs.push(`--sandbox-provider=${options.sandboxProvider}`);
+        }
 
         const result = spawnSync(tmuxScript, tmuxArgs, { stdio: "inherit" });
         if (result.status === 0) {
@@ -5169,13 +5259,18 @@ async function ralphCommand(options) {
       const sessionName = `ralph-${Date.now()}`;
       console.log(chalk.bold(`\n🖥️  Creating tmux session: ${sessionName}`));
 
+      // Build sandbox flags string
+      const sandboxFlagsTmux = options.sandbox
+        ? ` --sandbox --sandbox-provider=${options.sandboxProvider || "docker"}`
+        : "";
+
       // Create tmux session with first backlog (tmux requires shell for complex commands)
-      const firstCmd = `cd "${targetDir}" && "${scriptPath}" --workspace="${targetDir}" --backlog="${backlogs[0].path}" --engine=${engine}`;
+      const firstCmd = `cd "${targetDir}" && "${scriptPath}" --workspace="${targetDir}" --backlog="${backlogs[0].path}" --engine=${engine}${sandboxFlagsTmux}`;
       execSync(`tmux new-session -d -s ${sessionName} -n ralph '${firstCmd}'`, { stdio: "inherit" });
 
       // Split panes for remaining backlogs
       for (let i = 1; i < backlogs.length; i++) {
-        const cmd = `cd "${targetDir}" && "${scriptPath}" --workspace="${targetDir}" --backlog="${backlogs[i].path}" --engine=${engine}`;
+        const cmd = `cd "${targetDir}" && "${scriptPath}" --workspace="${targetDir}" --backlog="${backlogs[i].path}" --engine=${engine}${sandboxFlagsTmux}`;
         execSync(`tmux split-window -t ${sessionName} -h '${cmd}'`, { stdio: "inherit" });
         execSync(`tmux select-layout -t ${sessionName} tiled`, { stdio: "inherit" });
       }
@@ -5197,6 +5292,14 @@ async function ralphCommand(options) {
   // Run Ralph for each backlog
   const backlogsToRun = options.all ? backlogs : [backlogs[0]];
 
+  // Show sandbox status if enabled
+  if (options.sandbox) {
+    console.log(chalk.bold("\n🐳 Sandbox Mode Enabled"));
+    console.log(chalk.white(`  Provider: ${chalk.cyan(options.sandboxProvider || "docker")}`));
+    console.log(chalk.white(`  Budget: $${options.budgetMax || 50} max, $${options.budgetWarn || 25} warn`));
+    console.log("");
+  }
+
   console.log(chalk.bold(`\n🚀 Starting Ralph Loop (${engine})...\n`));
 
   for (const backlog of backlogsToRun) {
@@ -5209,6 +5312,18 @@ async function ralphCommand(options) {
 
     if (options.dryRun) args.push("--dry-run");
     if (options.verbose) args.push("--verbose");
+
+    // Sandbox flags
+    if (options.sandbox) {
+      args.push("--sandbox");
+      if (options.sandboxProvider) args.push(`--sandbox-provider=${options.sandboxProvider}`);
+      if (options.sandboxTimeout) args.push(`--sandbox-timeout=${options.sandboxTimeout}`);
+      if (options.sandboxMemory) args.push(`--sandbox-memory=${options.sandboxMemory}`);
+      if (options.sandboxCpus) args.push(`--sandbox-cpus=${options.sandboxCpus}`);
+      if (options.budgetMax) args.push(`--budget-max=${options.budgetMax}`);
+      if (options.budgetWarn) args.push(`--budget-warn=${options.budgetWarn}`);
+    }
+    if (options.validateOnly) args.push("--validate-only");
 
     console.log(chalk.cyan(`\n▶ ${backlog.name}: ${backlog.path}`));
 
@@ -5256,6 +5371,15 @@ program
   .option("--no-attach", "Don't auto-attach to tmux (with --parallel)")
   .option("--dry-run", "Show what would be done without executing")
   .option("-v, --verbose", "Show detailed output")
+  // Sandbox flags
+  .option("--sandbox", "Enable sandbox isolation for stories")
+  .option("--sandbox-provider <provider>", "Sandbox provider: docker, e2b, daytona", "docker")
+  .option("--sandbox-timeout <seconds>", "Sandbox creation timeout", "120")
+  .option("--sandbox-memory <size>", "Docker memory limit", "4g")
+  .option("--sandbox-cpus <n>", "Docker CPU limit", "2")
+  .option("--budget-max <usd>", "Maximum spend before stopping (USD)", "50")
+  .option("--budget-warn <usd>", "Warning threshold (USD)", "25")
+  .option("--validate-only", "Only validate PRD without running")
   .action(ralphCommand);
 
 // Interactive mode handler

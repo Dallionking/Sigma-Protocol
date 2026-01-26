@@ -130,25 +130,26 @@ export const useFloorStore = create<FloorState>((set, get) => ({
       });
 
       // Listen for state changes
-      room.onStateChange((state) => {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      room.onStateChange((state: any) => {
         const agents: Agent[] = [];
         const messages: FloorMessage[] = [];
         const tasks: Task[] = [];
 
         // Convert Colyseus MapSchema to arrays
-        if (state.agents) {
+        if (state?.agents) {
           state.agents.forEach((agent: Agent) => {
             agents.push({ ...agent });
           });
         }
 
-        if (state.messages) {
+        if (state?.messages) {
           state.messages.forEach((msg: FloorMessage) => {
             messages.push({ ...msg });
           });
         }
 
-        if (state.tasks) {
+        if (state?.tasks) {
           state.tasks.forEach((task: Task) => {
             tasks.push({ ...task });
           });
@@ -249,24 +250,25 @@ export const useFloorStore = create<FloorState>((set, get) => ({
         });
 
         // Re-attach state change listener
-        room.onStateChange((state) => {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        room.onStateChange((state: any) => {
           const agents: Agent[] = [];
           const messages: FloorMessage[] = [];
           const tasks: Task[] = [];
 
-          if (state.agents) {
+          if (state?.agents) {
             state.agents.forEach((agent: Agent) => {
               agents.push({ ...agent });
             });
           }
 
-          if (state.messages) {
+          if (state?.messages) {
             state.messages.forEach((msg: FloorMessage) => {
               messages.push({ ...msg });
             });
           }
 
-          if (state.tasks) {
+          if (state?.tasks) {
             state.tasks.forEach((task: Task) => {
               tasks.push({ ...task });
             });

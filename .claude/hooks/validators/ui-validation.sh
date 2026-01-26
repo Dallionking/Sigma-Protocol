@@ -69,8 +69,8 @@ fi
 
 # Check if agent-browser is installed
 if ! command -v agent-browser &>/dev/null; then
-    json_output "skip" "agent-browser not installed. Install with: npm install -g agent-browser" "SKIP: agent-browser CLI not found. UI validation skipped."
-    exit 0
+    json_output "fail" "agent-browser not installed. Install with: npm install -g agent-browser" "FAIL: agent-browser CLI not found. UI validation cannot proceed. Install with: npm install -g agent-browser"
+    exit 1
 fi
 
 # Check if dev server is running

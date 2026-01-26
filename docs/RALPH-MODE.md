@@ -1,7 +1,7 @@
 # Ralph-Mode: Autonomous Agent Implementation Guide
 
-**Version:** 2.0.0
-**Last Updated:** 2026-01-21
+**Version:** 5.0
+**Last Updated:** 2026-01-24
 
 This document explains how the Sigma Protocol integrates the "Ralph Loop" autonomous agent pattern for continuous, self-correcting PRD implementation.
 
@@ -129,6 +129,88 @@ Add to `~/.cursor/mcp.json`:
 | `mcp_taskmaster_analyze_project_complexity` | Assess project scope |
 | `mcp_taskmaster_next_task` | Get next task to implement |
 | `mcp_taskmaster_set_task_status` | Update task status |
+
+---
+
+## 1.6 Native Task Management (v3.0.0)
+
+Ralph v3.0.0 adds native Claude Code task persistence for improved observability and session resume capability.
+
+### The Hybrid Approach
+
+Ralph uses a **hybrid approach** combining:
+- **JSON backlog** (`prd.json`) - Story orchestration and completion tracking
+- **Native tasks** - Sub-task tracking and session persistence via `CLAUDE_CODE_TASK_LIST_ID`
+
+### Enabling Native Tasks
+
+```bash
+# Enable with auto-generated task list ID
+./scripts/ralph/sigma-ralph.sh . docs/ralph/prototype/prd.json claude-code --native-tasks
+
+# Resume with existing task list ID
+./scripts/ralph/sigma-ralph.sh . docs/ralph/prototype/prd.json claude-code \
+  --task-list-id=ralph-myproject-1234567890
+
+# Force disable native tasks
+./scripts/ralph/sigma-ralph.sh . docs/ralph/prototype/prd.json claude-code --no-native-tasks
+```
+
+### How It Works
+
+1. **On startup**, Ralph generates or loads a task list ID
+2. **Exports** `CLAUDE_CODE_TASK_LIST_ID` for Claude Code to use
+3. **Stores** the task list ID in `prd.json.meta.taskListId` for resume
+4. **Worker prompts** include parent task creation instructions
+
+### Worker Prompt Enhancement
+
+When `--native-tasks` is enabled, worker prompts include:
+
+```
+## PARENT TASK (Mandatory First Step)
+
+Before implementing anything, create a parent task for this story:
+- subject: "[S001-001] Story Title"
+- description: "Ralph story implementation"
+- activeForm: "Implementing S001-001..."
+
+Then mark it in progress, and when complete, mark it completed.
+```
+
+### Benefits
+
+| Feature | Without Native Tasks | With Native Tasks |
+|---------|---------------------|-------------------|
+| Progress visibility | MARKER output only | Native spinner + /tasks |
+| Session resume | Restart from beginning | Resume with task context |
+| Parallel safety | Risk of race conditions | Atomic backlog updates |
+| Observability | Check prd.json manually | Real-time status line |
+
+### Resume After Interruption
+
+```bash
+# Read task list ID from prd.json
+TASK_ID=$(jq -r '.meta.taskListId' docs/ralph/prototype/prd.json)
+
+# Resume with same task list
+./scripts/ralph/sigma-ralph.sh . docs/ralph/prototype/prd.json claude-code \
+  --task-list-id="$TASK_ID"
+```
+
+### Parallel Streams with Native Tasks
+
+Native tasks are safe for parallel execution thanks to atomic backlog updates:
+
+```bash
+# Terminal 1
+./scripts/ralph/sigma-ralph.sh . prd.json claude-code --native-tasks --stream=1
+
+# Terminal 2
+./scripts/ralph/sigma-ralph.sh . prd.json claude-code --native-tasks --stream=2
+```
+
+File locking (`flock`) prevents race conditions when updating `prd.json`.
 
 ---
 
@@ -540,67 +622,126 @@ The `ui-validation.sh` hook automatically extracts routes from file paths:
 
 Run Ralph Loop in isolated sandbox environments for safety and reproducibility.
 
-### Supported Providers
-
-| Provider | Type | Use Case |
-|----------|------|----------|
-| `docker` | Local | Fast, local isolation using containers |
-| `e2b` | Cloud | Cloud sandboxes with E2B API |
-| `daytona` | Cloud/Local | Developer workspaces |
-
-### Usage
+### Quick Start
 
 ```bash
-# Run in Docker sandbox
-sigma ralph --sandbox docker
+# 1. Set up sandbox provider (interactive wizard)
+sigma sandbox setup
 
-# Run in E2B cloud sandbox (requires E2B_API_KEY)
-sigma ralph --sandbox e2b
+# 2. Run Ralph with sandbox isolation
+sigma ralph --sandbox --sandbox-provider=docker
 
-# Run in Daytona workspace
-sigma ralph --sandbox daytona
+# 3. Monitor costs
+sigma sandbox cost
 ```
 
-### Docker Sandbox
+### Provider Comparison
 
-Uses the `sigma-sandbox:latest` Docker image:
+| Provider | Cost | Startup | Scalability | Best For |
+|----------|------|---------|-------------|----------|
+| **Docker** | FREE | ~10s | 2-4 local | Solo dev, testing |
+| **E2B** | ~$0.10/min | ~30s | 10+ cloud | CI/CD, teams |
+| **Daytona** | ~$0.08/min | ~45s | 10+ cloud | Open-source teams |
+
+### CLI Flags
 
 ```bash
-# Build the image first (if not exists)
-docker build -t sigma-sandbox:latest scripts/sandbox/
-
-# Image includes:
-# - Node.js 20
-# - Git, Python, jq
-# - Claude Code CLI
-# - Sigma Protocol CLI
+sigma ralph --sandbox                          # Enable sandbox isolation
+sigma ralph --sandbox-provider=<provider>      # docker, e2b, daytona
+sigma ralph --sandbox-timeout=<seconds>        # Creation timeout (default: 120)
+sigma ralph --sandbox-memory=<size>            # Docker memory (default: 4g)
+sigma ralph --sandbox-cpus=<n>                 # Docker CPUs (default: 2)
+sigma ralph --budget-max=<usd>                 # Max spend (default: $50)
+sigma ralph --budget-warn=<usd>                # Warning threshold (default: $25)
+sigma ralph --validate-only                    # Validate PRD without running
 ```
+
+### Docker Sandbox (FREE)
+
+```bash
+# Set up Docker provider
+sigma sandbox setup --provider=docker
+
+# Build sigma-sandbox image (automatic on first use)
+sigma sandbox build
+
+# Run Ralph with Docker isolation
+sigma ralph --sandbox --sandbox-provider=docker
+
+# Custom resources
+sigma ralph --sandbox --sandbox-provider=docker --sandbox-memory=8g --sandbox-cpus=4
+```
+
+Docker provides free local isolation using containers. No API keys required.
 
 ### E2B Cloud Sandbox
 
-Requires E2B API key:
-
 ```bash
-export E2B_API_KEY="your-key"
-sigma ralph --sandbox e2b
+# Set API key
+export E2B_API_KEY="sk_..."
+
+# Set up E2B provider
+sigma sandbox setup --provider=e2b
+
+# Test connection
+sigma sandbox test
+
+# Run Ralph with E2B
+sigma ralph --sandbox --sandbox-provider=e2b --budget-max=25
 ```
 
-Features:
-- Cloud-based isolation
-- Auto-provisioning
-- Preview URLs for testing
-- Cost tracking
+E2B provides scalable cloud sandboxes. Used by Perplexity, Manus, Groq.
 
-### Daytona Workspace
-
-Requires Daytona CLI:
+### Daytona Sandbox
 
 ```bash
-# Install Daytona
-curl -sf -L https://download.daytona.io/daytona/install.sh | sudo bash
+# Set API key
+export DAYTONA_API_KEY="..."
+export DAYTONA_API_URL="https://api.daytona.io"  # Optional
 
-# Run Ralph in Daytona workspace
-sigma ralph --sandbox daytona
+# Set up Daytona provider
+sigma sandbox setup --provider=daytona
+
+# Run Ralph with Daytona
+sigma ralph --sandbox --sandbox-provider=daytona
+```
+
+Daytona is an open-source option with self-hosting capabilities.
+
+### Budget Protection
+
+Cloud providers automatically track costs:
+
+```bash
+# Set budget limits
+sigma ralph --sandbox --sandbox-provider=e2b \
+  --budget-max=30 \
+  --budget-warn=20
+
+# View current spending
+sigma sandbox cost
+sigma sandbox cost --period=week
+```
+
+Budget protection prevents runaway costs. Ralph stops if budget is exceeded.
+
+### Sandbox Management Commands
+
+```bash
+# Interactive setup wizard
+sigma sandbox setup
+
+# Quick provider setup
+sigma sandbox setup --provider=docker
+
+# Check status
+sigma sandbox status
+
+# View costs
+sigma sandbox cost --period=week
+
+# Destroy all sandboxes
+sigma sandbox destroy --all
 ```
 
 ### Sandbox Session Schema
@@ -626,6 +767,14 @@ Session state is tracked in `.sss/sandbox-session.json`:
   ]
 }
 ```
+
+### Tutorials
+
+For detailed setup guides:
+- [E2B Tutorial](tutorials/RALPH-E2B-TUTORIAL.md)
+- [Docker Tutorial](tutorials/RALPH-DOCKER-TUTORIAL.md)
+- [Daytona Tutorial](tutorials/RALPH-DAYTONA-TUTORIAL.md)
+- [Full Integration Guide](RALPH-SANDBOX-INTEGRATION.md)
 
 ---
 

@@ -1,0 +1,176 @@
+---
+description: "Generate project-specific skillpack"
+globs: ["docs/**/*.md", "*.md", "CLAUDE.md"]
+alwaysApply: false
+---
+
+# /step-13-skillpack-generator
+
+## Mission
+
+Generate a **project-tailored Skillpack** that makes the right "expert mode" auto-trigger for both:
+
+- **Cursor IDE** (rule modules): `.cursor/rules/*.mdc` + router updates in `.cursorrules`
+- **Claude Code** (skills): `.claude/skills/*/SKILL.md` + a reusable plugin scaffold
+
+**Context:** You are the **Skillpack Architect**. You do not write generic prompts; you produce *auto-triggering, project-constrained* skill modules that build on the Foundation Skills installed in Step 0.
+
+---
+
+
+## Core Principle: Overlay > Rewrite
+
+Preserve proven popular skill prompting styles and add a **project overlay** above it.
+
+**Overlay structure (always prepend):**
+1. **Project Anchors**: what to read first (PRD, design system, stack)
+2. **Non-negotiables / Overrides**: project-specific constraints that overrule generic advice
+3. **Precedence Rules**: Project design system + PRDs + stack decisions override generic heuristics
+
+---
+
+
+## Phase 1: Domain Scan (shared)
+
+Detect which domains to generate based on evidence:
+
+| Domain | Evidence | Outputs |
+|--------|----------|---------|
+| Frontend | DESIGN-SYSTEM.md, Tailwind/shadcn, *.tsx | `frontend-aesthetics` |
+| Backend/API | app/api/**, actions/** | `backend-engineering` |
+| Database | supabase, drizzle, prisma, postgres | `database-modeling` |
+| Payments | stripe, billing, subscription, credits | `payments-subscriptions` |
+| Full-Stack | SECTION 0.5, actions/**/*.ts | `full-stack-enforcement` |
+| API Security | OWASP, RLS, supabase | `api-security` |
+| Server Actions | actions/**, use server | `server-actions-patterns` |
+| Agentic PRD | SECTION 15, File Manifest | `agentic-prd-compliance` |
+
+Keep the initial set small; prioritize quality over breadth.
+
+---
+
+
+## Phase 2: Generate Cursor Modules
+
+**Location decision:**
+- Multi-root workspace: `docs/.cursor/rules/` (canonical)
+- Single-root workspace: `.cursor/rules/` (repo root)
+
+
+## Phase 3: Generate Claude Code Skills
+
+**Location decision:**
+- Multi-root workspace: `docs/.claude/skills/` (canonical, use symlinks)
+- Single-root workspace: `.claude/skills/` (repo root)
+
+Create/update:
+- `frontend-aesthetics/SKILL.md`
+- `backend-engineering/SKILL.md`
+- `database-modeling/SKILL.md` (conditional)
+
+**Each SKILL.md must:**
+- Use YAML frontmatter with: name, description (third-person + triggers), version
+- Use imperative style in body (instructional)
+- Include Overlay block at top (anchors + non-negotiables + precedence)
+- Reference project docs instead of duplicating
+
+Optional: add `references/` files per skill:
+- `references/stack-summary.md`
+- `references/design-token-summary.md`
+- `references/prd-patterns.md`
+
+---
+
+
+## Phase 3.5: Generate OpenCode Skills
+
+If OpenCode is detected, create/update OpenCode-native skills.
+
+**Location:**
+- Single-root: `.opencode/skill/<name>/SKILL.md`
+- Multi-root: `docs/.opencode/skill/<name>/SKILL.md` (canonical)
+
+
+## Phase 4: Multi-Root Workspace Fan-Out (if applicable)
+
+
+## Phase 5: Generate Reusable Plugin Scaffold
+
+Create plugin scaffold under:
+- `claude-code/plugins/sss-skillpack/`
+
+Include:
+- `.claude-plugin/plugin.json`
+- `skills/<skill-name>/SKILL.md`
+
+Plugin skills should match project-local skills (same overlay + triggers).
+
+---
+
+
+## Phase 6: Generate @invokes Metadata (Ralph Loop Integration)
+
+**Purpose:** Enable Ralph Loop to automatically select the right agent/skill based on task type and acceptance criteria.
+
+
+## Phase 7: Fill Swarm-First Skill Placeholders
+
+**After generating project skills, fill the placeholders in CLAUDE.md created by Step 12.**
+
+
+### 7.4 Verification
+
+```bash
+# Check placeholders were replaced
+if grep -q "{{SKILLS_BY_CATEGORY}}" CLAUDE.md; then
+  echo "ERROR: Placeholder not replaced"
+  exit 1
+fi
+
+echo "CLAUDE.md skill section populated with [N] skills"
+```
+
+**HITL checkpoint:** Confirm skill matrix generation.
+
+---
+
+
+## Step 13 Verification Schema
+
+
+### Required Outputs (35 points)
+
+| Item | Path | Min Size | Points |
+|------|------|----------|--------|
+| Cursor frontend module | /.cursor/rules/frontend-aesthetics.mdc | 400B | 8 |
+| Cursor backend module | /.cursor/rules/backend-engineering.mdc | 400B | 8 |
+| Cursor router | /.cursorrules | 200B | 6 |
+| Claude skill frontend | /.claude/skills/frontend-aesthetics/SKILL.md | 400B | 7 |
+| Claude skill backend | /.claude/skills/backend-engineering/SKILL.md | 400B | 6 |
+
+
+### OpenCode Outputs (Conditional)
+
+If OpenCode detected:
+
+| Item | Path | Min Size | Points |
+|------|------|----------|--------|
+| OpenCode skill frontend | /.opencode/skill/frontend-aesthetics/SKILL.md | 400B | 5 |
+| OpenCode skill backend | /.opencode/skill/backend-engineering/SKILL.md | 400B | 5 |
+
+
+### Metadata & Trigger Quality (35 points)
+
+| Check | Description | Points |
+|-------|-------------|--------|
+| has_pattern:frontend-aesthetics.mdc:globs: | Cursor frontend rule has globs | 6 |
+| has_pattern:frontend-aesthetics.mdc:keywords: | Cursor frontend rule has keywords | 6 |
+| has_pattern:backend-engineering.mdc:globs: | Cursor backend rule has globs | 6 |
+| has_pattern:backend-engineering.mdc:keywords: | Cursor backend rule has keywords | 6 |
+| has_pattern:frontend-aesthetics/SKILL.md:description: | Claude skill has description | 6 |
+| has_pattern:backend-engineering/SKILL.md:description: | Claude skill has description | 5 |
+
+
+---
+
+*This is a condensed version. See `templates/steps/step-13-skillpack-generator.md` for full documentation.*

@@ -362,8 +362,8 @@ if [ -f "$INBOX" ]; then
     echo "📬 ORCHESTRATOR INBOX: $UNPROCESSED new message(s)"
     echo "---"
     
-    # Show new messages
-    jq -r '.messages[] | select(.processed == false) | "  [\(.type)] from \(.from): \(.status // "no status")"' "$INBOX" 2>/dev/null
+    # Show new messages (jq string interpolation uses backslash-parens)
+    jq -r '.messages[] | select(.processed == false) | "  [" + .type + "] from " + .from + ": " + (.status // "no status")' "$INBOX" 2>/dev/null
     
     # Check for completion messages - suggest gap-analysis
     COMPLETIONS=$(jq '[.messages[] | select(.processed == false and .type == "prd_complete")] | length' "$INBOX" 2>/dev/null || echo "0")
@@ -868,18 +868,19 @@ export async function launchWithAutoBackend(options) {
   switch (backend) {
     case 'iterm':
       return launchItermTabs(options);
-    
-    case 'tmux':
+
+    case 'tmux': {
       // Import tmux launcher dynamically
       const { spawnLocalOrchestration } = await import('./tmux-launcher.js');
       return spawnLocalOrchestration(options);
-    
+    }
+
     case 'task':
       // Task subagents - in-process, no terminal spawning
       console.log(chalk.yellow('Using Task subagents (in-process, no new terminals)'));
       // TODO: Wire up Task subagent spawning
       return { success: true, backend: 'task', message: 'Task subagent mode not yet implemented' };
-    
+
     default:
       throw new Error(`Unknown backend: ${backend}`);
   }

@@ -16,13 +16,15 @@ export default function LoginPage() {
   }, []);
 
   const handleGoogleLogin = () => {
-    // Visual only - would integrate with auth provider
-    console.log("Google login clicked");
+    // Prototype: OAuth integration placeholder
+    // In production, this would redirect to Google OAuth flow
+    // window.location.href = '/api/auth/google';
   };
 
   const handleGitHubLogin = () => {
-    // Visual only - would integrate with auth provider
-    console.log("GitHub login clicked");
+    // Prototype: OAuth integration placeholder
+    // In production, this would redirect to GitHub OAuth flow
+    // window.location.href = '/api/auth/github';
   };
 
   return (

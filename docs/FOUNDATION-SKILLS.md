@@ -1,6 +1,11 @@
 # Foundation Skills Reference
 
-Sigma Protocol includes **39 pre-bundled Foundation Skills** that provide universal AI capabilities across all supported platforms.
+**Version:** 5.0
+**Last Updated:** 2026-01-23
+
+Sigma Protocol includes **163 skills total** (39 Foundation Skills + 124 External Skills) that provide universal AI capabilities across all supported platforms.
+
+> **Note:** In addition to Foundation Skills, Sigma Protocol includes **120+ External Skills** from the skills.sh ecosystem. See [EXTERNAL-SKILLS.md](./EXTERNAL-SKILLS.md) for the complete external skills reference.
 
 ---
 
@@ -8,7 +13,9 @@ Sigma Protocol includes **39 pre-bundled Foundation Skills** that provide univer
 
 Foundation Skills are installed at **Step 0** (Environment Setup) and provide capabilities that enhance every step of the SSS workflow. They are **universal** and **project-agnostic**.
 
-**Step 13** (Skillpack Generator) creates **project-specific overlays** that build on these foundation skills with your project's:
+**External Skills** (Tier 2) provide domain-specific expertise for security, mobile development, 3D graphics, marketing, and more.
+
+**Step 13** (Skillpack Generator) creates **project-specific overlays** that build on these skills with your project's:
 
 - Design system and tokens
 - Stack choices and patterns
@@ -54,6 +61,22 @@ Skills are installed as `SKILL.md` directories:
 # Install command
 npx sigma-protocol install-skills --platform opencode
 ```
+
+### Factory Droid
+
+Skills are installed as `SKILL.md` directories (same format as Claude Code):
+
+```bash
+# Location
+.factory/skills/{skill-name}/SKILL.md
+
+# Install command
+npx sigma-protocol install-skills --platform factory-droid
+# Or use the converter script:
+./scripts/convert-to-factory.sh
+```
+
+See [FACTORY-DROID-INTEGRATION.md](./FACTORY-DROID-INTEGRATION.md) for detailed Factory Droid setup.
 
 ---
 
@@ -241,12 +264,18 @@ src/skills/                          # 39 total
 ```
 platforms/
 ├── cursor/rules/
-│   └── sss-*.mdc           # 39 .mdc rules with globs/keywords
+│   └── sss-*.mdc                # 149 .mdc rules with globs/keywords
 ├── claude-code/skills/
-│   └── */SKILL.md          # 39 skill directories
-└── opencode/skill/
-    └── */SKILL.md          # 39 skill directories
+│   └── */SKILL.md               # 148 skill directories
+├── opencode/skill/
+│   └── */SKILL.md               # 149 skill directories
+└── factory-droid/
+    ├── skills/*/SKILL.md        # 158 skill directories
+    ├── droids/                  # Custom subagents
+    └── commands/                # Slash commands
 ```
+
+See [PLATFORMS.md](./PLATFORMS.md) for complete platform configuration details.
 
 ---
 

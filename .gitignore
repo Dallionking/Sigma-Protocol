@@ -13,9 +13,24 @@ build/
 # IDE and editor
 .idea/
 .vscode/
+.cursor/projects/
+.claude/projects/
 *.swp
 *.swo
+*.code-workspace
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# OS files
 .DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
 Thumbs.db
 
 # Environment and secrets
@@ -48,6 +63,8 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
+dev-debug.log
+logs
 
 # Testing
 coverage/
@@ -59,10 +76,35 @@ coverage/
 .eslintcache
 .prettiercache
 
+# Python cache
+__pycache__/
+*.pyc
+
+# Temporary files
+tmp/
+temp/
+*.tmp
+*.temp
+*.bak
+*~
+
 # Sigma Protocol specific
 .sigma/
 .tracking-db/
 *.tracking.json
+
+# Research & Analysis (not needed by end users)
+.sss/confidence/
+docs/research/
+docs/analysis/
+*-analysis-*.md
+*-audit-*.md
+gap-analysis-*.json
+
+# Implementation artifacts
+validation-*.png
+*.local.md
+*.local.json
 
 # Orchestration testing (worktrees, logs, session state)
 worktrees/
@@ -83,20 +125,6 @@ packages/_upstream/
 # .claude/ is auto-generated
 # .opencode/ is auto-generated
 
-# Temporary files
-tmp/
-temp/
-*.tmp
-*.temp
-
-# OS files
-.DS_Store
-.DS_Store?
-._*
-.Spotlight-V100
-.Trashes
-ehthumbs.db
-
 # Private/internal content (should never be in public repo)
 course/
 claude-code/
@@ -112,7 +140,6 @@ Ralph-wiggum-transcript
 marketing-book-research/
 
 # Analysis directories & generated outputs
-docs/analysis/
 docs/prds/
 
 # Planning & temporary analysis docs
@@ -138,23 +165,9 @@ CHANGELOG-*.md
 # Cursor plans (internal)
 .cursor/plans/
 
-# Workspace files (IDE-specific)
-*.code-workspace
+# Keep patterns (don't ignore these)
+!docs/specs/
+!templates/
 
-logs
-dev-debug.log
-# Dependency directories
-# Environment variables
-# Editor directories and files
-.idea
-.vscode
-*.suo
-*.ntvs*
-*.njsproj
-*.sln
-*.sw?
-# OS specific
-
-# Task files
-# tasks.json
-# tasks/ 
+# Archived documentation
+.archive/

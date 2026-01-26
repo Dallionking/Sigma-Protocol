@@ -1,0 +1,657 @@
+{
+  "meta": {
+    "version": "1.0.0",
+    "project": "sigma-protocol-plugin",
+    "generated": "2026-01-23T00:00:00Z",
+    "totalStories": 154,
+    "totalPRDs": 19,
+    "estimatedHours": 284
+  },
+
+  "config": {
+    "workspace": "packages/sigma-protocol-plugin",
+    "engine": "claude-code",
+    "parallel": true,
+    "maxStreams": 5,
+    "sandbox": {
+      "enabled": true,
+      "provider": "docker"
+    },
+    "verification": {
+      "autoVerify": true,
+      "minScore": 80,
+      "retryOnFailure": true,
+      "maxRetries": 2
+    }
+  },
+
+  "stories": [
+    {
+      "id": "F19-001",
+      "prdId": "F19",
+      "title": "Audit agent skill references",
+      "description": "List all skills referenced in agent definitions and compare against .claude/skills/ directory to document discrepancies",
+      "priority": "P0",
+      "complexity": "S",
+      "estimatedHours": 0.5,
+      "status": "pending",
+      "dependencies": [],
+      "acceptance": [
+        "Complete list of referenced skills",
+        "List of missing skills identified",
+        "Discrepancy report generated"
+      ],
+      "files": [
+        "src/agents/tab-switchable/*.ts",
+        "src/agents/background/*.ts"
+      ]
+    },
+    {
+      "id": "F19-002",
+      "prdId": "F19",
+      "title": "Fix agent skill references",
+      "description": "Update agent definitions to reference existing skills or create minimal skill files for missing references",
+      "priority": "P0",
+      "complexity": "S",
+      "estimatedHours": 1,
+      "status": "pending",
+      "dependencies": ["F19-001"],
+      "acceptance": [
+        "All skill references are valid",
+        "No missing skill errors on load",
+        "Skill validation helper function created"
+      ],
+      "files": [
+        "src/agents/tab-switchable/*.ts",
+        "src/agents/background/*.ts",
+        "src/utils/skill-validator.ts"
+      ]
+    },
+    {
+      "id": "F19-003",
+      "prdId": "F19",
+      "title": "Standardize agent IDs to kebab-case",
+      "description": "Update all agent ID fields to use consistent kebab-case naming convention",
+      "priority": "P0",
+      "complexity": "S",
+      "estimatedHours": 0.5,
+      "status": "pending",
+      "dependencies": [],
+      "acceptance": [
+        "All agent IDs use kebab-case",
+        "ID references updated throughout codebase",
+        "TypeScript compilation passes"
+      ],
+      "files": [
+        "src/agents/tab-switchable/*.ts",
+        "src/agents/background/*.ts"
+      ]
+    },
+    {
+      "id": "F19-004",
+      "prdId": "F19",
+      "title": "Add missing type exports",
+      "description": "Create/update src/agents/types.ts with complete type exports for AgentDefinition, TabSwitchableAgent, BackgroundAgent, ModelConfig, and AgentRegistry",
+      "priority": "P0",
+      "complexity": "S",
+      "estimatedHours": 0.5,
+      "status": "pending",
+      "dependencies": [],
+      "acceptance": [
+        "All types properly exported",
+        "No TypeScript errors",
+        "Types match implementation"
+      ],
+      "files": [
+        "src/agents/types.ts"
+      ]
+    },
+    {
+      "id": "F19-005",
+      "prdId": "F19",
+      "title": "Fix model configurations",
+      "description": "Update oracle.ts and other agents to use valid model references (claude-sonnet-4-20250514, gpt-4o) instead of invalid ones",
+      "priority": "P0",
+      "complexity": "S",
+      "estimatedHours": 0.5,
+      "status": "pending",
+      "dependencies": ["F19-004"],
+      "acceptance": [
+        "All model references are valid",
+        "Model validation helper created",
+        "No runtime errors on agent instantiation"
+      ],
+      "files": [
+        "src/agents/background/oracle.ts",
+        "src/agents/tab-switchable/*.ts",
+        "src/utils/model-validator.ts"
+      ]
+    },
+
+    {
+      "id": "F01-001",
+      "prdId": "F01",
+      "title": "Define state type interfaces",
+      "description": "Create TypeScript interfaces for SigmaState, StepScore, HITLDecision, AgentInvocation, and StateSnapshot in src/core/state/types.ts",
+      "priority": "P0",
+      "complexity": "S",
+      "estimatedHours": 1,
+      "status": "pending",
+      "dependencies": ["F19-005"],
+      "acceptance": [
+        "All state types defined",
+        "Types are JSON-serializable",
+        "Documentation comments added"
+      ],
+      "files": [
+        "src/core/state/types.ts"
+      ]
+    },
+    {
+      "id": "F01-002",
+      "prdId": "F01",
+      "title": "Implement persistence layer",
+      "description": "Create file I/O utilities with atomic writes (write to temp, then rename) and backup before write in src/core/state/persistence.ts",
+      "priority": "P0",
+      "complexity": "M",
+      "estimatedHours": 2,
+      "status": "pending",
+      "dependencies": ["F01-001"],
+      "acceptance": [
+        "Atomic file writes work correctly",
+        "Backup created before each write",
+        "Corruption recovery implemented"
+      ],
+      "files": [
+        "src/core/state/persistence.ts"
+      ]
+    },
+    {
+      "id": "F01-003",
+      "prdId": "F01",
+      "title": "Implement file-based locking",
+      "description": "Create locking mechanism for concurrent access safety with 5-second timeout and 60-second stale detection in src/core/state/locking.ts",
+      "priority": "P0",
+      "complexity": "M",
+      "estimatedHours": 1.5,
+      "status": "pending",
+      "dependencies": ["F01-002"],
+      "acceptance": [
+        "Lock acquisition works correctly",
+        "Timeout triggers after 5 seconds",
+        "Stale locks detected and cleaned"
+      ],
+      "files": [
+        "src/core/state/locking.ts"
+      ]
+    },
+    {
+      "id": "F01-004",
+      "prdId": "F01",
+      "title": "Implement StateManager class",
+      "description": "Create StateManager with load, save, updateWorkflow, markStepComplete, setCurrentStep methods",
+      "priority": "P0",
+      "complexity": "M",
+      "estimatedHours": 2,
+      "status": "pending",
+      "dependencies": ["F01-003"],
+      "acceptance": [
+        "All StateManager methods implemented",
+        "Debounced writes work correctly",
+        "State is loaded on init"
+      ],
+      "files": [
+        "src/core/state/manager.ts"
+      ]
+    },
+    {
+      "id": "F01-005",
+      "prdId": "F01",
+      "title": "Implement snapshot system",
+      "description": "Add createSnapshot, restoreSnapshot, listSnapshots methods with retention policy (keep last 10)",
+      "priority": "P0",
+      "complexity": "M",
+      "estimatedHours": 1.5,
+      "status": "pending",
+      "dependencies": ["F01-004"],
+      "acceptance": [
+        "Snapshots can be created and restored",
+        "Retention policy enforced",
+        "Confirmation required for restore"
+      ],
+      "files": [
+        "src/core/state/manager.ts"
+      ]
+    },
+    {
+      "id": "F01-006",
+      "prdId": "F01",
+      "title": "Implement export/import",
+      "description": "Add exportState and importState methods with validation and schema migration support",
+      "priority": "P0",
+      "complexity": "M",
+      "estimatedHours": 1.5,
+      "status": "pending",
+      "dependencies": ["F01-004"],
+      "acceptance": [
+        "Export produces valid JSON",
+        "Import validates schema",
+        "Migration from older versions works"
+      ],
+      "files": [
+        "src/core/state/manager.ts",
+        "src/core/state/migration.ts"
+      ]
+    },
+    {
+      "id": "F01-007",
+      "prdId": "F01",
+      "title": "Integrate state with step-registry",
+      "description": "Hook state updates into step-registry for auto-persist on step completion",
+      "priority": "P0",
+      "complexity": "M",
+      "estimatedHours": 1,
+      "status": "pending",
+      "dependencies": ["F01-004"],
+      "acceptance": [
+        "State updates on step completion",
+        "State loads on plugin init",
+        "WorkflowState type updated"
+      ],
+      "files": [
+        "src/workflow/step-registry.ts",
+        "src/workflow/types.ts"
+      ]
+    },
+    {
+      "id": "F01-008",
+      "prdId": "F01",
+      "title": "Create state public exports",
+      "description": "Create index.ts with all public exports for state module",
+      "priority": "P0",
+      "complexity": "S",
+      "estimatedHours": 0.5,
+      "status": "pending",
+      "dependencies": ["F01-007"],
+      "acceptance": [
+        "All public APIs exported",
+        "Types exported",
+        "README documentation added"
+      ],
+      "files": [
+        "src/core/state/index.ts"
+      ]
+    },
+
+    {
+      "id": "F11-001",
+      "prdId": "F11",
+      "title": "Set up monorepo package structure",
+      "description": "Create packages directory with sigma-protocol-core, sigma-protocol-opencode, sigma-protocol-mcp packages using pnpm workspaces",
+      "priority": "P1",
+      "complexity": "M",
+      "estimatedHours": 2,
+      "status": "pending",
+      "dependencies": ["F01-008", "F19-005"],
+      "acceptance": [
+        "pnpm-workspace.yaml created",
+        "Package directories created",
+        "Package.json for each package",
+        "TypeScript configs set up"
+      ],
+      "files": [
+        "pnpm-workspace.yaml",
+        "packages/sigma-protocol-core/package.json",
+        "packages/sigma-protocol-core/tsconfig.json",
+        "packages/sigma-protocol-opencode/package.json",
+        "packages/sigma-protocol-mcp/package.json"
+      ]
+    },
+    {
+      "id": "F11-002",
+      "prdId": "F11",
+      "title": "Define PlatformAdapter interface",
+      "description": "Create platform-agnostic adapter interface in src/types/platform.ts with executeTool, executeAgent, loadState, saveState, showProgress, promptUser, log methods",
+      "priority": "P1",
+      "complexity": "M",
+      "estimatedHours": 2,
+      "status": "pending",
+      "dependencies": ["F11-001"],
+      "acceptance": [
+        "PlatformAdapter interface complete",
+        "All methods documented",
+        "Platform types defined"
+      ],
+      "files": [
+        "packages/sigma-protocol-core/src/types/platform.ts"
+      ]
+    },
+    {
+      "id": "F11-003",
+      "prdId": "F11",
+      "title": "Define ToolDefinition interface",
+      "description": "Create tool abstraction types in src/types/tool.ts with ToolDefinition, ToolParameter, ToolContext, ToolResult",
+      "priority": "P1",
+      "complexity": "S",
+      "estimatedHours": 1,
+      "status": "pending",
+      "dependencies": ["F11-001"],
+      "acceptance": [
+        "ToolDefinition interface complete",
+        "Parameter types cover all cases",
+        "Context interface defined"
+      ],
+      "files": [
+        "packages/sigma-protocol-core/src/types/tool.ts"
+      ]
+    },
+    {
+      "id": "F11-004",
+      "prdId": "F11",
+      "title": "Move StepSequencer to core",
+      "description": "Extract and refactor StepSequencer to be platform-agnostic, taking PlatformAdapter as dependency",
+      "priority": "P1",
+      "complexity": "L",
+      "estimatedHours": 4,
+      "status": "pending",
+      "dependencies": ["F11-002", "F11-003"],
+      "acceptance": [
+        "StepSequencer in core package",
+        "Uses PlatformAdapter abstraction",
+        "All 14 steps execute correctly"
+      ],
+      "files": [
+        "packages/sigma-protocol-core/src/steps/sequencer.ts"
+      ]
+    },
+    {
+      "id": "F11-005",
+      "prdId": "F11",
+      "title": "Move SkillResolver to core",
+      "description": "Extract SkillResolver with platform-agnostic skill loading from a skills directory",
+      "priority": "P1",
+      "complexity": "M",
+      "estimatedHours": 2,
+      "status": "pending",
+      "dependencies": ["F11-001"],
+      "acceptance": [
+        "SkillResolver in core package",
+        "Loads skills from any directory",
+        "Trigger matching works"
+      ],
+      "files": [
+        "packages/sigma-protocol-core/src/skills/resolver.ts"
+      ]
+    },
+    {
+      "id": "F11-006",
+      "prdId": "F11",
+      "title": "Move QualityGateEngine to core",
+      "description": "Extract QualityGateEngine with built-in validators and custom validator registration",
+      "priority": "P1",
+      "complexity": "M",
+      "estimatedHours": 2,
+      "status": "pending",
+      "dependencies": ["F11-001"],
+      "acceptance": [
+        "QualityGateEngine in core",
+        "Built-in validators included",
+        "Custom validators can be registered"
+      ],
+      "files": [
+        "packages/sigma-protocol-core/src/quality/engine.ts"
+      ]
+    },
+    {
+      "id": "F11-007",
+      "prdId": "F11",
+      "title": "Move StateManager to core",
+      "description": "Extract StateManager from F01 implementation to core package with platform-agnostic storage abstraction",
+      "priority": "P1",
+      "complexity": "M",
+      "estimatedHours": 2,
+      "status": "pending",
+      "dependencies": ["F01-008", "F11-001"],
+      "acceptance": [
+        "StateManager in core",
+        "Storage is abstracted",
+        "Platform-specific implementations possible"
+      ],
+      "files": [
+        "packages/sigma-protocol-core/src/state/manager.ts"
+      ]
+    },
+    {
+      "id": "F11-008",
+      "prdId": "F11",
+      "title": "Create OpenCodeAdapter",
+      "description": "Implement PlatformAdapter for OpenCode with native tool execution, agent bridge, and OpenCode-specific features",
+      "priority": "P1",
+      "complexity": "L",
+      "estimatedHours": 4,
+      "status": "pending",
+      "dependencies": ["F11-004", "F11-005", "F11-006", "F11-007"],
+      "acceptance": [
+        "OpenCodeAdapter implements PlatformAdapter",
+        "All tools execute correctly",
+        "Feature parity with current plugin"
+      ],
+      "files": [
+        "packages/sigma-protocol-opencode/src/adapter.ts",
+        "packages/sigma-protocol-opencode/src/tools/*.ts",
+        "packages/sigma-protocol-opencode/src/agents/*.ts"
+      ]
+    },
+    {
+      "id": "F11-009",
+      "prdId": "F11",
+      "title": "Create core unit tests",
+      "description": "Create unit tests for core components using mock adapter",
+      "priority": "P1",
+      "complexity": "M",
+      "estimatedHours": 3,
+      "status": "pending",
+      "dependencies": ["F11-008"],
+      "acceptance": [
+        "80%+ coverage for core",
+        "All public APIs tested",
+        "Tests pass"
+      ],
+      "files": [
+        "packages/sigma-protocol-core/src/**/__tests__/*.ts"
+      ]
+    },
+
+    {
+      "id": "F12-001",
+      "prdId": "F12",
+      "title": "Set up MCP server scaffold",
+      "description": "Create MCP server package with @modelcontextprotocol/sdk, logging, and error handling",
+      "priority": "P1",
+      "complexity": "M",
+      "estimatedHours": 3,
+      "status": "pending",
+      "dependencies": ["F11-009"],
+      "acceptance": [
+        "MCP server starts",
+        "SDK properly configured",
+        "Logging works"
+      ],
+      "files": [
+        "packages/sigma-protocol-mcp/src/server.ts",
+        "packages/sigma-protocol-mcp/package.json"
+      ]
+    },
+    {
+      "id": "F12-002",
+      "prdId": "F12",
+      "title": "Implement sigma_execute_step tool",
+      "description": "Create MCP tool for executing Sigma steps with input validation and result formatting",
+      "priority": "P1",
+      "complexity": "M",
+      "estimatedHours": 3,
+      "status": "pending",
+      "dependencies": ["F12-001"],
+      "acceptance": [
+        "Tool listed in tools/list",
+        "Step execution works",
+        "Results properly formatted"
+      ],
+      "files": [
+        "packages/sigma-protocol-mcp/src/tools/execute-step.ts"
+      ]
+    },
+    {
+      "id": "F12-003",
+      "prdId": "F12",
+      "title": "Implement sigma_verify_step tool",
+      "description": "Create MCP tool for verifying step outputs against quality gate criteria",
+      "priority": "P1",
+      "complexity": "M",
+      "estimatedHours": 2,
+      "status": "pending",
+      "dependencies": ["F12-001"],
+      "acceptance": [
+        "Verification produces scores",
+        "Criteria breakdown included",
+        "Pass/fail correctly determined"
+      ],
+      "files": [
+        "packages/sigma-protocol-mcp/src/tools/verify-step.ts"
+      ]
+    },
+    {
+      "id": "F12-004",
+      "prdId": "F12",
+      "title": "Implement sigma_get_skills tool",
+      "description": "Create MCP tool for retrieving relevant skills based on context",
+      "priority": "P1",
+      "complexity": "S",
+      "estimatedHours": 1.5,
+      "status": "pending",
+      "dependencies": ["F12-001"],
+      "acceptance": [
+        "Skills resolved by trigger",
+        "Content included in response",
+        "Metadata properly formatted"
+      ],
+      "files": [
+        "packages/sigma-protocol-mcp/src/tools/get-skills.ts"
+      ]
+    },
+    {
+      "id": "F12-005",
+      "prdId": "F12",
+      "title": "Implement status resource",
+      "description": "Create MCP resource for sigma://status with workflow progress, completed steps, and scores",
+      "priority": "P1",
+      "complexity": "M",
+      "estimatedHours": 2,
+      "status": "pending",
+      "dependencies": ["F12-001"],
+      "acceptance": [
+        "Resource returns status",
+        "All 14 steps included",
+        "Progress calculated correctly"
+      ],
+      "files": [
+        "packages/sigma-protocol-mcp/src/resources/status.ts"
+      ]
+    },
+    {
+      "id": "F12-006",
+      "prdId": "F12",
+      "title": "Implement step details resource",
+      "description": "Create MCP resource for sigma://step/{number} with full step information",
+      "priority": "P1",
+      "complexity": "S",
+      "estimatedHours": 1.5,
+      "status": "pending",
+      "dependencies": ["F12-001"],
+      "acceptance": [
+        "Step details returned",
+        "Quality gate info included",
+        "404 for invalid steps"
+      ],
+      "files": [
+        "packages/sigma-protocol-mcp/src/resources/step-details.ts"
+      ]
+    },
+    {
+      "id": "F12-007",
+      "prdId": "F12",
+      "title": "Implement HITL prompts",
+      "description": "Create MCP prompts for HITL checkpoint decisions with options and feedback",
+      "priority": "P1",
+      "complexity": "M",
+      "estimatedHours": 2,
+      "status": "pending",
+      "dependencies": ["F12-002"],
+      "acceptance": [
+        "HITL prompts work",
+        "Decisions captured",
+        "Feedback used in revision"
+      ],
+      "files": [
+        "packages/sigma-protocol-mcp/src/prompts/hitl.ts"
+      ]
+    },
+    {
+      "id": "F12-008",
+      "prdId": "F12",
+      "title": "Create CLI entry point",
+      "description": "Create bin/serve.ts CLI for starting MCP server with npx @sigma-protocol/mcp serve",
+      "priority": "P1",
+      "complexity": "S",
+      "estimatedHours": 1,
+      "status": "pending",
+      "dependencies": ["F12-007"],
+      "acceptance": [
+        "CLI starts server",
+        "npx command works",
+        "Environment config supported"
+      ],
+      "files": [
+        "packages/sigma-protocol-mcp/bin/serve.ts",
+        "packages/sigma-protocol-mcp/package.json"
+      ]
+    },
+    {
+      "id": "F12-009",
+      "prdId": "F12",
+      "title": "Test MCP server with Claude Code",
+      "description": "Integration test MCP server with Claude Code client to verify all tools and resources work",
+      "priority": "P1",
+      "complexity": "M",
+      "estimatedHours": 4,
+      "status": "pending",
+      "dependencies": ["F12-008"],
+      "acceptance": [
+        "All tools callable",
+        "All resources readable",
+        "No errors in Claude Code"
+      ],
+      "files": [
+        "packages/sigma-protocol-mcp/tests/integration/*.ts"
+      ]
+    }
+  ],
+
+  "streams": {
+    "stream1": {
+      "name": "Critical Path",
+      "stories": ["F19-001", "F19-002", "F19-003", "F19-004", "F19-005", "F01-001", "F01-002", "F01-003", "F01-004", "F01-005", "F01-006", "F01-007", "F01-008"],
+      "description": "Foundation fixes and state persistence"
+    },
+    "stream2": {
+      "name": "Cross-Platform Core",
+      "stories": ["F11-001", "F11-002", "F11-003", "F11-004", "F11-005", "F11-006", "F11-007", "F11-008", "F11-009"],
+      "description": "Platform abstraction layer"
+    },
+    "stream3": {
+      "name": "MCP Server",
+      "stories": ["F12-001", "F12-002", "F12-003", "F12-004", "F12-005", "F12-006", "F12-007", "F12-008", "F12-009"],
+      "description": "Enhanced MCP server for Claude Code"
+    }
+  }
+}

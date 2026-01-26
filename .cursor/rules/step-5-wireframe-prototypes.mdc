@@ -1,0 +1,194 @@
+---
+description: "Wireframe prototypes generation"
+globs: ["docs/**/*.md", "*.md", "CLAUDE.md"]
+alwaysApply: false
+---
+
+# step-5-wireframe-prototypes
+
+## Mission
+
+Generate comprehensive **Flow PRDs** with detailed ASCII wireframes, modern React stack integration specs, and researched component selections. The **USER** then implements these PRDs in Cursor to build an interactive UI prototype. This prototype code becomes the **foundation for Step 11** feature development.
+
+**Workflow:**
+1. **Step 5 (This Step):** AI generates detailed PRDs for each flow
+2. **User Implementation:** User takes PRDs into Cursor and builds the UI prototype
+3. **Iteration:** User refines the prototype until satisfied with the UI/UX
+4. **Step 11:** AI generates feature PRDs that build on the prototype code
+
+**Valuation Context:** You are the **CMO of a $100 MILLION to $1 BILLION COMPANY**. Every pixel, animation, and interaction must **maximize conversion**, **reduce friction**, and **feel premium**. This is **revenue engineering through design** — no AI slop, no generic templates.
+
+**Core Philosophy:**
+1. **Flow-First PRDs:** One comprehensive PRD per user flow (Auth, Onboarding, Dashboard, Checkout, etc.)
+2. **Research-Driven Specs:** Use shadcn MCP + Exa to find best patterns and document component selections
+3. **Modern Stack Integration:** Spec zod, react-hook-form, tRPC, react-query, and other 2025 best practices
+4. **Detailed Wireframes:** ASCII diagrams with exact component breakdowns, props, and usage examples
+5. **First Flow = Project Setup:** First PRD (01-auth) includes project bootstrap commands
+6. **User Implements:** PRDs are designed for user to implement in Cursor, not for AI execution
+7. **No AI Slop:** Every app must feel unique — no generic animations, no pulsating circles, no emoji icons
+8. **Premium Icons Only:** Use Lucide, Phosphor, or Tabler icons — **NEVER use emojis as icons**
+
+
+### Superdesign Workflow for Step 5
+
+```
+1. Open Superdesign sidebar in Cursor
+2. Prompt: "Generate wireframe for [FLOW_NAME] flow with [KEY_SCREENS]"
+3. Review 3-5 variations
+4. Fork and iterate on best option
+5. Extract design patterns for PRD
+6. Use superdesign_extract_system to capture design tokens
+```
+
+
+### Animation Uniqueness Checklist (Per App)
+
+Before approving any flow PRD, verify:
+
+- [ ] Splash screen animation is **unique to this app** (not used in other projects)
+- [ ] Logo animation style matches **app personality/tone**
+- [ ] Loading states use **branded elements** (not generic spinners)
+- [ ] Screen transitions are **intentional** (not default slide)
+- [ ] Charts are **themed** to match app colors
+- [ ] Success/error states have **appropriate feedback** (haptics, animations)
+- [ ] No emojis used as icons anywhere
+
+---
+
+
+### Wireframe Output
+
+**Output Files:**
+- `/docs/wireframes/LANDING-PAGE-WIREFRAME.md` - Structure documentation + detailed PRD
+
+**User Implementation:** After receiving this PRD, user creates `src/app/(marketing)/page.tsx` (web) or appropriate route
+
+
+### Anti-Slop Verification
+
+- [ ] Background is NOT a solid color
+- [ ] Logo does NOT have pulsating circle behind it
+- [ ] Animation timing is NOT default 300ms everywhere
+- [ ] This splash is UNIQUE to this app (not reused from other projects)
+- [ ] Animation style matches app personality/tone
+
+---
+
+
+### Quality Gates
+- [ ] Mobile responsive (web) / Platform-native feel (mobile)
+- [ ] Dark mode supported (if applicable)
+- [ ] Accessibility: Focus states, ARIA labels
+- [ ] Performance: No jank, smooth 60fps animations
+- [ ] No AI slop: Unique, crafted, memorable
+
+---
+
+
+## PHASE D — Documentation & Handoff
+
+After all prioritized flows have PRDs generated:
+
+
+### D.2 Final Quality Gates
+
+**Quality Checklist:**
+- [ ] All P0 flows have detailed PRDs generated
+- [ ] Each flow has a complete PRD in `/docs/prds/flows/`
+- [ ] All PRDs include ASCII wireframes with exact component specs
+- [ ] Modern stack libraries (zod, tRPC, react-query, etc.) are documented
+- [ ] shadcn MCP + Exa research findings are included
+- [ ] Component installation commands are specified
+- [ ] Design tokens are documented
+- [ ] PRD-SUMMARY.md is comprehensive
+- [ ] Zero Omission Certificate shows 100% coverage
+
+---
+
+
+### E.1 Zero Omission Verification (BLOCKING GATE)
+
+**Before final approval, verify 100% screen coverage:**
+
+```markdown
+
+## Zero Omission Verification
+
+
+## Verification Summary
+
+| Source | Document | Screen Count |
+|--------|----------|--------------|
+| **Step 4** | /docs/flows/SCREEN-INVENTORY.md | [X] |
+| **Step 5** | /docs/prds/flows/WIREFRAME-TRACKER.md | [Y] |
+| **Match** | [X] = [Y] | ✅ |
+
+---
+
+
+### Premium Animation Quality Signals
+
+**When premium feel is appropriate for the app, consider these quality signals:**
+
+These represent a **preferred animation direction** — apply where they enhance the user experience, not as a mandatory checklist for every project.
+
+- [ ] **Entry animations** — Content reveals intentionally (fade-up, stagger) vs. instant appearance
+- [ ] **Interaction feedback** — Buttons respond with spring physics vs. just color change
+- [ ] **Loading states** — Skeleton screens with shimmer vs. generic spinners
+- [ ] **Success celebrations** — Achievements feel earned when appropriate
+- [ ] **Navigation continuity** — Screens flow into each other vs. hard cuts
+- [ ] **Data visualizations** — Numbers count up, charts draw in where impactful
+- [ ] **Micro-interactions** — Toggles flip, checkboxes bounce where it adds delight
+- [ ] **Hover states (web)** — Cards lift/glow where interaction is primary
+- [ ] **Focus states** — Clear, intentional focus indicators on inputs
+
+> **Design Philosophy:** Not every app needs every animation. A minimal productivity tool might deliberately avoid celebration animations. A gamified wellness app might lean heavily into them. **Match animation level to app personality and user context.**
+
+
+### Mandatory Quality Checks for Finance Flows
+
+**Before approving any fintech/trading/banking flow, verify:**
+
+| Category | Check | Requirement |
+|----------|-------|-------------|
+| **Trust** | Security signals present | ✅ Lock icons, encryption badges, biometric prompts |
+| **Trust** | Error handling graceful | ✅ Never show raw errors, always provide next steps |
+| **Trust** | Loading states informative | ✅ "Verifying identity..." not just spinners |
+| **Clarity** | Money amounts unmistakable | ✅ Large, clear numbers, currency symbols |
+| **Clarity** | Transaction status obvious | ✅ Pending/complete/failed states distinct |
+| **Clarity** | Fee disclosure transparent | ✅ All fees shown before confirmation |
+| **Speed** | Critical paths optimized | ✅ < 3 taps to send money, < 5 for trades |
+| **Speed** | Real-time feel | ✅ Optimistic updates, background syncing |
+| **Security** | Confirmation gates | ✅ Biometric/PIN for transactions over threshold |
+| **Security** | Session management | ✅ Auto-logout, activity indicators |
+| **Accessibility** | Large touch targets | ✅ Min 44x44pt for all interactive elements |
+| **Accessibility** | Screen reader support | ✅ Amounts and statuses announced properly |
+
+
+### Fintech Component Checklist
+
+For each screen in a finance flow, verify:
+- [ ] Balance/amounts use `sliding-number` or `animated-number` for transitions
+- [ ] Transaction lists have clear status indicators (colored dots, badges)
+- [ ] Confirmation screens have prominent "Review" sections
+- [ ] Success states include transaction IDs and "View receipt" options
+- [ ] Error states provide specific guidance, not generic messages
+- [ ] Loading states show estimated wait times when possible
+- [ ] All destructive actions (cancel, close account) require explicit confirmation
+
+
+### Content Quality (30 points)
+
+| Check | Description | Points |
+|-------|-------------|--------|
+| has_pattern:FLOW-*.md:zod\|react-hook-form\|tRPC | Modern stack libraries specified | 8 |
+| has_pattern:FLOW-*.md:shadcn MCP\|get_code_context_exa | Research tools documented | 6 |
+| has_pattern:FLOW-*.md:```typescript | Code examples included | 6 |
+| has_pattern:FLOW-*.md:npx shadcn@latest add | Installation commands | 5 |
+| has_code_block:FLOW-*.md:ascii_wireframe | ASCII wireframes present | 5 |
+| has_pattern:FLOW-*.md:UI PROFILE COMPLIANCE\|uiProfile | UI profile compliance included | 3 |
+
+
+---
+
+*This is a condensed version. See `templates/steps/step-5-wireframe-prototypes.md` for full documentation.*

@@ -24,9 +24,17 @@ set -euo pipefail
 # Configuration
 # =============================================================================
 
-VERSION="1.0.0"
+VERSION="3.0.0"  # Native task persistence, atomic backlog updates, parent task creation. v2.2.0: sandbox isolation, retry limits, backoff, validation
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 SIGMA_PROTOCOL_DIR="$(dirname "$(dirname "$SCRIPT_DIR")")"
+
+# Source the dynamic skill registry system
+if [[ -f "$SCRIPT_DIR/skill-registry.sh" ]]; then
+    source "$SCRIPT_DIR/skill-registry.sh"
+    SKILL_REGISTRY_AVAILABLE=true
+else
+    SKILL_REGISTRY_AVAILABLE=false
+fi
 
 # Default values
 WORKSPACE=""
@@ -40,6 +48,35 @@ VERBOSE=false
 SKIP_VERIFICATION=false
 PROMPT_TEMPLATE=""
 QUIET=false
+
+# NEW v2.0.0: Parallel execution mode
+PARALLEL=false                  # Run streams in parallel
+PARALLEL_MONITOR_INTERVAL=10    # Seconds between status checks
+
+# NEW v3.1.0: Swarm mode (claudesp integration)
+SWARM_MODE=false                # Enable swarm mode with claudesp
+SWARM_SPAWN_SUBAGENTS=true      # Always spawn sub-agents for every story
+
+# NEW v2.2.0: Sandbox isolation settings
+SANDBOX_ENABLED=false           # Enable sandbox isolation
+SANDBOX_PROVIDER="docker"       # docker, e2b, daytona
+SANDBOX_TIMEOUT=120             # Sandbox creation timeout (seconds)
+SANDBOX_MEMORY="4g"             # Docker memory limit
+SANDBOX_CPUS=2                  # Docker CPU limit
+BUDGET_MAX=50                   # Max spend in USD before stopping
+BUDGET_WARN=25                  # Warning threshold in USD
+VALIDATE_ONLY=false             # Only validate PRD without running
+ENGINE_ARGS=""                  # Extra args to pass to the engine
+
+# Native Task Management (v3.0.0)
+NATIVE_TASKS_ENABLED=false      # Enable Claude Code native task tracking
+TASK_LIST_ID=""                 # Task list ID for persistence across sessions
+
+# Retry limits with exponential backoff (PR #98, #106)
+declare -A RETRY_COUNTS         # Track retries per story
+MAX_RETRIES="${MAX_RETRIES:-3}" # Max retries (env override)
+BACKOFF_INITIAL=2               # Initial backoff in seconds
+BACKOFF_MAX=60                  # Maximum backoff in seconds
 
 # Error recovery settings
 STORY_TIMEOUT=600           # 10 minutes per story
@@ -80,44 +117,18 @@ log_error() {
     echo -e "${RED}[ERROR]${NC} $1" >&2
 }
 
-# Activity monitor - shows file changes and git status while Claude works
-start_activity_monitor() {
-    local story_id="$1"
-    local start_time=$(date +%s)
-
-    while true; do
-        sleep 5
-
-        local elapsed=$(( $(date +%s) - start_time ))
-        local mins=$((elapsed / 60))
-        local secs=$((elapsed % 60))
-
-        # Clear line and show heartbeat
-        echo -ne "\r\033[K"
-        echo -ne "${BLUE}[♥ ${mins}m${secs}s]${NC} "
-
-        # Show recently modified files (last 30 seconds)
-        local recent_files=$(find "$WORKSPACE" -type f \( -name "*.swift" -o -name "*.tsx" -o -name "*.ts" -o -name "*.js" -o -name "*.py" -o -name "*.go" \) -mmin -0.5 2>/dev/null | head -3)
-        if [[ -n "$recent_files" ]]; then
-            local file_count=$(echo "$recent_files" | wc -l | tr -d ' ')
-            echo -ne "📝 ${file_count} files "
-            local latest=$(echo "$recent_files" | head -1)
-            echo -ne "${GREEN}$(basename "$latest")${NC} "
-        fi
-
-        # Show git changes count
-        local git_changes=$(cd "$WORKSPACE" && git status --porcelain 2>/dev/null | wc -l | tr -d ' ')
-        if [[ "$git_changes" -gt 0 ]]; then
-            echo -ne "📦 ${git_changes} staged "
-        fi
-
-        # Check if Claude is still running
-        if ! ps -p $CLAUDE_PID > /dev/null 2>&1; then
-            echo -e "${YELLOW}(completing)${NC}"
-            break
-        fi
-    done
-}
+# Activity monitor DEPRECATED in v2.1.17
+# Native Claude Code now provides:
+# - Task spinner with activeForm (shows current sub-task)
+# - /tasks command for progress overview
+# - Built-in status line with context usage
+#
+# The custom heartbeat monitor has been removed in favor of:
+# 1. stream-json mode with activity-filter.sh for real-time output
+# 2. Native TaskCreate/TaskUpdate for sub-task tracking
+# 3. Native Claude Code status indicators
+#
+# For OpenCode, progress is shown via its native status display.
 
 show_help() {
     cat << EOF
@@ -154,6 +165,56 @@ SESSION AUTO-RESTART OPTIONS:
     --session-timeout=SEC  Session timeout in seconds (default: 9000 = 2h30m)
                            Restarts loop before Claude Code session expires
 
+PARALLEL EXECUTION OPTIONS (v2.0.0 - Claude Code v2.1.17+):
+    --parallel, -P         Run streams in parallel (requires streams[] in backlog)
+    --parallel-interval=N  Seconds between status checks (default: 10)
+
+    Parallel mode spawns independent Claude sessions for each stream defined
+    in the backlog. Stories within a stream run sequentially, but streams run
+    concurrently. Uses background agents with run_in_background for monitoring.
+
+NATIVE TASK MANAGEMENT (v3.0.0):
+    --native-tasks         Enable Claude Code native task tracking
+    --task-list-id=ID      Use specific task list ID (for resume across sessions)
+    --no-native-tasks      Force disable native tasks (override env var)
+
+    Native task mode creates parent tasks for each story and exports
+    CLAUDE_CODE_TASK_LIST_ID for persistence. The task list ID is stored
+    in prd.json for automatic resume.
+
+SWARM MODE (v3.1.0 - Swarm-First Philosophy):
+    --swarm                Enable swarm mode with claudesp (Claude Swarm Protocol)
+    --no-swarm-spawn       Disable automatic sub-agent spawning (not recommended)
+
+    Swarm mode uses claudesp instead of claude CLI, enabling:
+    - Automatic sub-agent spawning for every story
+    - Parallel agent execution within each story
+    - Agent-to-task routing based on file patterns
+    - Skill injection based on task type
+
+    Each story session can spawn:
+    - sigma-planner for design decisions
+    - sigma-executor for implementation
+    - sigma-reviewer for verification
+
+SANDBOX ISOLATION OPTIONS (v2.2.0):
+    --sandbox              Enable sandbox isolation for story execution
+    --sandbox-provider=P   Provider: docker (default), e2b, daytona
+    --sandbox-timeout=S    Sandbox creation timeout in seconds (default: 120)
+    --sandbox-memory=SIZE  Docker memory limit (default: 4g)
+    --sandbox-cpus=N       Docker CPU limit (default: 2)
+    --budget-max=USD       Max spend before stopping (default: 50)
+    --budget-warn=USD      Warning threshold (default: 25)
+    --validate-only        Validate PRD without executing stories
+    --                     Pass remaining args to AI engine (e.g. -- --dangerously-skip-permissions)
+
+    Sandbox mode runs each story in an isolated environment:
+    - docker: FREE local isolation using Docker containers
+    - e2b: Cloud sandboxes (~$0.10/min), scalable to 10+ concurrent
+    - daytona: Open-source cloud (~$0.08/min), self-hostable
+
+    Setup sandboxes with: sigma sandbox setup --provider=docker
+
 EXAMPLES:
     # Run prototype implementation
     sigma-ralph.sh --workspace=/path/to/myapp --mode=prototype
@@ -166,6 +227,36 @@ EXAMPLES:
 
     # Dry run preview
     sigma-ralph.sh --workspace=/path/to/myapp --mode=prototype --dry-run
+
+    # Parallel execution (run all streams concurrently)
+    sigma-ralph.sh --workspace=/path/to/myapp --mode=implementation --parallel
+
+    # Sandbox mode with Docker (FREE)
+    sigma-ralph.sh --workspace=/path/to/myapp --mode=prototype --sandbox
+
+    # Sandbox mode with E2B (cloud)
+    sigma-ralph.sh --workspace=/path/to/myapp --mode=prototype --sandbox --sandbox-provider=e2b
+
+    # With budget limits
+    sigma-ralph.sh --workspace=/path/to/myapp --sandbox --budget-max=20 --budget-warn=10
+
+    # Validate PRD without running
+    sigma-ralph.sh --workspace=/path/to/myapp --validate-only
+
+    # Pass extra args to Claude Code
+    sigma-ralph.sh --workspace=/path/to/myapp --mode=prototype -- --dangerously-skip-permissions
+
+    # Native task tracking (v3.0.0)
+    sigma-ralph.sh --workspace=/path/to/myapp --mode=prototype --native-tasks
+
+    # Resume with existing task list
+    sigma-ralph.sh --workspace=/path/to/myapp --mode=prototype --task-list-id=ralph-myapp-1234567890
+
+    # Swarm mode (v3.1.0) - Always spawn sub-agents
+    sigma-ralph.sh --workspace=/path/to/myapp --mode=implementation --swarm
+
+    # Swarm mode with parallel execution
+    sigma-ralph.sh --workspace=/path/to/myapp --mode=implementation --swarm --parallel
 
 BACKLOG PATHS:
     prototype:       docs/ralph/prototype/prd.json
@@ -251,9 +342,76 @@ parse_args() {
                 SESSION_TIMEOUT="${1#*=}"
                 shift
                 ;;
+            --parallel|-P)
+                PARALLEL=true
+                shift
+                ;;
+            --parallel-interval=*)
+                PARALLEL_MONITOR_INTERVAL="${1#*=}"
+                shift
+                ;;
+            --swarm)
+                SWARM_MODE=true
+                shift
+                ;;
+            --no-swarm-spawn)
+                SWARM_SPAWN_SUBAGENTS=false
+                shift
+                ;;
+            --sandbox)
+                SANDBOX_ENABLED=true
+                shift
+                ;;
+            --sandbox-provider=*)
+                SANDBOX_PROVIDER="${1#*=}"
+                shift
+                ;;
+            --sandbox-timeout=*)
+                SANDBOX_TIMEOUT="${1#*=}"
+                shift
+                ;;
+            --sandbox-memory=*)
+                SANDBOX_MEMORY="${1#*=}"
+                shift
+                ;;
+            --sandbox-cpus=*)
+                SANDBOX_CPUS="${1#*=}"
+                shift
+                ;;
+            --budget-max=*)
+                BUDGET_MAX="${1#*=}"
+                shift
+                ;;
+            --budget-warn=*)
+                BUDGET_WARN="${1#*=}"
+                shift
+                ;;
+            --validate-only)
+                VALIDATE_ONLY=true
+                shift
+                ;;
+            --native-tasks)
+                NATIVE_TASKS_ENABLED=true
+                shift
+                ;;
+            --task-list-id=*)
+                TASK_LIST_ID="${1#*=}"
+                NATIVE_TASKS_ENABLED=true
+                shift
+                ;;
+            --no-native-tasks)
+                NATIVE_TASKS_ENABLED=false
+                shift
+                ;;
             --help|-h)
                 show_help
                 exit 0
+                ;;
+            --)
+                # Everything after -- is passed to the engine
+                shift
+                ENGINE_ARGS="$*"
+                break
                 ;;
             *)
                 log_error "Unknown option: $1"
@@ -311,21 +469,67 @@ validate_requirements() {
         log_info "Run Step 5.5 or Step 11.25 to create the backlog"
         exit 1
     fi
-    
+
+    # NEW v2.2.0: Validate PRD file (PR #10)
+    if ! validate_prd "$BACKLOG"; then
+        exit 1
+    fi
+
+    # NEW v2.2.0: Validate only mode - exit after PRD validation
+    if [[ "$VALIDATE_ONLY" == true ]]; then
+        log_success "PRD validation complete (--validate-only mode)"
+        exit 0
+    fi
+
+    # NEW v2.1.0: Build dynamic skill registry for intelligent skill matching
+    if [[ "$SKILL_REGISTRY_AVAILABLE" == true ]]; then
+        log_info "Building skill registry from workspace and SSS Protocol..."
+        build_skill_registry "$WORKSPACE" "$SIGMA_PROTOCOL_DIR"
+    fi
+
     # Detect AI engine
     detect_engine
+
+    # NEW v2.2.0: Validate sandbox provider if enabled
+    if [[ "$SANDBOX_ENABLED" == true ]]; then
+        if ! validate_sandbox_provider; then
+            exit 1
+        fi
+
+        # Build Docker image if needed
+        if [[ "$SANDBOX_PROVIDER" == "docker" ]]; then
+            if ! build_docker_image; then
+                exit 1
+            fi
+        fi
+
+        # Check budget for cloud providers
+        if ! check_budget; then
+            exit 1
+        fi
+    fi
 }
 
 detect_engine() {
     if [[ "$ENGINE" == "auto" ]]; then
-        if command -v claude &> /dev/null; then
+        # NEW v3.1.0: Check for claudesp first if swarm mode enabled
+        if [[ "$SWARM_MODE" == true ]] && command -v claudesp &> /dev/null; then
+            ENGINE="claudesp"
+            log_info "Detected Claude Swarm Protocol CLI (swarm mode)"
+        elif command -v claude &> /dev/null; then
             ENGINE="claude"
             log_info "Detected Claude Code CLI"
+            if [[ "$SWARM_MODE" == true ]]; then
+                log_warn "Swarm mode enabled but claudesp not found - using claude with Task tool delegation"
+            fi
         elif command -v opencode &> /dev/null; then
             ENGINE="opencode"
             log_info "Detected OpenCode CLI"
+            if [[ "$SWARM_MODE" == true ]]; then
+                log_warn "Swarm mode works best with claudesp or claude"
+            fi
         else
-            log_error "No AI engine found. Install claude or opencode CLI."
+            log_error "No AI engine found. Install claude, claudesp, or opencode CLI."
             exit 1
         fi
     else
@@ -334,6 +538,318 @@ detect_engine() {
             exit 1
         fi
     fi
+}
+
+# =============================================================================
+# Sandbox Integration (v2.2.0)
+# =============================================================================
+
+# Path to the ralph-bridge.js Node.js CLI
+RALPH_BRIDGE="$SIGMA_PROTOCOL_DIR/cli/lib/sandbox/ralph-bridge.js"
+
+# Validate sandbox provider configuration
+validate_sandbox_provider() {
+    if [[ "$SANDBOX_ENABLED" != true ]]; then
+        return 0
+    fi
+
+    log_info "Validating sandbox provider: $SANDBOX_PROVIDER"
+
+    # Check if ralph-bridge.js exists
+    if [[ ! -f "$RALPH_BRIDGE" ]]; then
+        log_error "ralph-bridge.js not found at: $RALPH_BRIDGE"
+        log_info "Make sure SSS Protocol is properly installed"
+        return 1
+    fi
+
+    # Check if Node.js is available
+    if ! command -v node &> /dev/null; then
+        log_error "Node.js is required for sandbox mode"
+        log_info "Install Node.js 18+ from https://nodejs.org"
+        return 1
+    fi
+
+    # Validate provider via bridge
+    local result
+    result=$(node "$RALPH_BRIDGE" --action=validate --provider="$SANDBOX_PROVIDER" --workspace="$WORKSPACE" 2>&1)
+    local exit_code=$?
+
+    if [[ $exit_code -ne 0 ]]; then
+        log_error "Sandbox provider validation failed:"
+        echo "$result" | grep -i "error" | head -5
+        log_info ""
+        log_info "Setup sandbox with: sigma sandbox setup --provider=$SANDBOX_PROVIDER"
+        return 1
+    fi
+
+    log_success "Sandbox provider validated: $SANDBOX_PROVIDER"
+    return 0
+}
+
+# Build Docker image if using Docker provider
+build_docker_image() {
+    if [[ "$SANDBOX_PROVIDER" != "docker" ]]; then
+        return 0
+    fi
+
+    log_info "Checking Docker image..."
+
+    local result
+    result=$(node "$RALPH_BRIDGE" --action=build-image --workspace="$WORKSPACE" 2>&1)
+    local exit_code=$?
+
+    if [[ $exit_code -ne 0 ]]; then
+        log_error "Failed to build Docker image"
+        echo "$result"
+        return 1
+    fi
+
+    if echo "$result" | grep -q "BUILT=true"; then
+        log_success "Docker image built: sigma-sandbox:latest"
+    else
+        log_info "Docker image already exists"
+    fi
+
+    return 0
+}
+
+# Calculate exponential backoff delay (PR #106)
+calculate_backoff() {
+    local attempt="$1"
+    local delay=$((BACKOFF_INITIAL * (2 ** (attempt - 1))))
+    echo $((delay > BACKOFF_MAX ? BACKOFF_MAX : delay))
+}
+
+# Get retry count for a story
+get_retry_count() {
+    local story_id="$1"
+    echo "${RETRY_COUNTS[$story_id]:-0}"
+}
+
+# Increment retry count for a story
+increment_retry_count() {
+    local story_id="$1"
+    local current="${RETRY_COUNTS[$story_id]:-0}"
+    RETRY_COUNTS[$story_id]=$((current + 1))
+}
+
+# Check if story has exceeded retry limit
+should_retry_story() {
+    local story_id="$1"
+    local count=$(get_retry_count "$story_id")
+    [[ $count -lt $MAX_RETRIES ]]
+}
+
+# Validate PRD file (PR #10)
+validate_prd() {
+    local prd_file="$1"
+
+    # Check file exists
+    if [[ ! -f "$prd_file" ]]; then
+        log_error "PRD file not found: $prd_file"
+        return 1
+    fi
+
+    # Check valid JSON
+    if ! jq empty "$prd_file" 2>/dev/null; then
+        log_error "PRD file is not valid JSON: $prd_file"
+        return 1
+    fi
+
+    # Check has stories array
+    if ! jq -e '.stories' "$prd_file" &>/dev/null; then
+        log_error "PRD file missing 'stories' array: $prd_file"
+        return 1
+    fi
+
+    # Check for duplicate IDs
+    local duplicates
+    duplicates=$(jq -r '[.stories[].id] | group_by(.) | map(select(length > 1)) | flatten | unique[]' "$prd_file" 2>/dev/null)
+    if [[ -n "$duplicates" ]]; then
+        log_error "PRD file has duplicate story IDs: $duplicates"
+        return 1
+    fi
+
+    # Get stats
+    local total=$(jq '.stories | length' "$prd_file")
+    local pending=$(jq '[.stories[] | select(.passes != true)] | length' "$prd_file")
+
+    log_info "PRD validated: $total stories ($pending pending)"
+    return 0
+}
+
+# Run a story in sandbox isolation
+run_story_in_sandbox() {
+    local story_json="$1"
+    local story_id=$(echo "$story_json" | jq -r '.id')
+
+    log_info "Running story $story_id in $SANDBOX_PROVIDER sandbox..."
+
+    if [[ "$DRY_RUN" == true ]]; then
+        log_warn "[DRY RUN] Would run story $story_id in $SANDBOX_PROVIDER sandbox"
+        return 0
+    fi
+
+    # Call the bridge to run the story
+    local result
+    result=$(node "$RALPH_BRIDGE" \
+        --action=run-story \
+        --story-id="$story_id" \
+        --provider="$SANDBOX_PROVIDER" \
+        --workspace="$WORKSPACE" \
+        --prd-file="$BACKLOG" \
+        --timeout="$SANDBOX_TIMEOUT" \
+        --memory="$SANDBOX_MEMORY" \
+        --cpus="$SANDBOX_CPUS" \
+        --budget-max="$BUDGET_MAX" \
+        --budget-warn="$BUDGET_WARN" \
+        --engine="$ENGINE" \
+        --output-format=bash \
+        2>&1)
+
+    local exit_code=$?
+
+    # Parse result
+    if echo "$result" | grep -q "SUCCESS=true"; then
+        log_success "Story completed in sandbox: $story_id"
+        return 0
+    else
+        local error_msg=$(echo "$result" | grep "ERROR=" | sed 's/ERROR=//')
+        log_error "Story failed in sandbox: $story_id"
+        [[ -n "$error_msg" ]] && log_error "Error: $error_msg"
+        return 1
+    fi
+}
+
+# Check budget before running
+check_budget() {
+    if [[ "$SANDBOX_PROVIDER" == "docker" ]]; then
+        # Docker is free
+        return 0
+    fi
+
+    local stories_remaining=$(jq '[.stories[] | select(.passes != true)] | length' "$BACKLOG")
+
+    local result
+    result=$(node "$RALPH_BRIDGE" \
+        --action=estimate \
+        --provider="$SANDBOX_PROVIDER" \
+        --workspace="$WORKSPACE" \
+        --stories="$stories_remaining" \
+        --output-format=bash \
+        2>&1)
+
+    if echo "$result" | grep -q "WOULD_EXCEED_BUDGET=true"; then
+        local estimated=$(echo "$result" | grep "ESTIMATED_COST=" | sed 's/ESTIMATED_COST=//')
+        local remaining=$(echo "$result" | grep "REMAINING_BUDGET=" | sed 's/REMAINING_BUDGET=//')
+        log_error "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+        log_error "⚠️ BUDGET EXCEEDED"
+        log_error "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+        log_error "Estimated cost: \$$estimated"
+        log_error "Remaining budget: \$$remaining"
+        log_error "Reduce stories or switch to Docker (free)"
+        return 1
+    fi
+
+    if echo "$result" | grep -q "WOULD_TRIGGER_WARNING=true"; then
+        log_warn "Budget warning: This run may approach your spending limit"
+    fi
+
+    return 0
+}
+
+# =============================================================================
+# Native Task Management (v3.0.0)
+# =============================================================================
+
+# File lock for atomic backlog updates (parallel stream safety)
+BACKLOG_LOCK=""
+
+# Atomic backlog update with file locking (for parallel streams)
+update_backlog_atomic() {
+    local jq_filter="$1"
+    local lock_file="${BACKLOG}.lock"
+
+    # Use flock for atomic updates (prevents race conditions in parallel mode)
+    (
+        flock -x -w 30 200 || {
+            log_error "Failed to acquire backlog lock after 30s"
+            return 1
+        }
+        local temp_file=$(mktemp)
+        if jq "$jq_filter" "$BACKLOG" > "$temp_file" 2>/dev/null; then
+            mv "$temp_file" "$BACKLOG"
+        else
+            rm -f "$temp_file"
+            log_error "jq filter failed: $jq_filter"
+            return 1
+        fi
+    ) 200>"$lock_file"
+}
+
+# Initialize native task tracking
+init_native_tasks() {
+    if [[ "$NATIVE_TASKS_ENABLED" != true ]]; then
+        return 0
+    fi
+
+    # Generate task list ID if not provided
+    if [[ -z "$TASK_LIST_ID" ]]; then
+        TASK_LIST_ID="ralph-$(basename "$WORKSPACE")-$(date +%s)"
+    fi
+
+    # Export for Claude Code native task persistence
+    export CLAUDE_CODE_TASK_LIST_ID="$TASK_LIST_ID"
+
+    log_info "Native task tracking enabled: $TASK_LIST_ID"
+
+    # Store task list ID in backlog for resume capability
+    update_backlog_atomic --arg id "$TASK_LIST_ID" '.meta.taskListId = $id'
+
+    return 0
+}
+
+# Create parent task instruction for story (injected into worker prompt)
+create_story_parent_task() {
+    local story_id="$1"
+    local story_title="$2"
+
+    [[ "$NATIVE_TASKS_ENABLED" != true ]] && return
+
+    cat << PARENT_TASK
+
+## PARENT TASK (Mandatory First Step)
+
+**IMPORTANT:** Before implementing anything, create a parent task for this story:
+
+\`\`\`
+Use TaskCreate tool with:
+- subject: "[$story_id] $story_title"
+- description: "Ralph story implementation - see PRD for details"
+- activeForm: "Implementing $story_id..."
+\`\`\`
+
+Then immediately mark it in progress:
+\`\`\`
+Use TaskUpdate tool with:
+- taskId: (the ID returned from TaskCreate)
+- status: "in_progress"
+\`\`\`
+
+When the story is complete (all acceptance criteria pass), mark the parent task completed:
+\`\`\`
+Use TaskUpdate tool with:
+- taskId: (the parent task ID)
+- status: "completed"
+\`\`\`
+
+**Benefits:**
+- Native spinner shows story progress
+- Task persists across session restarts
+- /tasks command shows Ralph loop progress
+- Task list ID: $TASK_LIST_ID
+
+PARENT_TASK
 }
 
 # =============================================================================
@@ -359,21 +875,35 @@ get_story_by_id() {
 
 mark_story_passed() {
     local story_id="$1"
-    local temp_file=$(mktemp)
-    
-    # Update passes to true and add lastAttempt
-    jq --arg id "$story_id" --arg ts "$(date -u +%Y-%m-%dT%H:%M:%SZ)" \
-        '(.stories[] | select(.id == $id)) |= . + {
-            passes: true,
-            lastAttempt: {
-                timestamp: $ts,
-                engine: "'"$ENGINE"'",
-                success: true
-            }
-        } | .meta.passedStories = ([.stories[] | select(.passes == true)] | length)' \
-        "$BACKLOG" > "$temp_file"
-    
-    mv "$temp_file" "$BACKLOG"
+
+    # Use atomic update for parallel safety
+    local jq_filter
+    jq_filter=$(cat << 'FILTER'
+(.stories[] | select(.id == $id)) |= . + {
+    passes: true,
+    lastAttempt: {
+        timestamp: $ts,
+        engine: $engine,
+        success: true
+    }
+} | .meta.passedStories = ([.stories[] | select(.passes == true)] | length)
+FILTER
+)
+
+    local lock_file="${BACKLOG}.lock"
+    (
+        flock -x -w 30 200 || {
+            log_error "Failed to acquire backlog lock"
+            return 1
+        }
+        local temp_file=$(mktemp)
+        jq --arg id "$story_id" \
+           --arg ts "$(date -u +%Y-%m-%dT%H:%M:%SZ)" \
+           --arg engine "$ENGINE" \
+           "$jq_filter" "$BACKLOG" > "$temp_file"
+        mv "$temp_file" "$BACKLOG"
+    ) 200>"$lock_file"
+
     log_success "Story $story_id marked as passed"
 }
 
@@ -381,29 +911,38 @@ record_attempt() {
     local story_id="$1"
     local success="$2"
     local error_msg="${3:-}"
-    local temp_file=$(mktemp)
-    
-    jq --arg id "$story_id" \
-       --arg ts "$(date -u +%Y-%m-%dT%H:%M:%SZ)" \
-       --arg engine "$ENGINE" \
-       --argjson success "$success" \
-       --arg error "$error_msg" \
-        '(.stories[] | select(.id == $id)) |= . + {
-            lastAttempt: {
-                timestamp: $ts,
-                engine: $engine,
-                success: $success,
-                errorMessage: (if $error != "" then $error else null end)
-            },
-            attempts: ((.attempts // []) + [{
-                timestamp: $ts,
-                engine: $engine,
-                success: $success,
-                errorMessage: (if $error != "" then $error else null end)
-            }])
-        }' "$BACKLOG" > "$temp_file"
-    
-    mv "$temp_file" "$BACKLOG"
+
+    # Use atomic update for parallel safety
+    local jq_filter='(.stories[] | select(.id == $id)) |= . + {
+        lastAttempt: {
+            timestamp: $ts,
+            engine: $engine,
+            success: $success,
+            errorMessage: (if $error != "" then $error else null end)
+        },
+        attempts: ((.attempts // []) + [{
+            timestamp: $ts,
+            engine: $engine,
+            success: $success,
+            errorMessage: (if $error != "" then $error else null end)
+        }])
+    }'
+
+    local lock_file="${BACKLOG}.lock"
+    (
+        flock -x -w 30 200 || {
+            log_error "Failed to acquire backlog lock"
+            return 1
+        }
+        local temp_file=$(mktemp)
+        jq --arg id "$story_id" \
+           --arg ts "$(date -u +%Y-%m-%dT%H:%M:%SZ)" \
+           --arg engine "$ENGINE" \
+           --argjson success "$success" \
+           --arg error "$error_msg" \
+           "$jq_filter" "$BACKLOG" > "$temp_file"
+        mv "$temp_file" "$BACKLOG"
+    ) 200>"$lock_file"
 }
 
 get_progress() {
@@ -431,39 +970,43 @@ detect_skills() {
     echo -e "$found"
 }
 
-# Generate skill delegation matrix for worker prompts
+# Generate core workflow skill matrix (static mandatory skills)
 generate_skill_matrix() {
     cat << 'SKILL_MATRIX'
-## CRITICAL: Skill Delegation Matrix
+## CRITICAL: Core Workflow Skills
 
 **DO NOT IMPLEMENT DIRECTLY** - Use specialized skills for all implementation.
 
-| Task Type | Required Skill | When to Use |
-|-----------|----------------|-------------|
-| Architecture | `@senior-architect` | BEFORE any coding begins |
-| UI Components | `@frontend-design` | ALL UI work (React, SwiftUI, Tailwind) |
-| File Scaffolding | `@scaffold` | New features requiring multiple files |
-| Error Diagnosis | `@systematic-debugging` | When ANY error occurs |
-| PRD Compliance | `@gap-analysis` | AFTER implementing, verify against PRD |
-| Test Validation | `@qa-engineer` | Verify acceptance criteria pass |
-| Web UI Testing | `agent-browser` CLI | Web projects - validate rendered UI |
-| iOS UI Testing | `xcrun simctl` | iOS projects - screenshot validation |
+| Phase | Required Skill | When to Use |
+|-------|----------------|-------------|
+| Planning | `@senior-architect` | BEFORE any coding begins |
+| UI Work | `@frontend-design` | ALL UI components |
+| Errors | `@systematic-debugging` | When ANY error occurs |
+| Verification | `@gap-analysis` | AFTER implementing |
+| Testing | `@senior-qa` | Verify acceptance criteria |
+| Browser Testing | `@agent-browser-validation` | Web UI validation |
 
-### How to Use Skills
+### Mandatory Workflow
 
-1. **Invoke by name**: Type `@skill-name` in your response
-2. **Via Skill tool**: Use the Skill tool with skill parameter
-3. **Read skill docs**: Check `.claude/skills/` for detailed instructions
-
-### Mandatory Skill Usage
-
-- **Before coding**: `@senior-architect` for design review
-- **For UI changes**: `@frontend-design` must be used
-- **After implementing**: `@gap-analysis` to verify PRD compliance
-- **On any error**: `@systematic-debugging` before retrying
-
-You will be **REJECTED** if you implement directly without skill delegation.
+1. **@senior-architect** → Design review before coding
+2. **@frontend-design** → All UI changes (enforced by hook)
+3. **@systematic-debugging** → Any error encountered
+4. **@gap-analysis** → PRD compliance after implementation
 SKILL_MATRIX
+}
+
+# Generate story-specific skill recommendations based on content analysis
+# NEW v2.1.0: Uses dynamic skill registry to match 40+ skills
+generate_story_skill_injection() {
+    local story_json="$1"
+
+    # Skip if registry not available
+    if [[ "$SKILL_REGISTRY_AVAILABLE" != true ]]; then
+        return
+    fi
+
+    # Use the skill registry to generate dynamic recommendations
+    generate_skill_injection "$story_json"
 }
 
 # =============================================================================
@@ -556,22 +1099,287 @@ DESIGN_CONTEXT
 }
 
 # =============================================================================
+# Native Task Management (Claude Code v2.1.17+)
+# =============================================================================
+
+# Generate TaskCreate instructions for granular sub-task tracking
+generate_task_tracking_section() {
+    local tasks_json="$1"
+    local story_id="$2"
+
+    # Handle empty/null tasks array
+    if [[ -z "$tasks_json" ]] || [[ "$tasks_json" == "[]" ]] || [[ "$tasks_json" == "null" ]]; then
+        return
+    fi
+
+    local task_count=$(echo "$tasks_json" | jq 'length' 2>/dev/null || echo "0")
+    if [[ "$task_count" -eq 0 ]]; then
+        return
+    fi
+
+    local task_list=""
+    while IFS= read -r task; do
+        local task_id=$(echo "$task" | jq -r '.id')
+        local task_desc=$(echo "$task" | jq -r '.description')
+        task_list+="
+- **$task_id**: $task_desc"
+    done < <(echo "$tasks_json" | jq -c '.[]' 2>/dev/null)
+
+    cat << TASK_SECTION
+
+## NATIVE TASK TRACKING (Claude Code v2.1.17+)
+
+Use Claude Code's native task management to track sub-task progress:
+
+### Sub-Tasks for This Story
+$task_list
+
+### How to Track Progress
+
+1. **At the start**, create tasks for each sub-task:
+\`\`\`
+Use TaskCreate tool with:
+- subject: "<task_id>: <brief description>"
+- description: "<full description from above>"
+- activeForm: "Implementing <task_id>..."
+\`\`\`
+
+2. **When starting a sub-task**, mark it in progress:
+\`\`\`
+Use TaskUpdate tool with:
+- taskId: "<task_id>"
+- status: "in_progress"
+\`\`\`
+
+3. **When completing a sub-task**, mark it completed:
+\`\`\`
+Use TaskUpdate tool with:
+- taskId: "<task_id>"
+- status: "completed"
+\`\`\`
+
+4. **To check progress**, use TaskList to see all task statuses.
+
+### Benefits
+- Native spinner shows current task (activeForm)
+- Progress visible via \`/tasks\` command
+- Clear completion status for each sub-task
+- Better observability than progress.txt
+
+TASK_SECTION
+}
+
+# Generate dependency section with blockedBy for native enforcement
+generate_dependency_section() {
+    local depends_on_array="$1"
+    local story_id="$2"
+
+    # Handle empty/null dependencies
+    if [[ -z "$depends_on_array" ]] || [[ "$depends_on_array" == "[]" ]] || [[ "$depends_on_array" == "null" ]]; then
+        return
+    fi
+
+    local dep_list=""
+    while IFS= read -r dep_id; do
+        [[ -n "$dep_id" ]] && dep_list+="
+- $dep_id"
+    done < <(echo "$depends_on_array" | jq -r '.[]' 2>/dev/null)
+
+    cat << DEP_SECTION
+
+## STORY DEPENDENCIES
+
+This story depends on the following stories being completed first:
+$dep_list
+
+### Dependency Enforcement
+
+If you create sub-tasks for this story, use TaskCreate with \`addBlockedBy\` to enforce ordering:
+
+\`\`\`
+Use TaskCreate tool with:
+- subject: "First task of $story_id"
+- description: "..."
+- addBlockedBy: ["dependent-story-task-id"]
+\`\`\`
+
+If dependencies are not met, you should:
+1. Check if dependent stories are marked as \`passes: true\` in the backlog
+2. If not, output: \`RALPH_STORY_BLOCKED: $story_id\`
+3. Include \`REASON: Waiting for dependencies: <list>\`
+
+DEP_SECTION
+}
+
+# =============================================================================
 # Prompt Generation
 # =============================================================================
+
+# Generate swarm spawn instructions for worker prompt
+generate_swarm_instructions() {
+    local story_json="$1"
+    local story_id=$(echo "$story_json" | jq -r '.id')
+
+    if [[ "$SWARM_MODE" != true ]] || [[ "$SWARM_SPAWN_SUBAGENTS" != true ]]; then
+        return
+    fi
+
+    # Check if story has UI tasks
+    local has_ui_tasks=$(echo "$story_json" | jq -r '.tasks[]? | select(.id | startswith("UI-")) | .id' 2>/dev/null | head -1)
+    local has_api_tasks=$(echo "$story_json" | jq -r '.tasks[]? | select(.id | startswith("API-") or .id | startswith("DB-")) | .id' 2>/dev/null | head -1)
+    local has_test_tasks=$(echo "$story_json" | jq -r '.tasks[]? | select(.id | startswith("TEST-")) | .id' 2>/dev/null | head -1)
+
+    cat << 'SWARM_INSTRUCTIONS'
+
+## 🐝 SWARM-FIRST PHILOSOPHY (MANDATORY)
+
+**CRITICAL RULE: Never work solo. Always delegate to sub-agents.**
+
+### You MUST Use the Task Tool to Spawn Sub-Agents
+
+For this story, use the following swarm pattern:
+
+```markdown
+1. **PLANNING PHASE** — Spawn sigma-planner first
+   Task tool: spawn general-purpose agent
+   Prompt: "You are sigma-planner. Review PRD and design implementation approach.
+            Use @senior-architect skill. Output: implementation plan with file order."
+
+2. **IMPLEMENTATION PHASE** — Spawn appropriate executor(s)
+SWARM_INSTRUCTIONS
+
+    # Add frontend instructions if UI tasks
+    if [[ -n "$has_ui_tasks" ]]; then
+        cat << 'UI_SWARM'
+   Task tool: spawn general-purpose agent
+   Prompt: "You are sigma-frontend. Implement UI components for this story.
+            Use @frontend-design skill. Follow design system strictly."
+UI_SWARM
+    fi
+
+    # Add backend instructions if API/DB tasks
+    if [[ -n "$has_api_tasks" ]]; then
+        cat << 'API_SWARM'
+   Task tool: spawn general-purpose agent
+   Prompt: "You are sigma-backend. Implement API/database changes for this story.
+            Use @api-design-principles and @architecture-patterns skills."
+API_SWARM
+    fi
+
+    cat << 'SWARM_INSTRUCTIONS_CONT'
+
+3. **VERIFICATION PHASE** — Spawn sigma-sisyphus
+   Task tool: spawn general-purpose agent
+   Prompt: "You are sigma-sisyphus. Verify all acceptance criteria pass.
+            Use @gap-analysis and @systematic-debugging skills.
+            Loop until all criteria pass or document blockers."
+```
+
+### Parallel Spawning (When Tasks Are Independent)
+
+If UI and API tasks are independent, spawn them in parallel:
+
+```markdown
+[Single message with multiple Task tool calls]
+- sigma-frontend: Implement UI components
+- sigma-backend: Implement API endpoints
+[Wait for both to complete]
+- sigma-sisyphus: Verify entire story
+```
+
+### Agent Skill Requirements
+
+| Agent | Required Skills |
+|-------|----------------|
+| sigma-planner | @senior-architect, @brainstorming |
+| sigma-frontend | @frontend-design, @react-performance |
+| sigma-backend | @api-design-principles, @architecture-patterns |
+| sigma-reviewer | @senior-qa, @systematic-debugging |
+| sigma-sisyphus | @gap-analysis, @quality-gates |
+
+**DO NOT implement directly. ALWAYS delegate via Task tool.**
+
+SWARM_INSTRUCTIONS_CONT
+}
 
 generate_worker_prompt() {
     local story_json="$1"
     local story_id=$(echo "$story_json" | jq -r '.id')
     local story_title=$(echo "$story_json" | jq -r '.title')
-    local story_desc=$(echo "$story_json" | jq -r '.description')
+    local story_desc=$(echo "$story_json" | jq -r '.description // "No description provided"')
     local source_prd=$(echo "$story_json" | jq -r '.source.prdPath')
-    local criteria=$(echo "$story_json" | jq -r '.acceptanceCriteria | map("- [\(.id)] \(.description) (type: \(.type))") | join("\n")')
-    local depends_on=$(echo "$story_json" | jq -r '.dependsOn | if length > 0 then join(", ") else "None" end')
+    local criteria=$(echo "$story_json" | jq -r '(.acceptanceCriteria // []) | map("- [\(.id)] \(.description) (type: \(.type))") | join("\n")' 2>/dev/null || echo "See PRD for acceptance criteria")
+    local depends_on=$(echo "$story_json" | jq -r '(.dependsOn // []) | if length > 0 then join(", ") else "None" end' 2>/dev/null || echo "None")
     local agent_instructions=$(echo "$story_json" | jq -r '.agentInstructions // "None"')
 
-    # NEW: Get design system context for UI tasks
+    # NEW v2.1.17: Extract tasks and estimated iterations for native task management
+    local estimated_iterations=$(echo "$story_json" | jq -r '.estimatedIterations // 1')
+    local tasks_json=$(echo "$story_json" | jq '.tasks // []' 2>/dev/null)
+    local tasks_count=$(echo "$tasks_json" | jq 'length' 2>/dev/null || echo "0")
+
+    # NEW v3.0.0: Generate parent task instruction for native task persistence
+    local parent_task_instruction=""
+    if [[ "$NATIVE_TASKS_ENABLED" == true ]]; then
+        parent_task_instruction=$(create_story_parent_task "$story_id" "$story_title")
+    fi
+
+    # NEW v2.1.17: Generate native TaskCreate instructions for granular tracking
+    local task_tracking_section=""
+    if [[ "$tasks_count" -gt 0 ]]; then
+        task_tracking_section=$(generate_task_tracking_section "$tasks_json" "$story_id")
+    fi
+
+    # NEW v2.1.17: Generate dependency section with blockedBy for native enforcement
+    local dependency_section=""
+    local depends_on_array=$(echo "$story_json" | jq -r '.dependsOn // []')
+    if [[ "$(echo "$depends_on_array" | jq 'length')" -gt 0 ]]; then
+        dependency_section=$(generate_dependency_section "$depends_on_array" "$story_id")
+    fi
+
+    # NEW v2.1.17: Plan mode instruction for complex stories
+    # Note: Uses structured planning inline (not EnterPlanMode which requires user approval)
+    local plan_mode_instruction=""
+    if [[ "$estimated_iterations" -gt 2 ]]; then
+        plan_mode_instruction="
+## ⚠️ COMPLEX STORY - STRUCTURED PLANNING REQUIRED
+
+This story has estimatedIterations=$estimated_iterations (complexity > 2).
+**You MUST plan thoroughly BEFORE implementing.**
+
+### Planning Checklist (Complete BEFORE Coding)
+
+1. **Explore codebase first:**
+   - Use Glob/Grep to understand existing patterns
+   - Read related files to understand architecture
+   - Identify all files that need changes
+
+2. **Design your approach:**
+   - List files to create/modify (in order)
+   - Identify potential blockers
+   - Consider edge cases and error handling
+
+3. **Use @senior-architect skill:**
+   - Invoke the skill to validate your approach
+   - Get architectural guidance before coding
+
+4. **Document your plan:**
+   - Write your implementation plan as a comment
+   - Include file paths and key decisions
+   - This becomes valuable context for debugging
+
+### Why This Matters
+
+Complex stories (estimatedIterations > 2) have higher failure rates when
+implementations start without proper planning. Taking time to explore and
+design prevents rework and wasted iterations.
+
+**BEGIN by reading existing code patterns, THEN plan, THEN implement.**
+"
+    fi
+
+    # Get design system context for UI tasks
     local design_context=$(get_design_system_context "$story_json")
-    
+
     # Paths for memory files
     local progress_file="$(dirname "$BACKLOG")/progress.txt"
     local agents_file="AGENTS.md"
@@ -579,6 +1387,18 @@ generate_worker_prompt() {
     # Detect available skills in workspace
     local detected_skills=$(detect_skills "$WORKSPACE")
     local skill_matrix=$(generate_skill_matrix)
+
+    # NEW v2.1.0: Generate dynamic story-specific skill recommendations
+    local story_skills=""
+    if [[ "$SKILL_REGISTRY_AVAILABLE" == true ]]; then
+        story_skills=$(generate_story_skill_injection "$story_json")
+    fi
+
+    # NEW v3.1.0: Generate swarm instructions for delegation
+    local swarm_instructions=""
+    if [[ "$SWARM_MODE" == true ]]; then
+        swarm_instructions=$(generate_swarm_instructions "$story_json")
+    fi
 
     cat << EOF
 You are an autonomous coding agent implementing a single story from a Ralph-style backlog.
@@ -606,6 +1426,12 @@ $detected_skills
 $design_context
 
 $skill_matrix
+$story_skills
+$swarm_instructions
+$plan_mode_instruction
+$parent_task_instruction
+$task_tracking_section
+$dependency_section
 
 ## INSTRUCTIONS
 
@@ -750,46 +1576,58 @@ ensure_git_commit() {
 }
 
 # =============================================================================
-# Progress File
+# Progress File (DEPRECATED in v2.0.0)
+# =============================================================================
+# Progress tracking has moved to:
+# 1. Native Claude Code TaskCreate/TaskUpdate for sub-task tracking
+# 2. prd.json backlog (primary source of truth with attempts array)
+# 3. On-demand progress reports via generate-progress-report.sh
+#
+# The append_progress function is now a no-op. To generate a progress
+# report from the backlog, run:
+#   ./scripts/ralph/generate-progress-report.sh docs/ralph/<mode>/prd.json
 # =============================================================================
 
-# Initialize progress file with header if it doesn't exist
+# Initialize progress file with deprecation header
 init_progress_file() {
     local progress_file="$(dirname "$BACKLOG")/progress.txt"
 
+    # Create a minimal header pointing to new tracking approach
     if [[ ! -f "$progress_file" ]]; then
         local backlog_name=$(basename "$(dirname "$BACKLOG")")
         cat > "$progress_file" << EOF
-# Ralph Progress Log
+# Ralph Progress Log (DEPRECATED)
+
+**Note:** As of v2.0.0, progress tracking uses:
+- Native Claude Code TaskCreate/TaskUpdate for sub-task tracking
+- prd.json backlog (check .stories[].attempts for history)
+- On-demand reports: ./scripts/ralph/generate-progress-report.sh
+
+To generate a fresh progress report from backlog:
+  ./scripts/ralph/generate-progress-report.sh $BACKLOG
+
 **Backlog:** $backlog_name
 **Started:** $(date -u +%Y-%m-%dT%H:%M:%SZ)
 **Engine:** $ENGINE
-**Workspace:** $WORKSPACE
 
 ---
 
 EOF
-        log_info "Created progress file: $progress_file"
+        log_info "Created progress file: $progress_file (see note about native task tracking)"
     fi
 }
 
+# DEPRECATED: Progress now tracked in prd.json attempts array
+# Kept for backwards compatibility but does nothing
 append_progress() {
-    local story_id="$1"
-    local status="$2"
-    local message="${3:-}"
-    local progress_file="$(dirname "$BACKLOG")/progress.txt"
-    
-    local timestamp=$(date -u +%Y-%m-%dT%H:%M:%SZ)
-    
-    cat >> "$progress_file" << EOF
-
-### $timestamp - $story_id
-**Status:** $status
-**Engine:** $ENGINE
-${message:+**Notes:** $message}
-
----
-EOF
+    # No-op in v2.0.0+
+    # Progress is now tracked via:
+    # 1. prd.json .stories[].attempts array (by record_attempt)
+    # 2. Native Claude Code TaskCreate/TaskUpdate (in worker prompts)
+    #
+    # To generate a progress report from backlog:
+    #   ./scripts/ralph/generate-progress-report.sh <backlog-path>
+    :  # Bash no-op
 }
 
 # =============================================================================
@@ -1053,11 +1891,42 @@ run_story() {
 
     if [[ "$DRY_RUN" == true ]]; then
         log_warn "[DRY RUN] Would execute story: $story_id"
+        if [[ "$SANDBOX_ENABLED" == true ]]; then
+            log_warn "[DRY RUN] Using $SANDBOX_PROVIDER sandbox"
+        fi
         generate_worker_prompt "$story_json"
         return 0
     fi
 
-    # Generate prompt
+    # NEW v2.2.0: Use sandbox isolation if enabled
+    if [[ "$SANDBOX_ENABLED" == true ]]; then
+        log_info "🔒 Running in $SANDBOX_PROVIDER sandbox..."
+
+        if run_story_in_sandbox "$story_json"; then
+            # Story completed in sandbox - mark as passed
+            ensure_git_commit "$story_id" "$story_title"
+            mark_story_passed "$story_id"
+            return 0
+        else
+            # Story failed in sandbox - handle with exponential backoff
+            local retry_count=$(get_retry_count "$story_id")
+            increment_retry_count "$story_id"
+
+            if should_retry_story "$story_id"; then
+                local backoff=$(calculate_backoff $((retry_count + 1)))
+                log_warn "Story failed, retrying in ${backoff}s... (attempt $((retry_count + 2))/$MAX_RETRIES)"
+                sleep "$backoff"
+                run_story "$story_json" $((attempt + 1))
+                return $?
+            else
+                log_error "Story exceeded retry limit ($MAX_RETRIES), skipping"
+                record_attempt "$story_id" false "Exceeded retry limit"
+                return 1
+            fi
+        fi
+    fi
+
+    # Generate prompt (non-sandbox mode)
     local prompt=$(generate_worker_prompt "$story_json")
     local prompt_file=$(mktemp)
     echo "$prompt" > "$prompt_file"
@@ -1070,12 +1939,16 @@ run_story() {
 
     log_info "Spawning fresh $ENGINE session..."
 
-    local MONITOR_PID=""
+    # NOTE: Custom activity monitor removed in v2.1.17
+    # Native Claude Code now provides task spinners (activeForm) and /tasks command
+    # Workers using TaskCreate/TaskUpdate get automatic progress display
 
     case "$ENGINE" in
-        claude)
-            # Claude Code CLI invocation
+        claude|claudesp)
+            # Claude Code / Claude Swarm Protocol CLI invocation
             # Using --dangerously-skip-permissions for autonomous mode
+            local engine_cmd="$ENGINE"
+
             if [[ "$QUIET" != true && -f "$SCRIPT_DIR/activity-filter.sh" ]]; then
                 # Stream JSON mode with real-time activity display
                 # IMPORTANT: --verbose is REQUIRED for stream-json to work
@@ -1085,13 +1958,13 @@ run_story() {
                 # Cleanup trap for temp files on interrupt/error
                 trap "rm -f '$json_output' '$text_output' 2>/dev/null" EXIT INT TERM
 
-                timeout "$STORY_TIMEOUT" claude --dangerously-skip-permissions \
+                timeout "$STORY_TIMEOUT" $engine_cmd --dangerously-skip-permissions \
                     --output-format stream-json \
                     --verbose \
+                    $ENGINE_ARGS \
                     -p "$(cat "$prompt_file")" 2>&1 | \
                     "$SCRIPT_DIR/activity-filter.sh" > "$json_output" &
                 CLAUDE_PID=$!
-                MONITOR_PID=""
 
                 wait $CLAUDE_PID
                 exit_code=$?
@@ -1106,45 +1979,25 @@ run_story() {
                 trap - EXIT INT TERM  # Reset trap after cleanup
                 echo ""  # New line after activity output
             else
-                # Quiet mode or fallback - direct execution without stream-json
-                timeout "$STORY_TIMEOUT" claude --dangerously-skip-permissions \
+                # Quiet mode or fallback - direct execution
+                # Native Claude Code status line handles progress display
+                timeout "$STORY_TIMEOUT" $engine_cmd --dangerously-skip-permissions \
+                    $ENGINE_ARGS \
                     -p "$(cat "$prompt_file")" > "$output_file" 2>&1 &
                 CLAUDE_PID=$!
 
-                if [[ "$QUIET" != true ]]; then
-                    start_activity_monitor "$story_id" &
-                    MONITOR_PID=$!
-                fi
-
                 wait $CLAUDE_PID
                 exit_code=$?
-
-                if [[ -n "$MONITOR_PID" ]]; then
-                    kill $MONITOR_PID 2>/dev/null || true
-                    echo ""  # New line after monitor output
-                fi
             fi
             ;;
         opencode)
             # OpenCode CLI invocation
-            timeout "$STORY_TIMEOUT" opencode --mode=plan -p "$(cat "$prompt_file")" > "$output_file" 2>&1 &
+            # OpenCode has its own native status display
+            timeout "$STORY_TIMEOUT" opencode --mode=plan $ENGINE_ARGS -p "$(cat "$prompt_file")" > "$output_file" 2>&1 &
             CLAUDE_PID=$!
 
-            # Start activity monitor (unless quiet mode)
-            if [[ "$QUIET" != true ]]; then
-                start_activity_monitor "$story_id" &
-                MONITOR_PID=$!
-            fi
-
-            # Wait for OpenCode to finish
             wait $CLAUDE_PID
             exit_code=$?
-
-            # Stop monitor
-            if [[ -n "$MONITOR_PID" ]]; then
-                kill $MONITOR_PID 2>/dev/null || true
-                echo ""  # New line after monitor output
-            fi
             ;;
     esac
 
@@ -1249,6 +2102,190 @@ format_time() {
     fi
 }
 
+# =============================================================================
+# Parallel Execution Mode (v2.0.0 - Claude Code v2.1.17+)
+# =============================================================================
+
+# Get streams from backlog
+get_streams() {
+    jq -r '.streams // []' "$BACKLOG"
+}
+
+# Count active streams
+count_streams() {
+    jq '.streams | length' "$BACKLOG" 2>/dev/null || echo "0"
+}
+
+# Get stories for a specific stream
+get_stream_stories() {
+    local stream_id="$1"
+    jq -r "[.stories[] | select(.tags.streamId == \"$stream_id\")] | length" "$BACKLOG"
+}
+
+# Get stream progress
+get_stream_progress() {
+    local stream_id="$1"
+    local total=$(jq "[.stories[] | select(.tags.streamId == \"$stream_id\")] | length" "$BACKLOG")
+    local passed=$(jq "[.stories[] | select(.tags.streamId == \"$stream_id\" and .passes == true)] | length" "$BACKLOG")
+    echo "$passed/$total"
+}
+
+# Spawn a parallel stream worker
+spawn_stream_worker() {
+    local stream_id="$1"
+    local stream_name="$2"
+    local log_file="$(dirname "$BACKLOG")/stream-${stream_id}.log"
+
+    log_info "  Spawning worker for stream: $stream_name ($stream_id)"
+    log_info "  Log file: $log_file"
+
+    # Run sigma-ralph for this specific stream in background
+    "$SCRIPT_DIR/sigma-ralph.sh" \
+        --workspace="$WORKSPACE" \
+        --backlog="$BACKLOG" \
+        --stream="$stream_id" \
+        --engine="$ENGINE" \
+        --timeout="$STORY_TIMEOUT" \
+        --max-retries="$MAX_RETRIES_PER_STORY" \
+        --failure-mode=skip \
+        --quiet \
+        > "$log_file" 2>&1 &
+
+    local pid=$!
+    echo "$pid"
+}
+
+# Monitor parallel workers
+monitor_parallel_workers() {
+    local -n pids=$1
+    local -n stream_names=$2
+
+    log_info "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+    log_info "⏳ Monitoring ${#pids[@]} parallel workers..."
+    log_info "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+
+    local all_done=false
+    local check_count=0
+
+    while [[ "$all_done" != true ]]; do
+        sleep "$PARALLEL_MONITOR_INTERVAL"
+        check_count=$((check_count + 1))
+
+        all_done=true
+        local active_count=0
+        local completed_count=0
+
+        echo ""
+        log_info "─── Status Check #$check_count ───"
+
+        for i in "${!pids[@]}"; do
+            local pid="${pids[$i]}"
+            local name="${stream_names[$i]}"
+
+            if ps -p "$pid" > /dev/null 2>&1; then
+                all_done=false
+                active_count=$((active_count + 1))
+                log_info "  [$name] RUNNING (PID: $pid)"
+            else
+                completed_count=$((completed_count + 1))
+                # Check exit status
+                if wait "$pid" 2>/dev/null; then
+                    log_success "  [$name] COMPLETED"
+                else
+                    log_warn "  [$name] FINISHED (with errors)"
+                fi
+            fi
+        done
+
+        log_info "Active: $active_count | Completed: $completed_count | Total: ${#pids[@]}"
+        log_info "Overall progress: $(get_progress)"
+    done
+
+    log_success "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+    log_success "🎉 ALL PARALLEL WORKERS COMPLETE!"
+    log_success "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+}
+
+# Run streams in parallel
+run_parallel() {
+    log_info "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+    log_info "🚀 SIGMA-RALPH PARALLEL MODE v${VERSION}"
+    log_info "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+    log_info "Workspace: $WORKSPACE"
+    log_info "Backlog:   $BACKLOG"
+    log_info "Engine:    $ENGINE"
+    log_info "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+
+    # Check if streams exist
+    local stream_count=$(count_streams)
+    if [[ "$stream_count" -eq 0 ]]; then
+        log_error "No streams defined in backlog."
+        log_info "Streams are defined in the 'streams' array of prd.json."
+        log_info "Run Step 11b (PRD Swarm) to generate streams, or use sequential mode."
+        exit 1
+    fi
+
+    # Initialize native tasks for parallel mode too
+    if [[ "$NATIVE_TASKS_ENABLED" == true ]]; then
+        init_native_tasks
+    fi
+
+    log_info "Found $stream_count streams in backlog:"
+
+    # Parse streams and spawn workers
+    local -a worker_pids=()
+    local -a worker_names=()
+
+    while IFS= read -r stream; do
+        local stream_id=$(echo "$stream" | jq -r '.id')
+        local stream_name=$(echo "$stream" | jq -r '.name')
+        local story_count=$(get_stream_stories "$stream_id")
+
+        log_info "  - $stream_name ($stream_id): $story_count stories"
+    done < <(jq -c '.streams[]' "$BACKLOG")
+
+    echo ""
+    log_info "Spawning parallel workers..."
+
+    while IFS= read -r stream; do
+        local stream_id=$(echo "$stream" | jq -r '.id')
+        local stream_name=$(echo "$stream" | jq -r '.name')
+
+        local pid=$(spawn_stream_worker "$stream_id" "$stream_name")
+        worker_pids+=("$pid")
+        worker_names+=("$stream_name")
+    done < <(jq -c '.streams[]' "$BACKLOG")
+
+    echo ""
+
+    # Monitor workers
+    monitor_parallel_workers worker_pids worker_names
+
+    # Final progress report
+    echo ""
+    log_info "Final progress: $(get_progress)"
+
+    # Check for any incomplete stories
+    local remaining=$(jq '[.stories[] | select(.passes == false)] | length' "$BACKLOG")
+    if [[ "$remaining" -gt 0 ]]; then
+        log_warn "$remaining stories still incomplete."
+        log_info "Check individual stream logs for details:"
+        for stream_id in $(jq -r '.streams[].id' "$BACKLOG"); do
+            local log_file="$(dirname "$BACKLOG")/stream-${stream_id}.log"
+            if [[ -f "$log_file" ]]; then
+                log_info "  - $log_file"
+            fi
+        done
+        return 1
+    fi
+
+    return 0
+}
+
+# =============================================================================
+# Sequential Execution Mode (Default)
+# =============================================================================
+
 main_loop() {
     # Record session start time
     SESSION_START_TIME=$(date +%s)
@@ -1262,6 +2299,15 @@ main_loop() {
     log_info "Engine:    $ENGINE"
     log_info "Stream:    ${STREAM:-all}"
     log_info "Progress:  $(get_progress)"
+    if [[ "$SANDBOX_ENABLED" == true ]]; then
+        log_info "Sandbox:   $SANDBOX_PROVIDER (budget: \$$BUDGET_MAX max)"
+    fi
+    if [[ "$NATIVE_TASKS_ENABLED" == true ]]; then
+        log_info "Tasks:     Native (ID: ${TASK_LIST_ID:-auto-generated})"
+    fi
+    if [[ "$SWARM_MODE" == true ]]; then
+        log_info "Swarm:     Enabled (always spawn sub-agents)"
+    fi
     if [[ "$AUTO_RESTART" == true ]]; then
         log_info "Session:   $(format_time $SESSION_TIMEOUT) (auto-restart enabled)"
     fi
@@ -1269,6 +2315,11 @@ main_loop() {
 
     # Initialize progress file with header
     init_progress_file
+
+    # NEW v3.0.0: Initialize native task tracking
+    if [[ "$NATIVE_TASKS_ENABLED" == true ]]; then
+        init_native_tasks
+    fi
 
     local iteration=0
     local consecutive_failures=0
@@ -1340,6 +2391,12 @@ main_loop() {
 main() {
     parse_args "$@"
     validate_requirements
+
+    # NEW v2.0.0: Parallel execution mode
+    if [[ "$PARALLEL" == true ]]; then
+        run_parallel
+        exit $?
+    fi
 
     if [[ "$AUTO_RESTART" == true ]]; then
         # Auto-restart mode: loop until all stories complete

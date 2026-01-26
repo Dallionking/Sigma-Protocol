@@ -18,7 +18,7 @@ if [ -f "$INBOX" ]; then
     echo "---"
     
     # Show new messages
-    jq -r '.messages[] | select(.processed == false) | "  [(.type)] from (.from): (.status // "no status")"' "$INBOX" 2>/dev/null
+    jq -r '.messages[] | select(.processed == false) | "  [\(.type)] from \(.from): \(.status // "no status")"' "$INBOX" 2>/dev/null
     
     # Check for completion messages - suggest gap-analysis
     COMPLETIONS=$(jq '[.messages[] | select(.processed == false and .type == "prd_complete")] | length' "$INBOX" 2>/dev/null || echo "0")

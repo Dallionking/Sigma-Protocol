@@ -24,6 +24,72 @@ import path from 'path';
 import { Listr } from 'listr2';
 
 // ============================================================================
+// Pre-check and Progress Functions (stubs for future implementation)
+// ============================================================================
+
+/**
+ * Run pre-installation checks for prerequisites
+ * @returns {Promise<boolean>} - True if all prerequisites pass
+ * TODO: Implement full pre-check logic for Node.js version, npm version, etc.
+ */
+async function runPreCheck() {
+  // Basic pre-check: verify Node.js and npm are available
+  try {
+    execSync('node --version', { stdio: 'pipe' });
+    execSync('npm --version', { stdio: 'pipe' });
+    return true;
+  } catch {
+    console.log(chalk.red('Error: Node.js or npm not found'));
+    return false;
+  }
+}
+
+/**
+ * Install dependencies with visual progress using Listr2
+ * @param {Array} depsToInstall - Dependencies to install
+ * @returns {Promise<Object>} - Context with success/failed arrays
+ * TODO: Enhance with better progress tracking and parallel installation
+ */
+async function installWithProgress(depsToInstall) {
+  const ctx = { success: [], failed: [] };
+
+  const tasks = new Listr(
+    depsToInstall.map(dep => ({
+      title: `Installing ${dep.displayName || dep.name}`,
+      task: async () => {
+        const command = getInstallCommand(dep);
+        if (!command) {
+          throw new Error(`No install command for ${process.platform}`);
+        }
+        await runInstall(command);
+        ctx.success.push(dep.name);
+      },
+      retry: 1
+    })),
+    {
+      concurrent: false,
+      exitOnError: false,
+      collectErrors: 'minimal'
+    }
+  );
+
+  try {
+    await tasks.run(ctx);
+  } catch {
+    // Errors are collected, not thrown
+  }
+
+  // Collect failed items
+  for (const dep of depsToInstall) {
+    if (!ctx.success.includes(dep.name)) {
+      ctx.failed.push(dep);
+    }
+  }
+
+  return ctx;
+}
+
+// ============================================================================
 // Dependency Definitions
 // ============================================================================
 

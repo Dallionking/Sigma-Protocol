@@ -1,0 +1,39 @@
+# Sigma Protocol - Factory Droid Configuration
+# See: https://docs.factory.ai/configuration
+
+review:
+  # Auto-review settings for PRs
+  auto_review:
+    enabled: true
+    draft: false
+    bot: false
+    ignore_title_keywords:
+      - "WIP"
+      - "DO NOT MERGE"
+      - "[skip review]"
+    ignore_labels:
+      - "droid-skip"
+      - "no-review"
+
+  # Review output options
+  pr_summary: true
+  file_summaries: true
+  tips: true
+
+  # CI/CD integration
+  github_action_repair: true
+
+  # Custom guidelines (merged with AGENTS.md)
+  guidelines:
+    - path: "**/*.tsx"
+      guideline: "Follow React best practices and use Server Components where possible"
+    - path: "**/*.test.*"
+      guideline: "Ensure tests are deterministic and isolated"
+    - path: "docs/**"
+      guideline: "Keep documentation up to date with code changes"
+
+# Model routing (optional)
+# models:
+#   default: claude-sonnet-4-20250514
+#   complex: claude-opus-4-5-20251101
+#   quick: claude-haiku-3-5-20250114

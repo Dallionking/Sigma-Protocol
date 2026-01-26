@@ -1,0 +1,129 @@
+---
+description: "Context engine setup for coding assistants"
+globs: ["docs/**/*.md", "*.md", "CLAUDE.md"]
+alwaysApply: false
+---
+
+# /step-12-context-engine
+
+## Mission
+
+Generate a sophisticated **Context Router** (`.cursorrules`) and a suite of **Domain-Specific Rules** (`.mdc` files).
+
+**Context:** You are the **Chief Context Engineer**. You don't just dump text; you architect *how* the AI behaves by creating a modular, intelligent rule system.
+
+---
+
+
+### Outputs (when detected)
+
+
+### Detection (Phase 1)
+
+```bash
+# 1. Package manager detection (pnpm/yarn/bun/npm)
+# 2. Check for TypeScript (tsconfig.json)
+# 3. Check for linting (eslint.config.*)
+# 4. Check for testing (vitest.config.*, jest.config.*, playwright.config.*)
+# 5. Check for formatting (prettier in package.json)
+```
+
+
+### Core Principle
+
+**Default to uncertainty over false confidence.**
+
+
+## Phase 1: Domain Scanning (The "Context Sensors")
+
+Detect which "Expert Personas" this project needs based on evidence.
+
+**Scan Locations:**
+- Code files: `app/**/*.ts`, `app/**/*.tsx`, `components/**/*.tsx`, `actions/**/*.ts`, `lib/**/*.ts`
+- Config files: `package.json`, `drizzle.config.ts`, `tailwind.config.ts`
+- Docs: `docs/specs/MASTER_PRD.md`, `docs/design/DESIGN-SYSTEM.md`, `docs/prds/*.md`
+
+**Domain Detection Table:**
+
+| Domain | Trigger | Rule to Generate |
+|--------|---------|------------------|
+| Subscription | stripe, lemon, whop, credits | `credit-subscription-model.mdc` |
+| AI/Voice | openai, livekit, assemblyai | `voice-intake-flow.mdc` |
+| Database | supabase, drizzle, convex | `data-models-relationships.mdc` |
+| Marketing | app/(marketing), landing-page | `marketing-personas.mdc` |
+| Design | tailwind, shadcn, framer | `design-system.mdc` |
+| Wireframes | /wireframes/ directory | `wireframe-visual-design.mdc` |
+| PRD/BDD | Given/When/Then, Appetite: | `prd-generation-algorithm.mdc` |
+| Shape Up | Betting Table, Rabbit Holes | `shape-up-workflow.mdc` |
+| Animation Quality | 60fps, Animation Budget | `animation-quality.mdc` |
+| State Transitions | State Transition Performance | `state-transition-quality.mdc` |
+| Bulletproof Gates | TRACEABILITY-MATRIX.md | `prd-traceability.mdc` |
+| Backend Completeness | actions/**/*.ts, use server | `backend-completeness.mdc` |
+| Agentic Readiness | File Manifest, SECTION 15 | `agentic-readiness.mdc` |
+| Full Stack | FULL STACK OVERVIEW | `full-stack-prd-enforcement.mdc` |
+| Boilerplate | .sigma/boilerplate.json | `boilerplate-patterns.mdc` |
+| Agentic Tools | Any project (always) | `.sigma/tools/` directory |
+
+---
+
+
+## Phase 2: Modular Rule Generation (The "Expert Modules")
+
+For each detected domain, generate the `.mdc` file using the **Golden Templates**.
+
+
+### 2.1 Core Rules (Always Generated)
+- `project-context.mdc` — Project Name, Vision, Value Prop from MASTER_PRD.md
+- `tech-stack.mdc` — Specific versions from stack-profile.json
+- `coding-standards.mdc` — TS Strict, Naming Conventions, Testing
+- `project-governance.mdc` — Step 1-12 Workflow enforcement
+
+
+### 2.3 Animation & State Quality Rules
+- `animation-quality.mdc` — 60fps target, GPU properties only, reduced motion
+- `state-transition-quality.mdc` — Transition performance, prohibited properties
+- `prd-traceability.mdc` — PRD feature-to-screen verification
+
+
+## Phase 3: The Master Context Router (.cursorrules)
+
+Generate the root `.cursorrules` file as a **Router** that dynamically imports `.mdc` files.
+
+
+## Phase 3.5: Generate CLAUDE.md with Swarm-First Section
+
+**Always generate or update `CLAUDE.md` with the swarm-first philosophy section.**
+
+
+## Workflow
+[Project workflow steps]
+
+
+## Phase 4: Execution Logic
+
+1. **Scan:** Identify active domains
+2. **Generate Modules:** Write `.mdc` files to `.cursor/rules/`
+3. **Generate Router:** Write `.cursorrules` to root
+4. **Generate CLAUDE.md:** Write with swarm-first section and placeholders
+5. **Verify:** Check that `@import` paths match actual files
+
+---
+
+
+## Step 12 Verification Schema
+
+
+### Content Quality (25 points)
+
+| Check | Description | Points |
+|-------|-------------|--------|
+| has_pattern:.cursorrules:@import | Context routing configured | 5 |
+| file_count:/.cursor/rules/:3 | At least 3 rule files generated | 5 |
+| has_pattern:CLAUDE.md:Never work solo | Swarm mandate present | 5 |
+| has_pattern:CLAUDE.md:sigma-planner | Agent registry present | 5 |
+| has_pattern:CLAUDE.md:SKILLS_BY_CATEGORY | Skills placeholder for Step 13 | 5 |
+
+
+---
+
+*This is a condensed version. See `templates/steps/step-12-context-engine.md` for full documentation.*

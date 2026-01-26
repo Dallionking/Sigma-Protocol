@@ -1,10 +1,24 @@
 # Sigma Protocol - Claude Code Configuration
 
+**Version:** 5.0
+**Last Updated:** 2026-01-23
+
 ## Overview
 
 Sigma Protocol is a **platform-agnostic 13-step product development methodology** for AI-assisted development.
 
 This CLAUDE.md orchestrates the Sigma workflow in Claude Code, providing access to all step commands, agents, and skills.
+
+### Supported Platforms
+
+| Platform | Configuration | Skills | Status |
+|----------|---------------|--------|--------|
+| **Claude Code** | `.claude/` | 162 | Production |
+| **OpenCode** | `.opencode/` | 149 | Production |
+| **Cursor** | `.cursor/rules/` | 149 | Production |
+| **Factory Droid** | `.factory/` | 158 | New |
+
+See [PLATFORMS.md](docs/PLATFORMS.md) for detailed platform configuration.
 
 ## Quick Start
 
@@ -83,6 +97,36 @@ claude "Run step-5b-prd-to-json --all-prds"
 | `/pr-review` | Pull request review |
 | `/sprint-plan` | Sprint planning |
 | `/status` | Project status check |
+| `/daily-standup` | Daily standup report |
+| `/backlog-groom` | Backlog grooming |
+
+### Deploy Commands
+| Command | Description |
+|---------|-------------|
+| `/ship-stage` | Deploy to staging |
+| `/ship-prod` | Deploy to production |
+| `/ship-check` | Pre-deployment validation |
+| `/client-handoff` | Generate client handoff docs |
+
+### Generator Commands
+| Command | Description |
+|---------|-------------|
+| `/new-feature` | Create new feature PRD |
+| `/new-project` | Scaffold new project |
+| `/scaffold` | Scaffold feature code |
+| `/proposal` | Generate client proposal |
+| `/contract` | Generate contract |
+
+### Marketing Commands
+| Command | Description |
+|---------|-------------|
+| `/01-market-research` | Market research & competitive analysis |
+| `/02-customer-avatar` | Customer avatar development |
+| `/04-offer-architect` | Hormozi offer architecture |
+| `/07-landing-page-copy` | Landing page copywriting |
+| `/08-ads-strategy` | Multi-platform ad strategy |
+
+> **Note:** 185 total commands available. Run `/help` to see all commands.
 
 
 ## Workflow
@@ -142,5 +186,13 @@ Commands pause for human approval at critical points. Never skip these.
 Each step has verification criteria. Target: 80+/100 score.
 
 ## Documentation
+
+- [WORKFLOW-OVERVIEW.md](docs/WORKFLOW-OVERVIEW.md) - Complete workflow guide
+- [FOUNDATION-SKILLS.md](docs/FOUNDATION-SKILLS.md) - 39 Foundation skills (163 total with external)
+- [EXTERNAL-SKILLS.md](docs/EXTERNAL-SKILLS.md) - 120+ external skills
+- [PLATFORMS.md](docs/PLATFORMS.md) - Platform configurations
+- [FACTORY-DROID-INTEGRATION.md](docs/FACTORY-DROID-INTEGRATION.md) - Factory Droid setup
+- [RALPH-MODE.md](docs/RALPH-MODE.md) - Autonomous implementation
+- [RALPH-SKILL-REGISTRY.md](docs/RALPH-SKILL-REGISTRY.md) - Dynamic skill matching
 
 See https://github.com/dallionking/sigma-protocol for full documentation.

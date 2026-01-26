@@ -1,0 +1,699 @@
+---
+name: prompt-handoff
+description: "Generate a comprehensive handoff prompt for continuing work in a new chat session when Cursor loops or hits context limits"
+model: claude-sonnet-4-5-20241022
+tools:
+  - Read
+  - Write
+  - Edit
+  - Bash
+  - WebFetch
+
+---
+
+# prompt-handoff
+
+**Source:** Sigma Protocol ops module
+**Version:** 1.0.0
+
+---
+
+
+# @prompt-handoff
+
+**Generate session continuity prompt for switching to fresh chat**
+
+## 🎯 Purpose
+
+When Cursor/Claude starts looping, switches to auto mode, or hits context limits mid-development, generate a comprehensive handoff prompt that captures:
+- Current task and objectives
+- What's been implemented (files, features)
+- What's remaining (TODOs, blockers)
+- Git context (branch, changes, worktree)
+- Technical decisions and key context
+- Why you're switching sessions
+
+Copy this prompt into a new chat and pick up exactly where you left off with zero context loss.
+
+---
+
+## 📋 Command Usage
+
+### **Quick Handoff**
+```bash
+@prompt-handoff
+```
+
+### **With Format Options**
+```bash
+@prompt-handoff --format=markdown    # Markdown format (default)
+@prompt-handoff --format=text        # Plain text
+@prompt-handoff --format=compact     # Condensed version
+```
+
+### **Auto-copy to Clipboard**
+```bash
+@prompt-handoff --copy
+```
+
+---
+
+## 🎭 Parameters
+
+| Parameter | Values | Description | Default |
+|-----------|--------|-------------|---------|
+| `--format` | `markdown`, `text`, `compact` | Output format | `markdown` |
+| `--copy` | boolean | Auto-copy to clipboard | `false` |
+| `--include-code` | boolean | Include code snippets of key changes | `false` |
+
+---
+
+<goal>
+You are the **Session Handoff Generator** - creating perfect continuity between chat sessions.
+
+## Implementation Steps
+
+### Step 1: Capture Current Context
+
+**Scan for active work indicators:**
+
+```typescript
+async function captureContext() {
+  const context = {
+    // Check for TODO markers in recent conversation
+    activeTasks: await detectActiveTasks(),
+    
+    // Check recent file modifications (last 2 hours)
+    recentFiles: await getRecentlyModified(2 * 60 * 60 * 1000),
+    
+    // Check for error patterns in terminal
+    recentErrors: await scanTerminalErrors(),
+    
+    // Detect current feature/PRD work
+    currentFeature: await detectCurrentFeature(),
+  };
+  
+  return context;
+}
+```
+
+---
+
+### Step 2: Git Status Analysis
+
+**Capture comprehensive git state:**
+
+```bash
+# Current branch
+git branch --show-current
+
+# Worktree status (if applicable)
+git worktree list
+
+# Uncommitted changes
+git status --porcelain
+
+# Recent commits (last 5)
+git log --oneline -5
+
+# Stashed changes
+git stash list
+
+# Untracked files
+git ls-files --others --exclude-standard
+```
+
+---
+
+### Step 3: Implementation Progress
+
+**Analyze what's been completed:**
+
+1. **Files Created/Modified:**
+   - Scan git status for new/modified files
+   - Group by category (components, pages, actions, schema, etc.)
+   - Include line count changes
+
+2. **Features Completed:**
+   - Check for TODO markers that are ✅
+   - Look for "DONE" or "COMPLETED" comments
+   - Cross-reference with PRD checklist if exists
+
+3. **Tests Added:**
+   - Count new test files
+   - Check test coverage if available
+
+---
+
+### Step 4: Remaining Work
+
+**Identify what's left:**
+
+1. **TODO Items:**
+   - Scan for `TODO:`, `FIXME:`, `HACK:` comments
+   - Extract inline task markers
+   - Check for `.todo` or task files
+
+2. **Known Issues:**
+   - Check for `BUG:`, `XXX:` comments
+   - Terminal error patterns
+   - Linter errors
+
+3. **Next Steps:**
+   - Based on PRD checklist
+   - Based on conversation context
+   - Based on incomplete features
+
+---
+
+### Step 5: Technical Context
+
+**Capture key technical decisions:**
+
+1. **Architecture Decisions:**
+   - New dependencies added (`package.json` diff)
+   - Database schema changes
+   - API endpoints created
+
+2. **Key File Paths:**
+   - Most frequently modified files
+   - Critical files for current feature
+   - Files that need attention
+
+3. **Environment:**
+   - Node version
+   - Package manager
+   - Any new env vars needed
+
+---
+
+### Step 6: Session Metadata
+
+**Why you're switching:**
+
+```typescript
+const switchReasons = {
+  looping: 'Cursor/Claude was repeating the same attempts',
+  context_limit: 'Approaching context window limit',
+  error_stuck: 'Stuck on an error, need fresh perspective',
+  auto_mode: 'Switched to auto mode unexpectedly',
+  manual: 'User-initiated context refresh',
+};
+```
+
+---
+
+## 📦 Output Format
+
+### Markdown Format (Default)
+
+```markdown
+# 🔄 Session Handoff Prompt
+
+**Date:** 2025-12-23 14:30 PST  
+**Reason:** Context limit approaching  
+**Branch:** feature/user-authentication  
+
+---
+
+## 📍 Current Objective
+
+Implementing user authentication feature (F01-AUTHENTICATION.md PRD). Working on OAuth integration with Google and GitHub providers.
+
+---
+
+## ✅ Completed in This Session
+
+### Files Created
+- `app/auth/callback/route.ts` (87 lines) - OAuth callback handler
+- `lib/auth/providers.ts` (145 lines) - Provider configurations
+- `components/auth/LoginButton.tsx` (52 lines) - Login UI component
+- `db/schema/users.ts` (34 lines) - User schema with OAuth fields
+
+### Files Modified
+- `app/api/auth/[...nextauth]/route.ts` (added Google/GitHub providers)
+- `lib/supabase/client.ts` (added auth helper functions)
+- `.env.example` (added GOOGLE_CLIENT_ID, GITHUB_CLIENT_ID)
+
+### Features Implemented
+- ✅ Google OAuth flow (working)
+- ✅ GitHub OAuth flow (working)
+- ✅ User session management
+- ✅ Redirect after auth
+- ⚠️ Email verification (partially done, needs testing)
+
+### Tests Added
+- `__tests__/auth/providers.test.ts` - Provider config tests
+- Coverage: 78% on auth module
+
+---
+
+## 🚧 Remaining Work
+
+### High Priority
+1. **Email Verification Flow**
+   - [ ] Create email verification template
+   - [ ] Add verification token to DB schema
+   - [ ] Implement token validation endpoint
+   - [ ] Add resend verification button
+
+2. **Error Handling**
+   - [ ] OAuth error states (provider rejection, network failures)
+   - [ ] User-friendly error messages
+   - [ ] Rate limiting on auth endpoints
+
+3. **Session Persistence**
+   - [ ] Implement refresh token rotation
+   - [ ] Add "remember me" functionality
+
+### Medium Priority
+- [ ] Add password reset flow
+- [ ] Implement 2FA setup UI
+- [ ] Add user profile picture from OAuth
+
+### Low Priority / Nice to Have
+- [ ] Social profile sync (bio, username)
+- [ ] Multiple account linking
+- [ ] Auth audit log
+
+---
+
+## 🐛 Known Issues
+
+1. **OAuth redirect loop on localhost**
+   - Symptom: After OAuth, redirects back to /login instead of /dashboard
+   - Potential cause: Next.js middleware not catching the callback
+   - Workaround: Testing on Vercel preview works fine
+   - File: `middleware.ts` line 23-45
+
+2. **Type error in auth callback**
+   - File: `app/auth/callback/route.ts:45`
+   - Error: `Property 'user' does not exist on type 'Session | null'`
+   - Status: Suppressed with @ts-ignore, needs proper typing
+
+3. **Linter warnings**
+   - 3 unused imports in `lib/auth/providers.ts`
+   - Missing alt text on LoginButton icon
+
+---
+
+## 🔧 Technical Context
+
+### Architecture Decisions
+- Using NextAuth.js v5 (App Router compatible)
+- Supabase for user storage, NextAuth for session management
+- JWT strategy (not database sessions)
+
+### Key Dependencies Added
+```json
+{
+  "next-auth": "^5.0.0-beta.4",
+  "@auth/supabase-adapter": "^1.0.0",
+  "jose": "^5.1.3"
+}
+```
+
+### Database Schema Changes
+- Added `users` table with OAuth fields (provider, providerId, emailVerified)
+- Added `verification_tokens` table
+- Migration: `db/migrations/0003_add_auth_tables.sql`
+
+### Environment Variables Needed
+```env
+NEXTAUTH_URL=http://localhost:3000
+NEXTAUTH_SECRET=<generated>
+GOOGLE_CLIENT_ID=<from Google Console>
+GOOGLE_CLIENT_SECRET=<from Google Console>
+GITHUB_CLIENT_ID=<from GitHub OAuth Apps>
+GITHUB_CLIENT_SECRET=<from GitHub OAuth Apps>
+```
+
+### Critical Files
+- `app/auth/callback/route.ts` - Main OAuth callback (needs attention)
+- `middleware.ts` - Auth middleware (redirect logic)
+- `lib/auth/session.ts` - Session helpers
+- `app/(auth)/login/page.tsx` - Login page
+
+---
+
+## 💾 Git Status
+
+**Current Branch:** `feature/user-authentication`  
+**Worktree:** None  
+
+**Uncommitted Changes (12 files):**
+```
+M  app/auth/callback/route.ts
+M  lib/auth/providers.ts
+M  lib/supabase/client.ts
+A  components/auth/LoginButton.tsx
+A  db/schema/users.ts
+M  .env.example
+M  middleware.ts
+A  __tests__/auth/providers.test.ts
+M  app/(auth)/login/page.tsx
+M  package.json
+M  pnpm-lock.yaml
+?? db/migrations/0003_add_auth_tables.sql
+```
+
+**Recent Commits:**
+```
+a3f7c21 feat: add OAuth provider configurations
+b8e4d12 feat: create auth callback route structure
+c5a9f23 chore: install next-auth and dependencies
+```
+
+**No stashed changes**
+
+---
+
+## 🎯 Recommended Next Steps
+
+1. **Fix the OAuth redirect loop** (blocking)
+   - Debug middleware auth matcher
+   - Test callback URL configuration
+   - Check NextAuth callback URL handling
+
+2. **Complete email verification** (high priority)
+   - Implement verification endpoint
+   - Create email template with Resend
+   - Add UI for verification state
+
+3. **Clean up type errors and linter warnings**
+   - Fix Session type in callback route
+   - Remove unused imports
+   - Add missing alt texts
+
+---
+
+## 🔄 Switching Context Because
+
+Cursor was looping on the OAuth redirect issue - attempted 4 different middleware configurations without success. The callback route is receiving the OAuth code correctly, but the redirect after session creation keeps going back to /login instead of /dashboard.
+
+**Fresh perspective needed on:**
+- Next.js App Router middleware auth matching
+- NextAuth redirect behavior with Supabase adapter
+
+---
+
+## 📝 Additional Notes
+
+- OAuth works perfectly on Vercel preview (preview-branch.vercel.app)
+- Issue only reproduces on localhost:3000
+- May be related to Next.js dev server vs production behavior
+- User session IS created (confirmed in Supabase), just redirect is wrong
+
+---
+
+**Copy this entire prompt into a new chat to continue seamlessly.**
+```
+
+---
+
+### Compact Format
+
+```text
+HANDOFF: 2025-12-23 14:30 | Branch: feature/user-authentication
+
+OBJECTIVE: Implementing OAuth authentication (Google/GitHub)
+
+DONE:
+✅ OAuth providers configured (Google, GitHub)
+✅ Callback route + session handling
+✅ Login UI components
+✅ User schema with OAuth fields
+
+TODO:
+⬜ Email verification flow
+⬜ Fix OAuth redirect loop on localhost
+⬜ Error handling for OAuth failures
+⬜ Refresh token rotation
+
+BLOCKERS:
+🐛 Redirect loop on localhost (works on Vercel)
+   File: middleware.ts:23-45
+   
+GIT:
+Branch: feature/user-authentication
+Modified: 12 files
+Recent: "feat: add OAuth provider configurations"
+
+KEY FILES:
+- app/auth/callback/route.ts (needs debugging)
+- middleware.ts (auth matcher issue)
+- lib/auth/session.ts
+
+SWITCHING BECAUSE:
+Cursor looping on middleware config - need fresh eyes
+
+NEXT: Debug middleware auth matcher, complete email verification
+```
+
+---
+
+## 🛠️ Implementation Logic
+
+### File Change Detection
+
+```typescript
+async function getRecentChanges() {
+  // Get uncommitted changes
+  const uncommitted = await exec('git status --porcelain');
+  
+  // Get files modified in last 2 hours
+  const recent = await exec('git log --since="2 hours ago" --name-status --oneline');
+  
+  // Get file line counts
+  const files = parseGitStatus(uncommitted);
+  const withStats = await Promise.all(
+    files.map(async (file) => ({
+      path: file,
+      lines: await getLineCount(file),
+      category: categorizeFile(file),
+      status: file.status, // A, M, D, ??
+    }))
+  );
+  
+  return groupBy(withStats, 'category');
+}
+```
+
+### TODO Extraction
+
+```typescript
+async function extractTODOs() {
+  const patterns = [
+    /TODO:/gi,
+    /FIXME:/gi,
+    /HACK:/gi,
+    /XXX:/gi,
+    /BUG:/gi,
+    /\[ \]/g, // Markdown checkboxes
+  ];
+  
+  const recentFiles = await getRecentlyModified();
+  const todos = [];
+  
+  for (const file of recentFiles) {
+    const content = await readFile(file);
+    for (const pattern of patterns) {
+      const matches = content.matchAll(pattern);
+      for (const match of matches) {
+        todos.push({
+          file,
+          line: getLineNumber(content, match.index),
+          text: extractTODOText(content, match.index),
+          type: match[0].replace(':', ''),
+        });
+      }
+    }
+  }
+  
+  return groupBy(todos, 'type');
+}
+```
+
+### Feature Detection
+
+```typescript
+async function detectCurrentFeature() {
+  // Check for open PRD files
+  const prdPattern = /docs\/prds\/F\d+-.*\.md/;
+  const recentFiles = await getRecentlyModified();
+  const prdFiles = recentFiles.filter(f => prdPattern.test(f));
+  
+  if (prdFiles.length > 0) {
+    return extractFeatureName(prdFiles[0]);
+  }
+  
+  // Check branch name
+  const branch = await exec('git branch --show-current');
+  if (branch.includes('feature/') || branch.includes('feat/')) {
+    return formatFeatureName(branch);
+  }
+  
+  // Check recent commit messages
+  const commits = await exec('git log -5 --oneline');
+  const featRegex = /feat(?:ure)?[:\(](.+?)[\)]/i;
+  const match = commits.match(featRegex);
+  if (match) {
+    return match[1].trim();
+  }
+  
+  return 'Unknown feature (manual context needed)';
+}
+```
+
+### Switch Reason Detection
+
+```typescript
+async function detectSwitchReason() {
+  // Heuristics for why user is switching
+  const reasons = [];
+  
+  // Check conversation length (if accessible)
+  // This would be in context if available
+  
+  // Check for error patterns in recent terminal
+  const terminalErrors = await scanTerminalErrors();
+  if (terminalErrors.length > 3) {
+    reasons.push('error_stuck');
+  }
+  
+  // Check for repeated file modifications
+  const changes = await getGitLog('--since="30 minutes ago"');
+  const fileFrequency = countFileFrequency(changes);
+  const mostEdited = Object.entries(fileFrequency).sort((a, b) => b[1] - a[1])[0];
+  
+  if (mostEdited && mostEdited[1] > 5) {
+    reasons.push('looping');
+  }
+  
+  // Default
+  if (reasons.length === 0) {
+    reasons.push('manual');
+  }
+  
+  return reasons;
+}
+```
+
+---
+
+## 📋 Checklist for Good Handoff
+
+Before generating handoff, ensure:
+
+- [ ] Git status captured (branch, uncommitted, recent commits)
+- [ ] Recent file changes identified (last 2 hours)
+- [ ] TODO/FIXME comments extracted
+- [ ] Current feature/PRD identified
+- [ ] Known errors documented
+- [ ] Key files highlighted
+- [ ] Technical context captured (dependencies, schema changes)
+- [ ] Next steps clearly defined
+- [ ] Switch reason documented
+
+---
+
+## 🎯 Success Criteria
+
+A good handoff prompt should enable the next session to:
+1. **Understand immediately** what you're working on
+2. **See clearly** what's done vs. what's remaining
+3. **Avoid repeating** failed attempts
+4. **Continue seamlessly** without asking clarifying questions
+5. **Access quickly** the most important files and context
+
+**Quality Check:**
+- Can you paste this into a new chat and start coding immediately? ✅
+- Does it capture the "gotchas" and blockers? ✅
+- Are file paths and line numbers specific? ✅
+- Is the git state clear? ✅
+
+---
+
+## 💡 Pro Tips
+
+1. **Run before switching** - Don't wait until context is maxed out
+2. **Save handoffs** - Keep a `/docs/handoffs/` folder with timestamped handoffs
+3. **Git commit first** - Clean git state makes handoffs clearer
+4. **Include blockers** - Document what NOT to try again
+5. **Be specific** - File paths, line numbers, error messages
+6. **Update TODOs** - Keep inline TODOs current as you work
+
+---
+
+## 🔗 Related Commands
+
+- `@status` - Check overall SSS workflow progress
+- `@analyze` - Full codebase health analysis
+- `@implement-prd` - Continue PRD implementation
+- `@client-handoff` - Full project delivery handoff (different use case)
+
+---
+
+## 🎬 Example Use Cases
+
+### Use Case 1: Context Limit
+```bash
+# You've been working for 2 hours, chat is huge
+@prompt-handoff --copy
+
+# Paste into new chat:
+"I'm continuing work on authentication. Here's where I left off:
+[handoff prompt]"
+```
+
+### Use Case 2: Cursor Looping
+```bash
+# Cursor tried same fix 5 times
+@prompt-handoff
+
+# Shows what was attempted, helps new session avoid same path
+```
+
+### Use Case 3: Daily Handoff
+```bash
+# End of day, want to continue tomorrow
+@prompt-handoff --format=compact
+
+# Quick summary for tomorrow's first chat
+```
+
+### Use Case 4: Switching Features
+```bash
+# Need to context switch to urgent bug
+@prompt-handoff
+
+# Save current state, switch to bug fix
+# Later: paste handoff to resume feature work
+```
+
+---
+
+</goal>
+
+---
+
+## 🔧 Technical Notes for AI
+
+**When implementing this command:**
+
+1. **Git commands are safe** - All git operations are read-only
+2. **Terminal scanning** - Look for terminal files in workspace
+3. **File recency** - Use file modification times (mtime)
+4. **Smart grouping** - Group files by directory/category (components, pages, lib, etc.)
+5. **Context awareness** - If conversation context available, extract active TODOs from it
+6. **Format flexibility** - Support markdown (rich), text (simple), compact (minimal)
+7. **Clipboard** - If `--copy` flag, output instructions for user to copy (can't directly access clipboard)
+
+**Error Handling:**
+- If not in git repo → Still generate handoff with file changes
+- If no recent changes → Warn user, generate minimal handoff
+- If no git history → Skip git section, focus on current state
+
+---
+
+$END$

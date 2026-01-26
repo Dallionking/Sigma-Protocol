@@ -1,0 +1,509 @@
+---
+name: lint-commands
+description: "Sigma ops command: lint-commands"
+model: claude-sonnet-4-5-20241022
+tools:
+  - Read
+  - Write
+  - Edit
+  - Bash
+  - WebFetch
+
+---
+
+# lint-commands
+
+**Source:** Sigma Protocol ops module
+**Version:** 1.0.0
+
+---
+
+---
+version: "2.0.0"
+last_updated: "2025-12-29"
+changelog:
+  - "2.0.0: Added Epistemic Gate enforcement - validates tier-based gate requirements"
+  - "1.0.0: Initial release - command file validation"
+description: "Validate command files for consistency, completeness, correctness, and Epistemic Gate compliance"
+allowed-tools:
+  # OTHER TOOLS
+  - run_terminal_cmd
+  - read_file
+  - list_dir
+  - grep
+parameters:
+  - --fix
+  - --strict
+  - --verbose
+  - --skip-epistemic
+---
+
+# /lint-commands
+
+**Validate all SSS command files for consistency and quality**
+
+## 🎯 Purpose
+
+**Role Context:** You are a **Technical Documentation Auditor** ensuring command files meet SSS standards.
+
+This command:
+- Validates YAML frontmatter completeness
+- Checks for proper H1 headers
+- Verifies consistent command naming (`/` vs `@`)
+- Validates parameter documentation
+- Checks for required sections
+- Detects empty sections
+- Validates file references
+- Reports issues with severity levels
+
+**Business Impact:**
+- **Maintain quality** through automated validation
+- **Catch errors early** before commands are used
+- **Enforce consistency** across all commands
+- **Enable CI/CD** integration
+
+---
+
+## 📋 Command Usage
+
+```bash
+# Basic validation
+/lint-commands
+
+# Verbose output (show all issues)
+/lint-commands --verbose
+
+# Strict mode (fail on warnings)
+/lint-commands --strict
+
+# With fix suggestions
+/lint-commands --fix
+```
+
+### Parameters
+
+| Parameter | Description | Default |
+|-----------|-------------|---------|
+| `--fix` | Show fix suggestions for issues | false |
+| `--strict` | Fail on warnings (not just errors) | false |
+| `--verbose` | Show detailed validation output | false |
+
+---
+
+## 🔄 Execution Flow
+
+### Phase 1: Scan Command Files
+
+Scans these directories:
+- `.cursor/commands/`
+- `steps/`
+- `audit/`
+- `deploy/`
+- `dev/`
+- `generators/`
+- `marketing/`
+- `ops/`
+
+For these file types:
+- `.md` (markdown commands)
+- No extension (extensionless markdown)
+- `.mdc` (rule files)
+
+---
+
+### Phase 2: Validation Checks
+
+For each command file:
+
+1. **Frontmatter Validation**
+   - Has YAML frontmatter (between `---` markers)
+   - Has `version` field
+   - Has `description` field
+   - Has `allowed-tools` list (warning if missing)
+   - Has `changelog` (optional)
+
+2. **Header Validation**
+   - Has H1 header after frontmatter
+   - Header starts with `# /` or `# @`
+   - Header name matches filename
+
+3. **Consistency Checks**
+   - Consistent command prefix (`/` or `@`, not mixed)
+   - No duplicate section headings
+
+4. **Structure Validation**
+   - Has "Purpose" section
+   - Has "Command Usage" section
+   - Has "Outputs" section
+   - No empty sections
+
+5. **Parameter Validation**
+   - All declared parameters are documented
+   - Parameter table exists if parameters declared
+
+6. **Reference Validation**
+   - File paths reference valid locations
+   - Command references use correct names
+
+---
+
+### Phase 3: Report Generation
+
+**Terminal Output:**
+
+```
+🔍 SSS Commands Linter
+
+📁 Checking .cursor/commands/
+  ✅ step-1-ideation.md
+  ✅ step-2-architecture.md
+  ⚠️  verify-prd.md - 2 warnings
+  ❌ old-command.md - 1 error, 1 warning
+
+📁 Checking ops/
+  ✅ backlog-groom
+  ✅ sprint-plan
+  ✅ daily-standup
+  ✅ job-status
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+📊 Lint Summary
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Files Checked: 42
+Errors:        1
+Warnings:      3
+Info:          0
+
+📋 Issues by Category:
+   Header: 1 errors, 0 warnings
+   Frontmatter: 0 errors, 2 warnings
+   Structure: 0 errors, 1 warnings
+
+🔴 Files with most issues:
+   old-command.md: 2 issues
+   verify-prd.md: 2 issues
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+❌ Lint failed (1 errors)
+```
+
+**Verbose Mode:**
+
+Shows each issue with:
+- Severity (Error/Warning/Info)
+- Category (Frontmatter/Header/Structure/etc.)
+- Message
+- Line number (if applicable)
+- Fix suggestion
+
+---
+
+## 📤 Outputs
+
+### Console Output
+
+- Summary of files checked
+- Issues found by severity
+- Issues grouped by category
+- Top offending files
+- Exit code (0 = success, 1 = failure)
+
+### No Files Written
+
+This is a read-only validation command.
+
+---
+
+## 🎯 Success Criteria
+
+**Pass Conditions:**
+- ✅ Zero errors found
+- ⚠️ Warnings allowed (unless `--strict`)
+
+**Fail Conditions:**
+- ❌ Any errors found
+- ❌ Warnings found (if `--strict` mode)
+
+---
+
+## 🔄 Integration Points
+
+### CI/CD Integration
+
+```yaml
+# .github/workflows/lint.yml
+name: Lint Commands
+on: [push, pull_request]
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Lint SSS Commands
+        run: pwsh scripts/lint-sss-commands.ps1 --strict
+```
+
+### Pre-commit Hook
+
+```bash
+# .git/hooks/pre-commit
+#!/bin/sh
+pwsh scripts/lint-sss-commands.ps1 --strict
+```
+
+### Part of Installation
+
+```bash
+# After installing commands
+./scripts/install-sss-commands.ps1
+./scripts/lint-sss-commands.ps1 --verbose
+```
+
+---
+
+## 💡 Tips
+
+### Run After Changes
+
+```bash
+# After editing commands
+/lint-commands --verbose
+```
+
+### Before Committing
+
+```bash
+# Ensure all commands valid
+/lint-commands --strict
+```
+
+### Find Specific Issues
+
+```bash
+# Use verbose to see all details
+/lint-commands --verbose | grep "Header"
+```
+
+---
+
+## 🚨 Common Issues
+
+### "Missing H1 header"
+**Fix:** Add `# /command-name` after frontmatter
+
+### "Header doesn't match filename"
+**Fix:** Rename file or update header to match
+
+### "Mixed command prefixes"
+**Fix:** Choose `/` or `@` and use consistently
+
+### "Missing parameter documentation"
+**Fix:** Add parameter to table in "Parameters" section
+
+---
+
+## 📊 Validation Rules Reference
+
+| Rule | Severity | Description |
+|------|----------|-------------|
+| No frontmatter | Error | File must have YAML frontmatter |
+| Missing version | Error | Frontmatter must have `version` |
+| Missing description | Error | Frontmatter must have `description` |
+| Missing allowed-tools | Warning | Should specify allowed tools |
+| No H1 header | Error | Must have `# /command-name` header |
+| Header mismatch | Warning | Header should match filename |
+| Mixed prefixes | Warning | Use `/` or `@` consistently |
+| Empty sections | Warning | Sections should have content |
+| Undocumented parameters | Warning | Parameters should be in table |
+| Missing Purpose | Warning | Should have Purpose section |
+| Missing Usage | Warning | Should have Command Usage section |
+
+---
+
+## 🧠 Epistemic Gate Validation
+
+**When `--strict` is enabled, validate Epistemic Gate compliance based on command tier.**
+
+### Tier Detection
+
+```typescript
+function detectCommandTier(filePath: string): number {
+  const folder = path.dirname(filePath).split('/').pop();
+  const name = path.basename(filePath);
+  
+  // Tier 1: Decision commands
+  const tier1Steps = ['step-1', 'step-1.5', 'step-2', 'step-8', 'step-10', 'step-11'];
+  const tier1Dev = ['plan', 'implement-prd'];
+  const tier1Generators = ['new-project', 'scaffold'];
+  
+  if (folder === 'steps' && tier1Steps.some(s => name.includes(s))) return 1;
+  if (folder === 'dev' && tier1Dev.includes(name)) return 1;
+  if (folder === 'generators' && tier1Generators.includes(name)) return 1;
+  
+  // Tier 2: Analysis commands
+  if (folder === 'audit') return 2;
+  if (folder === 'ops' && ['status', 'pr-review', 'qa-plan', 'qa-report', 'qa-run'].some(s => name.includes(s))) return 2;
+  if (folder === 'generators' && name === 'estimation-engine') return 2;
+  
+  // Tier 3: Execution commands
+  if (folder === 'deploy') return 3;
+  if (folder === 'ops') return 3;
+  if (folder === 'generators' && ['changelog', 'api-docs-gen', 'test-gen'].some(s => name.includes(s))) return 3;
+  
+  // Tier 4: Content commands
+  if (folder === 'marketing') return 4;
+  if (['contract', 'nda', 'proposal'].includes(name)) return 4;
+  
+  return 2; // Default to Tier 2
+}
+```
+
+### Tier-Based Validation Rules
+
+```typescript
+interface EpistemicRule {
+  tier: number;
+  requiredPatterns: RegExp[];
+  warningPatterns: RegExp[];
+  description: string;
+}
+
+const epistemicRules: EpistemicRule[] = [
+  {
+    tier: 1,
+    requiredPatterns: [
+      /Epistemic Confidence Gate/i,
+      /Evidence.*Requirements/i,
+      /Red-Team|Failure Mode/i,
+      /Falsifiability/i,
+      /EPISTEMIC-GATE-START/,
+    ],
+    warningPatterns: [],
+    description: 'Tier 1 requires full Epistemic Gate block',
+  },
+  {
+    tier: 2,
+    requiredPatterns: [
+      /Evidence.*Requirements|Evidence Ledger/i,
+    ],
+    warningPatterns: [
+      /EPISTEMIC-GATE-START/,
+    ],
+    description: 'Tier 2 requires Evidence Ledger',
+  },
+  {
+    tier: 3,
+    requiredPatterns: [],
+    warningPatterns: [
+      /Evidence/i,
+    ],
+    description: 'Tier 3 should verify external claims',
+  },
+  {
+    tier: 4,
+    requiredPatterns: [],
+    warningPatterns: [],
+    description: 'Tier 4 has no epistemic requirements',
+  },
+];
+```
+
+### Validation Function
+
+```typescript
+async function validateEpistemicGate(filePath: string, content: string): Promise<LintResult[]> {
+  const results: LintResult[] = [];
+  const tier = detectCommandTier(filePath);
+  const rule = epistemicRules.find(r => r.tier === tier);
+  
+  if (!rule) return results;
+  
+  // Check required patterns
+  for (const pattern of rule.requiredPatterns) {
+    if (!pattern.test(content)) {
+      results.push({
+        file: filePath,
+        severity: 'error',
+        category: 'Epistemic',
+        message: `Missing required pattern for Tier ${tier}: ${pattern.source}`,
+        fix: `Add Epistemic Gate block. See docs/epistemic/TIER-CLASSIFICATION.md`,
+      });
+    }
+  }
+  
+  // Check warning patterns
+  for (const pattern of rule.warningPatterns) {
+    if (!pattern.test(content)) {
+      results.push({
+        file: filePath,
+        severity: 'warning',
+        category: 'Epistemic',
+        message: `Recommended pattern for Tier ${tier}: ${pattern.source}`,
+        fix: `Consider adding for better epistemic confidence`,
+      });
+    }
+  }
+  
+  return results;
+}
+```
+
+### Output with Epistemic Validation
+
+```
+🔍 SSS Commands Linter (with Epistemic Gate)
+
+📁 Checking steps/
+  ✅ step-1-ideation (Tier 1)
+  ✅ step-2-architecture (Tier 1)
+  ❌ step-8-technical-spec (Tier 1) - Missing Epistemic Gate
+  
+📁 Checking audit/
+  ✅ holes (Tier 2)
+  ⚠️  security-audit (Tier 2) - Missing Evidence Ledger template
+
+📁 Checking marketing/
+  ✅ 01-market-research (Tier 4) - No gate required
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+📊 Epistemic Gate Summary
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Tier 1 Commands: 8 checked, 1 missing gate
+Tier 2 Commands: 12 checked, 1 warning
+Tier 3 Commands: 10 checked, all OK
+Tier 4 Commands: 17 checked, no gate required
+
+❌ Lint failed (1 epistemic error)
+
+To fix:
+  Add Epistemic Gate block to step-8-technical-spec
+  See: docs/epistemic/TIER-CLASSIFICATION.md
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+```
+
+### Skip Epistemic Validation
+
+Use `--skip-epistemic` to bypass Epistemic Gate checks:
+
+```bash
+/lint-commands --skip-epistemic
+```
+
+---
+
+## 📋 Epistemic Validation Rules Reference
+
+| Rule | Tier | Severity | Description |
+|------|------|----------|-------------|
+| Missing Epistemic Gate | 1 | Error | Tier 1 requires full gate block |
+| Missing Evidence Ledger | 1, 2 | Error (T1) / Warning (T2) | Must document evidence sources |
+| Missing Red-Team Analysis | 1 | Error | Tier 1 requires 5 failure modes |
+| Missing Falsifiability | 1 | Error | Tier 1 requires testable criteria |
+| No EPISTEMIC-GATE-START marker | 1 | Error | Gate must be parseable by @status |
+| Missing MCP tools | 1, 2 | Warning | Should include Ref/Exa MCPs |
+
+---
+
+*Part of SSS Command Pack infrastructure*
+

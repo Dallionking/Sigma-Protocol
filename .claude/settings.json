@@ -1,5 +1,19 @@
 {
   "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Edit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash \"$CLAUDE_PROJECT_DIR/.claude/hooks/ralph-skill-enforcement.sh\" \"$CLAUDE_FILE_PATH\"",
+            "condition": {
+              "glob": "**/*.{tsx,jsx,swift,vue,svelte}"
+            }
+          }
+        ]
+      }
+    ],
     "Stop": [
       {
         "matcher": "(prd.*(complete|done|finished)|fork.*(complete|blocked)|gap.analysis|orchestrat|@hub|stream.*(complete|done)|story.*(pass|complete)|ralph.*(loop|done|complete)|swarm.*(complete|finished))",

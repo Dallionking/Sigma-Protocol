@@ -1,0 +1,118 @@
+---
+description: "PRD swarm orchestration"
+globs: ["docs/**/*.md", "*.md", "CLAUDE.md"]
+alwaysApply: false
+---
+
+# /step-11b-prd-swarm
+
+## Mission
+
+Analyze PRD dependencies and organize them into parallelizable "swarms" (subfolders) that can be worked on simultaneously in multiple terminal instances (Cursor, Claude Code, Open Code, etc.).
+
+**Why This Step Exists:**
+For projects with many PRDs (10+), sequential implementation is slow. By analyzing the dependency graph and grouping independent chains, you can:
+- **Run multiple coding agents in parallel** — Each terminal works on a swarm
+- **Avoid dependency conflicts** — PRDs in different swarms don't depend on each other
+- **Maximize throughput** — 4 terminals = up to 4x faster implementation
+
+**This step ensures you can safely parallelize implementation without stepping on dependencies.**
+
+---
+
+
+### E2-E3: Final Validation and Handoff
+
+1. Verify all files moved successfully
+2. Check for broken cross-references
+3. Generate handoff summary
+
+```
+STEP 11b COMPLETE — SWARM ORCHESTRATION
+
+PRDs Organized: 72
+Swarms Created: 4
+
+Folder Structure:
+  docs/prds/swarm-1/ (18 PRDs)
+  docs/prds/swarm-2/ (16 PRDs)
+  docs/prds/swarm-3/ (19 PRDs)
+  docs/prds/swarm-4/ (19 PRDs)
+  docs/prds/SWARM-PLAN.md
+
+Next Steps:
+  1. Open 4 terminal windows
+  2. Assign each terminal to a swarm
+  3. Run: @implement-prd --swarm=N
+
+Quick Start:
+  Terminal 1: @implement-prd --swarm=1
+  Terminal 2: @implement-prd --swarm=2
+  ...
+
+Reply `approve` to proceed to implementation
+Reply `revise: [feedback]` to modify swarm structure
+
+## Quality Gates
+
+**Step 11b complete when:**
+
+- [ ] All PRDs parsed with dependencies extracted
+- [ ] No circular dependencies detected
+- [ ] Swarms created with balanced distribution
+- [ ] All PRD files moved to swarm folders
+- [ ] Per-swarm README generated
+- [ ] SWARM-PLAN.md created
+- [ ] .prd-status.json updated with swarm assignments
+- [ ] Human approved final structure
+
+---
+
+
+### Orchestrate Output
+
+```
+ORCHESTRATION CONFIG GENERATED
+
+Config: .sigma/orchestration/streams.json
+
+Streams:
+  Stream A: F001, F005 (Core Auth & User)
+  Stream B: F002, F006 (Dashboard & Charts)
+  Stream C: F003 (Backend Services)
+  Stream D: F004 (Integrations)
+
+Merge Order: A -> C -> D -> B
+
+Next Steps:
+  1. Launch workspace:
+     npx sigma-protocol orchestrate --streams=4
+
+  Or manually:
+     ./scripts/orchestrator/spawn-streams.sh . 4
+
+  2. In ORCHESTRATOR pane:
+     @orchestrate
+
+  3. In each STREAM pane:
+     @stream --name=A
+     @stream --name=B
+     ...
+```
+
+
+## Step 11b Verification Schema
+
+
+### Content Quality (30 points)
+
+| Check | Description | Points |
+|-------|-------------|--------|
+| no_circular | No circular dependencies in graph | 10 |
+| balanced_swarms | Swarms within 50% size of each other | 10 |
+| execution_order | Each swarm has valid topological order | 10 |
+
+
+---
+
+*This is a condensed version. See `templates/steps/step-11b-prd-swarm.md` for full documentation.*

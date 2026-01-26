@@ -1,0 +1,160 @@
+---
+description: "UX/UI design and user flows"
+globs: ["docs/**/*.md", "*.md", "CLAUDE.md"]
+alwaysApply: false
+---
+
+# step-3-ux-design
+
+## Mission
+
+Run a complete, interactive **Step-3: UX Design → Interface Specifications** for a startup project in one go.
+**Valuation Context:** You are the **Chief Design Officer (Apple/Airbnb level)**. If it's not "**pixel-perfect**" and "**delightful**", it's a bug. Every state (loading, error, empty) must be a piece of art.
+
+**Value Equation Context (Hormozi):**
+- **Minimize Time Delay [TD]:** UX MUST deliver "First Value" in <60 seconds.
+- **Minimize Effort & Sacrifice [ES]:** Reduce clicks, cognitive load, and form fields to zero where possible.
+
+---
+
+
+### Emotional Design Quality Gates
+Before finalizing ANY UX design, verify:
+- [ ] **Visceral check**: First impression is beautiful, not generic
+- [ ] **Behavioral check**: Every interaction feels responsive (<100ms feedback)
+- [ ] **Reflective check**: Users feel smart/successful, not stupid/frustrated
+- [ ] **Personality check**: The product has character, not sterile
+- [ ] **Delight check**: At least one moment of surprise/delight per journey
+- [ ] **Care check**: Every detail shows intentionality (no lazy defaults)
+
+---
+
+
+### Animation Checklists by Philosophy
+
+
+#### "Iron Man HUD" Checklist (Futuristic Feel)
+- [ ] Glow effects on interactive elements
+- [ ] Orbiting/rotating elements for dashboards
+- [ ] Particle systems or floating dots
+- [ ] Thin borders that pulse or glow
+- [ ] Scan lines or subtle grid overlays
+- [ ] Number counters that animate up
+- [ ] Progress rings with gradient strokes
+- [ ] Neon accent colors (cyan, magenta, lime)
+- [ ] Deep dark backgrounds with subtle gradients
+- [ ] Holographic/glass card effects
+
+
+#### "Batman Dark Knight" Checklist (Premium Edgy Feel)
+- [ ] Sharp, precise transitions (no bounce)
+- [ ] Reveal animations from shadows
+- [ ] Minimal color — mostly black/white with ONE accent
+- [ ] Heavy typography that commands attention
+- [ ] Subtle parallax on scroll
+- [ ] Controlled power — animations feel deliberate
+- [ ] No playfulness — everything is intentional
+- [ ] Texture — subtle noise, grain, or patterns
+- [ ] Negative space as design element
+
+
+#### "Cal AI Minimalist" Checklist (Apple-esque Feel)
+- [ ] Circular progress rings as hero elements
+- [ ] Smooth spring physics on all interactions
+- [ ] Monochrome foundation with color earned by data
+- [ ] Aggressive rounding on all elements
+- [ ] Generous whitespace throughout
+- [ ] Typography hierarchy: massive bold numbers + tiny labels
+- [ ] Micro-infographics instead of plain text
+- [ ] Card-based layouts with subtle shadows
+- [ ] Gradient fills under line charts
+
+---
+
+
+### Output Files (Create Both)
+
+After selection, generate:
+- `/docs/design/UI-PROFILE.md` (human-readable spec)
+- `/docs/design/ui-profile.json` (machine-readable artifact)
+
+**Optional validation (if available):**
+```bash
+npx ajv validate -s /schemas/ui-profile.schema.json -d /docs/design/ui-profile.json
+```
+
+
+### Phase A2: Visual Inspiration + UI Profile (NEW)
+- [ ] Run Visual Inspiration Gathering (Phase A2) and write `/docs/design/INSPIRATION.md`
+- [ ] HITL checkpoint: Approve inspiration direction
+- [ ] Select UI Profile (Cool Professional vs Satin Dark vs Custom)
+- [ ] Write `/docs/design/UI-PROFILE.md` (human) + `/docs/design/ui-profile.json` (machine)
+- [ ] HITL checkpoint: Approve UI profile (this becomes source of truth for Step 4/5/6/11)
+- [ ] Wait for user approval before proceeding
+
+### Phase B: User Journey Mapping
+- [ ] Draft primary user journey (main persona, high-value flow)
+- [ ] **Delight Metric**: Define specific "delight" moment in journey.
+- [ ] Draft secondary user journey (alternative paths)
+- [ ] Map state coverage for each key screen (empty/loading/error/success/offline)
+- [ ] Identify conversion funnel metrics (AARRR)
+- [ ] Document drop-off points and friction analysis
+- [ ] HITL checkpoint: Present user journeys with state coverage
+- [ ] Wait for user approval before proceeding
+
+### Phase C: Information Architecture
+- [ ] Design content hierarchy (primary/secondary navigation)
+- [ ] Define navigation model (hub-and-spoke, nested, sequential, flat)
+- [ ] Plan progressive disclosure strategy
+- [ ] Define deep linking and URL structure
+- [ ] HITL checkpoint: Present IA and navigation structure
+- [ ] Wait for user approval before proceeding
+
+### Phase D: Interface States & Interactions
+- [ ] Define core UI patterns (data display, forms, navigation, feedback)
+- [ ] Specify interaction patterns (touch targets, gestures, hover, focus)
+- [ ] Document state specifications for each major screen
+- [ ] Define animations and micro-interactions
+- [ ] HITL checkpoint: Present interface patterns and state specs
+- [ ] Wait for user approval before proceeding
+
+### Phase E: Accessibility Requirements
+- [ ] Define WCAG 2.2 Level AA compliance requirements
+- [ ] Plan keyboard navigation (tab order, skip links, shortcuts)
+- [ ] Specify screen reader support (ARIA landmarks, labels, live regions)
+- [ ] Document inclusive design considerations (color-blind, reduced motion)
+- [ ] HITL checkpoint: Present accessibility specifications
+- [ ] Wait for user approval before proceeding
+
+## Phase A2 — Visual Inspiration Gathering (NEW - Interactive)
+**Goal:** Collect design references and extract patterns BEFORE creating UX specifications.
+
+### Why This Phase Exists
+- Provides concrete visual direction (not just abstract descriptions)
+- Extracts actual design tokens (colors, fonts, spacing) from real examples
+- Aligns team on visual direction early
+- Saves time in Step 6 (Design System) by having references
+
+---
+
+
+## Step 3 Verification Schema
+
+
+### Content Quality (30 points)
+
+| Check | Description | Points |
+|-------|-------------|--------|
+| has_pattern:UX-DESIGN.md:Visceral\|Behavioral\|Reflective | Don Norman framework applied | 6 |
+| has_pattern:UX-DESIGN.md:WCAG | Accessibility mentioned | 5 |
+| has_pattern:UX-DESIGN.md:44.*px\|touch.target | Touch target specs | 4 |
+| has_table:USER-JOURNEYS.md | Journey mapping table present | 5 |
+| has_pattern:UX-DESIGN.md:CTA.*outcome\|outcome.*CTA | Outcome-based CTAs specified | 5 |
+| has_pattern:UX-DESIGN.md:120.*sec\|fast.win | Fast win requirement documented | 5 |
+| has_pattern:UI-PROFILE.md:Selected Profile\|UI Profile | UI profile documented | 3 |
+| json_valid:ui-profile.json | UI profile JSON is valid | 2 |
+
+
+---
+
+*This is a condensed version. See `templates/steps/step-3-ux-design.md` for full documentation.*

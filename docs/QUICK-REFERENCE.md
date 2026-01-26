@@ -1,6 +1,6 @@
 # SSS Quick Reference Card
 
-**Version:** 3.0 (Agentic Layer)  
+**Version:** 5.0  
 **Last Updated:** 2025-12-29
 
 ---
