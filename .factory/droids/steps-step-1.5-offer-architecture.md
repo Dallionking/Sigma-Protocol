@@ -2,6 +2,7 @@
 name: step-1.5-offer-architecture
 description: "Step 1.5: Offer Architecture → Design Grand Slam Offers and sync pricing/monetization across all project docs"
 model: claude-sonnet-4-5-20241022
+reasoningEffort: high
 tools:
   - Read
   - Write

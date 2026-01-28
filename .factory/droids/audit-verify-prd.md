@@ -2,6 +2,7 @@
 name: verify-prd
 description: "PRD implementation verification - validates code against PRD requirements with scoring"
 model: claude-sonnet-4-5-20241022
+reasoningEffort: high
 tools:
   - Read
   - Write

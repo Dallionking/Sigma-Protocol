@@ -2,6 +2,7 @@
 name: db-migrate
 description: "Smart database migration management with Drizzle ORM - safe schema changes, RLS policies, rollback support, and Supabase integration"
 model: claude-sonnet-4-5-20241022
+reasoningEffort: medium
 tools:
   - Read
   - Write

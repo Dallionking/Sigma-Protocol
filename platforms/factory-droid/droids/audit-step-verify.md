@@ -2,6 +2,7 @@
 name: step-verify
 description: "Deep gap analysis for workflow steps (0-12, including conditional 1.5 and 11b) with 100-point scoring and iterative fix loop"
 model: claude-sonnet-4-5-20241022
+reasoningEffort: high
 tools:
   - Read
   - Write

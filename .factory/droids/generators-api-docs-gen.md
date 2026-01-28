@@ -2,6 +2,7 @@
 name: api-docs-gen
 description: "Auto-generate API documentation from codebase - Next.js routes, Server Actions, OpenAPI/Swagger specs"
 model: claude-sonnet-4-5-20241022
+reasoningEffort: medium
 tools:
   - Read
   - Write

@@ -2,6 +2,7 @@
 name: validate-methodology
 description: "Validate compliance with Steps 0-12 methodology (including conditional 1.5) - check if all required documentation and files exist"
 model: claude-sonnet-4-5-20241022
+reasoningEffort: medium
 tools:
   - Read
   - Write

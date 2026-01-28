@@ -2,6 +2,7 @@
 name: step-1-ideation
 description: "Step 1: Ideation → PRD - Interactive research-backed product requirements with specialist personas and HITL review"
 model: claude-sonnet-4-5-20241022
+reasoningEffort: high
 tools:
   - Read
   - Write

@@ -2,6 +2,7 @@
 name: step-2-architecture
 description: "Step 2: Technical Architecture & System Design - Research-backed technical blueprint with FAANG-level specialist personas"
 model: claude-sonnet-4-5-20241022
+reasoningEffort: high
 tools:
   - Read
   - Write

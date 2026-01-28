@@ -2,6 +2,7 @@
 name: step-5a-prototype-prep
 description: "Step 5a: Prototype Prep - Validate Foundation Skills, check environment, auto-install missing skills, and prepare for prototype implementation via Ralph Loop"
 model: claude-sonnet-4-5-20241022
+reasoningEffort: high
 tools:
   - Read
   - Write

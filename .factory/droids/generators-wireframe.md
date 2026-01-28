@@ -2,6 +2,7 @@
 name: wireframe
 description: "Redirects to Step 5 for wireframe prototyping (replaces legacy HTML wireframe generation)"
 model: claude-sonnet-4-5-20241022
+reasoningEffort: medium
 tools:
   - Read
   - Write

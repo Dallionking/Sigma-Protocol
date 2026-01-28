@@ -2,6 +2,7 @@
 name: step-3-ux-design
 description: "Step 3: UX Design & Interface Planning - User experience specifications with journey mapping and interaction design personas"
 model: inherit
+reasoningEffort: high
 tools: ["Read", "LS", "Grep", "Glob"]model: claude-sonnet-4-5-20241022
 tools:
   - Read

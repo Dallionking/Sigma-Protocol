@@ -1,0 +1,112 @@
+# Sigma Protocol - Antigravity Platform Configuration
+# Version: 5.1.0
+# Platform: Google Antigravity
+
+name: sigma-protocol
+version: 5.1.0
+platform: antigravity
+
+# Directory mappings
+paths:
+  skills: skills/
+  commands: commands/
+  examples: examples/
+
+# Sync configuration
+sync:
+  enabled: true
+  source: .claude/skills/
+  target: platforms/antigravity/skills/
+  format: SKILL.md
+
+# Platform-specific settings
+antigravity:
+  # Default model configuration
+  model:
+    default: gemini-2.0-flash
+    planning: gemini-2.0-pro
+    review: gemini-2.0-pro
+
+  # Loki mode defaults
+  loki:
+    enabled: false
+    max_agents: 5
+    coordination: sequential
+
+  # Voice agent defaults
+  voice:
+    enabled: false
+    language: en-US
+
+  # Context management
+  context:
+    max_tokens: 128000
+    compression: semantic
+
+# Skill format specification
+skill_format:
+  extension: .md
+  filename: SKILL.md
+  frontmatter:
+    required:
+      - name
+      - description
+      - version
+    optional:
+      - author
+      - source
+      - tags
+      - triggers
+      - globs
+      - requires
+
+# Command format specification
+command_format:
+  extension: .md
+  frontmatter:
+    required:
+      - name
+      - description
+    optional:
+      - category
+      - invoke
+      - skill
+      - args
+
+# Integration with Sigma workflow
+sigma_integration:
+  steps_supported:
+    - step-1-ideation
+    - step-2-architecture
+    - step-3-ux-design
+    - step-4-flow-tree
+    - step-5-wireframe-prototypes
+    - step-6-design-system
+    - step-7-interface-states
+    - step-8-technical-spec
+    - step-9-landing-page
+    - step-10-feature-breakdown
+    - step-11-prd-generation
+    - step-12-context-engine
+    - step-13-skillpack-generator
+
+# Compatibility matrix
+compatibility:
+  skills_from:
+    - claude-code
+    - opencode
+    - factory-droid
+  commands_from:
+    - claude-code
+    - opencode
+
+# Build configuration
+build:
+  output_dir: dist/antigravity/
+  include:
+    - skills/**/*.md
+    - commands/**/*.md
+    - examples/**/*
+  exclude:
+    - "**/*.bak"
+    - "**/node_modules/**"

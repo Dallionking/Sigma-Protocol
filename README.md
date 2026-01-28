@@ -14,8 +14,8 @@
 A platform-agnostic 13-step product development methodology for AI-assisted development.
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
-[![Platforms](https://img.shields.io/badge/Platforms-Claude%20Code%20%7C%20Cursor%20%7C%20OpenCode%20%7C%20Factory%20Droid-green.svg)](#supported-platforms)
-[![Version](https://img.shields.io/badge/Version-5.0-purple.svg)](#)
+[![Platforms](https://img.shields.io/badge/Platforms-Claude%20Code%20%7C%20Cursor%20%7C%20OpenCode%20%7C%20Factory%20Droid%20%7C%20Antigravity-green.svg)](#supported-platforms)
+[![Version](https://img.shields.io/badge/Version-5.1-purple.svg)](#)
 
 ---
 
@@ -24,12 +24,13 @@ A platform-agnostic 13-step product development methodology for AI-assisted deve
 Sigma Protocol guides AI assistants through a complete product development workflow - from ideation to deployment. It provides:
 
 - **13 structured steps** from idea to shipping
-- **185 commands** across 7 categories
-- **163 skills** for specialized tasks
+- **185+ commands** across 7 categories
+- **177 skills** for specialized tasks
 - **Quality gates** with verification scoring (target: 80+)
 - **Human-in-the-loop checkpoints** for critical decisions
 - **Ralph Loop** for autonomous task execution
 - **Multi-agent orchestration** for parallel development
+- **Platform sync** to stay current with AI coding tools
 
 ---
 
@@ -69,7 +70,7 @@ sigma retrofit
 
 **Step 3: Start the Workflow in Your AI Assistant**
 
-Open your project in Claude Code, Cursor, or OpenCode and run:
+Open your project in Claude Code, Cursor, OpenCode, or Antigravity and run:
 ```bash
 /step-1-ideation "Your product idea here"
 ```
@@ -149,10 +150,13 @@ cp -r Sigma-Protocol/.cursor your-project/
 
 | Platform | Command Style | Configuration | Skills |
 |----------|---------------|---------------|--------|
-| **Claude Code** | `/command` | `.claude/` + `CLAUDE.md` | 162 |
+| **Claude Code** | `/command` | `.claude/` + `CLAUDE.md` | 177 |
 | **Cursor** | `@command` | `.cursor/rules/` | 149 |
 | **OpenCode** | `/command` | `.opencode/` + `AGENTS.md` | 149 |
 | **Factory Droid** | `/command` | `.factory/` + `AGENTS.md` | 158 |
+| **Antigravity** | `/command` | `.agent/` + `SKILL.md` | 16 |
+
+> **Tip:** Run `/platform-sync` weekly to keep skills current with platform updates.
 
 ---
 

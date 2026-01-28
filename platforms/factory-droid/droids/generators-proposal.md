@@ -2,6 +2,7 @@
 name: proposal
 description: "Agency Sales Closer - Generate client proposals with 2-option pricing (Upfront/Milestone), value-based pricing, 'Why We Work This Way' trust section, and negotiation playbooks"
 model: inherit
+reasoningEffort: medium
 tools: ["Read", "LS", "Grep", "Glob"]model: claude-sonnet-4-5-20241022
 tools:
   - Read

@@ -2,6 +2,7 @@
 name: prototype-proposal
 description: "Generate prototype proposals ($1,000-$5,000) for discovery and UI prototyping work covering Steps 1-5. Simplified 2-option pricing with 'Why We Work This Way' trust section."
 model: claude-sonnet-4-5-20241022
+reasoningEffort: medium
 tools:
   - Read
   - Write

@@ -2,6 +2,7 @@
 name: estimation-engine
 description: "AI-powered project estimation from requirements - time, cost, team composition, risk analysis"
 model: claude-sonnet-4-5-20241022
+reasoningEffort: medium
 tools:
   - Read
   - Write

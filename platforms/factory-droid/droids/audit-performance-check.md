@@ -2,6 +2,7 @@
 name: performance-check
 description: "Comprehensive performance audit with budgets, RUM integration, bundle analysis, and regression detection for production-ready applications"
 model: claude-sonnet-4-5-20241022
+reasoningEffort: high
 tools:
   - Read
   - Write

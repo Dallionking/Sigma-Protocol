@@ -1,4 +1,8 @@
 {
+  "permissions": {
+    "allow": ["Bash(git *)", "Read(src/**)"],
+    "mcpAutoEnable": "auto:3"
+  },
   "hooks": {
     "PreToolUse": [
       {

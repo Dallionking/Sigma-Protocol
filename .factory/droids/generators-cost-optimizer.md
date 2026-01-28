@@ -2,6 +2,7 @@
 name: cost-optimizer
 description: "Cloud cost optimization analyzer - identify waste, suggest cheaper alternatives, forecast spending"
 model: claude-sonnet-4-5-20241022
+reasoningEffort: medium
 tools:
   - Read
   - Write

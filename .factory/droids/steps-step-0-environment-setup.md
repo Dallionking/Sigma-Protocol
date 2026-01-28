@@ -2,6 +2,7 @@
 name: step-0-environment-setup
 description: "Step 0: Environment Setup & MCP Validation - Ensures all tools and MCPs are installed before starting the workflow"
 model: claude-sonnet-4-5-20241022
+reasoningEffort: high
 tools:
   - Read
   - Write

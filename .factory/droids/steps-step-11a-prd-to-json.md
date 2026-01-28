@@ -2,6 +2,7 @@
 name: step-11a-prd-to-json
 description: "Step 11a: Convert Step 11 implementation PRDs into Ralph-compatible JSON backlog format for autonomous implementation loops"
 model: claude-sonnet-4-5-20241022
+reasoningEffort: high
 tools:
   - Read
   - Write

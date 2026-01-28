@@ -2,6 +2,7 @@
 name: step-9-landing-page
 description: "Step 9: Landing Page & Conversion Optimization - High-converting copy creation with avatars, emotional diaries, CRO tactics, Cialdini principles, and Magic UI templates (4-part process)"
 model: inherit
+reasoningEffort: high
 tools: ["Read", "LS", "Grep", "Glob"]model: claude-sonnet-4-5-20241022
 tools:
   - Read

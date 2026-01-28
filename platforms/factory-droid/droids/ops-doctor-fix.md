@@ -2,6 +2,7 @@
 name: doctor-fix
 description: "Execute health check fixes identified by sigma doctor. Interprets fix requirements and applies them systematically."
 model: claude-sonnet-4-5-20241022
+reasoningEffort: medium
 tools:
   - Read
   - Write

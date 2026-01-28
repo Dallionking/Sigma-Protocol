@@ -2,6 +2,7 @@
 name: system-health.mdc
 description: "System health check - verifies MCPs, file structure, PRDs, and command protocols"
 model: claude-sonnet-4-5-20241022
+reasoningEffort: medium
 tools:
   - Read
   - Write

@@ -2,6 +2,7 @@
 name: sprint-plan
 description: "Sigma ops command: sprint-plan"
 model: claude-sonnet-4-5-20241022
+reasoningEffort: medium
 tools:
   - Read
   - Write

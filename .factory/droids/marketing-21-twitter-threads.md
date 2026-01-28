@@ -2,6 +2,7 @@
 name: 21-twitter-threads
 description: "Generate complete, viral Twitter/X threads with proven hooks, optimal structure, and engagement triggers. Full threads ready to post."
 model: claude-sonnet-4-5-20241022
+reasoningEffort: medium
 tools:
   - Read
   - Write

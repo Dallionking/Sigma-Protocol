@@ -2,6 +2,7 @@
 name: backlog-groom
 description: "Sigma ops command: backlog-groom"
 model: claude-sonnet-4-5-20241022
+reasoningEffort: medium
 tools:
   - Read
   - Write

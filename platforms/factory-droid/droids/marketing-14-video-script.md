@@ -2,6 +2,7 @@
 name: 14-video-script
 description: "Video script generation using 2025 verified experts: MrBeast (Production Handbook), Jon Youshaei (YouTube Masterclass), MKBHD, Casey Neistat - YouTube, VSL, webinar scripts"
 model: claude-sonnet-4-5-20241022
+reasoningEffort: medium
 tools:
   - Read
   - Write

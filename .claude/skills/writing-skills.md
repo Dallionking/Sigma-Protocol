@@ -635,6 +635,114 @@ Deploying untested skills = deploying untested code. It's a violation of quality
 - [ ] Commit skill to git and push to your fork (if configured)
 - [ ] Consider contributing back via PR (if broadly useful)
 
+## Skill Composition Patterns
+
+Skills can reference and build upon other skills. Understanding composition patterns helps create modular, maintainable skill libraries.
+
+### Composition Types
+
+| Type | Description | Example |
+|------|-------------|---------|
+| **Prerequisite** | Skill requires understanding of another | TDD skill requires debugging skill |
+| **Extension** | Skill adds capabilities to another | Root-cause-tracing extends debugging |
+| **Complementary** | Skills work together, neither requires other | Writing-clearly + verification |
+| **Alternative** | Skills solve same problem differently | Different testing frameworks |
+
+### Referencing Other Skills
+
+**REQUIRED BACKGROUND:** Use when skill requires understanding another skill first.
+
+```markdown
+**REQUIRED BACKGROUND:** You MUST understand @systematic-debugging before using this skill.
+```
+
+**EXTENDS:** Use when skill builds on another.
+
+```markdown
+**EXTENDS:** This skill extends @systematic-debugging with advanced techniques.
+```
+
+**SEE ALSO:** Use for complementary skills.
+
+```markdown
+**SEE ALSO:** For related patterns, see @verification-before-completion.
+```
+
+### Composition Best Practices
+
+| Practice | Description |
+|----------|-------------|
+| **Explicit dependencies** | List required skills in frontmatter or overview |
+| **No circular deps** | A requires B, B requires A = broken |
+| **Minimal coupling** | Skills should work alone when possible |
+| **Clear boundaries** | Each skill owns distinct concept |
+
+### Integration with using-sigma-skills
+
+When your skill should be combined with others, document the workflow:
+
+```markdown
+## Integration
+
+Use this skill with:
+1. **First:** @deep-research - Gather information
+2. **Then:** @brainstorming - Generate ideas
+3. **Finally:** This skill - Structure output
+
+Workflow: research → ideate → structure → output
+```
+
+See `@using-sigma-skills` for the complete skill invocation system.
+
+---
+
+## Claude Search Optimization (CSO) for Skill Descriptions
+
+Skill discovery depends on how well descriptions match agent queries. Optimize for searchability.
+
+### CSO Principles
+
+1. **Trigger-focused:** Description answers "When should I use this?"
+2. **Symptom-rich:** Include error messages, situations, pain points
+3. **Action-oriented:** Start with "Use when..."
+4. **Concise:** Under 500 characters for fast scanning
+
+### CSO Checklist
+
+- [ ] Starts with "Use when..."
+- [ ] Includes 3+ specific trigger conditions
+- [ ] Mentions symptoms/errors agent would search for
+- [ ] No workflow summary (causes shortcut behavior)
+- [ ] Third person voice
+- [ ] Under 500 characters
+
+### Keyword Strategy
+
+Include words agents search when encountering the problem:
+
+```yaml
+# For debugging skill
+description: Use when tests fail unexpectedly, errors appear in logs, code behaves differently than expected, or after 2+ failed fix attempts
+
+# Keywords covered: tests fail, errors, logs, unexpected behavior, failed fix
+```
+
+### Testing Discoverability
+
+After writing skill, test with simulated queries:
+
+```
+Query: "My test is failing with timeout error"
+→ Should find: systematic-debugging, condition-based-waiting
+
+Query: "Need to coordinate multiple agents"
+→ Should find: loki-mode, crewai-patterns, dispatching-parallel-agents
+```
+
+If your skill doesn't surface for expected queries, add those keywords to description.
+
+---
+
 ## Discovery Workflow
 
 How future Claude finds your skill:

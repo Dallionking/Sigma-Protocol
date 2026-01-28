@@ -2,6 +2,7 @@
 name: maintenance-plan
 description: "Generate comprehensive long-term maintenance and support documentation for project sustainability"
 model: claude-sonnet-4-5-20241022
+reasoningEffort: medium
 tools:
   - Read
   - Write

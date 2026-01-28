@@ -2,6 +2,7 @@
 name: load-test
 description: "Automated load testing and performance benchmarking - simulate traffic, identify bottlenecks, capacity planning"
 model: claude-sonnet-4-5-20241022
+reasoningEffort: high
 tools:
   - Read
   - Write

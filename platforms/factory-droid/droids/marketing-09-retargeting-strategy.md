@@ -2,6 +2,7 @@
 name: 09-retargeting-strategy
 description: "Retargeting ad strategy using 2025 verified practices: LeadsBridge, Madgicx, FetchFunnel - Facebook/Meta sequences for warm audiences"
 model: claude-sonnet-4-5-20241022
+reasoningEffort: medium
 tools:
   - Read
   - Write

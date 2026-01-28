@@ -2,6 +2,7 @@
 name: repair-manifest
 description: "Repair and sync the documentation manifest file - scans docs directory and updates .manifest.json"
 model: claude-sonnet-4-5-20241022
+reasoningEffort: medium
 tools:
   - Read
   - Write

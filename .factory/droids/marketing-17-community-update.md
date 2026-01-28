@@ -2,6 +2,7 @@
 name: 17-community-update
 description: "Generate engaging community updates for Discord, Telegram, Skool, Instagram, or any community platform - 'Building in Public' style"
 model: claude-sonnet-4-5-20241022
+reasoningEffort: medium
 tools:
   - Read
   - Write

@@ -2,6 +2,7 @@
 name: 10-launch-playbook
 description: "Product launch orchestration using 2025 verified expert: Jeff Walker (Product Launch Formula) - pre-launch, launch, post-launch sequences and coordination"
 model: claude-sonnet-4-5-20241022
+reasoningEffort: medium
 tools:
   - Read
   - Write

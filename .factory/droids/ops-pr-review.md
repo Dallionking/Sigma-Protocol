@@ -2,6 +2,7 @@
 name: pr-review
 description: "Sigma ops command: pr-review"
 model: claude-sonnet-4-5-20241022
+reasoningEffort: medium
 tools:
   - Read
   - Write

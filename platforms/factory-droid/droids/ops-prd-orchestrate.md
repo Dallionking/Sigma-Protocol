@@ -2,6 +2,7 @@
 name: prd-orchestrate
 description: "Analyze PRD dependencies and organize into parallelizable swarms for multi-terminal implementation (standalone alias for @step-11b-prd-swarm)"
 model: claude-sonnet-4-5-20241022
+reasoningEffort: high
 tools:
   - Read
   - Write

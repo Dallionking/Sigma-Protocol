@@ -2,6 +2,7 @@
 name: step-8-technical-spec
 description: "Step 8: Technical Specification & Development Blueprint - Most comprehensive spec combining all previous steps into development-ready documentation"
 model: claude-sonnet-4-5-20241022
+reasoningEffort: high
 tools:
   - Read
   - Write

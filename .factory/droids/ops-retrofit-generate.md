@@ -2,6 +2,7 @@
 name: retrofit-generate
 description: "Generate missing Sigma documentation for existing codebases - creates Steps 0-12 (+ conditional 1.5) docs and feature PRDs"
 model: claude-sonnet-4-5-20241022
+reasoningEffort: medium
 tools:
   - Read
   - Write

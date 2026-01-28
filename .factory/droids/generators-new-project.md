@@ -2,6 +2,7 @@
 name: new-project
 description: "Scaffold new projects from Sigma boilerplate templates with flow-tree driven module selection"
 model: claude-sonnet-4-5-20241022
+reasoningEffort: medium
 tools:
   - Read
   - Write

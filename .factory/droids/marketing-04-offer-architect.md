@@ -2,6 +2,7 @@
 name: 04-offer-architect
 description: "Design irresistible Grand Slam Offers using Alex Hormozi's $100M framework - pricing, value stacking, and guarantee engineering"
 model: claude-sonnet-4-5-20241022
+reasoningEffort: medium
 tools:
   - Read
   - Write

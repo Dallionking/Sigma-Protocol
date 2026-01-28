@@ -2,6 +2,7 @@
 name: onboard
 description: "Automated developer onboarding wizard - cross-platform support, intelligent error recovery, health dashboard, team configuration, environment setup, dependencies, database configuration, and first-run validation in under 5 minutes"
 model: claude-sonnet-4-5-20241022
+reasoningEffort: medium
 tools:
   - Read
   - Write

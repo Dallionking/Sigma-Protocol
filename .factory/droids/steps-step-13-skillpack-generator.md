@@ -2,6 +2,7 @@
 name: step-13-skillpack-generator
 description: "Step 13: Project Skillpack Generator — Generates project-specific overlay skills that build on Foundation Skills (installed in Step 0)"
 model: claude-sonnet-4-5-20241022
+reasoningEffort: high
 tools:
   - Read
   - Write

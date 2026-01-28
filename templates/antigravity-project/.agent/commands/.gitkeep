@@ -1,0 +1,17 @@
+# This directory contains project-level Antigravity commands
+#
+# Add your custom commands here as markdown files:
+#
+# commands/
+# └── my-command.md
+#
+# Command format:
+# ---
+# name: my-command
+# description: "What this command does"
+# ---
+#
+# Command instructions...
+#
+# See the Sigma Protocol documentation for command format details:
+# https://github.com/dallionking/sigma-protocol

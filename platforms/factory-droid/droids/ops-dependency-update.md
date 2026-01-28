@@ -2,6 +2,7 @@
 name: dependency-update
 description: "Intelligent dependency update workflow with AI-guided migration, changelog integration, peer dependency intelligence, automated testing, and safe rollback"
 model: claude-sonnet-4-5-20241022
+reasoningEffort: medium
 tools:
   - Read
   - Write

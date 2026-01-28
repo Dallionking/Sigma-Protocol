@@ -2,6 +2,7 @@
 name: step-11-prd-generation
 description: "Step 11: PRD Generation - Create Implementation-Ready PRDs using PR/FAQ, BDD, and Shape Up methodologies"
 model: inherit
+reasoningEffort: high
 tools: ["Read", "LS", "Grep", "Glob"]model: claude-sonnet-4-5-20241022
 tools:
   - Read

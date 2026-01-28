@@ -2,6 +2,7 @@
 name: step-11b-prd-swarm
 description: "Step 11b: PRD Swarm → Analyze PRD dependencies and organize into parallelizable swarms for multi-terminal implementation"
 model: inherit
+reasoningEffort: high
 tools: ["Read", "LS", "Grep", "Glob"]model: claude-sonnet-4-5-20241022
 tools:
   - Read

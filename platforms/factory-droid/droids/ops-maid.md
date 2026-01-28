@@ -2,6 +2,7 @@
 name: maid
 description: "Intelligent repository cleanup with content-aware analysis, git worktree detection, cross-reference validation, and smart organization. Alias: @cleanup-repo"
 model: claude-sonnet-4-5-20241022
+reasoningEffort: medium
 tools:
   - Read
   - Write

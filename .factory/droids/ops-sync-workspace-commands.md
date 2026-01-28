@@ -2,6 +2,7 @@
 name: sync-workspace-commands
 description: "Sync canonical Sigma commands from this repo to a target workspace's docs/.cursor/commands/ and optionally run workspace fan-out script"
 model: claude-sonnet-4-5-20241022
+reasoningEffort: medium
 tools:
   - Read
   - Write

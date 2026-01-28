@@ -2,6 +2,7 @@
 name: 23-story-posts
 description: "Generate complete story content for Instagram Stories, LinkedIn Stories, and YouTube Community posts. Full scripts, visuals, and engagement strategies."
 model: claude-sonnet-4-5-20241022
+reasoningEffort: medium
 tools:
   - Read
   - Write

@@ -2,6 +2,7 @@
 name: ship-stage
 description: "Staging deployment with validation checks, database migrations, and smoke testing"
 model: claude-sonnet-4-5-20241022
+reasoningEffort: medium
 tools:
   - Read
   - Write

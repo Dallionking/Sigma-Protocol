@@ -2,6 +2,7 @@
 name: test-gen
 description: "Generate comprehensive tests for existing code - React components, Server Actions, API routes, and E2E flows with AI-driven generation, property-based testing hints, mutation testing suggestions, and quality metrics"
 model: claude-sonnet-4-5-20241022
+reasoningEffort: medium
 tools:
   - Read
   - Write

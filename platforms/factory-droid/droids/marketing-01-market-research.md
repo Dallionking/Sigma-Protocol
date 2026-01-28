@@ -2,6 +2,7 @@
 name: 01-market-research
 description: "Deep competitive intelligence and market analysis using Porter's Five Forces, Blue Ocean Strategy, and SWOT frameworks"
 model: claude-sonnet-4-5-20241022
+reasoningEffort: medium
 tools:
   - Read
   - Write

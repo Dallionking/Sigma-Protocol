@@ -2,6 +2,7 @@
 name: step-7-interface-states
 description: "Step 7: Interface States & User Journey Design - Comprehensive state specifications covering empty, loading, error, success, partial states"
 model: inherit
+reasoningEffort: high
 tools: ["Read", "LS", "Grep", "Glob"]model: claude-sonnet-4-5-20241022
 tools:
   - Read

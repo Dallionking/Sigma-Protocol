@@ -1,0 +1,101 @@
+# Antigravity Agent Configuration Template
+# Copy this to your project's .agent/ directory
+# Version: 1.0.0
+
+# Project identification
+name: my-project
+version: "1.0"
+
+# Model configuration
+model:
+  # Default model for general tasks
+  default: gemini-2.0-flash
+
+  # Model for planning and architecture tasks
+  planning: gemini-2.0-pro
+
+  # Model for code review and verification
+  review: gemini-2.0-pro
+
+# Skill configuration
+skills:
+  # Enable skill loading
+  enabled: true
+
+  # Path to project-level skills
+  path: .agent/skills/
+
+  # Auto-invoke skills based on triggers
+  auto_invoke: true
+
+  # Skill sources (in priority order)
+  sources:
+    - local          # .agent/skills/
+    - sigma-protocol # Sigma Protocol skills
+
+# Tool permissions
+tools:
+  # Allowed tools
+  allowed:
+    - Read
+    - Write
+    - Edit
+    - Bash
+    - Glob
+    - Grep
+    - WebFetch
+    - WebSearch
+
+  # Restricted patterns (never allowed)
+  restricted:
+    - "Bash(rm -rf *)"
+    - "Bash(rm -rf /)"
+    - "Write(.env)"
+    - "Write(*.pem)"
+    - "Write(*credentials*)"
+
+# Voice configuration (optional)
+voice:
+  enabled: false
+  language: en-US
+  wake_word: "hey agent"
+
+# Loki mode configuration (optional)
+loki:
+  enabled: false
+  max_agents: 5
+  coordination: sequential  # sequential | parallel | adaptive
+
+# Context management
+context:
+  # Maximum context window (tokens)
+  max_tokens: 128000
+
+  # Compression strategy: none | semantic | summary
+  compression: semantic
+
+  # Files to always preserve in context
+  preserve:
+    - "*.md"
+    - "ARCHITECTURE.md"
+    - "MASTER_PRD.md"
+    - ".agent/config.yaml"
+
+# Hooks (optional)
+hooks:
+  # Run before each tool call
+  pre_tool: null
+
+  # Run after each tool call
+  post_tool: null
+
+  # Run on session start
+  on_start: null
+
+  # Run on session end
+  on_end: null
+
+# Logging
+logging:
+  level: info  # debug | info | warn | error
+  file: .agent/logs/agent.log

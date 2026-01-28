@@ -2,6 +2,7 @@
 name: 18-youtube-script-writer
 description: "Generate complete, word-for-word YouTube video scripts with proven hooks, pattern interrupts, and engagement techniques. NOT bullet points - FULL SCRIPTS ready to read on camera."
 model: claude-sonnet-4-5-20241022
+reasoningEffort: medium
 tools:
   - Read
   - Write

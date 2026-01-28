@@ -2,6 +2,7 @@
 name: 22-video-research
 description: "Research hashtags, analyze competitor videos, and identify viral patterns across YouTube, TikTok, and Instagram. Get data-driven insights for your content strategy."
 model: claude-sonnet-4-5-20241022
+reasoningEffort: medium
 tools:
   - Read
   - Write

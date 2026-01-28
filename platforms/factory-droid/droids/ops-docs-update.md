@@ -2,6 +2,7 @@
 name: docs-update
 description: "Automated documentation generation with freshness checking, quality metrics, and AI-powered summaries following Docs-as-Code principles"
 model: claude-sonnet-4-5-20241022
+reasoningEffort: medium
 tools:
   - Read
   - Write

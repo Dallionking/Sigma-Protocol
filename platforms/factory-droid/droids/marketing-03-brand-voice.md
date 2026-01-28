@@ -2,6 +2,7 @@
 name: 03-brand-voice
 description: "Brand voice development using 2025 verified experts: Nick Parker (Voicebox/Tone Knob), Ashlyn Carter, Brand Voice Academy - tone guidelines, style guide, voice attributes"
 model: claude-sonnet-4-5-20241022
+reasoningEffort: medium
 tools:
   - Read
   - Write

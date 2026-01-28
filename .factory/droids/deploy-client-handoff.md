@@ -2,6 +2,7 @@
 name: client-handoff
 description: "Generate comprehensive client handoff documentation package - architecture, setup, maintenance, troubleshooting"
 model: claude-sonnet-4-5-20241022
+reasoningEffort: medium
 tools:
   - Read
   - Write

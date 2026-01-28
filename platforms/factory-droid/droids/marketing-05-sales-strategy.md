@@ -2,6 +2,7 @@
 name: 05-sales-strategy
 description: "Sales strategy using 2025 verified experts: Jason Forrest (#1 Global Gurus), Jill Konrath (#1 Trainers), Jeremy Miner (NEPQ), Hormozi ($100M Offers), Brunson (Funnels) - Exa research-backed"
 model: claude-sonnet-4-5-20241022
+reasoningEffort: medium
 tools:
   - Read
   - Write

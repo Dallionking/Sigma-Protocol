@@ -2,6 +2,7 @@
 name: retrofit-analyze
 description: "Analyze existing codebase for Sigma methodology adoption - comprehensive gap analysis with section-level detection and update recommendations"
 model: claude-sonnet-4-5-20241022
+reasoningEffort: medium
 tools:
   - Read
   - Write

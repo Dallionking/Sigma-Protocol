@@ -2,6 +2,7 @@
 name: code-quality-report
 description: "Generate client-friendly code quality report with visualizations - test coverage, complexity, security, performance, accessibility"
 model: claude-sonnet-4-5-20241022
+reasoningEffort: high
 tools:
   - Read
   - Write

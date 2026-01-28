@@ -2,6 +2,7 @@
 name: nda
 description: "Generate professional Mutual Non-Disclosure Agreements by extracting project and client data from PRD, Betting Table, and Proposal documents. Typically signed alongside the project contract."
 model: claude-sonnet-4-5-20241022
+reasoningEffort: medium
 tools:
   - Read
   - Write

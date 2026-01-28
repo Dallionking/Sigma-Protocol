@@ -342,4 +342,95 @@ Integrate debugging as a standard step when issues arise.
 
 ---
 
+## Root Cause Tracing Integration
+
+For complex bugs that resist initial investigation, use the **Root Cause Tracing** methodology. This skill extends systematic debugging with deeper causal analysis.
+
+### When to Escalate to Root Cause Tracing
+
+Escalate when:
+- Hypothesis testing produces inconclusive results
+- Bug reappears after "fix"
+- Multiple related bugs suggest systemic issue
+- Fix would be a workaround, not a solution
+
+See `@root-cause-tracing` for the full methodology.
+
+### 5 Whys Workflow
+
+When Step 5 (Root Cause Analysis) identifies the immediate cause, apply 5 Whys to find the systemic cause:
+
+```markdown
+## 5 Whys Analysis
+
+**Problem:** [The bug you found]
+
+**Why 1:** Why did [bug] happen?
+→ [Immediate technical cause]
+
+**Why 2:** Why did [immediate cause] happen?
+→ [Deeper cause]
+
+**Why 3:** Why did [deeper cause] happen?
+→ [Process/design cause]
+
+**Why 4:** Why did [process cause] happen?
+→ [Systemic cause]
+
+**Why 5:** Why did [systemic cause] happen?
+→ [Root cause - often organizational or architectural]
+```
+
+### 5 Whys Example
+
+```markdown
+**Problem:** Users see stale data after update
+
+**Why 1:** Why do users see stale data?
+→ Cache not invalidated after write
+
+**Why 2:** Why wasn't cache invalidated?
+→ Write function doesn't call cache.invalidate()
+
+**Why 3:** Why doesn't write function invalidate cache?
+→ Cache invalidation is caller's responsibility, not documented
+
+**Why 4:** Why is it caller's responsibility?
+→ No centralized cache management, each module handles own caching
+
+**Why 5:** Why no centralized cache management?
+→ Caching was added ad-hoc as performance fix, no architecture review
+
+**Root cause:** Missing caching architecture. Fix: Create cache manager service.
+**Immediate fix:** Add invalidation to this write function.
+**Systemic fix:** Refactor to centralized cache manager.
+```
+
+### Stopping Criteria
+
+Stop asking "Why" when you reach:
+- **Organizational boundary:** "We didn't have time" → scheduling/prioritization issue
+- **Architectural decision:** "System wasn't designed for this" → design review needed
+- **Missing process:** "No one knew to do that" → documentation/training gap
+- **External constraint:** "Third-party API doesn't support it" → evaluate alternatives
+
+### 5 Whys Anti-Patterns
+
+| Anti-Pattern | Problem | Fix |
+|--------------|---------|-----|
+| **Stopping too early** | Fixing symptom, not cause | Ask at least 3 Whys |
+| **Blaming people** | "Because developer X made mistake" | Ask why the system allowed the mistake |
+| **Single path** | Only one causal chain | Branch: "Why else might this happen?" |
+| **Speculation** | Guessing without evidence | Each "Why" needs evidence |
+| **Going too deep** | 10+ Whys into philosophy | Stop at actionable root cause |
+
+### Integration with Debugging Steps
+
+1. **Steps 1-4:** Standard debugging to identify bug
+2. **Step 5:** Initial root cause → Apply 5 Whys
+3. **Step 6:** Fix addresses root cause, not just symptom
+4. **Step 7:** Prevention addresses systemic cause
+
+---
+
 _Remember: A bug you understand is a bug you can fix correctly. A bug you guess at is a bug that will return._

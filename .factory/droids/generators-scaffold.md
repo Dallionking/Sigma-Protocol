@@ -2,6 +2,7 @@
 name: scaffold
 description: "Scaffold complete features with intelligent template detection, dependency analysis, and boilerplate recognition following 2025 Next.js 14+ best practices"
 model: claude-sonnet-4-5-20241022
+reasoningEffort: medium
 tools:
   - Read
   - Write

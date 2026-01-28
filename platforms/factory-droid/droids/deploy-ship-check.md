@@ -2,6 +2,7 @@
 name: ship-check
 description: "Pre-deployment validation - comprehensive checks including environment parity, secrets scanning, risk assessment, and rollback readiness before staging or production deployment"
 model: claude-sonnet-4-5-20241022
+reasoningEffort: medium
 tools:
   - Read
   - Write

@@ -2,6 +2,7 @@
 name: 15-thumbnail-prompts
 description: "Generate Pikzels-ready thumbnail prompts from content calendar - YouTube, Reels, TikTok, Instagram covers with persona support"
 model: claude-sonnet-4-5-20241022
+reasoningEffort: medium
 tools:
   - Read
   - Write

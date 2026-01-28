@@ -2,6 +2,7 @@
 name: step-4-flow-tree
 description: "Step 4: Flow Tree & Screen Architecture - Comprehensive Mobbin-style screen mapping for every flow in your application"
 model: inherit
+reasoningEffort: high
 tools: ["Read", "LS", "Grep", "Glob"]model: claude-sonnet-4-5-20241022
 tools:
   - Read

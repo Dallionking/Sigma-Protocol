@@ -2,6 +2,7 @@
 name: implement-prd
 description: "Automatically implement a PRD from Step 11 - intelligently scaffolds, generates code, applies design system, creates tests with cross-platform and swarm support"
 model: claude-sonnet-4-5-20241022
+reasoningEffort: high
 tools:
   - Read
   - Write

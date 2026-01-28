@@ -2,6 +2,7 @@
 name: retrofit-sync
 description: "Unified retrofit command - sync any project with latest Sigma-Protocol in one pass"
 model: claude-sonnet-4-5-20241022
+reasoningEffort: medium
 tools:
   - Read
   - Write

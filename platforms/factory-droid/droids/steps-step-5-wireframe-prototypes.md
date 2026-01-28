@@ -2,6 +2,7 @@
 name: step-5-wireframe-prototypes
 description: "Step 5: Generate Wireframe PRDs - Create detailed PRDs with ASCII wireframes, component specs, and project setup. USER implements PRDs to build interactive UI prototype (foundation for Step 11)"
 model: inherit
+reasoningEffort: high
 tools: ["Read", "LS", "Grep", "Glob"]model: claude-sonnet-4-5-20241022
 tools:
   - Read

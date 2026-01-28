@@ -2,6 +2,7 @@
 name: 19-short-form-scripts
 description: "Generate complete, word-for-word scripts for TikTok, Instagram Reels, and YouTube Shorts with viral hooks, trending formats, and exact dialogue."
 model: claude-sonnet-4-5-20241022
+reasoningEffort: medium
 tools:
   - Read
   - Write

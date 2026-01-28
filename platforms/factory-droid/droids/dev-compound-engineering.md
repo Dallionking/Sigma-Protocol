@@ -2,6 +2,7 @@
 name: compound-engineering
 description: "Structured development workflow where learnings compound over time. Plan first, work in focused sprints, review comprehensively, then compound learnings into AGENTS.md for permanent improvement."
 model: claude-sonnet-4-5-20241022
+reasoningEffort: medium
 tools:
   - Read
   - Write

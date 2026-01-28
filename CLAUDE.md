@@ -1,7 +1,7 @@
 # Sigma Protocol - Claude Code Configuration
 
-**Version:** 5.0
-**Last Updated:** 2026-01-23
+**Version:** 5.1.0
+**Last Updated:** 2026-01-28
 
 ## Overview
 
@@ -13,10 +13,11 @@ This CLAUDE.md orchestrates the Sigma workflow in Claude Code, providing access 
 
 | Platform | Configuration | Skills | Status |
 |----------|---------------|--------|--------|
-| **Claude Code** | `.claude/` | 162 | Production |
+| **Claude Code** | `.claude/` | 177 | Production |
 | **OpenCode** | `.opencode/` | 149 | Production |
 | **Cursor** | `.cursor/rules/` | 149 | Production |
-| **Factory Droid** | `.factory/` | 158 | New |
+| **Factory Droid** | `.factory/` | 158 | Production |
+| **Antigravity** | `.agent/` | 16 | New |
 
 See [PLATFORMS.md](docs/PLATFORMS.md) for detailed platform configuration.
 
@@ -99,6 +100,7 @@ claude "Run step-5b-prd-to-json --all-prds"
 | `/status` | Project status check |
 | `/daily-standup` | Daily standup report |
 | `/backlog-groom` | Backlog grooming |
+| `/platform-sync` | **NEW:** Sync with platform changelogs (run weekly) |
 
 ### Deploy Commands
 | Command | Description |
@@ -282,6 +284,23 @@ When distributing to swarm, assign skills by role:
 
 ### Task Management
 - **Task Master AI**: PRD parsing, task management, research integration
+
+### Claude Code v2.1.x Task Management
+
+Claude Code v2.1.x includes a native task management system:
+
+| Tool | Description |
+|------|-------------|
+| `TaskCreate` | Create tasks with dependencies |
+| `TaskUpdate` | Update task status/content |
+| `TaskList` | List all tasks with filters |
+| `TaskGet` | Get task details by ID |
+
+**Dependency Tracking:**
+- `blockedBy`: Tasks that must complete first
+- `blocks`: Tasks waiting on this task
+
+**Status Workflow:** `pending` → `in_progress` → `completed`
 
 ## Documentation
 

@@ -2,6 +2,7 @@
 name: notebooklm-format
 description: "General-purpose document-to-NotebookLM converter. Transform ANY document (PRD, proposals, research, architecture, etc.) into conversational format for AI podcast/video generation. Supports angle selection for custom focus."
 model: claude-sonnet-4-5-20241022
+reasoningEffort: medium
 tools:
   - Read
   - Write

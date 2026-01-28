@@ -2,6 +2,7 @@
 name: security-audit
 description: "Comprehensive security and vulnerability audit - dependencies, code patterns, OWASP Top 10, RLS policies, supply chain security, secret scanning, and automated remediation"
 model: inherit
+reasoningEffort: high
 tools: ["Read", "LS", "Grep", "Glob"]model: claude-sonnet-4-5-20241022
 tools:
   - Read

@@ -2,6 +2,7 @@
 name: 08-ads-strategy
 description: "Multi-platform ad strategy using 2025 verified experts: Jon Loomer, Mari Smith, Barry Hott (Meta), Maxwell Finn (TikTok), Ezra Firestone (Smart Marketer) - Exa research-backed"
 model: claude-sonnet-4-5-20241022
+reasoningEffort: medium
 tools:
   - Read
   - Write

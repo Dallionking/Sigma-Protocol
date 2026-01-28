@@ -1,0 +1,10 @@
+# This directory contains project-level Antigravity skills
+#
+# Add your custom skills here in SKILL.md format:
+#
+# skills/
+# └── my-skill/
+#     └── SKILL.md
+#
+# See the Sigma Protocol documentation for skill format details:
+# https://github.com/dallionking/sigma-protocol

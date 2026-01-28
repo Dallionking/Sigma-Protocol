@@ -2,6 +2,7 @@
 name: README.md
 description: "Sigma generators command: README.md"
 model: claude-sonnet-4-5-20241022
+reasoningEffort: medium
 tools:
   - Read
   - Write

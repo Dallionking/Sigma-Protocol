@@ -2,6 +2,7 @@
 name: 20-linkedin-writer
 description: "Generate complete, ready-to-post LinkedIn content including text posts, carousels, articles, and story posts with viral hooks and algorithm optimization."
 model: claude-sonnet-4-5-20241022
+reasoningEffort: medium
 tools:
   - Read
   - Write

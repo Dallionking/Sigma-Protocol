@@ -2,6 +2,7 @@
 name: accessibility-audit
 description: "WCAG 2.2 AA compliance checker with mobile focus, auto-remediation, score tracking, and milestone management"
 model: claude-sonnet-4-5-20241022
+reasoningEffort: high
 tools:
   - Read
   - Write

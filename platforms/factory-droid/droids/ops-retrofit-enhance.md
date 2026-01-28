@@ -2,6 +2,7 @@
 name: retrofit-enhance
 description: "Comprehensive Sigma updater: (1) UPDATE existing docs with new frameworks in-place, (2) ENHANCE old workflow to new 13-step, (3) SYNC command versions. Preserves customizations."
 model: inherit
+reasoningEffort: medium
 tools: ["Read", "LS", "Grep", "Glob"]model: claude-sonnet-4-5-20241022
 tools:
   - Read

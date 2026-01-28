@@ -2,6 +2,7 @@
 name: prompt-handoff
 description: "Generate a comprehensive handoff prompt for continuing work in a new chat session when Cursor loops or hits context limits"
 model: claude-sonnet-4-5-20241022
+reasoningEffort: medium
 tools:
   - Read
   - Write

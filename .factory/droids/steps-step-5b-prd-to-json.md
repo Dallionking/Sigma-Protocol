@@ -2,6 +2,7 @@
 name: step-5b-prd-to-json
 description: "Step 5b: Convert Step 5 prototype PRDs into Ralph-compatible JSON backlog format for autonomous implementation loops"
 model: claude-sonnet-4-5-20241022
+reasoningEffort: high
 tools:
   - Read
   - Write

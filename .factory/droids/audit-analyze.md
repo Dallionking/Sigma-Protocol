@@ -2,6 +2,7 @@
 name: analyze
 description: "Codebase insights and health report - comprehensive analysis with real-time dashboard, trends, and actionable quick wins"
 model: claude-sonnet-4-5-20241022
+reasoningEffort: high
 tools:
   - Read
   - Write

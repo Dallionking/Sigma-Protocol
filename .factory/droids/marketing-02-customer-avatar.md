@@ -2,6 +2,7 @@
 name: 02-customer-avatar
 description: "Deep customer avatar development using 2025 verified expert: Ryan Levesque (ASK Method) - psychographics, day-in-life, objections, buying triggers"
 model: claude-sonnet-4-5-20241022
+reasoningEffort: medium
 tools:
   - Read
   - Write

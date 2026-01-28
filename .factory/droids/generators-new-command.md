@@ -2,6 +2,7 @@
 name: new-command
 description: "Create a new Sigma command with research-backed frameworks, expert citations, Epistemic Gate blocks, and consistent structure"
 model: claude-sonnet-4-5-20241022
+reasoningEffort: medium
 tools:
   - Read
   - Write

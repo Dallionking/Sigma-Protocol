@@ -2,6 +2,7 @@
 name: ship-prod
 description: "Production deployment with strict validation, safety confirmations, and automated rollback capabilities"
 model: claude-sonnet-4-5-20241022
+reasoningEffort: medium
 tools:
   - Read
   - Write

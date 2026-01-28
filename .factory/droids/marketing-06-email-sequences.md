@@ -2,6 +2,7 @@
 name: 06-email-sequences
 description: "Email sequence generation using 2025 verified experts: Scott Cohen (InboxArmy), Jen Capstraw, Chase Dimond - welcome, nurture, launch, and re-engagement sequences"
 model: claude-sonnet-4-5-20241022
+reasoningEffort: medium
 tools:
   - Read
   - Write

@@ -2,6 +2,7 @@
 name: dev-loop
 description: "Master orchestrator - automatically implements all PRDs from Step 11 in sequence with self-correcting verification loops"
 model: claude-sonnet-4-5-20241022
+reasoningEffort: medium
 tools:
   - Read
   - Write

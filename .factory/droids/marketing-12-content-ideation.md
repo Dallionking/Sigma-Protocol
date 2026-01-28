@@ -2,6 +2,7 @@
 name: 12-content-ideation
 description: "Real-time content brainstorming partner - turn raw ideas into structured content plans with talking points and repurposing strategy"
 model: claude-sonnet-4-5-20241022
+reasoningEffort: medium
 tools:
   - Read
   - Write

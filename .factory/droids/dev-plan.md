@@ -2,6 +2,7 @@
 name: plan
 description: "Turn any PRD into a detailed implementation plan using relevant Skills + Exa MCP. No assumptions."
 model: claude-sonnet-4-5-20241022
+reasoningEffort: medium
 tools:
   - Read
   - Write

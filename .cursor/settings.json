@@ -1,0 +1,25 @@
+{
+  "agent": {
+    "skillsEnabled": true,
+    "skillsPath": ".cursor/skills"
+  },
+  "rules": {
+    "enabled": true,
+    "path": ".cursor/rules"
+  },
+  "mcp": {
+    "enabled": true,
+    "configPath": ".cursor/mcp.json"
+  },
+  "editor": {
+    "formatOnSave": true,
+    "codeActionsOnSave": {
+      "source.fixAll": true
+    }
+  },
+  "ai": {
+    "model": "claude-sonnet-4-5-20241022",
+    "contextWindow": "auto",
+    "streaming": true
+  }
+}

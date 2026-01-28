@@ -2,6 +2,7 @@
 name: 07-landing-page-copy
 description: "Landing page copywriting using 2025 verified experts: Joanna Wiebe (CopyHackers), Conversion Rate Experts, Unbounce - hero sections, CTAs, and conversion optimization"
 model: claude-sonnet-4-5-20241022
+reasoningEffort: medium
 tools:
   - Read
   - Write

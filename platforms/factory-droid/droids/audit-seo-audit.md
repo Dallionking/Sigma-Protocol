@@ -2,6 +2,7 @@
 name: seo-audit
 description: "SEO best practices validation - meta tags, Core Web Vitals, structured data, sitemap verification"
 model: claude-sonnet-4-5-20241022
+reasoningEffort: high
 tools:
   - Read
   - Write

@@ -2,6 +2,7 @@
 name: step-10-feature-breakdown
 description: "Step 10: Feature Shaping & Story Mapping - Identify, shape, and validate all features requiring dedicated PRDs using Story Mapping, Shape Up, and INVEST frameworks"
 model: claude-sonnet-4-5-20241022
+reasoningEffort: high
 tools:
   - Read
   - Write

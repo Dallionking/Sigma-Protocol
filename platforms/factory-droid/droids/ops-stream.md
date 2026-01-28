@@ -2,6 +2,7 @@
 name: stream
 description: "Stream worker agent that executes PRDs in a Ralph loop, reports progress to the orchestrator via mcp_agent_mail, and waits for verification before continuing."
 model: claude-sonnet-4-5-20241022
+reasoningEffort: medium
 tools:
   - Read
   - Write

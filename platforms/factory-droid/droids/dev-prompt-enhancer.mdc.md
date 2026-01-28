@@ -2,6 +2,7 @@
 name: prompt-enhancer.mdc
 description: "Enhances simple user inputs into detailed, context-engineered execution plans before implementation."
 model: claude-sonnet-4-5-20241022
+reasoningEffort: medium
 tools:
   - Read
   - Write

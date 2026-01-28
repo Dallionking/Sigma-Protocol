@@ -2,6 +2,7 @@
 name: holes
 description: "PRE-implementation gap analysis and risk assessment - identifies holes in PLANS, requirements, and specifications BEFORE coding starts. Use @gap-analysis for POST-implementation verification."
 model: claude-sonnet-4-5-20241022
+reasoningEffort: high
 tools:
   - Read
   - Write

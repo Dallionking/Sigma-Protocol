@@ -2,6 +2,7 @@
 name: continue
 description: "Find the most recent unfinished PRD/task and resume work. Integrates with Ralph loop for autonomous continuation."
 model: claude-sonnet-4-5-20241022
+reasoningEffort: medium
 tools:
   - Read
   - Write

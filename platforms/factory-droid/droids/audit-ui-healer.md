@@ -2,6 +2,7 @@
 name: ui-healer
 description: "Comprehensive UI testing, healing, and conversion optimization - multi-engine browser testing (Cursor/Playwright/Claude), accessibility, responsive design, Hormozi principles enforcement"
 model: inherit
+reasoningEffort: high
 tools: ["Read", "LS", "Grep", "Glob"]model: claude-sonnet-4-5-20241022
 tools:
   - Read

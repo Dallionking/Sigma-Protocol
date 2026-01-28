@@ -2,6 +2,7 @@
 name: license-check
 description: "Open-source license compliance checker - identify risks, ensure legal safety, generate attribution files"
 model: claude-sonnet-4-5-20241022
+reasoningEffort: high
 tools:
   - Read
   - Write

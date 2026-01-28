@@ -2,6 +2,7 @@
 name: status
 description: "Display Sigma workflow progress - quick status check for all steps (0-12 including 1.5 and 11b), PRDs, swarms, and Epistemic Confidence"
 model: claude-sonnet-4-5-20241022
+reasoningEffort: medium
 tools:
   - Read
   - Write

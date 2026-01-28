@@ -2,6 +2,7 @@
 name: orchestrate
 description: "Spawn and coordinate multi-agent orchestration. Can be invoked mid-session to spin up fork workers. Supports iTerm2 native tabs/panes, tmux, or Task subagents."
 model: claude-sonnet-4-5-20241022
+reasoningEffort: high
 tools:
   - Read
   - Write

@@ -2,6 +2,7 @@
 name: step-6-design-system
 description: "Step 6: Design System & Style Guide - Visual specifications with tokens, components, and accessibility standards"
 model: inherit
+reasoningEffort: high
 tools: ["Read", "LS", "Grep", "Glob"]model: claude-sonnet-4-5-20241022
 tools:
   - Read

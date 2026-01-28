@@ -2,6 +2,7 @@
 name: 11-partnership-outreach
 description: "Influencer and partnership outreach using 2025 verified practices: Impact.com, Influencity, InfluenceFlow - cold DM scripts, collaboration proposals, affiliate programs"
 model: claude-sonnet-4-5-20241022
+reasoningEffort: medium
 tools:
   - Read
   - Write

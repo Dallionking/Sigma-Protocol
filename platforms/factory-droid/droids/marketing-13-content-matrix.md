@@ -2,6 +2,7 @@
 name: 13-content-matrix
 description: "Generate multi-platform content strategy using Gary Vee's pillar content repurposing framework - YouTube, Reels, Threads, LinkedIn"
 model: claude-sonnet-4-5-20241022
+reasoningEffort: medium
 tools:
   - Read
   - Write

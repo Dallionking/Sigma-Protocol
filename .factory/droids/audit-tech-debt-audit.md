@@ -2,6 +2,7 @@
 name: tech-debt-audit
 description: "Scan codebase for technical debt with budgeting, PM integration, velocity tracking, and predictive modeling"
 model: claude-sonnet-4-5-20241022
+reasoningEffort: high
 tools:
   - Read
   - Write

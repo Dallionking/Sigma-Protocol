@@ -2,6 +2,7 @@
 name: step-12-context-engine
 description: "Step 12: Context Engineering & Rule Synthesis - Generates the Master Context Router and Domain-Specific Rules"
 model: claude-sonnet-4-5-20241022
+reasoningEffort: high
 tools:
   - Read
   - Write

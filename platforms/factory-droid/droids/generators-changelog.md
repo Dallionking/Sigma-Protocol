@@ -2,6 +2,7 @@
 name: changelog
 description: "Auto-generate release notes with dated folder structure (newest first)"
 model: claude-sonnet-4-5-20241022
+reasoningEffort: medium
 tools:
   - Read
   - Write

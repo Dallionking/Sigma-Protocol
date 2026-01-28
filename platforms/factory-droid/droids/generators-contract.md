@@ -2,6 +2,7 @@
 name: contract
 description: "Generate professional Software Development Contracts with 'How We Work' preamble, extracting scope, timeline, and 2-option pricing from PRD, Betting Table, and Proposal documents"
 model: claude-sonnet-4-5-20241022
+reasoningEffort: medium
 tools:
   - Read
   - Write
