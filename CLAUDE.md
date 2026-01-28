@@ -185,6 +185,104 @@ Commands pause for human approval at critical points. Never skip these.
 ### Quality Gates
 Each step has verification criteria. Target: 80+/100 score.
 
+---
+
+## Execution Philosophy: Swarm-First
+
+**Never work solo. Always use agent swarms for PRD execution.**
+
+### Swarm Sizing
+| PRD Complexity | Agent Count | Parallel Streams |
+|----------------|-------------|------------------|
+| Simple (1-3 features) | 5 agents | 2-3 |
+| Medium (4-7 features) | 10 agents | 4-5 |
+| Complex (8+ features) | 15-20 agents | 6-8 |
+
+### Research-First Planning
+
+**CRITICAL: Before ANY planning session:**
+1. Invoke `deep-research` skill automatically
+2. Use Firecrawl for competitor/market research
+3. Use EXA for technical patterns and code examples
+4. Synthesize findings BEFORE brainstorming
+
+### Automatic Skill Invocation
+
+Before executing ANY task, match keywords and auto-invoke:
+
+| Task Contains | Auto-Invoke Skill |
+|---------------|-------------------|
+| plan, design, ideate | `brainstorming` + `deep-research` |
+| architecture, technical | `deep-research` first |
+| component, UI, *.tsx | `frontend-design` |
+| test, verify, done | `verification-before-completion` |
+| docs, README, commit | `writing-clearly` |
+| marketing, launch, SEO | `marketing-*` skills |
+| 3+ independent tasks | `dispatching-parallel-agents` |
+
+### Agent Skill Assignment
+
+When distributing to swarm, assign skills by role:
+
+| Agent Role | Skills |
+|------------|--------|
+| **Planning Agents** | deep-research, brainstorming, executing-plans |
+| **Frontend Agents** | frontend-design, react-performance |
+| **Backend Agents** | verification-before-completion |
+| **QA Agents** | verification-before-completion, tdd-skill-creation |
+| **Documentation Agents** | writing-clearly |
+| **Marketing Agents** | marketing-copywriting, marketing-psychology, seo-audit |
+
+---
+
+## Skills by Category
+
+### Research & Planning
+| Skill | Auto-Trigger | Description |
+|-------|--------------|-------------|
+| `deep-research` | plan, architecture | Firecrawl + EXA + Ref MCP orchestration |
+| `brainstorming` | plan, design, ideate | One-question-at-a-time exploration |
+| `executing-plans` | implement-prd, plan | Batch execution with checkpoints |
+
+### Frontend & UI
+| Skill | Auto-Trigger | Description |
+|-------|--------------|-------------|
+| `frontend-design` | *.tsx, component, UI | CVA patterns, style vocabulary |
+| `react-performance` | performance, slow, audit | Vercel's 57 optimization rules |
+
+### Quality & Verification
+| Skill | Auto-Trigger | Description |
+|-------|--------------|-------------|
+| `verification-before-completion` | done, complete, ship | Evidence before claims |
+| `writing-clearly` | docs, README, commit | Strunk's rules, no AI-isms |
+
+### Orchestration
+| Skill | Auto-Trigger | Description |
+|-------|--------------|-------------|
+| `subagent-driven-development` | orchestrate, stream | Fresh subagent per task |
+| `dispatching-parallel-agents` | swarm, parallel | One agent per problem domain |
+
+### Marketing
+| Skill | Auto-Trigger | Description |
+|-------|--------------|-------------|
+| `marketing-copywriting` | 07-landing-page-copy | Headlines, CTAs, page structure |
+| `marketing-psychology` | 04-offer-architect | Buyer psychology, pricing |
+| `seo-audit` | 16-seo-content | Technical + on-page SEO |
+| `launch-strategy` | 10-launch-playbook | 5-phase launch, ORB framework |
+
+---
+
+## MCP Tools Available
+
+### Research Tools
+- **Firecrawl**: Web scraping, site crawling, content extraction
+- **EXA**: Semantic search, code context, deep research
+- **Ref**: Documentation search, URL reading
+- **Context7**: Library-specific documentation
+
+### Task Management
+- **Task Master AI**: PRD parsing, task management, research integration
+
 ## Documentation
 
 - [WORKFLOW-OVERVIEW.md](docs/WORKFLOW-OVERVIEW.md) - Complete workflow guide

@@ -19,6 +19,32 @@
 				"AZURE_OPENAI_API_KEY": "YOUR_AZURE_KEY_HERE",
 				"OLLAMA_API_KEY": "YOUR_OLLAMA_API_KEY_HERE"
 			}
+		},
+		"firecrawl": {
+			"type": "stdio",
+			"command": "npx",
+			"args": ["-y", "firecrawl-mcp"],
+			"env": {
+				"FIRECRAWL_API_KEY": "YOUR_FIRECRAWL_API_KEY_HERE"
+			}
+		},
+		"exa": {
+			"type": "stdio",
+			"command": "npx",
+			"args": ["-y", "@anthropic/exa-mcp-server"],
+			"env": {
+				"EXA_API_KEY": "YOUR_EXA_API_KEY_HERE"
+			}
+		},
+		"Ref": {
+			"type": "stdio",
+			"command": "npx",
+			"args": ["-y", "@anthropic/ref-mcp-server"]
+		},
+		"context7": {
+			"type": "stdio",
+			"command": "npx",
+			"args": ["-y", "@context7/mcp-server"]
 		}
 	}
 }

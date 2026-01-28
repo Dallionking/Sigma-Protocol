@@ -5,6 +5,63 @@
 
 ---
 
+## Execution Philosophy: Swarm-First
+
+**Never work solo. Always use agent swarms for PRD execution.**
+
+### Swarm Sizing
+| PRD Complexity | Agent Count | Parallel Streams |
+|----------------|-------------|------------------|
+| Simple (1-3 features) | 5 agents | 2-3 |
+| Medium (4-7 features) | 10 agents | 4-5 |
+| Complex (8+ features) | 15-20 agents | 6-8 |
+
+### Research-First Planning
+
+**CRITICAL: Before ANY planning session:**
+1. Invoke `deep-research` skill automatically
+2. Use Firecrawl for competitor/market research
+3. Use EXA for technical patterns and code examples
+4. Synthesize findings BEFORE brainstorming
+
+### Automatic Skill Invocation
+
+| Task Contains | Auto-Invoke Skill |
+|---------------|-------------------|
+| plan, design, ideate | `brainstorming` + `deep-research` |
+| architecture, technical | `deep-research` first |
+| component, UI, *.tsx | `frontend-design` |
+| test, verify, done | `verification-before-completion` |
+| docs, README, commit | `writing-clearly` |
+| marketing, launch, SEO | `marketing-*` skills |
+| 3+ independent tasks | `dispatching-parallel-agents` |
+
+### Agent Skill Assignment
+
+| Agent Role | Skills |
+|------------|--------|
+| **Planning Agents** | deep-research, brainstorming, executing-plans |
+| **Frontend Agents** | frontend-design, react-performance |
+| **Backend Agents** | verification-before-completion |
+| **QA Agents** | verification-before-completion, tdd-skill-creation |
+| **Documentation Agents** | writing-clearly |
+| **Marketing Agents** | marketing-copywriting, marketing-psychology |
+
+---
+
+## MCP Tools Required
+
+### Research Tools (Required for Planning)
+- **Firecrawl**: Web scraping, site crawling, content extraction
+- **EXA**: Semantic search, code context, deep research
+- **Ref**: Documentation search, URL reading
+- **Context7**: Library-specific documentation
+
+### Task Management
+- **Task Master AI**: PRD parsing, task management
+
+---
+
 ## Build & Test
 
 ```bash

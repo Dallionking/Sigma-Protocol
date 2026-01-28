@@ -492,8 +492,14 @@ Append skill-to-agent mappings:
 - @quality-gates - Quality enforcement
 - @systematic-debugging - Bug investigation
 
+### Planning Agents (sigma-planner)
+- @deep-research - **ALWAYS FIRST** - Firecrawl + EXA research
+- @brainstorming - One-question-at-a-time (after research)
+- @executing-plans - Batch execution with checkpoints
+
 ### Research Agents (sigma-researcher)
-- @sigmavue-research - Deep research
+- @deep-research - Firecrawl + EXA + Ref MCP orchestration
+- @sigmavue-research - Deep research patterns
 - @remembering-conversations - Context lookup
 ```
 

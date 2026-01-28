@@ -94,6 +94,64 @@ Generate the root `.cursorrules` file as a **Router** that dynamically imports `
 
 **Always generate or update `CLAUDE.md` with the swarm-first philosophy section.**
 
+### Required CLAUDE.md Sections
+
+```markdown
+## Execution Philosophy: Swarm-First
+
+**Never work solo. Always use agent swarms for PRD execution.**
+
+### Swarm Sizing
+| PRD Complexity | Agent Count | Parallel Streams |
+|----------------|-------------|------------------|
+| Simple (1-3 features) | 5 agents | 2-3 |
+| Medium (4-7 features) | 10 agents | 4-5 |
+| Complex (8+ features) | 15-20 agents | 6-8 |
+
+### Research-First Planning
+
+**CRITICAL: Before ANY planning session:**
+1. Invoke `deep-research` skill automatically
+2. Use Firecrawl for competitor/market research
+3. Use EXA for technical patterns and code examples
+4. Synthesize findings BEFORE brainstorming
+
+### Automatic Skill Invocation
+
+Before executing ANY task, match keywords and auto-invoke skills:
+
+| Task Contains | Auto-Invoke Skill |
+|---------------|-------------------|
+| plan, design, ideate, new feature | `deep-research` THEN `brainstorming` |
+| architecture, technical decision | `deep-research` first |
+| component, UI, *.tsx, styling | `frontend-design` |
+| API, endpoint, server action | `verification-before-completion` |
+| test, verify, audit, "done" | `verification-before-completion` |
+| docs, README, changelog, commit | `writing-clearly` |
+| marketing, launch, SEO, copy | `marketing-*` skills |
+| 3+ independent subtasks | `dispatching-parallel-agents` |
+
+### Agent Skill Assignment
+
+When distributing to swarm, assign skills by role:
+
+**Planning Agents:** deep-research, brainstorming, executing-plans
+**Frontend Agents:** frontend-design, react-performance
+**Backend Agents:** verification-before-completion
+**QA Agents:** verification-before-completion, tdd-skill-creation
+**Documentation Agents:** writing-clearly
+**Marketing Agents:** deep-research, marketing-copywriting, marketing-psychology, seo-audit
+
+## Skills by Category
+
+{{SKILLS_BY_CATEGORY}}
+<!-- Step 13 will populate this with project-specific skill matrix -->
+```
+
+### AGENTS.md Generation (for Claude Code, OpenCode, Droid)
+
+Also generate `AGENTS.md` with identical swarm + skill sections for CLI tools.
+
 
 ## Workflow
 [Project workflow steps]

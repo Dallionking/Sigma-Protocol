@@ -403,16 +403,25 @@ Strategy: Ref (docs) -> Exa (code) | Context7 -> Perplexity (backup)
 
 CRITICAL RULE: Never work solo. Always delegate to sub-agents.
 
+### Research-First Planning
+
+**CRITICAL: Before ANY planning session:**
+1. Invoke `deep-research` skill automatically
+2. Use Firecrawl for competitor/market research
+3. Use EXA for technical patterns and code examples
+4. Synthesize findings BEFORE brainstorming
+
 ### Mandatory Delegation Rules
 1. Always spawn sub-agents using Task tool
 2. Match agents to domains
 3. Invoke skills explicitly (@skill-name)
 4. Parallelize when possible
+5. **Planning agents MUST invoke deep-research first**
 
 ### Agent Registry
 | Task Type | Primary Agent | Supporting Agents |
 |-----------|---------------|-------------------|
-| Planning | sigma-planner | sigma-researcher |
+| Planning | sigma-planner | sigma-researcher + deep-research |
 | Code Implementation | sigma-executor | sigma-backend, sigma-frontend |
 | Bug Fixes | sigma-executor | sigma-reviewer |
 | Research | sigma-researcher | — |
@@ -458,10 +467,18 @@ Loop: Build -> Test -> Fix -> Repeat until green.
 
 CRITICAL RULE: Never work solo. Always delegate to sub-agents.
 
+### Research-First Planning
+
+**CRITICAL: Before ANY planning session:**
+1. Invoke `deep-research` skill automatically
+2. Use Firecrawl for competitor/market research  
+3. Use EXA for technical patterns and code examples
+4. Synthesize findings BEFORE brainstorming
+
 [Include full swarm-first section]
 
 ## Agent Registry
-[Include agent registry]
+[Include agent registry - Planning agents must invoke deep-research]
 
 ## Skills Registry ({{SKILL_COUNT}} Skills by Category)
 {{SKILLS_BY_CATEGORY}}

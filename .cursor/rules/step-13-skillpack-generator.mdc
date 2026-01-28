@@ -117,6 +117,104 @@ Plugin skills should match project-local skills (same overlay + triggers).
 
 **After generating project skills, fill the placeholders in CLAUDE.md created by Step 12.**
 
+### 7.1 Generate Categorized Skill Matrix
+
+Replace `{{SKILLS_BY_CATEGORY}}` with:
+
+```markdown
+### Research & Planning
+| Skill | Auto-Trigger | Description |
+|-------|--------------|-------------|
+| deep-research | plan, architecture, investigate | Firecrawl + EXA + Ref MCP orchestration |
+| brainstorming | plan, design, ideate | One-question-at-a-time exploration (AFTER research) |
+| executing-plans | implement-prd, plan | Batch execution with checkpoints |
+| marketing-psychology | offer, pricing, conversion | 70+ mental models for marketing |
+
+### Frontend & UI
+| Skill | Auto-Trigger | Description |
+|-------|--------------|-------------|
+| frontend-design | *.tsx, component, UI | CVA patterns, style vocabulary |
+| react-performance | performance, slow, audit | Vercel's 57 optimization rules |
+| marketing-copywriting | landing-page, copy | Conversion copywriting framework |
+
+### Backend & QA
+| Skill | Auto-Trigger | Description |
+|-------|--------------|-------------|
+| verification-before-completion | done, complete, ship | Evidence before claims |
+| tdd-skill-creation | new-skill, test | TDD for skill documentation |
+
+### Documentation
+| Skill | Auto-Trigger | Description |
+|-------|--------------|-------------|
+| writing-clearly | docs, README, commit | Strunk's rules, no AI-isms |
+
+### Orchestration
+| Skill | Auto-Trigger | Description |
+|-------|--------------|-------------|
+| subagent-driven-development | orchestrate, stream | Fresh subagent per task |
+| dispatching-parallel-agents | swarm, parallel | One agent per problem domain |
+
+### Marketing (Commands 01-23)
+| Skill | Auto-Trigger | Description |
+|-------|--------------|-------------|
+| marketing-copywriting | 07-landing-page-copy | Headlines, CTAs, page structure |
+| marketing-psychology | 04-offer-architect | Buyer psychology, pricing |
+| seo-audit | 16-seo-content | Technical + on-page SEO |
+| launch-strategy | 10-launch-playbook | 5-phase launch, ORB framework |
+```
+
+### 7.2 Generate AGENTS.md for CLI Tools
+
+Create/update `AGENTS.md` with identical content for:
+- Claude Code
+- OpenCode
+- Factory Droid
+- Gemini CLI
+
+```markdown
+# AGENTS.md - Swarm Execution Guide
+
+## Default Mode: Swarm-First
+
+When executing PRDs or task backlogs:
+1. Read skill-registry skill first
+2. Categorize all tasks by type
+3. Assign skills to agents based on category
+4. Distribute to swarm (minimum 5 agents)
+5. Execute in parallel
+
+## Research-First Planning
+
+**CRITICAL: Before ANY planning session:**
+1. Invoke `deep-research` skill automatically
+2. Use Firecrawl/EXA for research
+3. Synthesize findings BEFORE brainstorming
+
+## Skill Auto-Invocation
+
+Before starting ANY task, check task keywords and invoke matching skill:
+- Planning keywords → deep-research THEN brainstorming
+- Architecture keywords → deep-research first
+- Frontend keywords → frontend-design
+- Completion keywords → verification-before-completion
+- Documentation keywords → writing-clearly
+
+## Skills by Category
+[Same matrix as CLAUDE.md]
+```
+
+### 7.3 Add @invokes Metadata to PRD.json
+
+For Ralph Loop integration, add skill hints:
+
+```json
+{
+  "task_id": "feat-001",
+  "title": "Build dashboard UI",
+  "@invokes": ["frontend-design", "react-performance"],
+  "type": "frontend"
+}
+```
 
 ### 7.4 Verification
 
@@ -125,6 +223,11 @@ Plugin skills should match project-local skills (same overlay + triggers).
 if grep -q "{{SKILLS_BY_CATEGORY}}" CLAUDE.md; then
   echo "ERROR: Placeholder not replaced"
   exit 1
+fi
+
+# Check AGENTS.md was generated
+if [ ! -f "AGENTS.md" ]; then
+  echo "WARNING: AGENTS.md not generated for CLI tools"
 fi
 
 echo "CLAUDE.md skill section populated with [N] skills"
