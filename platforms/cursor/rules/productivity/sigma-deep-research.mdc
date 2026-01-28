@@ -1,0 +1,56 @@
+---
+description: "Comprehensive research orchestration using Firecrawl, EXA, Ref MCP. Auto-invoke before planning."
+globs: ["docs/**/*.md", "*.md"]
+alwaysApply: false
+---
+
+# Deep Research Skill
+
+Comprehensive research orchestration for planning and implementation decisions.
+
+## Auto-Invoke Triggers
+
+This skill MUST be invoked automatically when:
+- Entering plan mode
+- Starting any planning session
+- Making architecture decisions
+- Implementing unfamiliar features
+
+## MCP Tool Selection
+
+| Research Need | Primary Tool | Fallback |
+|---------------|--------------|----------|
+| Web scraping | `firecrawl_scrape` | `webfetch` |
+| Site crawling | `firecrawl_crawl` | Manual links |
+| Semantic search | `exa_web_search_exa` | `web_search` |
+| Code patterns | `exa_get_code_context_exa` | GitHub search |
+| Documentation | `Ref_ref_search_documentation` | Official docs |
+
+## Research Process
+
+1. **IDENTIFY** research needs
+2. **EXECUTE** parallel research (Firecrawl + EXA + Ref)
+3. **SYNTHESIZE** findings before brainstorming
+
+## Source Credibility
+
+| Factor | Weight |
+|--------|--------|
+| Recency | 30% |
+| Authority | 25% |
+| Relevance | 25% |
+| Depth | 20% |
+
+## Planning Integration
+
+When planning mode activates:
+
+1. READ the planning request
+2. IDENTIFY research needs automatically
+3. EXECUTE research using this skill
+4. PASS findings to brainstorming skill
+5. THEN begin planning with context
+
+---
+
+*Research BEFORE planning. Evidence BEFORE decisions.*
