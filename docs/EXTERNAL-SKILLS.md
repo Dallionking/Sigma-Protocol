@@ -1,7 +1,7 @@
 # External Skills Reference
 
-**Version:** 5.0
-**Last Updated:** 2026-01-23
+**Version:** 1.0.0-alpha.1
+**Last Updated:** 2026-02-04
 **Maintainer:** Sigma Protocol Team
 
 ---
@@ -238,10 +238,11 @@ External skills are distributed across all supported platforms:
 
 | Platform | Location | Count | Format |
 |----------|----------|-------|--------|
-| Claude Code | `platforms/claude-code/skills/<name>/SKILL.md` | 148 | Full content |
-| OpenCode | `platforms/opencode/skill/<name>/SKILL.md` | 149 | Full content |
-| Cursor | `platforms/cursor/rules/<category>/sigma-<name>.mdc` | 149 | Condensed |
-| Local Project | `.claude/skills/<name>.md` | 162 | Flat files |
+| Claude Code | `platforms/claude-code/skills/<name>/SKILL.md` | 151 | Full content |
+| OpenCode | `platforms/opencode/skill/<name>/SKILL.md` | 167 | Full content |
+| Codex | `platforms/codex/skills/<name>/SKILL.md` | 180 | Full content |
+| Cursor | `platforms/cursor/rules/<category>/sigma-<name>.mdc` | 27 rules | Condensed |
+| Local Project | `.claude/skills/<name>.md` | 179 | Flat files |
 
 ---
 

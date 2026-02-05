@@ -4,7 +4,7 @@
 
 import fs from "fs-extra";
 import path from "path";
-import { ROOT_DIR } from "../constants.js";
+import { ROOT_DIR, PLATFORMS } from "../constants.js";
 import { countFilesByExt, findSkillDirs } from "../utils/files.js";
 import { transformToCursorRule } from "../platform/cursor.js";
 
@@ -334,5 +334,56 @@ export async function installOpenCodeSkills(targetDir, spinner, results) {
     results.opencode.installed++;
 
     spinner.text = `OpenCode: Installing ${skillName}...`;
+  }
+}
+
+/**
+ * Install Codex Foundation Skills
+ * Codex prefers .codex/skills, but we also install .agents/skills for legacy compatibility
+ * @param {string} targetDir - Target directory
+ * @param {object} spinner - Ora spinner instance
+ * @param {object} results - Results tracking object
+ */
+export async function installCodexSkills(targetDir, spinner, results) {
+  const sourceDir = path.join(ROOT_DIR, "platforms", "codex", "skills");
+  const config = PLATFORMS.codex;
+  const destDirs = [config.skillsDir, config.legacySkillsDir].filter(Boolean).map((dir) => path.join(targetDir, dir));
+
+  if (!(await fs.pathExists(sourceDir))) {
+    throw new Error(`No Codex skills found at ${sourceDir}`);
+  }
+
+  for (const destDir of destDirs) {
+    await fs.ensureDir(destDir);
+  }
+
+  // Get all skill directories (supports nested categories)
+  const skillDirs = await findSkillDirs(sourceDir);
+
+  for (const srcPath of skillDirs) {
+    const skillName = path.basename(srcPath);
+    const destPaths = destDirs.map((dir) => path.join(dir, skillName));
+
+    const validation = await validateSkillDirectory(srcPath, skillName);
+    if (!validation.valid) {
+      spinner.text = `Codex: Skipping invalid skill ${skillName} (${validation.error})`;
+      results.codex.skipped++;
+      continue;
+    }
+
+    let copied = false;
+    for (const destPath of destPaths) {
+      if (!(await fs.pathExists(destPath))) {
+        await fs.copy(srcPath, destPath);
+        copied = true;
+      }
+    }
+
+    if (copied) {
+      results.codex.installed++;
+      spinner.text = `Codex: Installing ${skillName}...`;
+    } else {
+      results.codex.skipped++;
+    }
   }
 }

@@ -46,7 +46,7 @@ export async function buildOpenCode(targetDir, modules, spinner, installOpenCode
 
         const originalContent = await fs.readFile(filePath, "utf8");
 
-        // Generate OpenCode command (thin wrapper)
+        // Generate OpenCode command (full prompt injection, no agent indirection)
         const openCodeCommand = transformToOpenCodeCommand(
           originalContent,
           file,
@@ -151,34 +151,16 @@ export function transformToOpenCodeCommand(originalContent, filename, module) {
     }
   }
 
-  // OpenCode command - NO shell injection for security
+  // OpenCode command - full prompt injection (no agent indirection)
+  if (originalContent.startsWith("---\n")) {
+    return originalContent;
+  }
+
   return `---
 description: ${description}
-agent: ${filename}
 ---
 
-# /${filename}
-
-## Context
-
-This command invokes the **@${filename}** agent with full Sigma Protocol methodology.
-
-The agent will automatically:
-- Read project structure from the file system
-- Check for existing specs in \`docs/specs/\`
-- Check for PRDs in \`docs/prds/\`
-- Review recent git history if available
-
-## Your Input
-
-$ARGUMENTS
-
----
-
-**Usage:** \`/${filename} [your input]\`
-
-The agent has access to file read/write, bash (with safety restrictions), and web fetch tools.
-`;
+${originalContent}`;
 }
 
 /**
@@ -213,7 +195,7 @@ export function transformToOpenCodeAgent(originalContent, filename, module) {
   // Build OpenCode agent format with FULL original content
   const openCodeAgent = `---
 description: "${existingFrontmatter.description || `Sigma ${module}/${filename}`}"
-mode: subagent
+mode: primary
 model: anthropic/claude-sonnet-4-20250514
 temperature: 0.3
 tools:

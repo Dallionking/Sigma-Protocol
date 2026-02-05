@@ -134,13 +134,14 @@ docs/notebooklm/
 commands-private-archive/
 
 # Research & Transcripts (not for public repo)
-Trasnscripts/
+Transcripts/
 *transcript*
 Ralph-wiggum-transcript
 marketing-book-research/
 
 # Analysis directories & generated outputs
 docs/prds/
+docs/sessions/
 
 # Planning & temporary analysis docs
 CLI-ENHANCEMENT-ANALYSIS.md
@@ -171,4 +172,3 @@ CHANGELOG-*.md
 
 # Archived documentation
 .archive/
-package-lock.json

@@ -57,8 +57,8 @@ export async function buildClaudeCode(targetDir, modules, spinner, installClaude
           claudeCodeContent
         );
 
-        // Write as command (thin wrapper that invokes the agent)
-        const commandContent = generateClaudeCodeCommand(file, module);
+        // Write as command (full prompt injection, no agent indirection)
+        const commandContent = generateClaudeCodeCommand(file, module, originalContent);
         await fs.writeFile(
           path.join(targetDir, config.commandsDir, `${file}.md`),
           commandContent
@@ -184,7 +184,18 @@ ${bodyContent}
  * @param {string} module - Module name
  * @returns {string} - Command content
  */
-export function generateClaudeCodeCommand(filename, module) {
+export function generateClaudeCodeCommand(filename, module, originalContent) {
+  if (originalContent) {
+    if (originalContent.startsWith("---\n")) {
+      return originalContent;
+    }
+    return `---
+description: "Run Sigma ${module}/${filename}"
+---
+
+${originalContent}`;
+  }
+
   return `---
 description: "Run Sigma ${module}/${filename}"
 allowed-tools:

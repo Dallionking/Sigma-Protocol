@@ -1,36 +1,41 @@
 ---
-description: "Run Sigma steps/step-7-interface-states"
+version: "2.2.0"
+last_updated: "2026-01-07"
+changelog:
+  - "2.2.0: Added react-performance.md reference for state management optimization during transitions"
+  - "2.1.0: Added SwiftUI state patterns (ViewState enum, AsyncContentView, animation transitions, symbol effects)"
+  - "2.0.0: Renumbered from Step 5 to Step 7 in 13-step workflow"
+  - "1.0.0: Initial release as Step 5"
+description: "Step 7: Interface States & User Journey Design - Comprehensive state specifications covering empty, loading, error, success, partial states"
 allowed-tools:
-  - Read
-  - Write
-  - Edit
-  - Bash
-  - WebFetch
+  # PRIMARY MCP Tools (Use First)
+  - mcp_Ref_ref_search_documentation
+  - mcp_Ref_ref_read_url
+  - mcp_exa_web_search_exa
+  - mcp_exa_get_code_context_exa
+  - mcp_exa_crawling_exa
+  - mcp_exa_company_research_exa
+  - mcp_exa_linkedin_search_exa
+  - mcp_exa_deep_researcher_start
+  - mcp_exa_deep_researcher_check
+  
+  # BACKUP MCP Tools (Use only if primary fails)
+  - mcp_perplexity-ask_perplexity_ask
+  
+  # OTHER TOOLS
+  - web_search
+  - read_file
+  - write
+  - list_dir
+  - run_terminal_cmd
+parameters:
+  - --depth
 ---
-
-# /step-7-interface-states
-
-Invoke the **step-7-interface-states** agent from Sigma Protocol.
-
-This command runs the full step-7-interface-states workflow including:
-- All HITL (Human-in-the-Loop) checkpoints
-- MCP research integration
-- Quality verification gates
-
-**Usage:** `/step-7-interface-states [your input here]`
-
-# step-7-interface-states
-
-**Source:** Sigma Protocol steps module
-**Version:** 2.2.0
-
----
-
 
 # /step-7-interface-states — Interface State Specifications & User Journey Design (Staff UX Lead + $1B Valuation Context)
 
-**Mission**
-Run a complete, interactive **Step-5: Interface States - Detailed Specs** for a startup project in one go.
+**Mission**  
+Run a complete, interactive **Step-5: Interface States → Detailed Specs** for a startup project in one go. 
 **Valuation Context:** You are a **Staff UX Lead at a FAANG Company**. You obsess over **state coverage**. A missing empty state or a generic error message is a **critical failure**.
 
 ---
@@ -46,7 +51,7 @@ Run a complete, interactive **Step-5: Interface States - Detailed Specs** for a 
 | Component | Trigger | Rules | Feedback | Loops & Modes |
 |-----------|---------|-------|----------|---------------|
 | **Definition** | What initiates | Logic that runs | What user sees/feels | Repetition/variations |
-| **Example** | Button click | Validate, submit | Spinner - success | Retry on error |
+| **Example** | Button click | Validate, submit | Spinner → success | Retry on error |
 
 **The Three Questions for EVERY Micro-interaction:**
 1. **Purpose:** Is it necessary? (If not, remove it)
@@ -68,7 +73,7 @@ Each technical state should map to an **emotional state**:
 
 ### Framework 3: Motion Design Principles (Make It Feel Alive)
 
-> **Animation Quality Reference:** See `/commands/MOBILE_APP_DESIGN_LEARNINGS.md` for premium animation benchmarks and quality direction.
+> **📚 Animation Quality Reference:** See `/commands/MOBILE_APP_DESIGN_LEARNINGS.md` for premium animation benchmarks and quality direction.
 
 **Microsoft Fluent 2 Motion Principles:**
 1. **Functional:** Motion serves a purpose (guide attention, show relationships, confirm actions)
@@ -87,7 +92,7 @@ Each technical state should map to an **emotional state**:
 
 **The 60fps Rule:** Only animate `transform` and `opacity`. Never animate `width`, `height`, `margin`, `padding`.
 
-> **React Performance Reference:** State changes can trigger expensive re-renders. For patterns on memoization, state colocation, and preventing cascading re-renders during state transitions, see `/src/foundation-skills/react-performance.md`.
+> **📚 React Performance Reference:** State changes can trigger expensive re-renders. For patterns on memoization, state colocation, and preventing cascading re-renders during state transitions, see `/src/foundation-skills/react-performance.md`.
 
 ---
 
@@ -99,12 +104,12 @@ Each technical state should map to an **emotional state**:
 
 | Technical State | User Emotion | Motion Character | Animation Intensity |
 |-----------------|--------------|------------------|---------------------|
-| **Empty - Loading** | Anticipation | Smooth fade, skeleton shimmer | Medium |
-| **Loading - Populated** | Relief, productivity | Staggered reveal, content slides in | Medium-High |
-| **Populated - Error** | Frustration | Shake, red flash (brief) | Low (don't add to frustration) |
-| **Error - Loading** (retry) | Hope | Smooth transition, spinner | Medium |
-| **Action - Success** | Accomplishment | Bounce, checkmark, optional confetti | High (celebrate!) |
-| **Online - Offline** | Concern | Gentle slide-down banner | Low (don't alarm) |
+| **Empty → Loading** | Anticipation | Smooth fade, skeleton shimmer | Medium |
+| **Loading → Populated** | Relief, productivity | Staggered reveal, content slides in | Medium-High |
+| **Populated → Error** | Frustration | Shake, red flash (brief) | Low (don't add to frustration) |
+| **Error → Loading** (retry) | Hope | Smooth transition, spinner | Medium |
+| **Action → Success** | Accomplishment | Bounce, checkmark, optional confetti | High (celebrate!) |
+| **Online → Offline** | Concern | Gentle slide-down banner | Low (don't alarm) |
 
 #### Animation Libraries for State Transitions
 
@@ -147,7 +152,7 @@ struct AsyncContentView<T, Content: View, LoadingView: View, ErrorView: View>: V
     @ViewBuilder let content: (T) -> Content
     @ViewBuilder let loading: () -> LoadingView
     @ViewBuilder let error: (Error) -> ErrorView
-
+    
     var body: some View {
         switch state {
         case .idle:
@@ -171,7 +176,7 @@ struct AsyncContentView<T, Content: View, LoadingView: View, ErrorView: View>: V
 // Usage
 struct UserListView: View {
     @State private var state: ViewState<[User]> = .loading
-
+    
     var body: some View {
         AsyncContentView(
             state: state,
@@ -228,41 +233,41 @@ Image(systemName: "checkmark.circle.fill")
     .foregroundStyle(.green)
 ```
 
-**Reference:** `/docs/swiftui/SWIFTUI-BEST-PRACTICES.md` Animation section
+**Reference:** `/docs/swiftui/SWIFTUI-BEST-PRACTICES.md` → Animation section
 
 #### Spring Physics for State Changes
 
 ```typescript
 // State-specific spring presets
 export const stateTransitions = {
-  // Loading - Populated (content reveal)
-  contentReveal: {
-    type: "spring",
-    stiffness: 300,
+  // Loading → Populated (content reveal)
+  contentReveal: { 
+    type: "spring", 
+    stiffness: 300, 
     damping: 25,
-    staggerChildren: 0.05
+    staggerChildren: 0.05 
   },
-
+  
   // Error shake (subtle, not aggressive)
-  errorShake: {
-    type: "spring",
-    stiffness: 500,
+  errorShake: { 
+    type: "spring", 
+    stiffness: 500, 
     damping: 10,
     // Use with x: [0, -10, 10, -10, 10, 0]
   },
-
+  
   // Success bounce (celebratory)
-  successBounce: {
-    type: "spring",
-    stiffness: 400,
-    damping: 15
+  successBounce: { 
+    type: "spring", 
+    stiffness: 400, 
+    damping: 15 
   },
-
+  
   // Modal/overlay entry
-  overlayEntry: {
-    type: "spring",
-    stiffness: 350,
-    damping: 30
+  overlayEntry: { 
+    type: "spring", 
+    stiffness: 350, 
+    damping: 30 
   },
 };
 ```
@@ -271,8 +276,8 @@ export const stateTransitions = {
 
 | State Change | Static/Generic | Alive/Premium |
 |--------------|----------------|---------------|
-| **Empty - First Item** | Item appears instantly | Fade-in + slight bounce, celebration micro-animation |
-| **Loading content** | Spinner only | Skeleton shimmer - staggered content reveal |
+| **Empty → First Item** | Item appears instantly | Fade-in + slight bounce, celebration micro-animation |
+| **Loading content** | Spinner only | Skeleton shimmer → staggered content reveal |
 | **Data refresh** | Flash/instant swap | Smooth cross-fade, numbers animate to new values |
 | **Error appearance** | Red text appears | Shake + red border pulse (1-2 cycles max) |
 | **Success confirmation** | "Saved" text | Checkmark animation + brief green flash + optional confetti |
@@ -284,7 +289,7 @@ export const stateTransitions = {
 
 When implementing state changes, consider:
 
-- [ ] **Does loading to populated feel like content is "arriving"?** (Not just appearing)
+- [ ] **Does loading → populated feel like content is "arriving"?** (Not just appearing)
 - [ ] **Do errors provide gentle feedback?** (Shake once or twice, not aggressively)
 - [ ] **Are success moments celebrated proportionally?** (Quick save = checkmark, milestone = confetti)
 - [ ] **Do data updates animate?** (Numbers roll, text morphs, not instant swap)
@@ -298,7 +303,7 @@ When implementing state changes, consider:
 
 ---
 
-### Framework 3.6: State Transition Implementation Quality NEW
+### Framework 3.6: State Transition Implementation Quality ⭐ NEW
 
 > **Philosophy:** This section ensures state transitions are **implemented well** (technical quality). Style is determined by Design DNA in Step 3; this section ensures that whatever style is chosen, it's implemented smoothly, performantly, and accessibly.
 
@@ -311,13 +316,13 @@ When implementing state changes, consider:
 
 | Transition Type | Max Duration | Target FPS | Properties Allowed |
 |-----------------|--------------|------------|-------------------|
-| **Empty - Loading** | 150ms | 60fps | opacity, transform |
-| **Loading - Populated** | 300ms | 60fps | opacity, transform |
-| **Populated - Error** | 200ms | 60fps | opacity, transform, border-color |
-| **Action - Success** | 400ms | 60fps | opacity, transform, scale |
-| **Any - Offline Banner** | 250ms | 60fps | transform (translateY), opacity |
+| **Empty → Loading** | 150ms | 60fps | opacity, transform |
+| **Loading → Populated** | 300ms | 60fps | opacity, transform |
+| **Populated → Error** | 200ms | 60fps | opacity, transform, border-color |
+| **Action → Success** | 400ms | 60fps | opacity, transform, scale |
+| **Any → Offline Banner** | 250ms | 60fps | transform (translateY), opacity |
 
-### NEVER animate during state transitions:
+### ⚠️ NEVER animate during state transitions:
 - width, height (causes layout thrashing)
 - margin, padding (causes reflow)
 - top, left, right, bottom (use transform instead)
@@ -379,7 +384,7 @@ const StatefulComponent = ({ status, data, error }) => {
           <SkeletonLoader />
         </motion.div>
       )}
-
+      
       {status === 'error' && (
         <motion.div
           key="error"
@@ -391,7 +396,7 @@ const StatefulComponent = ({ status, data, error }) => {
           <ErrorState error={error} />
         </motion.div>
       )}
-
+      
       {status === 'success' && (
         <motion.div
           key="populated"
@@ -414,16 +419,16 @@ const StatefulComponent = ({ status, data, error }) => {
 // REQUIRED: Always respect user preference
 const useStateTransition = () => {
   const prefersReduced = usePrefersReducedMotion();
-
+  
   return {
-    contentReveal: prefersReduced
+    contentReveal: prefersReduced 
       ? { duration: 0 }
       : { type: "spring", stiffness: 300, damping: 25 },
-
+    
     errorShake: prefersReduced
       ? { duration: 0 }
       : { type: "spring", stiffness: 500, damping: 10 },
-
+    
     successBounce: prefersReduced
       ? { duration: 0 }
       : { type: "spring", stiffness: 400, damping: 15 },
@@ -437,7 +442,7 @@ const useStateTransition = () => {
 // GOOD: Skeleton matches final content to prevent layout shift
 const ContentCard = ({ isLoading, data }) => {
   const cardStyle = "h-[120px] w-full rounded-lg"; // Fixed dimensions
-
+  
   if (isLoading) {
     return (
       <div className={cardStyle}>
@@ -447,7 +452,7 @@ const ContentCard = ({ isLoading, data }) => {
       </div>
     );
   }
-
+  
   return (
     <div className={cardStyle}>
       <h3>{data.title}</h3>
@@ -467,10 +472,10 @@ describe('State Transition Quality', () => {
   it('skeleton matches content dimensions', () => {
     const { rerender } = render(<Component isLoading={true} />);
     const skeletonHeight = screen.getByTestId('skeleton').offsetHeight;
-
+    
     rerender(<Component isLoading={false} data={mockData} />);
     const contentHeight = screen.getByTestId('content').offsetHeight;
-
+    
     // Heights should be within 5% (no jarring jump)
     expect(Math.abs(skeletonHeight - contentHeight) / contentHeight).toBeLessThan(0.05);
   });
@@ -479,10 +484,10 @@ describe('State Transition Quality', () => {
   it('respects prefers-reduced-motion for state changes', () => {
     mockMatchMedia('(prefers-reduced-motion: reduce)', true);
     render(<Component />);
-
+    
     // Trigger state change
     fireEvent.click(screen.getByRole('button'));
-
+    
     // Transition should be instant
     expect(screen.getByTestId('new-state')).toBeVisible();
     // No waiting for animation
@@ -492,11 +497,11 @@ describe('State Transition Quality', () => {
   it('error shake animation is brief', async () => {
     render(<Component />);
     triggerError();
-
+    
     const startTime = performance.now();
     await waitFor(() => screen.getByTestId('error-state'));
     const animationDuration = performance.now() - startTime;
-
+    
     // Error animation should be < 500ms
     expect(animationDuration).toBeLessThan(500);
   });
@@ -506,10 +511,10 @@ describe('State Transition Quality', () => {
     render(<Component />);
     const button = screen.getByRole('button');
     button.focus();
-
+    
     fireEvent.click(button); // Triggers state change
     await waitFor(() => screen.getByTestId('new-state'));
-
+    
     // Focus should still be on button or moved intentionally
     expect(document.activeElement).toBe(button);
   });
@@ -572,11 +577,11 @@ describe('State Transition Quality', () => {
 | **Optimistic UI** | Instant-feeling actions (like, toggle) | "Done!" — removes waiting entirely |
 
 **Loading Copy Examples:**
-- "Loading..." (generic, boring)
-- "Please wait..." (passive, no info)
-- "Generating your PRD... ~15 seconds" (specific, time estimate)
-- "Crunching the numbers..." (personality, activity)
-- "Almost there..." (at 80%+, builds anticipation)
+- ❌ "Loading..." (generic, boring)
+- ❌ "Please wait..." (passive, no info)
+- ✅ "Generating your PRD... ~15 seconds" (specific, time estimate)
+- ✅ "Crunching the numbers..." (personality, activity)
+- ✅ "Almost there..." (at 80%+, builds anticipation)
 
 ### Framework 6: Error States as Trust Builders
 
@@ -593,10 +598,10 @@ describe('State Transition Quality', () => {
 ```
 [What happened] + [What to do next]
 
-"We couldn't save your changes. Check your connection and try again."
-"That email is already registered. Try signing in instead."
-"Error 500" (meaningless)
-"Oops! Something went wrong!" (cutesy but useless)
+✅ "We couldn't save your changes. Check your connection and try again."
+✅ "That email is already registered. Try signing in instead."
+❌ "Error 500" (meaningless)
+❌ "Oops! Something went wrong!" (cutesy but useless)
 ```
 
 ### Framework 7: Success States as Celebration Moments
@@ -607,16 +612,16 @@ describe('State Transition Quality', () => {
 |--------------|-----------|--------------|
 | **Quick action** (save, update) | Checkmark fade-in | "Saved" (simple, fast) |
 | **Milestone** (complete onboarding) | Confetti, bounce | "You're all set! [Next step]" |
-| **Achievement** (first project) | Badge reveal | "First project created!" |
+| **Achievement** (first project) | Badge reveal | "🎉 First project created!" |
 | **Purchase** | Satisfying confirmation | "Welcome! Your account is ready." |
 
 **Success Copy Formula:**
 ```
 [Acknowledge the win] + [Clear next step]
 
-"Project created! Invite your team to start collaborating."
-"Saved. Your changes are live."
-"Success!" (no context, no next step)
+✅ "Project created! Invite your team to start collaborating."
+✅ "Saved. Your changes are live."
+❌ "Success!" (no context, no next step)
 ```
 
 ### Framework 8: Micro-interaction Patterns Library
@@ -675,7 +680,7 @@ This command:
 ---
 
 ## Preflight (auto)
-1) **Get date**: run `date +"%Y-%m-%d"` and capture `TODAY`.
+1) **Get date**: run `date +"%Y-%m-%d"` and capture `TODAY`.  
 2) **Create folders (idempotent)** if missing:
    - `/docs/states`, `/docs/flows`, `/docs/screens`
 3) **Writing policy**: For large files, **write in small chunks** to avoid editor limits.
@@ -750,11 +755,11 @@ This command:
 ```
 
 **Execution Rules**:
-- Check off EACH task as you complete it
-- Do NOT skip ahead - complete tasks in order
-- Do NOT proceed to next phase until user approves
-- Cover ALL states for ALL screens methodically
-- Take notes to maintain context
+- ✅ Check off EACH task as you complete it
+- ✅ Do NOT skip ahead - complete tasks in order
+- ✅ Do NOT proceed to next phase until user approves
+- ✅ Cover ALL states for ALL screens methodically
+- ✅ Take notes to maintain context
 
 ---
 
@@ -791,13 +796,13 @@ This command:
    - **Offline state** (no network, cached data, sync pending - if applicable)
 
 2) Identify **state transition matrix**:
-   - Empty - Loading - Populated/Error
-   - Populated - Loading - Updated Populated/Error
-   - Error - Loading - Populated/Error (retry logic)
-   - Offline - Loading - Populated/Error (reconnection)
+   - Empty → Loading → Populated/Error
+   - Populated → Loading → Updated Populated/Error
+   - Error → Loading → Populated/Error (retry logic)
+   - Offline → Loading → Populated/Error (reconnection)
 
-**HITL checkpoint** Confirm state model and transitions.
-**Prompt:** "Approve state model? Reply `approve states` or `revise: ...`."
+**HITL checkpoint →** Confirm state model and transitions.  
+**Prompt:** "Approve state model? Reply `approve states` or `revise: …`."
 
 ---
 
@@ -808,12 +813,12 @@ This command:
 **Tone**: Helpful, calm, plain-English. Friendly but professional. Empathetic without cutesy fillers.
 
 **Guidelines**:
-- **Prefer direct, second person**: "Add your first project" (not "You should add...")
-- **Light encouragement OK**: "Let's add your first project" is fine
-- **Avoid**: "Oops!", "Uh-oh!", jokes, sarcasm, or overly cutesy language
-- **Error pattern**: State what happened + what to do next
-- **Loading pattern**: Be specific with time if possible ("~3 sec")
-- **Success pattern**: Acknowledge + next step
+- ✅ **Prefer direct, second person**: "Add your first project" (not "You should add...")
+- ✅ **Light encouragement OK**: "Let's add your first project" is fine
+- ❌ **Avoid**: "Oops!", "Uh-oh!", jokes, sarcasm, or overly cutesy language
+- ✅ **Error pattern**: State what happened + what to do next
+- ✅ **Loading pattern**: Be specific with time if possible ("~3 sec")
+- ✅ **Success pattern**: Acknowledge + next step
 
 ### F-K Readability Requirement
 **Target**: Flesch-Kincaid grade 5-8 for ALL UI microcopy.
@@ -824,26 +829,26 @@ This command:
 
 #### Empty State Copy Examples:
 ```
-GOOD:
+✅ GOOD:
 - "No projects yet. Let's create your first one!"
 - "Add your first project."
 - "Your dashboard is waiting. Add your first [item] to get started."
 - "Nothing here yet. [Action] to begin."
 
-BAD:
+❌ BAD:
 - "Oops! Nothing here!" (too cutesy)
 - "The project list is currently empty." (too formal)
 ```
 
 #### Loading State Copy Examples:
 ```
-GOOD:
+✅ GOOD:
 - "Generating your PRD... ~15 seconds"
-- "Importing data... ~3 sec"
+- "Importing data… ~3 sec"
 - "Crunching the numbers... almost there"
 - "Loading [specific item]..."
 
-BAD:
+❌ BAD:
 - "Please wait..." (vague)
 - "Loading..." (too generic, add context)
 - "Hang tight!" (too casual, no time estimate)
@@ -851,14 +856,14 @@ BAD:
 
 #### Error State Copy Examples:
 ```
-GOOD (Pattern: What happened + What to do):
+✅ GOOD (Pattern: What happened + What to do):
 - "We couldn't save. Try again or check your connection."
 - "Upload failed. File must be under 10MB. Try a smaller file."
 - "Your session expired. Log in again to continue."
 - "[Field] is required." (for validation)
 - "[Field] must be a valid [type]." (e.g., "Email must be a valid email address")
 
-BAD:
+❌ BAD:
 - "Error 500" (no context, not helpful)
 - "Oops! Something broke!" (cutesy + unclear)
 - "An error occurred." (vague, no recovery action)
@@ -866,13 +871,13 @@ BAD:
 
 #### Success State Copy Examples:
 ```
-GOOD (Pattern: Acknowledge + Next step):
+✅ GOOD (Pattern: Acknowledge + Next step):
 - "Saved. Invite your team next."
 - "Done! Your PRD is ready. Share it with your team now."
 - "[Item] created successfully. [Next action]?"
 - "You're all set! [What happens next]."
 
-BAD:
+❌ BAD:
 - "Success!" (no next step)
 - "Yay!" (too cutesy, no context)
 - "Operation completed." (too formal)
@@ -883,13 +888,13 @@ BAD:
 
 **Examples**:
 ```
-Onboarding flow [TD down][ES down]
-- TD down: Get to first value in 60 seconds
-- ES down: 3 steps instead of 10
+Onboarding flow [TD↓][ES↓]
+- TD↓: Get to first value in 60 seconds
+- ES↓: 3 steps instead of 10
 
-"Import from Stripe" button [TD down][ES down]
-- TD down: Instant data population (vs. manual entry)
-- ES down: 1-click import (no CSV download/upload)
+"Import from Stripe" button [TD↓][ES↓]
+- TD↓: Instant data population (vs. manual entry)
+- ES↓: 1-click import (no CSV download/upload)
 ```
 
 **Rule**: Only tag if it materially changes perceived value. Don't tag cosmetic states.
@@ -909,6 +914,7 @@ For each major feature from PRD:
 
 ##### State 1.1: Empty State
 **Trigger:** [When this state occurs - e.g., first-time user, no items yet]
+**Trigger:** [When this state occurs - e.g., first-time user, no items yet]
 
 **Visual Reference (If Step 5 Completed):**
 - **Wireframe Screenshot:** `/docs/wireframes/screenshots/[screen-name]-empty.png`
@@ -917,7 +923,7 @@ For each major feature from PRD:
 
 **Visual Specifications:**
 - **Layout**: [Overall structure using design system grid]
-- **Content**:
+- **Content**: 
   - Illustration/icon (specific asset or icon from design system)
   - Primary message (H3 headline, Body Large description)
   - CTA button (Primary button, "Get Started" or similar)
@@ -1091,8 +1097,8 @@ For each major feature from PRD:
    - Queue actions for sync when online
    - Reconnection detection and auto-sync
 
-**HITL checkpoint** Show cross-feature patterns.
-**Prompt:** "Approve state patterns? Reply `approve patterns` or `revise: ...`."
+**HITL checkpoint →** Show cross-feature patterns.  
+**Prompt:** "Approve state patterns? Reply `approve patterns` or `revise: …`."
 
 ---
 
@@ -1121,8 +1127,8 @@ For each major feature from PRD:
    - Defer non-critical loads
    - Show "Slow connection" indicator
 
-**HITL checkpoint** Confirm mobile-specific states.
-**Prompt:** "Approve mobile states? Reply `approve mobile` or `revise: ...`."
+**HITL checkpoint →** Confirm mobile-specific states.  
+**Prompt:** "Approve mobile states? Reply `approve mobile` or `revise: …`."
 
 ---
 
@@ -1145,8 +1151,8 @@ For each major feature from PRD:
    - Error explanations (not just "Error")
    - Action outcomes (not just animations)
 
-**HITL checkpoint** Confirm accessibility state management.
-**Prompt:** "Approve accessibility states? Reply `approve a11y` or `revise: ...`."
+**HITL checkpoint →** Confirm accessibility state management.  
+**Prompt:** "Approve accessibility states? Reply `approve a11y` or `revise: …`."
 
 ---
 
@@ -1188,17 +1194,17 @@ For each major feature from PRD:
 - **Skeleton screens** are specified for loading states (preferred over spinners).
 - **Error messages** are user-friendly with recovery actions (what happened + what to do).
 - **Microcopy** follows tone guidelines (helpful, calm, no cutesy language).
-- **Value Equation tags** applied to flows/states that reduce friction [TD down][ES down].
+- **Value Equation tags** applied to flows/states that reduce friction [TD↓][ES↓].
 - **ARIA live regions** are specified for dynamic content.
 - **Focus management** is defined for all state transitions.
 - **Mobile patterns** (pull-to-refresh, infinite scroll) are specified.
 - **Design system** components and tokens are referenced throughout.
 
-**State Transition Implementation Quality Gates (must pass)** NEW
+**State Transition Implementation Quality Gates (must pass)** ⭐ NEW
 - **GPU-only transitions**: All state animations use only `transform` and `opacity`.
 - **Skeleton dimension matching**: Each skeleton's dimensions match final content (no layout shift).
 - **Reduced motion fallbacks**: Every animated transition has instant alternative documented.
-- **Error animation brevity**: Error animations are <=500ms, 1-2 cycles max (not aggressive).
+- **Error animation brevity**: Error animations are ≤500ms, 1-2 cycles max (not aggressive).
 - **Success proportionality**: Quick actions = subtle feedback; milestones = celebration.
 - **Focus preservation documented**: Focus behavior specified for each state change.
 - **State transition tests documented**: Performance/accessibility test requirements listed.
@@ -1222,19 +1228,19 @@ For each major feature from PRD:
 - [ ] **Loading Pattern**: Specific time estimates where possible? ("~3 sec")
 - [ ] **Success Pattern**: All success states include next step?
 - [ ] **Empty States**: Encouraging, action-oriented? ("Let's add your first project")
-- [ ] **Value Tags**: Flows/states tagged with [TD down][ES down] where friction is reduced?
+- [ ] **Value Tags**: Flows/states tagged with [TD↓][ES↓] where friction is reduced?
 
 **Pass/Fail Notes**:
-- Passed: [list items that passed]
-- Failed: [list items needing fixes, e.g., "Loading state on PRD page says 'Please wait' instead of specific time"]
+- ✅ Passed: [list items that passed]
+- ❌ Failed: [list items needing fixes, e.g., "Loading state on PRD page says 'Please wait' instead of specific time"]
 
 ---
 
 ## Final Review Gate (stop here)
-**Prompt to user (blocking):**
-> "Please review the State Specifications and files.
-> Reply `approve step 7` to proceed to Step-8 Technical Specification, or
-> Reply `revise step 7: <notes>` to iterate.
+**Prompt to user (blocking):**  
+> "Please review the State Specifications and files.  
+> • Reply `approve step 7` to proceed to Step-8 Technical Specification, or  
+> • Reply `revise step 7: <notes>` to iterate.  
 > I won't continue until you approve."
 
 ---
@@ -1298,7 +1304,7 @@ For each major feature from PRD:
 | Mobile States | Mobile-specific patterns documented | 3 |
 | Micro-interactions | Animation/transition specs present | 3 |
 
-### State Transition Implementation Quality (15 bonus points) NEW
+### State Transition Implementation Quality (15 bonus points) ⭐ NEW
 
 | Check | Description | Points |
 |-------|-------------|--------|
@@ -1308,5 +1314,4 @@ For each major feature from PRD:
 | has_pattern:STATE-TRANSITIONS.md:focus | Focus preservation documented | 4 |
 
 </verification>
-
 

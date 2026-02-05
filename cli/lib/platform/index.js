@@ -25,3 +25,6 @@ export {
   generateAgentsMd,
   generateOpenCodeConfig,
 } from "./opencode.js";
+
+// Codex platform
+export { buildCodex } from "./codex.js";

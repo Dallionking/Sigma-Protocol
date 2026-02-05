@@ -1,7 +1,8 @@
 ---
-version: "1.5.0"
-last_updated: "2026-01-07"
+version: "1.6.0"
+last_updated: "2026-02-04"
 changelog:
+  - "1.6.0: Added Codex skill generation (.codex/skills/*; legacy: .agents/skills/*) and platform selection support"
   - "1.5.0: Added Full-Stack Enforcement skills (full-stack-enforcement, api-security, server-actions-patterns, agentic-prd-compliance) to align with Step 11 v3.0.0 requirements"
   - "1.4.0: Clarified relationship with Foundation Skills (Step 0) — Step 13 creates project overlays, not foundation skills"
   - "1.3.0: Added interactive platform selection (HITL) with .sigma/config.json persistence"
@@ -28,6 +29,8 @@ Generate a **project-tailored Skillpack** that makes the right “expert mode”
 
 - **Cursor IDE** (rule modules): `.cursor/rules/*.mdc` + router updates in `.cursorrules`
 - **Claude Code** (skills): `.claude/skills/*/SKILL.md` + a reusable plugin scaffold (`claude-code/plugins/sigma-skillpack/`)
+- **OpenCode** (skills): `.opencode/skill/*/SKILL.md` + optional agents
+- **Codex** (skills): `.codex/skills/*/SKILL.md` (legacy: `.agents/skills/*/SKILL.md`) + optional `.codex/config.toml`
 
 **Context:** You are the **Skillpack Architect**. You do not write generic prompts; you produce *auto-triggering, project-constrained* skill modules that build on the Foundation Skills installed in Step 0.
 
@@ -95,6 +98,9 @@ ls .claude/skills/*/SKILL.md 2>/dev/null | wc -l
 
 # OpenCode
 ls .opencode/skill/*/SKILL.md 2>/dev/null | wc -l
+
+# Codex
+ls .codex/skills/*/SKILL.md .agents/skills/*/SKILL.md 2>/dev/null | wc -l
 ```
 
 **If foundation skills are missing:**
@@ -112,7 +118,7 @@ npx sigma-protocol install
 
 Or install skills only:
 ```bash
-npx sigma-protocol install-skills --platform [cursor|claude-code|opencode|all]
+npx sigma-protocol install-skills --platform [cursor|claude-code|opencode|codex|all]
 ```
 
 > ⏸️ Reply `installed` after running the command, or `skip` to generate overlays without foundation skills (not recommended).
@@ -133,12 +139,14 @@ Detection hints:
 - `.cursorrules` or `.cursor/` found: [Yes/No]
 - `CLAUDE.md` or `.claude/` found: [Yes/No]  
 - `opencode.json` or `.opencode/` found: [Yes/No]
+- `.codex/` or `.codex/skills/` found (legacy: `.agents/skills/`): [Yes/No]
 
 **Select platforms to generate configuration for:**
 
 - [ ] **Cursor** — `.cursor/rules/*.mdc` + `.cursorrules` router
 - [ ] **Claude Code** — `.claude/skills/*` + plugin scaffold
 - [ ] **OpenCode** — `.opencode/skill/*` + optional agents
+- [ ] **Codex** — `.codex/skills/*` + optional `.codex/config.toml` (legacy: `.agents/skills/*`)
 
 **Your selection:** (e.g., "Cursor and Claude Code" or "all")
 
@@ -154,7 +162,8 @@ Detection hints:
   "platforms": {
     "cursor": true,
     "claude_code": true,
-    "opencode": false
+    "opencode": false,
+    "codex": false
   },
   "last_updated": "2026-01-04T12:00:00Z"
 }
@@ -170,6 +179,7 @@ Detection hints:
 - If `.cursorrules` or `.cursor/` exists → generate Cursor modules
 - If `CLAUDE.md` or `.claude/` exists → generate Claude Code skills + plugin scaffold
 - If `opencode.json` / `opencode.jsonc` exists OR `.opencode/` exists → generate OpenCode skills
+- If `.codex/` exists OR `.codex/skills/` exists (legacy: `.agents/skills/`) → generate Codex skills
 
 ### 2) Load project context
 
@@ -188,6 +198,8 @@ If present:
 Also read existing context outputs:
 - `.cursorrules`
 - `.cursor/rules/*.mdc`
+- `.codex/config.toml`
+- `.codex/skills/*/SKILL.md` (legacy: `.agents/skills/*/SKILL.md`)
 
 ### 3) Detect workspace architecture
 
@@ -360,11 +372,46 @@ Prepend the same overlay block used for Claude skills:
 
 If the project uses OpenCode heavily, also scaffold `.opencode/agent/` with:
 - `sigma` (primary)
-- `sss-executor` (subagent)
-- `sss-planner` (subagent; tool-restricted where appropriate)
-- `sss-sisyphus` (subagent)
+- `sss-executor` (primary)
+- `sss-planner` (primary; tool-restricted where appropriate)
+- `sss-sisyphus` (primary)
 
 **Important:** OpenCode agent names come from filenames; do not include `name:` in frontmatter.
+
+---
+
+## Phase 3.75: Generate Codex skills (project-local)
+
+If Codex is detected, also create/update Codex-native skills at:
+
+- **Single-root:** `.codex/skills/<name>/SKILL.md` (legacy: `.agents/skills/<name>/SKILL.md`)
+- **Multi-root:** `docs/.codex/skills/<name>/SKILL.md` (canonical; legacy: `docs/.agents/skills/<name>/SKILL.md`), then symlink or fan-out to each repo root
+
+### Required (minimum)
+
+Mirror the same skills you generated for Claude Code:
+
+- `frontend-aesthetics`
+- `backend-engineering`
+- `database-modeling` (conditional)
+
+### Codex skill rules
+
+- Each skill must be in its own directory named exactly `<name>`
+- The file must be named `SKILL.md` (uppercase)
+- YAML frontmatter must include:
+  - `name` (must match directory name; lowercase with hyphens)
+  - `description` (1–1024 chars)
+  - `version` (optional but recommended)
+
+### Overlay integrity
+
+Prepend the same overlay block used for Claude skills:
+1) Project Anchors
+2) Non‑negotiables / Overrides
+3) Precedence rules (project docs override generic guidance)
+
+**No subagents:** Each Codex skill must contain the **full prompt** (no delegation).
 
 ---
 
@@ -388,7 +435,8 @@ fi
 **Fan-out script should:**
 1. Sync `docs/.cursor/rules/*.mdc` → `{repo}/.cursor/rules/` (for shared rules)
 2. Create symlinks: `{repo}/.claude/skills` → `../../docs/.claude/skills`
-3. Update `.gitignore` entries for symlinks
+3. Create symlinks: `{repo}/.codex/skills` → `../../docs/.codex/skills` (legacy: `.agents/skills` → `../../docs/.agents/skills`)
+4. Update `.gitignore` entries for symlinks
 
 **Shared rules to sync (add to SHARED_RULES array):**
 - `frontend-aesthetics.mdc`
@@ -817,6 +865,7 @@ Return:
 - Workspace architecture (single-root vs multi-root)
 - Cursor modules created/updated (with location)
 - Claude skills created/updated (with location)
+- Codex skills created/updated (with location, if generated)
 - Fan-out script status (if multi-root)
 - Plugin scaffold created/updated
 - **@invokes metadata generated** (patterns, AC types, skills)
@@ -824,7 +873,7 @@ Return:
 - Skipped outputs (and why)
 
 **For multi-root workspaces, also report:**
-- Canonical locations (`docs/.cursor/rules/`, `docs/.claude/skills/`)
+- Canonical locations (`docs/.cursor/rules/`, `docs/.claude/skills/`, `docs/.codex/skills/`; legacy: `docs/.agents/skills/`)
 - Repos that will receive synced rules
 - Next steps: Run `scripts/sync-ai-config.sh` to fan out
 
@@ -856,6 +905,15 @@ If OpenCode is detected, also require:
 |------|------|----------|--------|
 | OpenCode skill frontend | /.opencode/skill/frontend-aesthetics/SKILL.md | 400B | 5 |
 | OpenCode skill backend | /.opencode/skill/backend-engineering/SKILL.md | 400B | 5 |
+
+### Codex Outputs (Conditional — only if Codex detected)
+
+If Codex is detected, also require:
+
+| Item | Path | Min Size | Points |
+|------|------|----------|--------|
+| Codex skill frontend | /.codex/skills/frontend-aesthetics/SKILL.md | 400B | 5 |
+| Codex skill backend | /.codex/skills/backend-engineering/SKILL.md | 400B | 5 |
 
 ### Metadata & Trigger Quality (35 points)
 

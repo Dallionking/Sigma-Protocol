@@ -110,6 +110,7 @@ For each command file:
 3. **Consistency Checks**
    - Consistent command prefix (`/` or `@`, not mixed)
    - No duplicate section headings
+   - **Step guardrail:** Files under `steps/` must not instruct subagent spawning (no `subagent`, `sub-agent`, or Task-based delegation)
 
 4. **Structure Validation**
    - Has "Purpose" section

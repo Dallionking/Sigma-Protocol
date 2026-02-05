@@ -1,6 +1,6 @@
 # Ralph + Native Task Integration Spec
 
-**Version:** 1.0.0
+**Version:** 1.0.0-alpha.1
 **Status:** Implemented (v3.0.0)
 **Date:** 2026-01-24
 

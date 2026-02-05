@@ -1,7 +1,7 @@
 # Sigma Protocol Versioning
 
-**Version:** 5.0
-**Last Updated:** 2026-01-25
+**Version:** 1.0.0-alpha.1
+**Last Updated:** 2026-02-04
 **Maintainer:** Sigma Protocol Team
 
 ---
@@ -9,6 +9,8 @@
 ## Overview
 
 Sigma Protocol follows semantic versioning with major releases representing significant methodology changes, new platform support, or architectural improvements.
+
+**Version Source of Truth:** `package.json` controls the canonical release version for this repository.
 
 ---
 

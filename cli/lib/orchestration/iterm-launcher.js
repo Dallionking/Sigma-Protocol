@@ -878,7 +878,7 @@ export async function launchWithAutoBackend(options) {
     case 'task':
       // Task subagents - in-process, no terminal spawning
       console.log(chalk.yellow('Using Task subagents (in-process, no new terminals)'));
-      // TODO: Wire up Task subagent spawning
+      // TODO(#3): Wire up Task subagent spawning
       return { success: true, backend: 'task', message: 'Task subagent mode not yet implemented' };
 
     default:

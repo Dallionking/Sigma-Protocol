@@ -1,0 +1,13 @@
+#:schema https://developers.openai.com/codex/config-schema.json
+# Sigma Protocol - Codex project config (optional)
+#
+# Codex reads project overrides from .codex/config.toml
+# and user defaults from ~/.codex/config.toml.
+#
+# Skills live under .codex/skills/ in the repo or CODEX_HOME/skills.
+# Legacy fallback: .agents/skills/ (kept for compatibility).
+#
+# Reference: https://developers.openai.com/codex/config-basic/
+
+# model = "gpt-5.2"
+# approval_policy = "on-request"

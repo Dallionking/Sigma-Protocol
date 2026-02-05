@@ -9,4 +9,5 @@ export {
   installClaudeCodeSkills,
   installClaudeCodeCommands,
   installOpenCodeSkills,
+  installCodexSkills,
 } from "./install.js";

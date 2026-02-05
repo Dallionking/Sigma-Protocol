@@ -4,11 +4,9 @@ globs: ["docs/**/*.md", "*.md", "CLAUDE.md"]
 alwaysApply: false
 ---
 
-# /step-6-design-system
-
 ## Mission
 
-Run a complete, interactive **Step-4: Design System → Visual Specifications** for a startup project in one go.
+Run a complete, interactive **Step-4: Design System → Visual Specifications** for a startup project in one go. 
 **Valuation Context:** You are a **Senior Design Systems Architect at a FAANG Company**. Your design system must be **scalable, accessible, and visually stunning**. It is the foundation of a **premium product**.
 
 **Perceived Value Principle:**
@@ -42,12 +40,12 @@ This command:
 ---
 
 
-### Phase F.5: Effects Layer (Cool, Not Toy) NEW
+### Phase F.5: Effects Layer (Cool, Not Toy) ⭐ NEW
 - [ ] Read UI Profile cool layer settings (on/off) and motion intensity
 - [ ] Define **Hover Depth** spec (subtle lift + shadow/border lift)
 - [ ] Define **Border Beam / Focus Trail** spec (hover/focus only for professional profiles)
 - [ ] Define apply-to allow-list (interactive cards, CTAs, inputs only)
-- [ ] Define reduced-motion fallback (beam to border lift)
+- [ ] Define reduced-motion fallback (beam → border lift)
 - [ ] HITL checkpoint: Present effects layer rules
 - [ ] Wait for approval
 
@@ -78,11 +76,11 @@ This command:
 ```
 
 **Execution Rules**:
-- Check off EACH task as you complete it
-- Do NOT skip ahead - complete tasks in order
-- Do NOT proceed to next phase until user approves
-- Use MCP search for research
-- Take notes to maintain context
+- ✅ Check off EACH task as you complete it
+- ✅ Do NOT skip ahead - complete tasks in order
+- ✅ Do NOT proceed to next phase until user approves
+- ✅ Use MCP search for research
+- ✅ Take notes to maintain context
 
 ## Phase A0 — Extract Tokens from Wireframe Prototypes (If Step 5 Completed)
 
@@ -101,9 +99,9 @@ Check for these files from Step 5:
 If files don't exist, skip to Phase A (traditional design system creation).
 
 
-## Phase F.5 — Effects Layer (Cool, Not Toy) NEW
+## Phase F.5 — Effects Layer (Cool, Not Toy) ⭐ NEW
 
-**Goal:** Define a profile-aware "cool layer" (hover depth + border beam/focus trail) that adds polish without making the UI look like a toy.
+**Goal:** Define a profile-aware “cool layer” (hover depth + border beam/focus trail) that adds polish without making the UI look like a toy.
 
 
 ### G7: Animation Quality Signals (Reference Checklist)
@@ -127,7 +125,7 @@ If files don't exist, skip to Phase A (traditional design system creation).
 - [ ] Does the overall feel match the Design DNA from Step 3?
 
 
-## Phase G.5 — Animation Implementation Quality Framework NEW
+## Phase G.5 — Animation Implementation Quality Framework ⭐ NEW
 
 > **Philosophy:** This section ensures animations are **implemented well** (technical quality), not what animations to use (style is determined by Design DNA in Step 3). High-quality implementation = smooth, performant, accessible.
 
@@ -190,7 +188,7 @@ If files don't exist, skip to Phase A (traditional design system creation).
 | has_pattern:css-variables.css:--color\|--space | CSS variables defined | 5 |
 
 
-### Animation Implementation Quality (15 bonus points) NEW
+### Animation Implementation Quality (15 bonus points) ⭐ NEW
 
 | Check | Description | Points |
 |-------|-------------|--------|
@@ -202,7 +200,6 @@ If files don't exist, skip to Phase A (traditional design system creation).
 </verification>
 
 
-
 ---
 
-*This is a condensed version. See `templates/steps/step-6-design-system.md` for full documentation.*
+*This is a condensed version. See `steps/step-6-design-system` for full documentation.*

@@ -1,7 +1,8 @@
 ---
-version: "4.2.0"
-last_updated: "2026-01-07"
+version: "4.3.0"
+last_updated: "2026-02-04"
 changelog:
+  - "4.3.0: Added Codex integration outputs (.codex/config.toml + .codex/skills; legacy: .agents/skills) and detection rules"
   - "4.2.0: Added Full-Stack Enforcement Rules (Section 2.5) - generates backend-completeness.mdc, agentic-readiness.mdc, full-stack-prd-enforcement.mdc to enforce Step 11 v3.0.0 requirements"
   - "4.1.0: Added OpenCode dual-generation (opencode.jsonc + .opencode/{agent,command,skill})"
   - "4.0.0: Added Agentic Layer Tools - generates .sigma/tools/ with typecheck, lint, test, build, format scripts for Grade 4 closed loops"
@@ -26,6 +27,9 @@ parameters:
 **Mission**  
 Generate a sophisticated **Context Router** (`.cursorrules`) and a suite of **Domain-Specific Rules** (`.mdc` files).
 **Context:** You are the **Chief Context Engineer**. You don't just dump text; you architect *how* the AI behaves by creating a modular, intelligent rule system.
+
+**Single-Agent Rule (No Subagents)**  
+This step must run entirely in the **primary session**. Do **not** spawn subagents or delegate via Task. If multiple roles are needed, simulate them using labeled sections within the same response.
 
 ---
 
@@ -60,17 +64,17 @@ Generate (or update) `opencode.jsonc` with:
 Create `.opencode/agent/` and generate these agent files (minimum):
 
 - `sigma.md` (mode: `primary`) — orchestrator
-- `sigma-executor.md` (mode: `subagent`) — implementation
-- `sigma-planner.md` (mode: `subagent`) — planning (ideally tool-restricted)
-- `sigma-explorer.md` (mode: `subagent`) — exploration
-- `sigma-sisyphus.md` (mode: `subagent`) — verification loops
-- `sigma-copywriter.md` (mode: `subagent`) — marketing copy
+- `sigma-executor.md` (mode: `primary`) — implementation
+- `sigma-planner.md` (mode: `primary`) — planning (ideally tool-restricted)
+- `sigma-explorer.md` (mode: `primary`) — exploration
+- `sigma-sisyphus.md` (mode: `primary`) — verification loops
+- `sigma-copywriter.md` (mode: `primary`) — marketing copy
 
 **Important (OpenCode rule):** The agent **name** is derived from the filename. Do **not** include `name:` in frontmatter.
 
 Frontmatter keys that OpenCode recognizes (see OpenCode docs):
 - `description` (required)
-- `mode` (optional: `primary` / `subagent` / `all`)
+- `mode` (optional: `primary` / `all`) — avoid `subagent` for Sigma steps
 - `model` (optional)
 - `tools` / `permission` (optional)
 
@@ -84,8 +88,8 @@ Generate one OpenCode command per Sigma command.
 
 **Command file format (OpenCode):**
 - Path: `.opencode/command/<command>.md`
-- Frontmatter keys: `description` (required), optional `agent`, `model`, `subtask`
-- Body: the full prompt template
+- Frontmatter keys: `description` (required), optional `model`, `subtask`
+- Body: the full prompt template (no `agent` indirection for Sigma steps)
 
 **Model routing (deterministic table — do not ad‑hoc):**
 - `marketing/*` → `opencode/kimi-k2`
@@ -118,6 +122,61 @@ If you generate Claude skills in `.claude/skills/`, also mirror each skill into:
 - `SKILL.md` must be uppercase
 - Frontmatter must include `name` + `description`
 - Skill name must match directory name and satisfy: `^[a-z0-9]+(-[a-z0-9]+)*$`
+
+---
+
+## Codex Integration (If Codex detected)
+
+If Codex is detected, generate Codex-native config + skill scaffolding in addition to Cursor outputs.
+
+### Detection
+
+Treat Codex as “in use” if **any** of these are true:
+
+- `.codex/` directory exists
+- `.codex/skills/` directory exists
+- `.agents/skills/` directory exists (legacy)
+- User explicitly asks for “Codex support”
+
+### Outputs (when detected)
+
+#### 1) `.codex/config.toml` (project root)
+
+Create or update **minimal** config:
+
+- `model = "gpt-5.2-codex"`
+- `model_provider = "openai"`
+- `approval_policy = "on-request"`
+- `sandbox_mode = "read-only"`
+- `project_doc_max_bytes = 32768`
+- Optional: `web_search = "cached"` (if using web search)
+
+Keep only keys you set; do **not** paste the full sample config.
+
+#### 2) `.codex/skills/` (skills directory)
+
+Ensure `.codex/skills/` exists. Codex loads skills from:
+
+```
+.codex/skills/<skill-name>/SKILL.md
+```
+
+Legacy fallback (if present):
+
+```
+.agents/skills/<skill-name>/SKILL.md
+```
+
+Do **not** split steps into subagents. Each skill must contain the **full prompt**.
+
+#### 3) `AGENTS.md` (repo root)
+
+Ensure `AGENTS.md` exists and lists Sigma steps + usage guidance.
+
+#### 4) `.codex/rules/*.rules` (optional)
+
+Only create `.codex/rules/*.rules` if you can author **Starlark** rules.  
+Do **not** attempt to auto-convert `.mdc` rules. If unsure, skip this.
 
 ---
 
@@ -1208,4 +1267,3 @@ See `.sigma/memory/` for session state and continuity.
 | PRD Integration | Rules reference Step 11 PRD patterns | 3 |
 
 </verification>
-

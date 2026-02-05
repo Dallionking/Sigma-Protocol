@@ -42,6 +42,7 @@ Ops commands provide "senior engineering team" workflows: sprint planning, stand
 | `@maintenance-plan` | Create maintenance schedule |
 | `@cleanup-repo` | Repository cleanup |
 | `@lint-commands` | Lint Sigma command files |
+| `@platform-sync` | Sync platform changelogs |
 
 ## Usage
 
@@ -84,4 +85,3 @@ All ops commands use `/.tracking-db/` for state:
 - [TRACKING-SYSTEM.md](../docs/tracking/TRACKING-SYSTEM.md)
 - [QA-SYSTEM.md](../docs/qa/QA-SYSTEM.md)
 - [REVIEW-SYSTEM.md](../docs/reviews/REVIEW-SYSTEM.md)
-

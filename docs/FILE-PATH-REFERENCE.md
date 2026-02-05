@@ -1,7 +1,7 @@
 # Sigma File Path Reference
 
-**Version:** 5.0  
-**Last Updated:** 2025-12-29  
+**Version:** 1.0.0-alpha.1
+**Last Updated:** 2026-02-04
 **Purpose:** Canonical list of all file paths used across the Sigma workflow
 
 **Changelog:**
@@ -118,6 +118,14 @@ This document defines the **official file paths** for all outputs created by the
 **Outputs:**
 - `.cursorrules`
 - `.cursor/rules/*.mdc`
+
+### Codex Integration (Optional)
+**Command:** `@step-12-context-engine` (plus `sigma install --platform codex`)
+**Outputs:**
+- `.codex/config.toml` (project config; optional)
+- `.codex/rules/*.rules` (Codex Starlark rules; optional)
+- `.codex/skills/<skill>/SKILL.md` (Sigma steps and foundation skills)
+- `.agents/skills/<skill>/SKILL.md` (Legacy Codex skills fallback)
 
 ---
 
@@ -334,4 +342,3 @@ docs/migrations/                  # Migration rollback plans
 ❌ `/docs/technical-spec/TECHNICAL-SPEC.md` → Use `/docs/technical/TECHNICAL-SPEC.md`  
 ❌ `/docs/feature-breakdown/FEATURE-BREAKDOWN.md` → Use `/docs/implementation/FEATURE-BREAKDOWN.md`
 ❌ `/PRD/` → Use `/docs/prds/`
-

@@ -4,11 +4,9 @@ globs: ["docs/**/*.md", "*.md", "CLAUDE.md"]
 alwaysApply: false
 ---
 
-# /step-7-interface-states
-
 ## Mission
 
-Run a complete, interactive **Step-5: Interface States - Detailed Specs** for a startup project in one go.
+Run a complete, interactive **Step-5: Interface States → Detailed Specs** for a startup project in one go. 
 **Valuation Context:** You are a **Staff UX Lead at a FAANG Company**. You obsess over **state coverage**. A missing empty state or a generic error message is a **critical failure**.
 
 ---
@@ -23,7 +21,7 @@ Run a complete, interactive **Step-5: Interface States - Detailed Specs** for a 
 
 When implementing state changes, consider:
 
-- [ ] **Does loading to populated feel like content is "arriving"?** (Not just appearing)
+- [ ] **Does loading → populated feel like content is "arriving"?** (Not just appearing)
 - [ ] **Do errors provide gentle feedback?** (Shake once or twice, not aggressively)
 - [ ] **Are success moments celebrated proportionally?** (Quick save = checkmark, milestone = confetti)
 - [ ] **Do data updates animate?** (Numbers roll, text morphs, not instant swap)
@@ -38,7 +36,7 @@ When implementing state changes, consider:
 ---
 
 
-### Framework 3.6: State Transition Implementation Quality NEW
+### Framework 3.6: State Transition Implementation Quality ⭐ NEW
 
 > **Philosophy:** This section ensures state transitions are **implemented well** (technical quality). Style is determined by Design DNA in Step 3; this section ensures that whatever style is chosen, it's implemented smoothly, performantly, and accessibly.
 
@@ -47,11 +45,11 @@ When implementing state changes, consider:
 
 | Transition Type | Max Duration | Target FPS | Properties Allowed |
 |-----------------|--------------|------------|-------------------|
-| **Empty - Loading** | 150ms | 60fps | opacity, transform |
-| **Loading - Populated** | 300ms | 60fps | opacity, transform |
-| **Populated - Error** | 200ms | 60fps | opacity, transform, border-color |
-| **Action - Success** | 400ms | 60fps | opacity, transform, scale |
-| **Any - Offline Banner** | 250ms | 60fps | transform (translateY), opacity |
+| **Empty → Loading** | 150ms | 60fps | opacity, transform |
+| **Loading → Populated** | 300ms | 60fps | opacity, transform |
+| **Populated → Error** | 200ms | 60fps | opacity, transform, border-color |
+| **Action → Success** | 400ms | 60fps | opacity, transform, scale |
+| **Any → Offline Banner** | 250ms | 60fps | transform (translateY), opacity |
 
 
 #### State Transition Implementation Checklist
@@ -129,7 +127,7 @@ This command:
 | has_pattern:STATE-SPEC.md:ms\|millisecond\|animation | Animation timing specified | 6 |
 
 
-### State Transition Implementation Quality (15 bonus points) NEW
+### State Transition Implementation Quality (15 bonus points) ⭐ NEW
 
 | Check | Description | Points |
 |-------|-------------|--------|
@@ -141,7 +139,6 @@ This command:
 </verification>
 
 
-
 ---
 
-*This is a condensed version. See `templates/steps/step-7-interface-states.md` for full documentation.*
+*This is a condensed version. See `steps/step-7-interface-states` for full documentation.*

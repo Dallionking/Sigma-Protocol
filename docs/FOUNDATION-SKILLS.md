@@ -1,9 +1,9 @@
 # Foundation Skills Reference
 
-**Version:** 5.0
-**Last Updated:** 2026-01-23
+**Version:** 1.0.0-alpha.1
+**Last Updated:** 2026-02-04
 
-Sigma Protocol includes **163 skills total** (39 Foundation Skills + 124 External Skills) that provide universal AI capabilities across all supported platforms.
+Sigma Protocol includes **180+ skills total** (Foundation + External; counts vary by platform) that provide universal AI capabilities across all supported platforms.
 
 > **Note:** In addition to Foundation Skills, Sigma Protocol includes **120+ External Skills** from the skills.sh ecosystem. See [EXTERNAL-SKILLS.md](./EXTERNAL-SKILLS.md) for the complete external skills reference.
 
@@ -60,6 +60,20 @@ Skills are installed as `SKILL.md` directories:
 
 # Install command
 npx sigma-protocol install-skills --platform opencode
+```
+
+### Codex
+
+Skills are installed as `SKILL.md` directories:
+
+```bash
+# Location
+.codex/skills/{skill-name}/SKILL.md
+# Legacy fallback
+.agents/skills/{skill-name}/SKILL.md
+
+# Install command
+npx sigma-protocol install-skills --platform codex
 ```
 
 ### Factory Droid
@@ -135,6 +149,20 @@ Documents, presentations, and productivity tools.
 | **pptx**                        | Presentation creation and editing         | presentation, slides, pptx, pitch deck | Client handoff |
 | **applying-brand-guidelines**   | Consistent branding across outputs        | brand, style, theme, guidelines        | 6, marketing   |
 | **remembering-conversations**   | Search previous conversations for context | recall, previous, remember, context    | All steps      |
+
+---
+
+### Self-Learning (SLAS) (3 skills)
+
+Session learning and preference capture.
+
+| Skill | Description | Auto-Triggers | Used In Steps |
+|-------|-------------|---------------|---------------|
+| **session-distill** | Distill session history into preferences and patterns | slas, session, distill | All |
+| **sigma-exit** | Capture session context before ending a session | slas, exit, session | All |
+| **developer-preferences** | Auto-generated preferences overlay from SLAS | preferences, slas | All |
+
+Claude Code hooks live in `.claude/hooks/slas/` (`session-start-context.sh`, `session-end-summary.sh`) and write to `docs/sessions/{logs,preferences,patterns}`. Codex/OpenCode installs include the SLAS skills and session scaffolding but do not run hooks.
 
 ---
 

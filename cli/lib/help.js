@@ -216,7 +216,7 @@ ${chalk.cyan.bold("Best Practice")}
   
   platforms: {
     title: "Platform Support",
-    description: "Cursor, Claude Code, and OpenCode",
+    description: "Cursor, Claude Code, OpenCode, and Codex",
     content: `
 Sigma Protocol supports multiple AI IDEs/platforms.
 
@@ -224,11 +224,13 @@ ${chalk.cyan.bold("Supported Platforms")}
   ${chalk.yellow("Cursor")}       @commands in Cursor IDE
   ${chalk.yellow("Claude Code")} /commands in Claude Code CLI
   ${chalk.yellow("OpenCode")}    /commands + agents in OpenCode
+  ${chalk.yellow("Codex")}       Skills + AGENTS.md in Codex
 
 ${chalk.cyan.bold("Command Syntax by Platform")}
   ${chalk.gray("Cursor:")}      ${chalk.cyan("@step-1-ideation")}
   ${chalk.gray("Claude Code:")} ${chalk.cyan("/step-1-ideation")} or ${chalk.cyan("claude \"Run step 1\"")}
   ${chalk.gray("OpenCode:")}    ${chalk.cyan("/step-1-ideation")} or ${chalk.cyan("@sigma-implementer")}
+  ${chalk.gray("Codex:")}       ${chalk.cyan("$step-1-ideation")} (skill invocation)
 
 ${chalk.cyan.bold("Directory Structure")}
   ${chalk.gray("Cursor:")}
@@ -246,6 +248,13 @@ ${chalk.cyan.bold("Directory Structure")}
     .opencode/skill/      # Skills (SKILL.md format)
     .opencode/agent/      # Agents
     opencode.json         # Configuration
+    AGENTS.md             # Orchestrator file
+
+  ${chalk.gray("Codex:")}
+    .codex/config.toml    # Project config (optional)
+    .codex/rules/         # Starlark rules (optional)
+    .codex/skills/        # Skills (SKILL.md format)
+    .agents/skills/       # Legacy skills (fallback)
     AGENTS.md             # Orchestrator file
 
 ${chalk.cyan.bold("Cross-Platform Note")}
@@ -370,4 +379,3 @@ export default {
   runHelp,
   HELP_TOPICS,
 };
-

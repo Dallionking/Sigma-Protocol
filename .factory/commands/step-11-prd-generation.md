@@ -1,23 +1,51 @@
 ---
-name: step-11-prd-generation
+version: "3.0.0"
+last_updated: "2026-01-07"
+changelog:
+  - "3.0.0: MAJOR - Bulletproof PRDs for full-stack coverage. Added 10 new frameworks (8-17): Vertical Slice Architecture, Google API Design, Railway-Oriented Programming, Zod Best Practices, OWASP API Security Top 10, Supabase RLS, Next.js Server Actions, Feature-Sliced Design, TanStack Patterns, Agentic PRD Specification. Added Section 0.5 (Full Stack Overview) and Section 15 (Agentic Implementation Guide). Added Gate 7 (Backend Completeness) and Gate 8 (Agentic Readiness). Added Anti-Patterns 11-14. Updated verification schema with backend and agentic quality checks."
+  - "2.4.0: Added SwiftUI component templates (View, ViewModel, Row, Form/Sheet) in Section 8"
+  - "2.3.2: Updated default page wrapper to App/Wide layout (no container mx-auto) to prevent narrow centered dashboards"
+  - "2.3.1: Made UI Profile presence a blocking preflight requirement for Step 11 PRD generation"
+  - "2.3.0: Added UI Profile import (UI-PROFILE.md + ui-profile.json) and profile-aware UI compliance gates in Section 8"
+  - "2.2.0: Added Boilerplate Stable API References section - PRDs reference stable APIs instead of re-specifying"
+  - "2.1.0: Updated to handle numbered PRD folder structure from Step 5 (01-auth/, 02-onboarding/), added platform awareness (Next.js/TanStack/Expo)"
+  - "2.0.0: Renumbered from Step 9 to Step 11 in 13-step workflow"
+  - "1.0.0: Initial release as Step 9"
 description: "Step 11: PRD Generation - Create Implementation-Ready PRDs using PR/FAQ, BDD, and Shape Up methodologies"
-model: claude-sonnet-4-5-20241022
-tools:
-  - Read
-  - Write
-  - Edit
-  - Bash
-  - WebFetch
-  # MCP tools inherited from original command
+allowed-tools:
+  # PRIMARY MCP Tools (Use First)
+  - mcp_Ref_ref_search_documentation
+  - mcp_Ref_ref_read_url
+  - mcp_exa_web_search_exa
+  - mcp_exa_get_code_context_exa
+  - mcp_exa_crawling_exa
+  - mcp_exa_company_research_exa
+  - mcp_exa_linkedin_search_exa
+  - mcp_exa_deep_researcher_start
+  - mcp_exa_deep_researcher_check
+  
+  # ALWAYS ACTIVE (Specialized)
+  - mcp_supabase-mcp-server_search_docs
+  - mcp_21st-devmagic_21st_magic_component_builder
+  - mcp_21st-devmagic_21st_magic_component_inspiration
+  - mcp_21st-devmagic_logo_search
+  - mcp_sequential-thinking_sequentialthinking
+  
+  # BACKUP MCP Tools (Use only if primary fails)
+  - mcp_context7_resolve-library-id
+  - mcp_context7_get-library-docs
+  - mcp_perplexity-ask_perplexity_ask
+  
+  # OTHER TOOLS
+  - web_search
+  - read_file
+  - write
+  - list_dir
+  - run_terminal_cmd
+parameters:
+  - --feature-id
+  - --batch
 ---
-
-# step-11-prd-generation
-
-**Source:** Sigma Protocol steps module
-**Version:** 3.0.0
-
----
-
 
 # /step-11-prd-generation — Implementation-Ready PRD Creation (CPO + Lead Architect)
 
@@ -88,9 +116,9 @@ The hook returns a JSON response with:
 
 ---
 
-## BOILERPLATE STABLE API REFERENCES (NEW - If Using Sigma Boilerplate)
+## BOILERPLATE STABLE API REFERENCES (NEW - If Using SSS Boilerplate)
 
-**If your project uses an Sigma boilerplate, PRDs should reference stable APIs rather than re-specifying foundation components.**
+**If your project uses an SSS boilerplate, PRDs should reference stable APIs rather than re-specifying foundation components.**
 
 ### Detection
 
@@ -2908,4 +2936,3 @@ npm run build           # Build succeeds
 **Blocking:** PRDs scoring below 100 MUST be revised before proceeding to Step 12
 
 </verification>
-

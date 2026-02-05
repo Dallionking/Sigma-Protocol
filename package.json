@@ -33,7 +33,7 @@
     "build:claude-code": "node cli/sigma-cli.js build --platform claude-code",
     "build:opencode": "node cli/sigma-cli.js build --platform opencode",
     "build:all": "node cli/sigma-cli.js build --platform all",
-    "test": "node --test cli/__tests__/",
+    "test": "node --test \"cli/__tests__/**/*.test.js\"",
     "lint": "eslint cli/",
     "format": "prettier --write \"**/*.{js,json,yaml,md}\""
   },

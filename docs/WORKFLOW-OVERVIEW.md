@@ -1,7 +1,7 @@
 # Sigma Development Workflow: Complete Guide (Steps 0-12 + Conditional 1.5)
 
-**Last Updated:** 2026-01-23
-**Version:** 5.0 (with Agentic Layer, Self-Correcting Dev Loop, Grade 4 Tooling, Factory Droid Support)
+**Last Updated:** 2026-02-04
+**Version:** 1.0.0-alpha.1
 
 ---
 
@@ -23,11 +23,13 @@ The Sigma (Sigma Software Solutions) workflow is a **comprehensive, 14-step proc
 - **Self-Contained:** Works for new projects without legacy dependencies
 - **Agentic Layer:** Grade 4 self-correcting loops with project-local tools
 
-See `docs/mcp/SIGMA-VERSIONING.md` for the canonical step registry.
+**Source of Truth:** `steps/` is canonical. `templates/steps/` is generated from `steps/` and should not be edited directly.
+
+See `docs/SIGMA-VERSIONING.md` for the canonical step registry.
 
 ---
 
-## 🎯 Foundation Skills System (v5.0)
+## 🎯 Foundation Skills System (v1.0.0-alpha.1)
 
 Sigma includes a **three-tier skill system** that provides AI capabilities at different levels:
 
@@ -70,6 +72,7 @@ See [EXTERNAL-SKILLS.md](./EXTERNAL-SKILLS.md) for the complete external skills 
 | **Cursor**         | `.cursor/rules/sss-*.mdc`      | `.cursor/rules/<cat>/*.mdc` | `.cursor/rules/frontend-aesthetics.mdc`        |
 | **Claude Code**    | `.claude/skills/*/SKILL.md`    | Same location (162 total)   | `.claude/skills/frontend-aesthetics/SKILL.md`  |
 | **OpenCode**       | `.opencode/skill/*/SKILL.md`   | Same location (149 total)   | `.opencode/skill/frontend-aesthetics/SKILL.md` |
+| **Codex**          | `.codex/skills/*/SKILL.md`     | Same location (180 total)   | `.codex/skills/frontend-aesthetics/SKILL.md`  |
 | **Factory Droid**  | `.factory/skills/*/SKILL.md`   | Same location (158 total)   | `.factory/skills/frontend-aesthetics/SKILL.md` |
 
 ### How They Work Together
@@ -406,7 +409,7 @@ Step 1.5 is **required when monetization is detected**:
 Step 11b (PRD Swarm Orchestration) is **suggested when**:
 
 - `docs/prds/` contains 5+ PRD files
-- User has access to multiple terminal instances (Cursor, Claude Code, OpenCode)
+- User has access to multiple terminal instances (Cursor, Claude Code, OpenCode, Codex)
 - Project complexity warrants parallel development
 
 **What Step 11b Does:**
@@ -466,8 +469,8 @@ Terminal 4: @implement-prd --swarm=4  (works on swarm-4 PRDs)
 
 ---
 
-**Last Updated:** 2025-12-29  
-**Version:** 4.0 (with Agentic Layer, Grade 4 Self-Correcting Loops, .sigma/tools/ Integration)  
+**Last Updated:** 2026-02-04
+**Version:** 1.0.0-alpha.1 (with Agentic Layer, Grade 4 Self-Correcting Loops, .sigma/tools/ Integration)
 **Status:** ✅ Production Ready
 
-See `docs/mcp/SIGMA-VERSIONING.md` for the canonical step registry and cascade rules.
+See `docs/SIGMA-VERSIONING.md` for the canonical step registry and cascade rules.

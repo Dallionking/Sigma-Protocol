@@ -30,7 +30,7 @@ import { Listr } from 'listr2';
 /**
  * Run pre-installation checks for prerequisites
  * @returns {Promise<boolean>} - True if all prerequisites pass
- * TODO: Implement full pre-check logic for Node.js version, npm version, etc.
+ * TODO(#1): Implement full pre-check logic for Node.js version, npm version, etc.
  */
 async function runPreCheck() {
   // Basic pre-check: verify Node.js and npm are available
@@ -48,7 +48,7 @@ async function runPreCheck() {
  * Install dependencies with visual progress using Listr2
  * @param {Array} depsToInstall - Dependencies to install
  * @returns {Promise<Object>} - Context with success/failed arrays
- * TODO: Enhance with better progress tracking and parallel installation
+ * TODO(#2): Enhance with better progress tracking and parallel installation
  */
 async function installWithProgress(depsToInstall) {
   const ctx = { success: [], failed: [] };
@@ -657,4 +657,3 @@ export async function warnMissingDeps() {
 }
 
 export { DEPENDENCIES };
-

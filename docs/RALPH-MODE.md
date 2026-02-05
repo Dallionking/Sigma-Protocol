@@ -1,7 +1,7 @@
 # Ralph-Mode: Autonomous Agent Implementation Guide
 
-**Version:** 5.0
-**Last Updated:** 2026-01-24
+**Version:** 1.0.0-alpha.1
+**Last Updated:** 2026-02-04
 
 This document explains how the Sigma Protocol integrates the "Ralph Loop" autonomous agent pattern for continuous, self-correcting PRD implementation.
 

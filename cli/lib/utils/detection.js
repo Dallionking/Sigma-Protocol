@@ -38,6 +38,19 @@ export async function detectMissingAssets(targetDir) {
     { label: ".opencode/skill", path: path.join(targetDir, ".opencode", "skill") },
   ];
 
+  const codexDir = path.join(targetDir, ".codex");
+  const codexSkills = path.join(targetDir, ".codex", "skills");
+  const codexLegacySkills = path.join(targetDir, ".agents", "skills");
+  if (
+    (await fs.pathExists(codexDir)) ||
+    (await fs.pathExists(codexSkills)) ||
+    (await fs.pathExists(codexLegacySkills))
+  ) {
+    checks.push({ label: ".codex/config.toml", path: path.join(codexDir, "config.toml") });
+    checks.push({ label: ".codex/skills", path: codexSkills });
+    checks.push({ label: ".agents/skills", path: codexLegacySkills });
+  }
+
   for (const check of checks) {
     if (!(await fs.pathExists(check.path))) {
       missing.push(check.label);
@@ -114,6 +127,18 @@ export async function autoDetectPlatform(targetDir) {
   const opencodeJson = path.join(targetDir, "opencode.json");
   if ((await fs.pathExists(opencodeDir)) || (await fs.pathExists(opencodeJson))) {
     return "opencode";
+  }
+
+  // Check for Codex
+  const codexDir = path.join(targetDir, ".codex");
+  const codexConfig = path.join(codexDir, "config.toml");
+  const codexSkills = path.join(targetDir, ".agents", "skills");
+  if (
+    (await fs.pathExists(codexDir)) ||
+    (await fs.pathExists(codexConfig)) ||
+    (await fs.pathExists(codexSkills))
+  ) {
+    return "codex";
   }
 
   return null;

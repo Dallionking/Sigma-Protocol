@@ -1,38 +1,51 @@
 ---
-description: "Run Sigma steps/step-5b-prd-to-json"
+version: "1.2.0"
+last_updated: "2026-01-21"
+changelog:
+  - "1.2.0: Renamed from step-5.5 to step-5b for correct sort order"
+  - "1.1.0: Added Taskmaster MCP integration for AI-powered PRD parsing"
+  - "1.0.0: Initial release — Ralph-mode PRD→JSON backlog converter for prototype PRDs"
+description: "Step 5b: Convert Step 5 prototype PRDs into Ralph-compatible JSON backlog format for autonomous implementation loops"
 allowed-tools:
-  - Read
-  - Write
-  - Edit
-  - Bash
-  - WebFetch
+  # PRIMARY MCP Tools (Use First)
+  - mcp_Ref_ref_search_documentation
+  - mcp_exa_get_code_context_exa
+  - mcp_sequential-thinking_sequentialthinking
+  
+  # TASKMASTER MCP Tools (For AI-Powered Parsing)
+  - mcp_taskmaster_parse_prd
+  - mcp_taskmaster_get_tasks
+  - mcp_taskmaster_add_task
+  - mcp_taskmaster_expand_task
+  - mcp_taskmaster_set_task_status
+  - mcp_taskmaster_analyze_project_complexity
+  - mcp_taskmaster_next_task
+  
+  # OTHER TOOLS
+  - read_file
+  - write
+  - list_dir
+  - glob_file_search
+  - grep
+  - run_terminal_cmd
+  - todo_write
+parameters:
+  - --dry-run
+  - --scope
+  - --journey-aware
+  - --emit-confidence
+  - --max-story-size
+  - --verification-strict
+  - --use-taskmaster
+  - --taskmaster-model
 ---
-
-# /step-5b-prd-to-json
-
-Invoke the **step-5b-prd-to-json** agent from Sigma Protocol.
-
-This command runs the full step-5b-prd-to-json workflow including:
-- All HITL (Human-in-the-Loop) checkpoints
-- MCP research integration
-- Quality verification gates
-
-**Usage:** `/step-5b-prd-to-json [your input here]`
-
-# step-5b-prd-to-json
-
-**Source:** Sigma Protocol steps module
-**Version:** 1.2.0
-
----
-
 
 # /step-5b-prd-to-json — Convert Prototype PRDs to Ralph Backlog
 
-**Mission**
+**Mission**  
 Convert Step 5 prototype PRDs (located in `docs/prds/flows/`) into a machine-readable JSON backlog (`docs/ralph/prototype/prd.json`) that enables Ralph-style autonomous implementation loops.
 
-**Why This Step Exists:**
+**Why This Step Exists:**  
 The Ralph loop requires a JSON backlog with **atomic stories** and **verifiable acceptance criteria**. Step 5 produces excellent markdown PRDs, but they need to be parsed into the Ralph format so:
 - **AI agents know exactly what to implement** — Each story is one context window of work
 - **Completion is machine-verifiable** — Acceptance criteria specify commands to run and success conditions
@@ -43,21 +56,21 @@ The Ralph loop requires a JSON backlog with **atomic stories** and **verifiable 
 
 ---
 
-## When to Use This Step
+## 🔍 When to Use This Step
 
 ### Automatically Suggested After Step 5 When:
-- `docs/prds/flows/` contains PRD files
-- User wants to implement prototypes using Ralph-style loop
-- Multi-PRD implementation session planned
+- ✅ `docs/prds/flows/` contains PRD files
+- ✅ User wants to implement prototypes using Ralph-style loop
+- ✅ Multi-PRD implementation session planned
 
 ### Skip This Step If:
-- User prefers manual PRD-by-PRD implementation
-- Only 1-2 small PRDs (Ralph overhead not worth it)
-- PRDs are still being refined (wait until stable)
+- ❌ User prefers manual PRD-by-PRD implementation
+- ❌ Only 1-2 small PRDs (Ralph overhead not worth it)
+- ❌ PRDs are still being refined (wait until stable)
 
 ---
 
-## Command Usage
+## 📋 Command Usage
 
 ```bash
 # Run as step (after Step 5)
@@ -91,7 +104,7 @@ The Ralph loop requires a JSON backlog with **atomic stories** and **verifiable 
 
 ---
 
-## Taskmaster MCP Integration (Recommended for Claude Code)
+## 🤖 Taskmaster MCP Integration (Recommended for Claude Code)
 
 When `--use-taskmaster=true`, this step leverages the [Taskmaster MCP](https://github.com/eyaltoledano/claude-task-master) for AI-powered PRD parsing instead of manual regex extraction.
 
@@ -181,7 +194,7 @@ Add to `~/.cursor/mcp.json`:
 
 ---
 
-## Preflight (auto)
+## ⚡ Preflight (auto)
 
 ```typescript
 // 1. Get date
@@ -207,7 +220,7 @@ const flowTree = await readFile('docs/flows/flow-tree.json').catch(() => null);
 // 6. Display context
 console.log(`
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-STEP 5b: PRD to RALPH BACKLOG CONVERSION
+🔄 STEP 5b: PRD → RALPH BACKLOG CONVERSION
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 Date: ${today}
 Flow Folders Found: ${flowFolders.length}
@@ -225,18 +238,18 @@ if (prdFiles.length < 1) {
 
 ---
 
-## Task Execution Flow
+## 📋 Task Execution Flow
 
 ```
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-STEP 5b: PRD to RALPH BACKLOG WORKFLOW
+🔄 STEP 5b: PRD → RALPH BACKLOG WORKFLOW
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 Phase A: Context Loading
   [ ] A1: Scan docs/prds/flows/ for all PRD files
   [ ] A2: Load flow-tree.json for screen metadata
   [ ] A3: Check for existing Ralph backlog
-  CHECKPOINT: Confirm PRD inventory
+  ⏸️  CHECKPOINT: Confirm PRD inventory
 
 Phase B: PRD Parsing
   [ ] B1: Parse each PRD markdown file
@@ -244,15 +257,15 @@ Phase B: PRD Parsing
   [ ] B3: Extract screen/flow metadata
   [ ] B4: Identify user journeys
   [ ] B5: Detect dependencies between screens
-  CHECKPOINT: Review parsed PRD structure
+  ⏸️  CHECKPOINT: Review parsed PRD structure
 
 Phase C: Story Generation
   [ ] C1: Convert PRD sections to atomic stories
   [ ] C2: Apply story-splitting rules (max-story-size)
   [ ] C3: Generate verifiable acceptance criteria
-  [ ] C4: Map Sigma verification commands to criteria
+  [ ] C4: Map SSS verification commands to criteria
   [ ] C5: Assign priority based on journey/dependency order
-  CHECKPOINT: Review generated stories
+  ⏸️  CHECKPOINT: Review generated stories
 
 Phase D: Backlog Assembly
   [ ] D1: Validate all stories have verifiable criteria
@@ -260,21 +273,21 @@ Phase D: Backlog Assembly
   [ ] D3: Generate prd-map.json for traceability
   [ ] D4: Initialize progress.txt
   [ ] D5: Create AGENTS.md template
-  CHECKPOINT: Verify backlog structure
+  ⏸️  CHECKPOINT: Verify backlog structure
 
-Phase E: Output and Validation
+Phase E: Output & Validation
   [ ] E1: Write docs/ralph/prototype/prd.json
   [ ] E2: Write docs/ralph/prototype/prd-map.json
   [ ] E3: Write docs/ralph/prototype/progress.txt
   [ ] E4: Emit Epistemic Confidence artifact
-  FINAL: Ready for Ralph loop
+  ⏸️  FINAL: Ready for Ralph loop
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 ```
 
 ---
 
-## Phase A: Context Loading
+## 🔄 Phase A: Context Loading
 
 ### A1: Scan PRD Files
 
@@ -292,23 +305,23 @@ interface Step5PRD {
 
 async function scanStep5PRDs(scope?: string): Promise<Step5PRD[]> {
   const prds: Step5PRD[] = [];
-
+  
   // Build glob pattern based on scope
-  const pattern = scope
+  const pattern = scope 
     ? `docs/prds/flows/${scope}/**/*.md`
     : 'docs/prds/flows/**/*.md';
-
+  
   const prdPaths = await glob(pattern);
-
+  
   // Exclude FLOW-*.md files (these are flow overviews, not screen PRDs)
   const screenPrds = prdPaths.filter(p => !p.includes('FLOW-'));
-
+  
   for (const prdPath of screenPrds) {
     const content = await readFile(prdPath);
     const prd = parseStep5PRD(prdPath, content);
     prds.push(prd);
   }
-
+  
   // Sort by flow order, then screen order
   prds.sort((a, b) => {
     if (a.flowId !== b.flowId) {
@@ -316,7 +329,7 @@ async function scanStep5PRDs(scope?: string): Promise<Step5PRD[]> {
     }
     return a.order - b.order;
   });
-
+  
   return prds;
 }
 
@@ -325,26 +338,26 @@ function parseStep5PRD(path: string, content: string): Step5PRD {
   const parts = path.split('/');
   const filename = parts[parts.length - 1];
   const flowFolder = parts[parts.length - 2];
-
-  // Parse flow: "01-auth" -> { id: "01-auth", name: "Auth", order: 1 }
+  
+  // Parse flow: "01-auth" → { id: "01-auth", name: "Auth", order: 1 }
   const flowMatch = flowFolder.match(/^(\d+)-(.+)$/);
   const flowId = flowFolder;
-  const flowName = flowMatch
+  const flowName = flowMatch 
     ? flowMatch[2].replace(/-/g, ' ').replace(/\b\w/g, c => c.toUpperCase())
     : flowFolder;
-
-  // Parse screen: "02-login-screen.md" -> { id: "02-login-screen", name: "Login Screen", order: 2 }
+  
+  // Parse screen: "02-login-screen.md" → { id: "02-login-screen", name: "Login Screen", order: 2 }
   const screenMatch = filename.replace('.md', '').match(/^(\d+)-(.+)$/);
   const screenId = filename.replace('.md', '');
   const screenName = screenMatch
     ? screenMatch[2].replace(/-/g, ' ').replace(/\b\w/g, c => c.toUpperCase())
     : filename.replace('.md', '');
   const order = screenMatch ? parseInt(screenMatch[1], 10) : 0;
-
+  
   // Extract title from first # heading
   const titleMatch = content.match(/^#\s+(.+)$/m);
   const title = titleMatch ? titleMatch[1].trim() : screenName;
-
+  
   return {
     path,
     flowId,
@@ -374,12 +387,12 @@ async function loadFlowTree(): Promise<Map<string, FlowTreeScreen> | null> {
   try {
     const content = await readFile('docs/flows/flow-tree.json');
     const flowTree = JSON.parse(content);
-
+    
     const screenMap = new Map<string, FlowTreeScreen>();
     for (const screen of flowTree.screens || []) {
       screenMap.set(screen.id, screen);
     }
-
+    
     return screenMap;
   } catch {
     console.log('Flow tree not found, proceeding without screen metadata');
@@ -392,7 +405,7 @@ async function loadFlowTree(): Promise<Map<string, FlowTreeScreen> | null> {
 
 ---
 
-## Phase B: PRD Parsing
+## 🔄 Phase B: PRD Parsing
 
 ### B1-B2: Extract Acceptance Criteria
 
@@ -409,31 +422,31 @@ interface ParsedAcceptanceCriteria {
 
 function extractAcceptanceCriteria(content: string): ParsedAcceptanceCriteria[] {
   const criteria: ParsedAcceptanceCriteria[] = [];
-
+  
   // Pattern 1: Gherkin format
   const gherkinPattern = /Scenario:\s*(.+?)\n\s*Given\s+(.+?)\n(?:\s*And\s+.+?\n)*\s*When\s+(.+?)\n\s*Then\s+(.+?)(?:\n\s*And\s+.+?)*/gi;
-
+  
   let match;
   let acIndex = 1;
-
+  
   while ((match = gherkinPattern.exec(content)) !== null) {
     const scenario = match[1].trim();
     const given = match[2].trim();
     const when = match[3].trim();
-
+    
     // Extract all Then clauses (including And)
     const thenSection = match[0].substring(match[0].indexOf('Then'));
     const thenLines = thenSection
       .split('\n')
       .filter(line => /^\s*(Then|And)\s+/i.test(line))
       .map(line => line.replace(/^\s*(Then|And)\s+/i, '').trim());
-
+    
     // Determine type from scenario name
     let type: ParsedAcceptanceCriteria['type'] = 'happy-path';
     if (/error|fail|invalid/i.test(scenario)) type = 'error-handling';
     else if (/edge|boundary/i.test(scenario)) type = 'edge-case';
     else if (/valid/i.test(scenario)) type = 'validation';
-
+    
     criteria.push({
       id: `ac-${acIndex++}`,
       scenario,
@@ -444,18 +457,18 @@ function extractAcceptanceCriteria(content: string): ParsedAcceptanceCriteria[] 
       raw: match[0],
     });
   }
-
+  
   // Pattern 2: Bullet-list acceptance criteria (fallback)
   if (criteria.length === 0) {
     const bulletPattern = /##\s*Acceptance Criteria\s*\n((?:[-*]\s*.+\n?)+)/i;
     const bulletMatch = content.match(bulletPattern);
-
+    
     if (bulletMatch) {
       const bullets = bulletMatch[1]
         .split('\n')
         .filter(line => /^[-*]\s+/.test(line))
         .map(line => line.replace(/^[-*]\s+/, '').trim());
-
+      
       for (const bullet of bullets) {
         criteria.push({
           id: `ac-${acIndex++}`,
@@ -469,7 +482,7 @@ function extractAcceptanceCriteria(content: string): ParsedAcceptanceCriteria[] 
       }
     }
   }
-
+  
   return criteria;
 }
 ```
@@ -492,7 +505,7 @@ function extractPRDMetadata(content: string, flowId: string): PRDMetadata {
   const dependencies = depsMatch
     ? depsMatch[1].split(/[,;]/).map(d => d.trim()).filter(d => d)
     : [];
-
+  
   // Extract UI components (from ## Components section or inline)
   const componentsMatch = content.match(/##\s*Components?\s*\n((?:[-*]\s*.+\n?)+)/i);
   const uiComponents = componentsMatch
@@ -500,11 +513,11 @@ function extractPRDMetadata(content: string, flowId: string): PRDMetadata {
         .filter(line => /^[-*]\s+/.test(line))
         .map(line => line.replace(/^[-*]\s+/, '').trim())
     : [];
-
+  
   // Extract routes
   const routeMatch = content.match(/route[:\s]+[`"]?([^`"\n]+)[`"]?/i);
   const routes = routeMatch ? [routeMatch[1].trim()] : [];
-
+  
   // Extract data requirements
   const dataMatch = content.match(/##\s*Data\s*\n((?:[-*]\s*.+\n?)+)/i);
   const dataRequirements = dataMatch
@@ -512,7 +525,7 @@ function extractPRDMetadata(content: string, flowId: string): PRDMetadata {
         .filter(line => /^[-*]\s+/.test(line))
         .map(line => line.replace(/^[-*]\s+/, '').trim())
     : [];
-
+  
   return {
     dependencies,
     uiComponents,
@@ -526,7 +539,7 @@ function extractPRDMetadata(content: string, flowId: string): PRDMetadata {
 
 ---
 
-## Phase C: Story Generation
+## 🔄 Phase C: Story Generation
 
 ### C1-C2: Convert PRD to Atomic Stories
 
@@ -574,27 +587,27 @@ function generateStoriesFromPRD(
   maxStorySize: 'small' | 'medium' | 'large'
 ): GeneratedStory[] {
   const stories: GeneratedStory[] = [];
-
+  
   // Determine story granularity based on maxStorySize
   const splitThreshold = {
     small: 3,   // Max 3 acceptance criteria per story
     medium: 6,  // Max 6 acceptance criteria per story
     large: 10,  // Max 10 acceptance criteria per story
   }[maxStorySize];
-
+  
   // Group criteria into stories
   const criteriaGroups = chunkArray(criteria, splitThreshold);
-
+  
   for (let i = 0; i < criteriaGroups.length; i++) {
     const group = criteriaGroups[i];
     const storyNumber = criteriaGroups.length > 1 ? `-part-${i + 1}` : '';
     const storyId = `${prd.screenId}${storyNumber}`;
-
+    
     // Map acceptance criteria to verifiable format
-    const verifiableCriteria = group.map(ac =>
+    const verifiableCriteria = group.map(ac => 
       convertToVerifiableCriterion(ac, prd, metadata)
     );
-
+    
     // Always add gap-analysis as final verification
     verifiableCriteria.push({
       id: `ac-${verifiableCriteria.length + 1}`,
@@ -603,7 +616,7 @@ function generateStoriesFromPRD(
       command: '@gap-analysis',
       expectedScore: 85,
     });
-
+    
     // Add UI validation if this is a screen PRD
     if (metadata.routes.length > 0) {
       verifiableCriteria.push({
@@ -619,10 +632,10 @@ function generateStoriesFromPRD(
         },
       });
     }
-
+    
     const story: GeneratedStory = {
       id: storyId,
-      title: criteriaGroups.length > 1
+      title: criteriaGroups.length > 1 
         ? `${prd.title} (Part ${i + 1}/${criteriaGroups.length})`
         : prd.title,
       description: `Implement ${prd.screenName} screen from ${prd.flowName} flow`,
@@ -644,10 +657,10 @@ function generateStoriesFromPRD(
       dependsOn: metadata.dependencies.map(d => d), // Convert screen deps to story deps
       estimatedIterations: Math.ceil(group.length / 3),
     };
-
+    
     stories.push(story);
   }
-
+  
   return stories;
 }
 
@@ -657,7 +670,7 @@ function convertToVerifiableCriterion(
   metadata: PRDMetadata
 ): GeneratedStory['acceptanceCriteria'][0] {
   // Attempt to convert BDD criterion to machine-verifiable check
-
+  
   // Check if it's about file creation
   const fileCreateMatch = ac.then.join(' ').match(/creat(?:e|ed)\s+(?:file|component|page)\s+[`"]?([^`"]+)[`"]?/i);
   if (fileCreateMatch) {
@@ -668,7 +681,7 @@ function convertToVerifiableCriterion(
       filePath: fileCreateMatch[1],
     };
   }
-
+  
   // Check if it's about UI rendering
   const uiRenderMatch = ac.then.join(' ').match(/(?:display|show|render)s?\s+[`"]?([^`"]+)[`"]?/i);
   if (uiRenderMatch && metadata.routes.length > 0) {
@@ -685,7 +698,7 @@ function convertToVerifiableCriterion(
       },
     };
   }
-
+  
   // Default: use verify-prd command
   return {
     id: ac.id,
@@ -697,17 +710,17 @@ function convertToVerifiableCriterion(
 }
 
 function calculatePriority(prd: Step5PRD, partIndex: number, totalParts: number): number {
-  // Priority based on: flow order x 100 + screen order x 10 + part index
+  // Priority based on: flow order × 100 + screen order × 10 + part index
   const flowOrder = parseInt(prd.flowId.match(/^\d+/)?.[0] || '0', 10);
   const screenOrder = prd.order;
-
+  
   return flowOrder * 100 + screenOrder * 10 + partIndex;
 }
 
 function determineComplexity(criteriaCount: number, metadata: PRDMetadata): 'simple' | 'medium' | 'complex' {
   const componentCount = metadata.uiComponents.length;
   const hasData = metadata.dataRequirements.length > 0;
-
+  
   if (criteriaCount <= 3 && componentCount <= 2 && !hasData) return 'simple';
   if (criteriaCount <= 6 && componentCount <= 5) return 'medium';
   return 'complex';
@@ -726,7 +739,7 @@ function chunkArray<T>(array: T[], size: number): T[][] {
 
 ---
 
-## Phase D: Backlog Assembly
+## 🔄 Phase D: Backlog Assembly
 
 ### D1: Validate Verifiable Criteria
 
@@ -741,7 +754,7 @@ function validateStories(
   strict: boolean
 ): ValidationResult {
   const issues: { storyId: string; issue: string }[] = [];
-
+  
   for (const story of stories) {
     // Check: At least one criterion
     if (story.acceptanceCriteria.length === 0) {
@@ -751,13 +764,13 @@ function validateStories(
       });
       continue;
     }
-
+    
     // Check: All criteria are verifiable (in strict mode)
     if (strict) {
       const manualOnlyCriteria = story.acceptanceCriteria.filter(
         ac => ac.type === 'manual'
       );
-
+      
       if (manualOnlyCriteria.length === story.acceptanceCriteria.length) {
         issues.push({
           storyId: story.id,
@@ -765,12 +778,12 @@ function validateStories(
         });
       }
     }
-
+    
     // Check: Has at least one verification command
     const hasCommandCriteria = story.acceptanceCriteria.some(
       ac => ac.type === 'command' || ac.type === 'file-exists' || ac.type === 'ui-validation'
     );
-
+    
     if (!hasCommandCriteria) {
       issues.push({
         storyId: story.id,
@@ -778,7 +791,7 @@ function validateStories(
       });
     }
   }
-
+  
   return {
     valid: issues.length === 0,
     issues,
@@ -795,7 +808,7 @@ async function buildBacklog(
   dryRun: boolean
 ): Promise<void> {
   const timestamp = new Date().toISOString();
-
+  
   // Build prd.json
   const backlog = {
     $schema: '../../../schemas/ralph-backlog.schema.json',
@@ -811,7 +824,7 @@ async function buildBacklog(
     stories,
     journeys: extractJourneys(stories),
   };
-
+  
   // Build prd-map.json
   const prdMap = {
     $schema: '../../../schemas/ralph-prd-map.schema.json',
@@ -832,7 +845,7 @@ async function buildBacklog(
       storyCount: stories.filter(s => s.source.prdPath === prd.path).length,
     })),
   };
-
+  
   // Initialize progress.txt
   const progressTxt = `# Ralph Loop Progress — Prototype Implementation
 # Generated: ${timestamp}
@@ -843,7 +856,7 @@ async function buildBacklog(
 ---
 
 `;
-
+  
   if (dryRun) {
     console.log('\n[DRY RUN] Would create:');
     console.log('  docs/ralph/prototype/prd.json');
@@ -853,26 +866,26 @@ async function buildBacklog(
     console.log(JSON.stringify(backlog, null, 2).slice(0, 2000) + '...');
     return;
   }
-
+  
   // Create directory
-  await mkdir('docs/ralph/prototype', { recursive: true });
-
+  await run_terminal_cmd('mkdir -p docs/ralph/prototype');
+  
   // Write files
-  await writeFile('docs/ralph/prototype/prd.json', JSON.stringify(backlog, null, 2));
-  await writeFile('docs/ralph/prototype/prd-map.json', JSON.stringify(prdMap, null, 2));
-  await writeFile('docs/ralph/prototype/progress.txt', progressTxt);
-
+  await write('docs/ralph/prototype/prd.json', JSON.stringify(backlog, null, 2));
+  await write('docs/ralph/prototype/prd-map.json', JSON.stringify(prdMap, null, 2));
+  await write('docs/ralph/prototype/progress.txt', progressTxt);
+  
   console.log(`
-Backlog created:
-   docs/ralph/prototype/prd.json (${stories.length} stories)
-   docs/ralph/prototype/prd-map.json
-   docs/ralph/prototype/progress.txt
+✅ Backlog created:
+   📄 docs/ralph/prototype/prd.json (${stories.length} stories)
+   📄 docs/ralph/prototype/prd-map.json
+   📄 docs/ralph/prototype/progress.txt
   `);
 }
 
 function extractJourneys(stories: GeneratedStory[]): { id: string; name: string; storyIds: string[] }[] {
   const journeyMap = new Map<string, string[]>();
-
+  
   for (const story of stories) {
     if (story.tags.journeyId) {
       const existing = journeyMap.get(story.tags.journeyId) || [];
@@ -880,7 +893,7 @@ function extractJourneys(stories: GeneratedStory[]): { id: string; name: string;
       journeyMap.set(story.tags.journeyId, existing);
     }
   }
-
+  
   // Also create a journey per flow
   const flowMap = new Map<string, string[]>();
   for (const story of stories) {
@@ -888,9 +901,9 @@ function extractJourneys(stories: GeneratedStory[]): { id: string; name: string;
     existing.push(story.id);
     flowMap.set(story.tags.flowId, existing);
   }
-
+  
   const journeys: { id: string; name: string; storyIds: string[] }[] = [];
-
+  
   for (const [flowId, storyIds] of flowMap) {
     journeys.push({
       id: `journey-${flowId}`,
@@ -902,7 +915,7 @@ function extractJourneys(stories: GeneratedStory[]): { id: string; name: string;
       }),
     });
   }
-
+  
   return journeys;
 }
 
@@ -921,7 +934,7 @@ async function getProjectName(): Promise<string> {
 
 ---
 
-## Phase E: Output and Validation
+## 🔄 Phase E: Output & Validation
 
 ### E4: Emit Epistemic Confidence Artifact
 
@@ -939,35 +952,35 @@ function computeBacklogConfidence(
   prds: Step5PRD[]
 ): BacklogConfidence {
   // Verifiability: stories with at least one command/file/ui check
-  const verifiable = stories.filter(s =>
-    s.acceptanceCriteria.some(ac =>
+  const verifiable = stories.filter(s => 
+    s.acceptanceCriteria.some(ac => 
       ac.type !== 'manual'
     )
   ).length;
   const verifiabilityScore = (verifiable / stories.length) * 100;
-
+  
   // Coverage: PRDs with at least one story
   const coveredPrds = new Set(stories.map(s => s.source.prdPath));
   const coverageScore = (coveredPrds.size / prds.length) * 100;
-
+  
   // Atomicity: stories estimated at 1 iteration
   const atomic = stories.filter(s => s.estimatedIterations === 1).length;
   const atomicityScore = (atomic / stories.length) * 100;
-
+  
   // Dependencies: stories with resolvable deps
   const storyIds = new Set(stories.map(s => s.id));
-  const resolvableDeps = stories.filter(s =>
+  const resolvableDeps = stories.filter(s => 
     s.dependsOn.every(d => storyIds.has(d) || d === '')
   ).length;
   const dependencyScore = (resolvableDeps / stories.length) * 100;
-
+  
   const overallConfidence = (
     verifiabilityScore * 0.4 +
     coverageScore * 0.2 +
     atomicityScore * 0.2 +
     dependencyScore * 0.2
   );
-
+  
   return {
     verifiabilityScore,
     coverageScore,
@@ -983,7 +996,7 @@ async function emitConfidenceArtifact(
   confidence: BacklogConfidence
 ): Promise<void> {
   const timestamp = new Date().toISOString();
-
+  
   const artifact = {
     version: '1.0.0',
     command: '@step-5b-prd-to-json',
@@ -1009,18 +1022,18 @@ async function emitConfidenceArtifact(
       ...(confidence.atomicityScore < 70 ? ['Many stories may require multiple iterations'] : []),
     ] : [],
   };
-
-  await mkdir('.sigma/confidence', { recursive: true });
+  
+  await run_terminal_cmd('mkdir -p .sigma/confidence');
   const filename = `.sigma/confidence/step-5b-${timestamp.split('T')[0]}.json`;
-  await writeFile(filename, JSON.stringify(artifact, null, 2));
-
+  await write(filename, JSON.stringify(artifact, null, 2));
+  
   console.log(`
-Epistemic Confidence: ${Math.round(confidence.overallConfidence)}%
+📊 Epistemic Confidence: ${Math.round(confidence.overallConfidence)}%
    Verifiability: ${Math.round(confidence.verifiabilityScore)}%
    Coverage: ${Math.round(confidence.coverageScore)}%
    Atomicity: ${Math.round(confidence.atomicityScore)}%
    Dependencies: ${Math.round(confidence.dependencyScore)}%
-
+   
    Artifact saved: ${filename}
   `);
 }
@@ -1028,7 +1041,7 @@ Epistemic Confidence: ${Math.round(confidence.overallConfidence)}%
 
 ---
 
-## Quality Gates
+## ✅ Quality Gates
 
 **Step 5b complete when:**
 
@@ -1043,11 +1056,11 @@ Epistemic Confidence: ${Math.round(confidence.overallConfidence)}%
 
 ---
 
-## Final Review Gate
+## 🚫 Final Review Gate
 
 ```
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-STEP 5.5 COMPLETE — PRD to RALPH BACKLOG
+🔄 STEP 5.5 COMPLETE — PRD → RALPH BACKLOG
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 PRDs Processed: [X]
@@ -1055,9 +1068,9 @@ Stories Generated: [X]
 Epistemic Confidence: [X]%
 
 Created:
-- docs/ralph/prototype/prd.json
-- docs/ralph/prototype/prd-map.json
-- docs/ralph/prototype/progress.txt
+✅ docs/ralph/prototype/prd.json
+✅ docs/ralph/prototype/prd-map.json
+✅ docs/ralph/prototype/progress.txt
 
 Ready for Ralph Loop:
   sigma-ralph.sh --workspace=/path/to/project --mode=prototype
@@ -1074,7 +1087,7 @@ Reply `revise: [feedback]` to modify
 
 ---
 
-## Related Commands
+## 🔗 Related Commands
 
 | Command | Relationship |
 |---------|--------------|
@@ -1099,7 +1112,7 @@ Reply `revise: [feedback]` to modify
 
 ---
 
-## Output Files
+## 📝 Output Files
 
 ### docs/ralph/prototype/prd.json
 
@@ -1205,5 +1218,4 @@ Reply `revise: [feedback]` to modify
 | source_traceable | All stories have valid source.prdPath | 5 |
 
 </verification>
-
 

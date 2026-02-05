@@ -14,8 +14,8 @@
 A platform-agnostic 13-step product development methodology for AI-assisted development.
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
-[![Platforms](https://img.shields.io/badge/Platforms-Claude%20Code%20%7C%20Cursor%20%7C%20OpenCode%20%7C%20Factory%20Droid%20%7C%20Antigravity-green.svg)](#supported-platforms)
-[![Version](https://img.shields.io/badge/Version-5.1-purple.svg)](#)
+[![Platforms](https://img.shields.io/badge/Platforms-Claude%20Code%20%7C%20Cursor%20%7C%20OpenCode%20%7C%20Codex%20%7C%20Factory%20Droid%20%7C%20Antigravity-green.svg)](#supported-platforms)
+[![Version](https://img.shields.io/badge/Version-1.0.0--alpha.1-purple.svg)](#)
 
 ---
 
@@ -25,7 +25,7 @@ Sigma Protocol guides AI assistants through a complete product development workf
 
 - **13 structured steps** from idea to shipping
 - **185+ commands** across 7 categories
-- **177 skills** for specialized tasks
+- **180+ skills** for specialized tasks
 - **Quality gates** with verification scoring (target: 80+)
 - **Human-in-the-loop checkpoints** for critical decisions
 - **Ralph Loop** for autonomous task execution
@@ -70,7 +70,7 @@ sigma retrofit
 
 **Step 3: Start the Workflow in Your AI Assistant**
 
-Open your project in Claude Code, Cursor, OpenCode, or Antigravity and run:
+Open your project in Claude Code, Cursor, OpenCode, Codex, or Antigravity and run:
 ```bash
 /step-1-ideation "Your product idea here"
 ```
@@ -150,11 +150,12 @@ cp -r Sigma-Protocol/.cursor your-project/
 
 | Platform | Command Style | Configuration | Skills |
 |----------|---------------|---------------|--------|
-| **Claude Code** | `/command` | `.claude/` + `CLAUDE.md` | 177 |
-| **Cursor** | `@command` | `.cursor/rules/` | 149 |
-| **OpenCode** | `/command` | `.opencode/` + `AGENTS.md` | 149 |
-| **Factory Droid** | `/command` | `.factory/` + `AGENTS.md` | 158 |
-| **Antigravity** | `/command` | `.agent/` + `SKILL.md` | 16 |
+| **Claude Code** | `/command` | `.claude/` + `CLAUDE.md` | 151 |
+| **Cursor** | `@command` | `.cursor/rules/` | 27 rules |
+| **OpenCode** | `/command` | `.opencode/` + `AGENTS.md` | 167 |
+| **Codex** | `$command` (skills) | `.codex/` + `.codex/skills/` + `.agents/skills/` (legacy) + `AGENTS.md` | 180 |
+| **Factory Droid** | `/command` | `.factory/` + `AGENTS.md` | 163 |
+| **Antigravity** | `/command` | `.agent/` + `SKILL.md` | 15 |
 
 > **Tip:** Run `/platform-sync` weekly to keep skills current with platform updates.
 
@@ -283,7 +284,7 @@ Commands:
   sigma retrofit        Add Sigma to existing project
   sigma doctor          Installation health check
   sigma doctor --fix    Auto-fix common issues
-  sigma install-skills  Install all skills (163)
+  sigma install-skills  Install all skills (varies by platform)
   sigma status          Show workflow status
   sigma search <query>  Search commands and skills
   sigma help            Show all commands
@@ -330,11 +331,15 @@ sigma-protocol/
 │   └── agents-legacy/  # Deprecated agent files
 ├── .cursor/            # Cursor configuration
 │   └── rules/          # Cursor rule files (.mdc)
+├── .codex/             # Codex project config (optional)
+├── .agents/            # Codex skills (repo-scoped)
+│   └── skills/         # Skill folders (SKILL.md)
 ├── .factory/           # Factory Droid configuration
 ├── platforms/          # Platform-specific configs
 │   ├── claude-code/
 │   ├── cursor/
 │   ├── opencode/
+│   ├── codex/
 │   └── factory-droid/
 ├── templates/
 │   ├── steps/          # Canonical step definitions

@@ -1,45 +1,51 @@
 ---
-description: "Run Sigma steps/step-10-feature-breakdown"
+version: "2.2.0"
+last_updated: "2026-01-07"
+changelog:
+  - "2.2.0: Added mandatory Backend Scope section to feature shaping template - no frontend-only features allowed. Updated Betting Table with Backend column."
+  - "2.1.0: Added Boilerplate Pre-Built Features section - skip shaping for boilerplate-provided features"
+  - "2.0.0: Renumbered from Step 8 to Step 10 in 13-step workflow"
+  - "1.0.0: Initial release as Step 8"
+description: "Step 10: Feature Shaping & Story Mapping - Identify, shape, and validate all features requiring dedicated PRDs using Story Mapping, Shape Up, and INVEST frameworks"
 allowed-tools:
-  - Read
-  - Write
-  - Edit
-  - Bash
-  - WebFetch
+  # PRIMARY MCP Tools (Use First)
+  - mcp_Ref_ref_search_documentation
+  - mcp_Ref_ref_read_url
+  - mcp_exa_web_search_exa
+  - mcp_exa_get_code_context_exa
+  - mcp_exa_crawling_exa
+  - mcp_exa_company_research_exa
+  - mcp_exa_linkedin_search_exa
+  - mcp_exa_deep_researcher_start
+  - mcp_exa_deep_researcher_check
+  
+  # BACKUP MCP Tools (Use only if primary fails)
+  - mcp_context7_resolve-library-id
+  - mcp_context7_get-library-docs
+  - mcp_perplexity-ask_perplexity_ask
+  
+  # OTHER TOOLS
+  - web_search
+  - read_file
+  - write
+  - list_dir
+  - run_terminal_cmd
+parameters:
+  - --min-complexity
+  - --appetite
 ---
-
-# /step-10-feature-breakdown
-
-Invoke the **step-10-feature-breakdown** agent from Sigma Protocol.
-
-This command runs the full step-10-feature-breakdown workflow including:
-- All HITL (Human-in-the-Loop) checkpoints
-- MCP research integration
-- Quality verification gates
-
-**Usage:** `/step-10-feature-breakdown [your input here]`
-
----
-
-# step-10-feature-breakdown
-
-**Source:** Sigma Protocol steps module
-**Version:** 2.2.0
-
----
-
 
 # /step-10-feature-breakdown — Feature Shaping & Story Mapping (Principal Software Architect + $1B Valuation Context)
 
-**Mission**
-Run a complete, interactive **Step-8: Feature Shaping → Story Map → Betting Table** for a startup project.
+**Mission**  
+Run a complete, interactive **Step-8: Feature Shaping → Story Map → Betting Table** for a startup project. 
 **Valuation Context:** You are a **Principal Software Architect at a FAANG Company**. You are planning the build for a **$100M scale product**. Dependencies must be optimized. Complexity must be estimated accurately. Features must be **shaped** (bounded, de-risked) before becoming PRDs.
 
 ---
 
-## BOILERPLATE PRE-BUILT FEATURES (NEW - If Using Sigma Boilerplate)
+## BOILERPLATE PRE-BUILT FEATURES (NEW - If Using SSS Boilerplate)
 
-**If your project uses an Sigma boilerplate, many features are already built. Focus shaping on unique product features.**
+**If your project uses an SSS boilerplate, many features are already built. Focus shaping on unique product features.**
 
 ### Detection
 
@@ -365,7 +371,7 @@ This command:
 ---
 
 ## Preflight (auto)
-1) **Get date**: run `date +"%Y-%m-%d"` and capture `TODAY`, and derive `YEAR`.
+1) **Get date**: run `date +"%Y-%m-%d"` and capture `TODAY`, and derive `YEAR`.  
 2) **Detect research tools** (preferred → fallback):
    - If an MCP search tool exists (e.g., `perplexity`, `tavily`, `brave`), prefer it.
    - Else, use Cursor's web browsing.
@@ -535,7 +541,7 @@ This command:
 
 4) **Output**: `/docs/implementation/OUTCOME-MAP.md`
 
-**HITL checkpoint →** Show outcome mapping.
+**HITL checkpoint →** Show outcome mapping.  
 **Prompt:** "Approve outcome mapping? Reply `approve outcomes` or `add outcome: [outcome]`."
 
 ---
@@ -587,19 +593,19 @@ Here's what I found:
    - All database tables, indexes, constraints
    - Migration strategy
    - **Outcome Link**: [Foundation for all features]
-
+   
 2. **Authentication & Authorization**
    - User login/logout
    - JWT/session management
    - Role-based access control (RBAC)
    - **Outcome Link**: [Security requirement]
-
+   
 3. **API Foundation & Middleware**
    - REST/GraphQL setup
    - Error handling
    - Request validation
    - **Outcome Link**: [Foundation for all features]
-
+   
 4. **Deployment Pipeline**
    - CI/CD setup (GitHub Actions / etc)
    - Environment management (dev/staging/prod)
@@ -614,7 +620,7 @@ Here's what I found:
 5. **[Feature Name from PRD]** (e.g., "Voice Intake Agent")
    - [Brief description from PRD]
    - **Outcome Link**: [Linked outcome from Step-1]
-
+   
 6. **[Feature Name from PRD]** (e.g., "PRD Generator")
    - [Brief description from PRD]
    - **Outcome Link**: [Linked outcome from Step-1]
@@ -732,7 +738,7 @@ Proceeding to Phase A: Story Mapping...
 
 5) **Output**: `/docs/implementation/STORY-MAP.md` (Mermaid diagram)
 
-**HITL checkpoint →** Show Story Map.
+**HITL checkpoint →** Show Story Map.  
 **Prompt:** "Approve story map structure? Reply `approve story map` or `revise: …`."
 
 ---
@@ -744,7 +750,7 @@ For **EACH feature**, document:
 
 ### Shaped Feature: [Feature Name]
 
-**Appetite**:
+**Appetite**: 
 - [ ] Small Batch (1-2 weeks) — Quick win, well-understood
 - [ ] Big Batch (4-6 weeks) — Core innovation, some unknowns
 
@@ -797,7 +803,7 @@ RESEARCH NEEDED:
 - Use Perplexity/Exa to search: "[technology] implementation risks {YEAR}"
 - Document findings in `/docs/research/RABBIT-HOLES-${TODAY}.md`
 
-**HITL checkpoint →** Show shaped features with appetites and rabbit holes.
+**HITL checkpoint →** Show shaped features with appetites and rabbit holes.  
 **Prompt:** "Approve shaped features? Reply `approve shaping` or `revise: …`."
 
 ---
@@ -827,7 +833,7 @@ For **EACH feature**, validate:
 - Cannot proceed to Step-9 PRD generation
 - Must be refined before next attempt
 
-**HITL checkpoint →** Show INVEST scorecard.
+**HITL checkpoint →** Show INVEST scorecard.  
 **Prompt:** "Approve INVEST validation? Reply `approve invest` or `revise: …`."
 
 ---
@@ -848,7 +854,7 @@ For **EACH feature**:
 - "Database migrations" → OK as infrastructure (Phase 0 exception)
 - Pure backend with no user impact → Flag for review
 
-**HITL checkpoint →** Show vertical slice validation.
+**HITL checkpoint →** Show vertical slice validation.  
 **Prompt:** "Approve vertical slices? Reply `approve slices` or `revise: …`."
 
 ---
@@ -896,16 +902,16 @@ graph TD
     Voice --> PRD[PRD Generator]
     Auth --> Dashboard[Dashboard]
     PRD --> Dashboard
-
+    
     classDef phase0 fill:#f9f,stroke:#333
     classDef phase1 fill:#bbf,stroke:#333
     classDef phase2 fill:#bfb,stroke:#333
-
+    
     class DB,Auth phase0
     class Voice,PRD,Dashboard phase1
 ```
 
-**HITL checkpoint →** Show betting table and dependency graph.
+**HITL checkpoint →** Show betting table and dependency graph.  
 **Prompt:** "Approve betting table? Reply `approve betting` or `revise: …`."
 
 ---
@@ -951,7 +957,7 @@ GET STARTED: [First action]
 - [Copy from Step-1 feature acceptance criteria]
 - [Must be testable per INVEST]
 
-**HITL checkpoint →** Show PRD scope definitions for all features.
+**HITL checkpoint →** Show PRD scope definitions for all features.  
 **Prompt:** "Approve PRD scopes? Reply `approve scopes` or `revise: …`."
 
 ---
@@ -1054,10 +1060,10 @@ GET STARTED: [First action]
 ---
 
 ## Final Review Gate (stop here)
-**Prompt to user (blocking):**
-> "Please review the Feature Shaping output and Betting Table.
-> This defines which PRDs will be created in Step-9.
->
+**Prompt to user (blocking):**  
+> "Please review the Feature Shaping output and Betting Table.  
+> This defines which PRDs will be created in Step-9.  
+> 
 > **Validation Summary:**
 > - [ ] Outcome Gate: All features linked to outcomes
 > - [ ] Shape Up Gate: Appetites and rabbit holes defined
@@ -1066,9 +1072,9 @@ GET STARTED: [First action]
 > - [ ] Story Map Gate: Features organized by user journey
 > - [ ] Kano Gate: Features classified
 > - [ ] Dependency Gate: Build order defined
->
-> • Reply `approve step 10` to proceed to Step-11 PRD Generation, or
-> • Reply `revise step 10: <notes>` to iterate.
+> 
+> • Reply `approve step 10` to proceed to Step-11 PRD Generation, or  
+> • Reply `revise step 10: <notes>` to iterate.  
 > I won't continue until you approve."
 
 ---
@@ -1148,3 +1154,4 @@ GET STARTED: [First action]
 | Ready for PRDs | Each feature ready for Step 11 PRD generation | 3 |
 
 </verification>
+

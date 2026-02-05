@@ -1,7 +1,7 @@
 # Sigma Protocol Command Catalog
 
-**Version:** 5.0
-**Last Updated:** 2026-01-21
+**Version:** 1.0.0-alpha.1
+**Last Updated:** 2026-02-04
 
 Complete index of all Sigma Protocol commands, organized by category.
 
@@ -15,14 +15,14 @@ Complete index of all Sigma Protocol commands, organized by category.
 | **Steps** | 20 | Core 13-step workflow + Ralph-mode conversions |
 | **Audit** | 16 | Quality assurance + code simplification |
 | **Dev** | 5 | Development workflow + compound engineering |
-| **Ops** | 33 | Operations & management + orchestration |
+| **Ops** | 34 | Operations & management + orchestration |
 | **Deploy** | 4 | Shipping & handoff |
 | **Generators** | 15 | Code & doc generation |
 | **Marketing** | 25 | GTM workflow + Content Creation Studio |
 | **Ralph Loop** | 1 | Autonomous agent orchestration |
 | **Skills** | 39 | Foundation skills (frontend, marketing, multi-agent) |
 | **Agents** | 12 | Specialist agent personas |
-| **Total** | **188** | |
+| **Total** | **189** | |
 
 ---
 
@@ -33,6 +33,9 @@ Complete index of all Sigma Protocol commands, organized by category.
 | **Cursor** | `@command-name` | `.cursor/commands/` |
 | **Claude Code** | `/command-name` | `.claude/` + `CLAUDE.md` |
 | **OpenCode** | `/command-name` | `.opencode/` + `AGENTS.md` |
+| **Codex** | `$command-name` (skills) | `.codex/` + `.codex/skills/` + `.agents/skills/` (legacy) + `AGENTS.md` |
+
+**Codex note:** Codex loads skills from `.codex/skills` (legacy fallback: `.agents/skills`) and discovers `AGENTS.md` automatically, so Sigma steps are installed as skills to keep full prompts intact.
 
 **Install for your platform:**
 ```bash
@@ -67,6 +70,7 @@ The global `sigma` command provides an interactive interface.
 | `sigma status` | Check installation status |
 | `sigma build` | Build platform-specific outputs |
 | `sigma update` | Update to latest Sigma version |
+| `sigma slas` | Self-learning session system (init, distill, status) |
 
 ### Maintenance Commands
 
@@ -303,7 +307,7 @@ Multi-agent parallel development - implements the **P-Thread** pattern.
 
 ## Ops Commands (`ops/`)
 
-Operations and project management — **33 commands**.
+Operations and project management — **34 commands**.
 
 ### Tracking & Planning
 
@@ -358,6 +362,7 @@ Operations and project management — **33 commands**.
 | `prompt-handoff` | Handoff context to another session |
 | `repair-manifest` | Repair module manifests |
 | `sync-workspace-commands` | Sync commands in workspace |
+| `platform-sync` | Sync with platform changelogs |
 | `system-health` | System health check |
 
 ### Retrofit

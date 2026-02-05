@@ -1,7 +1,7 @@
 # Sigma Quick Reference Card
 
-**Version:** 5.0  
-**Last Updated:** 2025-12-29
+**Version:** 1.0.0-alpha.1
+**Last Updated:** 2026-02-04
 
 ---
 

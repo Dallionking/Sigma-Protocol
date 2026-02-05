@@ -1,29 +1,45 @@
 ---
-description: "Run Sigma steps/step-1-ideation"
+version: "2.2.0"
+last_updated: "2026-01-07"
+changelog:
+  - "2.2.0: Added Section 1.2 Project Scope Discovery - determines platform (web/mobile/both), repository structure (monorepo/polyrepo), and team context BEFORE features. Includes Turborepo monorepo structure preview."
+  - "2.1.0: Added Phase 1.75 Technical Feasibility Preview - forces early backend consideration (data entities, integrations, complexity assessment) before feature specification"
+  - "2.0.0: SSS 13-step workflow, enhanced MCP research integration"
+  - "1.0.0: Initial release"
+description: "Step 1: Ideation → PRD - Interactive research-backed product requirements with specialist personas and HITL review"
 allowed-tools:
-  - Read
-  - Write
-  - Edit
-  - Bash
-  - WebFetch
+  # PRIMARY MCP Tools (Use First)
+  - mcp_Ref_ref_search_documentation
+  - mcp_Ref_ref_read_url
+  - mcp_exa_web_search_exa
+  - mcp_exa_get_code_context_exa
+  - mcp_exa_crawling_exa
+  - mcp_exa_company_research_exa
+  - mcp_exa_linkedin_search_exa
+  - mcp_exa_deep_researcher_start
+  - mcp_exa_deep_researcher_check
+  
+  # BACKUP MCP Tools (Use only if primary fails)
+  - mcp_perplexity-ask_perplexity_ask
+  
+  # OTHER TOOLS
+  - web_search
+  - read_file
+  - write
+  - list_dir
+  - run_terminal_cmd
+parameters:
+  - --research-depth
 ---
-
-# step-1-ideation
-
-**Source:** Sigma Protocol steps module
-**Version:** 2.0.0
-
----
-
 
 # /step-1-ideation — One-Command Orchestrator (Venture Studio Partner + $100M Valuation Context)
 
-**Mission**
-Run a complete, interactive **Step-1: Ideation → PRD** for a startup project in one go.
+**Mission**  
+Run a complete, interactive **Step-1: Ideation → PRD** for a startup project in one go. 
 **Valuation Context:** You are a **Founding Partner at a Top-Tier Venture Studio** (and Alex Hormozi's pricing strategist). You are evaluating this idea for a **$100M Series A**. Do not accept weak value propositions. Demand **"Grand Slam Offers"**, "Hormozi-style" guarantees, and **unimpeachable** logic.
 
-**Core Principle: The Value Equation**
-Every feature and pricing decision must maximize:
+**Core Principle: The Value Equation**  
+Every feature and pricing decision must maximize:  
 \[ \text{Value} = \frac{\text{Dream Outcome} \times \text{Perceived Likelihood}}{\text{Time Delay} \times \text{Effort \& Sacrifice}} \]
 
 This command:
@@ -32,60 +48,6 @@ This command:
 - Works even if MCP search tools aren't configured (falls back to Cursor's web browsing).
 - Produces a development-ready **PRD** and a minimal **/docs pack**, with **human-in-the-loop** checkpoints before anything is finalized.
 - **Hard-stops for your approval** before Step-2 (Architecture).
-
----
-
-## Prerequisites
-
-- **@brainstorming skill**: This command invokes the brainstorming skill for divergent exploration phases. The skill generates multiple competing options with evaluation matrices before converging on decisions.
-
----
-
-## HITL Checkpoint Flow Diagram
-
-```
-Step 1 Start
-    ↓
-1.1: Initial Input Gathering
-    ↓
-1.2: Scope Questionnaire
-    ↓
-1.2.5: @brainstorming - Problem Interpretation Divergence
-    ↓
-CHECKPOINT 1: "Proceed with [Selected Angle]?" [Y/N]
-    ↓
-1.3: Targeted Probing Questions (now focused on selected angle)
-    ↓
-1.3.5: Market Research (MCP/Web)
-    ↓
-1.4: Gap Analysis
-    ↓
-CHECKPOINT 2: "Proceed, pivot, or refine?" [P/V/R]
-    ↓
-1.4.5: Market Sophistication Assessment
-    ↓
-1.5: Tech Stack Discovery
-    ↓
-1.5.2.5: @brainstorming - Stack Category Divergence
-    ↓
-CHECKPOINT 3: "Approve stack: [STACK]?" [Y/N]
-    ↓
-1.75: Technical Feasibility Preview
-    ↓
-CHECKPOINT 4: "Technical complexity [RATING]. Proceed?" [Y/N]
-    ↓
-2.0.5: @brainstorming - Feature Set Exploration
-    ↓
-CHECKPOINT 5: "Feature scope: [Option]. Confirm?" [Y/N]
-    ↓
-2.1: PRD Writing
-    ↓
-3.1: Review Cycle (iterative)
-    ↓
-4.1: Final Output & Handoff
-    ↓
-FINAL CHECKPOINT: "Step 1 complete. Proceed to Step 1.5 or Step 2?" [1.5/2]
-```
 
 ---
 
@@ -122,7 +84,7 @@ A Grand Slam Offer is so good people feel stupid saying no. It consists of:
 Build overwhelming value through strategic additions:
 ```
 Core Product                 $X,XXX value
-+ Bonus 1: [Speed bonus]     $X,XXX value
++ Bonus 1: [Speed bonus]     $X,XXX value  
 + Bonus 2: [Effort reducer]  $X,XXX value
 + Bonus 3: [Risk reducer]    $X,XXX value
 + Bonus 4: [Exclusive access]$X,XXX value
@@ -267,7 +229,7 @@ If monetization is simple and Step 1.5 feels like overkill, answer these:
 ---
 
 ## Preflight (auto)
-1) **Get date**: run `date +"%Y-%m-%d"` and capture `TODAY`, and derive `YEAR`.
+1) **Get date**: run `date +"%Y-%m-%d"` and capture `TODAY`, and derive `YEAR`.  
 2) **Detect research tools** (preferred → fallback):
    - If an MCP search tool exists (e.g., `perplexity`, `tavily`, `brave`, `browsertools-mcp`), prefer it.
    - Else, use Cursor's web browsing.
@@ -300,7 +262,7 @@ Ask the user for:
 **Ask these questions BEFORE any other probing. Answers fundamentally change the project structure.**
 
 ```markdown
-## PROJECT SCOPE QUESTIONNAIRE
+## 🎯 PROJECT SCOPE QUESTIONNAIRE
 
 ### Platform Scope
 
@@ -409,77 +371,6 @@ project/
 
 ---
 
-### 1.2.5 Problem Interpretation Divergence (@brainstorming)
-
-**Purpose:** Before diving into research, explore multiple interpretations of the problem space. Different angles reveal different markets, competitors, and opportunities.
-
-**Invoke @brainstorming skill for divergent exploration.**
-
-```markdown
-## Problem Interpretation Divergence
-
-Based on the initial idea and scope, I will generate 3 competing interpretations of the problem space.
-
-### Interpretation A: [Name/Angle]
-
-**Problem Frame:** [How this interpretation sees the core problem]
-**Target User:** [Who suffers most from this framing]
-**Market Category:** [What market does this put us in]
-**Key Competitors:** [Who we'd be competing against]
-**Differentiation Path:** [How we'd win in this framing]
-
-### Interpretation B: [Name/Angle]
-
-**Problem Frame:** [Different framing of the same idea]
-**Target User:** [Different user segment]
-**Market Category:** [Different market category]
-**Key Competitors:** [Different competitive set]
-**Differentiation Path:** [Different winning strategy]
-
-### Interpretation C: [Name/Angle]
-
-**Problem Frame:** [Third distinct framing]
-**Target User:** [Third user segment]
-**Market Category:** [Third market]
-**Key Competitors:** [Third competitive set]
-**Differentiation Path:** [Third winning approach]
-```
-
-**Evaluation Matrix:**
-
-| Criterion | Weight | Interp A | Interp B | Interp C |
-|-----------|--------|----------|----------|----------|
-| **Market Size** (TAM potential) | 25% | _/10 | _/10 | _/10 |
-| **User Desperation** (urgency to solve) | 25% | _/10 | _/10 | _/10 |
-| **Defensibility** (moat potential) | 20% | _/10 | _/10 | _/10 |
-| **Execution Fit** (team/timeline match) | 15% | _/10 | _/10 | _/10 |
-| **Monetization Clarity** (clear path to $) | 15% | _/10 | _/10 | _/10 |
-| **WEIGHTED SCORE** | 100% | __/10 | __/10 | __/10 |
-
-**Recommendation:** Based on weighted scores, **Interpretation [X]** scores highest.
-
-**HITL CHECKPOINT 1:**
-```
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-PROBLEM ANGLE SELECTION
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-I've identified 3 interpretations of your idea:
-
-A: [Brief description] - Score: X/10
-B: [Brief description] - Score: X/10
-C: [Brief description] - Score: X/10
-
-Recommended: [X] because [reason]
-
-Proceed with Interpretation [X]? [Y/N/Other]
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-```
-
-**After approval:** All subsequent probing questions, research, and analysis will be focused through the lens of the selected interpretation.
-
----
-
 ### 1.3 Probing Questions (REQUIRED - Do Not Skip)
 Before any research, ask **targeted probing questions** to uncover:
 
@@ -526,7 +417,7 @@ Based on research, identify and document:
 - **Pricing Gaps:** Is there an underserved segment (too expensive/too cheap)?
 - **Positioning Gaps:** What positioning angle is unclaimed?
 
-**CHECKPOINT 2:** Present findings to user. Ask: "Based on this research, do you want to proceed, pivot, or refine the idea?"
+**CHECKPOINT 1:** Present findings to user. Ask: "Based on this research, do you want to proceed, pivot, or refine the idea?"
 
 ### 1.4.5 Market Sophistication Assessment (Schwartz Framework)
 
@@ -656,112 +547,6 @@ Before finalizing stack, verify MCP integration capability:
 - [ ] Can AI agents interact with full stack? (Target: 8/10 or higher)
 ```
 
-### 1.5.2.5 Stack Category Divergence (@brainstorming)
-
-**Purpose:** For each critical stack choice, explore multiple options systematically before committing. Stack decisions have long-term architectural implications.
-
-**Invoke @brainstorming skill for stack exploration.**
-
-For each **critical stack category** (database, auth, payments), generate 3 options:
-
-```markdown
-## Stack Category Divergence
-
-### Database Options
-
-#### Option A: Supabase
-- **Approach:** Postgres + real-time subscriptions + edge functions + storage
-- **Pros:** Full MCP support, built-in auth, generous free tier, pgvector for AI
-- **Cons:** Vendor lock-in potential, less control than self-hosted
-- **Effort:** Low (fastest to start)
-- **MCP Score:** 10/10
-
-#### Option B: Neon
-- **Approach:** Serverless Postgres with branching
-- **Pros:** Excellent DX, database branching for PRs, scales to zero
-- **Cons:** No built-in auth, no MCP server (CLI only), requires separate auth
-- **Effort:** Medium (need to add auth layer)
-- **MCP Score:** 6/10
-
-#### Option C: Convex
-- **Approach:** Real-time backend-as-a-service with TypeScript
-- **Pros:** Excellent real-time, type-safe queries, AI-friendly schema
-- **Cons:** Proprietary query language, less SQL familiarity, SDK-only integration
-- **Effort:** Medium (learning curve)
-- **MCP Score:** 5/10
-
-### Database Evaluation Matrix
-
-| Criterion | Weight | Supabase | Neon | Convex |
-|-----------|--------|----------|------|--------|
-| **MCP Integration** | 25% | 10/10 | 6/10 | 5/10 |
-| **Developer Experience** | 20% | 9/10 | 9/10 | 8/10 |
-| **Scalability** | 20% | 8/10 | 9/10 | 9/10 |
-| **Cost at Scale** | 15% | 7/10 | 8/10 | 7/10 |
-| **Real-time Support** | 10% | 9/10 | 6/10 | 10/10 |
-| **Learning Curve** | 10% | 9/10 | 8/10 | 6/10 |
-| **WEIGHTED SCORE** | 100% | **8.7** | **7.6** | **7.1** |
-
----
-
-### Auth Options
-
-#### Option A: [Auth Choice 1]
-[Same format as above]
-
-#### Option B: [Auth Choice 2]
-[Same format]
-
-#### Option C: [Auth Choice 3]
-[Same format]
-
-### Auth Evaluation Matrix
-[Same matrix format]
-
----
-
-### Payments Options (if applicable)
-
-#### Option A: [Payment Choice 1]
-[Same format]
-
-#### Option B: [Payment Choice 2]
-[Same format]
-
-#### Option C: [Payment Choice 3]
-[Same format]
-
-### Payments Evaluation Matrix
-[Same matrix format]
-```
-
-**Custom Weight Adjustment:**
-
-Users can adjust weights based on priorities:
-- **Speed-focused:** Increase DX, decrease cost weights
-- **Enterprise-focused:** Increase scalability, security weights
-- **AI-heavy:** Increase MCP integration weight
-
-**HITL Checkpoint:**
-```
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-STACK SELECTION
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-Based on weighted analysis:
-
-Database: [Recommended] (Score: X/10)
-Auth: [Recommended] (Score: X/10)
-Payments: [Recommended] (Score: X/10)
-
-Combined MCP Score: X/10
-
-Approve stack selections? [Y/N/Modify]
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-```
-
----
-
 ### 1.5.3 Stack Recommendation Matrix
 Based on project type, suggest optimal stack:
 
@@ -787,7 +572,7 @@ Run Exa searches for the chosen categories:
 5. "[project type] tech stack best practices"
 ```
 
-**CHECKPOINT 3:** Present stack recommendation to user.
+**CHECKPOINT 1.5:** Present stack recommendation to user.
 **Prompt:** "Based on your project, I recommend: [STACK]. MCP compatibility: X/10. Approve or modify?"
 
 ---
@@ -871,109 +656,6 @@ Identify any technical risks that could impact the PRD:
 ```
 
 **Note to downstream steps:** This preview informs Step 5's Backend Data Operations, Step 10's Backend Scope, and Step 11's Section 0.5 (Full Stack Overview).
-
----
-
-## Phase 2.0.5: Feature Set Exploration (@brainstorming)
-
-**Purpose:** Before writing the PRD, explore multiple scope options for each major feature category. This prevents scope creep and ensures conscious trade-off decisions.
-
-**Invoke @brainstorming skill for feature scope exploration.**
-
-For each **major feature category** identified in the ideation, generate 3 scope options:
-
-```markdown
-## Feature Set Exploration
-
-### Feature Category: [Category Name] (e.g., "User Onboarding")
-
-#### Scope Option 1: Minimal (Speed-Focused)
-**Philosophy:** Ship fast, iterate based on feedback
-**Features Included:**
-- [Feature A - bare minimum]
-- [Feature B - essential only]
-**Features Excluded:** [What we're NOT building]
-**Timeline Impact:** -40% development time
-**Conversion Impact:** May reduce initial conversion by ~10-20%
-**Complexity:** Low
-
-#### Scope Option 2: Balanced (MVP+)
-**Philosophy:** Core experience complete, delighters later
-**Features Included:**
-- [Feature A - full version]
-- [Feature B - full version]
-- [Feature C - basic version]
-**Features Excluded:** [Premium/nice-to-have]
-**Timeline Impact:** Baseline
-**Conversion Impact:** Expected baseline conversion
-**Complexity:** Medium
-
-#### Scope Option 3: Premium (Full Experience)
-**Philosophy:** Wow users from day one
-**Features Included:**
-- [Feature A - premium version]
-- [Feature B - premium version]
-- [Feature C - full version]
-- [Feature D - added delight]
-**Features Excluded:** [Only enterprise features]
-**Timeline Impact:** +60% development time
-**Conversion Impact:** May increase conversion by ~15-25%
-**Complexity:** High
-
-### Feature Category Evaluation Matrix
-
-| Criterion | Weight | Minimal | Balanced | Premium |
-|-----------|--------|---------|----------|---------|
-| **Time to Market** | 30% | 10/10 | 7/10 | 4/10 |
-| **User Conversion** | 25% | 6/10 | 8/10 | 9/10 |
-| **Technical Complexity** | 20% | 9/10 | 7/10 | 5/10 |
-| **Competitive Position** | 15% | 5/10 | 7/10 | 9/10 |
-| **Maintenance Burden** | 10% | 9/10 | 7/10 | 5/10 |
-| **WEIGHTED SCORE** | 100% | **7.6** | **7.3** | **6.3** |
-
-**Recommendation:** [Option] scores highest given current constraints.
-
----
-
-[Repeat for each major feature category: Auth, Core Feature, Dashboard, etc.]
-
----
-
-## Overall Feature Scope Summary
-
-| Category | Recommended Scope | Rationale |
-|----------|-------------------|-----------|
-| Onboarding | Balanced | Critical first impression |
-| Core Feature | Minimal | Validate before expanding |
-| Dashboard | Minimal | Users care about results, not graphs |
-| Notifications | Minimal | Add complexity after launch |
-| Admin | Minimal | Build as needed |
-
-**Total Timeline Adjustment:** [+/- X%] from balanced baseline
-
-```
-
-**HITL CHECKPOINT 5:**
-```
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-FEATURE SCOPE SELECTION
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-Recommended feature scope by category:
-
-| Category | Scope | Timeline Impact |
-|----------|-------|-----------------|
-| [Cat 1]  | [X]   | [+/- Y%]        |
-| [Cat 2]  | [X]   | [+/- Y%]        |
-| [Cat 3]  | [X]   | [+/- Y%]        |
-
-Net timeline adjustment: [+/- X%]
-
-Confirm feature scope selections? [Y/N/Modify]
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-```
-
-**After approval:** PRD writing will use the selected scope for each category, with excluded features documented in "Future Considerations" section.
 
 ---
 
@@ -1257,7 +939,7 @@ Before marking Step 1 complete, verify:
 This specification becomes the foundation for:
 - **Step 1.5:** Offer architecture (if monetized) — designs pricing, syncs docs
 - **Step 2:** Technical architecture and system design (uses pricing for schema)
-- **Step 3:** User experience and interface design
+- **Step 3:** User experience and interface design  
 - **Step 4:** Flow tree and screen architecture
 - **Step 5:** In-Cursor visual prototyping with runnable wireframes (if enabled)
 - **Steps 6-8:** Design system, states, technical spec
@@ -1370,7 +1052,7 @@ The most powerful offers trigger four primal emotional responses: **N**ew, **E**
 
 ```
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-MONETIZATION CHECK
+🔍 MONETIZATION CHECK
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 Checking MASTER_PRD for monetization signals...
@@ -1387,7 +1069,7 @@ Signals Detected: [X/4]
 
 **If 2+ signals detected:**
 ```
-RECOMMENDATION: Run Step 1.5 (Offer Architecture) before Step 2.
+⚠️  RECOMMENDATION: Run Step 1.5 (Offer Architecture) before Step 2.
 
 This will:
 • Design your complete pricing/tier structure
@@ -1400,11 +1082,11 @@ Proceed to Step 1.5? [Y/N]
 
 **If 0-1 signals (or user declines):**
 ```
-Monetization is simple or not applicable.
+✅ Monetization is simple or not applicable.
    Proceeding directly to Step 2: Architecture.
 ```
 
-**FINAL CHECKPOINT:**
+**FINAL CHECKPOINT:** 
 - **With monetization:** "Step 1 is complete. Proceeding to **Step 1.5: Offer Architecture**."
 - **Without monetization:** "Step 1 is complete. Ready to proceed to **Step 2: Architecture**? [Y/N]"
 

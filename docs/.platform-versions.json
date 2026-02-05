@@ -23,6 +23,13 @@
       "config_path": ".cursor/",
       "skills_synced": 149
     },
+    "codex": {
+      "version": "unknown",
+      "last_checked": "2026-02-04",
+      "changelog_url": "https://developers.openai.com/codex/changelog",
+      "config_path": ".codex/",
+      "skills_synced": 179
+    },
     "factory-droid": {
       "version": "0.5.0",
       "last_checked": "2026-01-28",

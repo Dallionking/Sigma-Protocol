@@ -1,7 +1,7 @@
 # Platform Reference Guide
 
-**Version:** 5.1
-**Last Updated:** 2026-01-28
+**Version:** 1.0.0-alpha.1
+**Last Updated:** 2026-02-04
 **Maintainer:** Sigma Protocol Team
 
 ---
@@ -12,11 +12,12 @@ Sigma Protocol supports multiple AI coding platforms with platform-specific conf
 
 | Platform | Status | Skills | Commands | Primary Use |
 |----------|--------|--------|----------|-------------|
-| **Claude Code** | Production | 148 | 122 | Anthropic CLI (Canonical Source) |
-| **OpenCode** | Production | 149 | 122 | Open-source alternative |
-| **Cursor** | Production | 149 rules | 26 | IDE integration |
-| **Factory Droid** | Production | 150+ | 120+ | Enterprise automation |
-| **Antigravity** | New | 16+ | 10+ | Universal agent protocol |
+| **Claude Code** | Production | 151 | 122 | Anthropic CLI (Canonical Source) |
+| **OpenCode** | Production | 167 | 122 | Open-source alternative |
+| **Codex** | Production | 180 | 122 | OpenAI Codex App/CLI |
+| **Cursor** | Production | 27 rules | 26 | IDE integration |
+| **Factory Droid** | Production | 163 | 120+ | Enterprise automation |
+| **Antigravity** | New | 15 | 10+ | Universal agent protocol |
 
 ---
 
@@ -29,7 +30,7 @@ Sigma Protocol supports multiple AI coding platforms with platform-specific conf
 ├── frontend-design.md       # Canonical skill definition
 ├── react-performance.md
 ├── verification-before-completion.md
-└── ... (148 skills)
+└── ... (151 skills)
 ```
 
 Use `./scripts/sync-skills-to-platforms.sh` to sync to all platforms.
@@ -207,6 +208,40 @@ skills:
   enabled: true
   path: .opencode/skill/
 ```
+
+---
+
+## Codex
+
+**OpenAI Codex App/CLI with project-scoped configuration.**
+
+### Directory Structure
+
+```
+.codex/
+├── config.toml         # Project config (optional)
+└── rules/
+    └── *.rules         # Starlark rules (optional)
+
+.agents/
+└── skills/
+    └── <skill-name>/
+        └── SKILL.md
+
+AGENTS.md               # Project-wide instructions
+```
+
+### Key Facts (Official)
+
+- **Config files:** Codex reads user config from `~/.codex/config.toml` and project overrides from `.codex/config.toml`.
+- **Rules:** Codex loads Starlark rules from `~/.codex/rules/*.rules` and `.codex/rules/*.rules`.
+- **Skills:** Codex reads skills from `.codex/skills` in your home folder and in git repositories (legacy fallback: `.agents/skills`); each skill lives in a folder with `SKILL.md`.
+- **AGENTS.md:** Codex discovers `AGENTS.md` using a defined search order (repo first, then parent paths, then home).
+
+### Sigma Integration Notes
+
+- **Steps = Skills:** Sigma steps are installed as Codex skills so each step remains a full prompt (no sub-agent indirection).
+- **Foundation skills:** Install via `sigma install-skills --platform codex`.
 
 ---
 
@@ -501,7 +536,7 @@ python3 scripts/transform-for-antigravity.py \
 ```yaml
 # antigravity.yaml
 name: sigma-protocol
-version: 5.0.0
+version: 1.0.0-alpha.1
 description: Sigma Protocol skills for Antigravity
 author: sigma-protocol
 
@@ -520,21 +555,21 @@ triggers:
 
 ### Skills
 
-| Skill | Claude Code | OpenCode | Cursor | Factory | Antigravity |
-|-------|-------------|----------|--------|---------|-------------|
-| frontend-design | .md | SKILL.md | .mdc | SKILL.md | SKILL.md |
-| react-performance | .md | SKILL.md | .mdc | SKILL.md | SKILL.md |
-| verification | .md | SKILL.md | .mdc | SKILL.md | SKILL.md |
-| ... (162+ total) | 148 | 149 | 149 | 150+ | 16+ |
+| Skill | Claude Code | OpenCode | Codex | Cursor | Factory | Antigravity |
+|-------|-------------|----------|-------|--------|---------|-------------|
+| frontend-design | .md | SKILL.md | SKILL.md | .mdc | SKILL.md | SKILL.md |
+| react-performance | .md | SKILL.md | SKILL.md | .mdc | SKILL.md | SKILL.md |
+| verification | .md | SKILL.md | SKILL.md | .mdc | SKILL.md | SKILL.md |
+| ... (151 total) | 151 | 167 | 180 | 27 rules | 163 | 15 |
 
 ### Commands
 
-| Command | Claude Code | OpenCode | Cursor | Factory | Antigravity |
-|---------|-------------|----------|--------|---------|-------------|
-| step-1-ideation | .md | .md | .mdc | .md | - |
-| implement-prd | .md | .md | - | .md | - |
-| gap-analysis | .md | .md | - | .md | - |
-| ... (122 total) | 122 | 122 | 26 | 120+ | 10+ |
+| Command | Claude Code | OpenCode | Codex | Cursor | Factory | Antigravity |
+|---------|-------------|----------|-------|--------|---------|-------------|
+| step-1-ideation | .md | .md | SKILL.md | .mdc | .md | - |
+| implement-prd | .md | .md | SKILL.md | - | .md | - |
+| gap-analysis | .md | .md | SKILL.md | - | .md | - |
+| ... (122 total) | 122 | 122 | skills-based | 26 | 120+ | 10+ |
 
 ---
 
@@ -542,7 +577,7 @@ triggers:
 
 ### Canonical Source
 
-All skills are authored and maintained in `.claude/skills/` (flat .md format).
+All skills are authored and maintained in `.claude/skills/` (flat `.md` format). Codex consumes `SKILL.md` folders generated from this source in `.codex/skills/` (legacy: `.agents/skills/`).
 
 ### Sync Script
 
@@ -555,6 +590,7 @@ All skills are authored and maintained in `.claude/skills/` (flat .md format).
 
 # Sync specific platform
 ./scripts/sync-skills-to-platforms.sh --platform cursor
+./scripts/sync-skills-to-platforms.sh --platform codex
 
 # Force overwrite existing
 ./scripts/sync-skills-to-platforms.sh --force --verbose
@@ -565,6 +601,7 @@ All skills are authored and maintained in `.claude/skills/` (flat .md format).
 | Platform | Transformation | Script |
 |----------|----------------|--------|
 | OpenCode | Direct copy to folder/SKILL.md | Built-in |
+| Codex | Direct copy to folder/SKILL.md | Built-in |
 | Cursor | Condense to .mdc (~600 lines) | `condense-for-cursor.py` |
 | Factory | Direct copy to folder/SKILL.md | Built-in |
 | Antigravity | Add tags/triggers metadata | `transform-for-antigravity.py` |

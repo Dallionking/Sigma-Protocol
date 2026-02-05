@@ -102,6 +102,21 @@ export async function checkPlatformPrerequisites(targetDir, platforms) {
         }
         break;
       }
+      case "codex": {
+        const codexDir = path.join(targetDir, ".codex");
+        const codexConfig = path.join(codexDir, "config.toml");
+        const codexSkills = path.join(targetDir, ".codex", "skills");
+        const codexLegacySkills = path.join(targetDir, ".agents", "skills");
+        if (
+          (await fs.pathExists(codexDir)) ||
+          (await fs.pathExists(codexConfig)) ||
+          (await fs.pathExists(codexSkills)) ||
+          (await fs.pathExists(codexLegacySkills))
+        ) {
+          warnings.push("Existing Codex configuration detected - will be merged/overwritten");
+        }
+        break;
+      }
     }
   }
 
@@ -169,6 +184,15 @@ export async function validateSourceFiles(modules) {
     const commandCount = await countFilesByExt(claudeCommandsSource, ".md");
     if (commandCount === 0) {
       issues.push(`No Claude Code commands found under: ${claudeCommandsSource}`);
+    }
+  }
+
+  // Check for Codex skills (folder format)
+  const codexSkillsSource = path.join(ROOT_DIR, "platforms", "codex", "skills");
+  if (await fs.pathExists(codexSkillsSource)) {
+    const skillCount = await countFilesByExt(codexSkillsSource, "SKILL.md");
+    if (skillCount === 0) {
+      issues.push(`No Codex skills found under: ${codexSkillsSource}`);
     }
   }
 

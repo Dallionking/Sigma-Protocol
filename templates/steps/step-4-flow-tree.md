@@ -1,19 +1,41 @@
 ---
-description: "Run Sigma steps/step-4-flow-tree"
+version: "2.4.0"
+last_updated: "2026-01-07"
+changelog:
+  - "2.4.0: Added Data Requirements Matrix (C.4-C.6) - maps screens to data entities and operations, bridges to Step 5/10/11 backend requirements"
+  - "2.3.0: Added SwiftUI native iOS navigation patterns (NavigationStack, TabView, Sheet/FullScreenCover) with code examples"
+  - "2.2.0: Added UI Profile import/confirmation from Step 3 and persisted meta.uiProfile into /product/flows/flow-tree.json"
+  - "2.1.0: Added Phase H - flow-tree.json generation for module selection + boilerplate integration"
+  - "2.0.0: NEW command - Flow Tree & Screen Architecture"
+description: "Step 4: Flow Tree & Screen Architecture - Comprehensive Mobbin-style screen mapping for every flow in your application"
 allowed-tools:
-  - Read
-  - Write
-  - Edit
-  - Bash
-  - WebFetch
+  # PRIMARY MCP Tools (Use First)
+  - mcp_Ref_ref_search_documentation
+  - mcp_Ref_ref_read_url
+  - mcp_exa_web_search_exa
+  - mcp_exa_get_code_context_exa
+  - mcp_exa_crawling_exa
+  - mcp_exa_company_research_exa
+  - mcp_exa_deep_researcher_start
+  - mcp_exa_deep_researcher_check
+  
+  # BACKUP MCP Tools (Use only if primary fails)
+  - mcp_perplexity-ask_perplexity_ask
+  
+  # OTHER TOOLS
+  - web_search
+  - read_file
+  - write
+  - list_dir
+  - run_terminal_cmd
+parameters:
+  - --platform    # web | mobile | both
+  - --depth       # standard | comprehensive
 ---
 
 # /step-4-flow-tree — Flow Tree & Screen Architecture (Product Director + $1B Valuation Context)
 
-**Source:** Sigma Protocol steps module
-**Version:** 2.4.0
-
-**Mission**
+**Mission**  
 Create a comprehensive **Mobbin-style Flow Tree** showing **every single screen** in your application before any wireframes are built.
 
 **Valuation Context:** You are a **Product Director at a $1 Billion Company**. You've seen how "lazy screen mapping" kills products. Every screen must be accounted for. No shortcuts. No "we'll add login later." This is the **complete blueprint** of your product's interface.
@@ -105,7 +127,7 @@ Looking at professional apps like Cash App on Mobbin:
 | **Medium** | Spring physics, staggered children | `border-trail`, `animated-group` |
 | **Complex** | Orchestrated sequences, particle effects | `dock`, `morphing-dialog`, `particle-button` |
 
-> **Animation Research Reference:** See `/commands/MOBILE_APP_DESIGN_LEARNINGS.md` for comprehensive animation patterns and code examples.
+> **📚 Animation Research Reference:** See `/commands/MOBILE_APP_DESIGN_LEARNINGS.md` for comprehensive animation patterns and code examples.
 
 ### Framework 4: Screen Priority Matrix
 
@@ -195,7 +217,7 @@ Evaluate each screen against 7 facets:
 ### Design DNA Selection Prompt
 
 **HITL Checkpoint →** Ask user to select DNA archetype.
-**Prompt:**
+**Prompt:** 
 ```
 Which Design DNA best matches your product vision?
 
@@ -646,7 +668,7 @@ Navigation Pattern Selection:
 // Root navigation pattern
 struct ContentView: View {
     @State private var selectedTab = 0
-
+    
     var body: some View {
         TabView(selection: $selectedTab) {
             NavigationStack {
@@ -654,13 +676,13 @@ struct ContentView: View {
             }
             .tabItem { Label("Home", systemImage: "house") }
             .tag(0)
-
+            
             NavigationStack {
                 SearchView()
             }
             .tabItem { Label("Search", systemImage: "magnifyingglass") }
             .tag(1)
-
+            
             NavigationStack {
                 ProfileView()
             }
@@ -823,7 +845,7 @@ Create a comprehensive table of EVERY screen:
 ### C.2 Screen Count Summary
 
 | Flow Category | Sub-Flows | Total Screens | P0 | P1 | P2 |
-|---------------|-----------|---------------|----|----|----|
+|---------------|-----------|---------------|----|----|----| 
 | Launch | 0 | 3 | 1 | 1 | 1 |
 | Onboarding | 0 | 8 | 6 | 2 | 0 |
 | Authentication | 4 | 12 | 10 | 2 | 0 |
@@ -1049,14 +1071,14 @@ flowchart TD
         D -->|Yes| E[Home]
         D -->|No| F[Sign In]
     end
-
+    
     subgraph Onboarding
         C --> G[Value Props]
         G --> H[Permissions]
         H --> I[Get Started]
         I --> F
     end
-
+    
     subgraph Auth
         F --> J{Action}
         J -->|Sign In| K[Enter Credentials]
@@ -1069,7 +1091,7 @@ flowchart TD
         O --> P[Create Password]
         P --> E
     end
-
+    
     subgraph Main
         E --> Q[Tab Navigation]
         Q --> R[Feature 1]
@@ -1215,7 +1237,7 @@ Features with Screens / Total PRD Features = Coverage %
 ### Formula 2: Screen Density Check
 ```
 Total Screens / Total Features = Avg Screens per Feature
-[N] / [X] = [Z]
+[N] / [X] = [Z] 
 
 Expected range: 1.5 - 4.0 screens per feature
 If < 1.5: Likely missing screens (too few screens per feature)
@@ -1277,7 +1299,7 @@ If > 4.0: Verify not over-engineering (acceptable for complex features)
 **HITL Checkpoint →** Present Zero Omission Certificate.
 **Prompt:**
 ```
-## ZERO OMISSION CERTIFICATE
+## 🛡️ ZERO OMISSION CERTIFICATE
 
 I have verified complete PRD-to-Screen traceability:
 
@@ -1476,7 +1498,7 @@ npx ajv validate -s /schemas/flow-tree.schema.json -d /product/flows/flow-tree.j
 
 **Prompt to user (blocking):**
 > "Please review the Flow Tree and Screen Architecture.
->
+> 
 > **Summary:**
 > - Total Screens: [X]
 > - P0 Screens: [X] (MVP)
@@ -1484,7 +1506,7 @@ npx ajv validate -s /schemas/flow-tree.schema.json -d /product/flows/flow-tree.j
 > - P2 Screens: [X] (Nice-to-have)
 > - Flow Categories: [X]
 > - Sub-Flows: [X]
->
+> 
 > **Files Created:**
 > - `/docs/flows/FLOW-TREE.md`
 > - `/docs/flows/SCREEN-INVENTORY.md`
@@ -1492,16 +1514,16 @@ npx ajv validate -s /schemas/flow-tree.schema.json -d /product/flows/flow-tree.j
 > - `/docs/flows/TRACEABILITY-MATRIX.md`
 > - `/product/flows/flow-tree.json` ⭐ MACHINE-READABLE
 > - `/product/flows/module-selection.json` (optional)
->
+> 
 > **TRACEABILITY VERIFICATION:**
 > - PRD Features Mapped: [X]/[X] (100%)
 > - Features WITHOUT Screens: 0 ✅
 > - Avg Screens per Feature: [N/X]
->
+> 
 > **This is your app's complete screen blueprint.**
 > Every screen you'll build is listed here.
 > The Traceability Matrix GUARANTEES no PRD features were missed.
->
+> 
 > • Reply `approve step 4` to proceed to Step-5 Wireframe Prototypes, or
 > • Reply `revise step 4: <notes>` to iterate.
 > I won't continue until you approve."
@@ -1837,3 +1859,5 @@ If specific expertise needed:
 | Platform Specifics | Mobile/Web specifics included | 3 |
 
 </verification>
+
+

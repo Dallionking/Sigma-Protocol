@@ -4,8 +4,6 @@ globs: ["docs/**/*.md", "*.md", "CLAUDE.md"]
 alwaysApply: false
 ---
 
-# step-11-prd-generation
-
 ## Mission
 
 Generate comprehensive, implementation-ready PRDs (600-1000 lines) that consume Step 8's Shaped Projects and produce executable specifications developers can build from directly.
@@ -240,4 +238,4 @@ Before marking component refinement complete:
 
 ---
 
-*This is a condensed version. See `templates/steps/step-11-prd-generation.md` for full documentation.*
+*This is a condensed version. See `steps/step-11-prd-generation` for full documentation.*

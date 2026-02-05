@@ -1,18 +1,29 @@
 ---
-description: "Sync Sigma Protocol with latest platform updates from Claude Code, OpenCode, Cursor, Factory Droid, and Antigravity changelogs"
+version: "1.0.0"
+last_updated: "2026-02-04"
+changelog:
+  - "1.0.0: Initial release — platform changelog scout & sync"
+description: "Sync Sigma Protocol with latest platform updates from Claude Code, OpenCode, Codex, Cursor, Factory Droid, and Antigravity changelogs"
 allowed-tools:
-  - Read
-  - Write
-  - Edit
-  - Bash
-  - WebFetch
-  - WebSearch
-  - Glob
-  - Grep
-  - Task
+  - read_file
+  - write
+  - list_dir
+  - glob_file_search
+  - run_terminal_cmd
+  - mcp_Ref_ref_search_documentation
+  - mcp_Ref_ref_read_url
+  - mcp_exa_web_search_exa
+  - mcp_exa_crawling_exa
+  - mcp_exa_deep_researcher_start
+  - mcp_exa_deep_researcher_check
+  - mcp_perplexity-ask_perplexity_ask
+parameters:
+  - --dry-run
+  - --apply
+  - --since
 ---
 
-# /platform-sync — Platform Changelog Scout & Sync
+# @platform-sync — Platform Changelog Scout & Sync
 
 **Mission:** Keep Sigma Protocol (or any repo) up-to-date with the latest platform capabilities by monitoring changelogs, identifying relevant updates, and generating actionable enhancement recommendations.
 
@@ -37,6 +48,7 @@ This command:
 |----------|------------------|-----------------|----------|
 | **Claude Code** | GitHub releases + CHANGELOG.md | `.claude/` | Critical |
 | **OpenCode** | GitHub releases | `.opencode/` | High |
+| **Codex** | OpenAI Codex changelog | `.codex/` + `.agents/skills/` | High |
 | **Cursor** | cursor.com/changelog | `.cursor/` | High |
 | **Factory Droid** | GitHub releases | `.factory/` | Medium |
 | **Antigravity** | GitHub releases | `.agent/` | Medium |
@@ -127,6 +139,12 @@ Files: CHANGELOG.md, releases
 Search: "OpenCode AI changelog {YEAR}"
 ```
 
+**Codex:**
+```
+Source: https://developers.openai.com/codex/changelog
+Search: "OpenAI Codex changelog {YEAR}"
+```
+
 **Cursor:**
 ```
 Source: https://www.cursor.com/changelog
@@ -198,269 +216,36 @@ grep -r "subagent" .claude/skills/                # Subagent patterns
 | New Claude tool | `.claude/skills/*.md` | Add to relevant skills |
 | New hook | `CLAUDE.md`, skills | Document in capabilities |
 | Deprecation | All skills using feature | Update or remove references |
-| Breaking change | All configs | Immediate fix required |
-
-### 2.2 Generate Recommendations
-
-Output a structured recommendation list:
-
-```markdown
-## Platform Sync Recommendations
-
-### Critical (Apply Immediately)
-1. [BREAKING] Claude Code v2.2.0 removed `OldTool` — update 3 skills
-2. [DEPRECATION] Cursor rules format changing — migrate to skills
-
-### High Priority (This Week)
-3. [NEW_FEATURE] Claude Code added `TaskDependency` tool — enhance orchestration skills
-4. [ENHANCEMENT] Factory Droid 7M token support — update docs
-
-### Medium Priority (This Sprint)
-5. [NEW_FEATURE] OpenCode plugin system — create integration guide
-6. [ENHANCEMENT] Cursor Browser subagent improvements — update testing skills
-
-### Low Priority (Backlog)
-7. [DOCS] Antigravity updated SKILL.md spec — review for compliance
-```
 
 ---
 
-## Phase 3: Apply Updates (HITL)
+## Phase 3: Recommendations & Apply
 
-### 3.1 Update Application Modes
+### 3.1 Generate Recommendations
 
-**Mode 1: Report Only (Default)**
-```
-Generate recommendations without making changes.
-Output: docs/platform-sync-report-{DATE}.md
-```
+For each platform change, output:
+- Affected files
+- Suggested changes
+- Risk level
+- Effort estimate
 
-**Mode 2: Interactive Apply**
-```
-Present each recommendation with options:
-[A]pply | [S]kip | [D]efer | [M]anual
-```
+### 3.2 Apply (Optional)
 
-**Mode 3: Auto-Apply Safe**
-```
-Automatically apply:
-- Documentation updates
-- New feature additions (additive)
-- Non-breaking enhancements
-
-Require approval for:
-- Breaking changes
-- Deprecation handling
-- Config modifications
-```
-
-### 3.2 Update Templates
-
-**For NEW_FEATURE:**
-1. Read the feature documentation
-2. Identify which skills should reference it
-3. Add section to relevant skills
-4. Update PLATFORMS.md
-
-**For DEPRECATION:**
-1. Find all references to deprecated feature
-2. Identify replacement (if any)
-3. Update references or add migration notes
-4. Set reminder for removal
-
-**For BREAKING:**
-1. Immediately fix affected configs
-2. Update skills that reference changed APIs
-3. Run verification to ensure nothing broken
+If `--apply` is set, implement selected changes and update:
+- `docs/.platform-versions.json`
+- Relevant `.claude/`, `.cursor/`, `.opencode/`, `.factory/` files
+- Any affected skill/command docs
 
 ---
 
-## Phase 4: Verification & Report
+## Output Artifacts
 
-### 4.1 Post-Update Verification
-
-```bash
-# Verify no broken references
-grep -r "DEPRECATED" .claude/skills/ --include="*.md" | wc -l
-
-# Check skill count didn't decrease
-ls .claude/skills/*.md | wc -l
-
-# Validate JSON configs
-python3 -c "import json; json.load(open('.claude/settings.json'))"
-```
-
-### 4.2 Generate Sync Report
-
-**Output: `docs/platform-sync-report-{DATE}.md`**
-
-```markdown
-# Platform Sync Report — {DATE}
-
-## Summary
-- **Platforms Checked:** 5
-- **Changes Detected:** 12
-- **Updates Applied:** 8
-- **Deferred:** 2
-- **Skipped:** 2
-
-## Platform Versions
-
-| Platform | Previous | Current | Changes |
-|----------|----------|---------|---------|
-| Claude Code | 2.1.4 | 2.2.0 | 3 |
-| OpenCode | 1.1.2 | 1.1.5 | 2 |
-| Cursor | 2.4.0 | 2.5.0 | 4 |
-| Factory Droid | 0.5.0 | 0.5.2 | 2 |
-| Antigravity | 0.1.0 | 0.1.0 | 0 |
-
-## Changes Applied
-
-### Claude Code
-- [x] Added TaskDependency documentation to orchestration skills
-- [x] Updated PLATFORMS.md with v2.2.0 features
-- [ ] DEFERRED: PreCompact hook examples (needs research)
-
-### Cursor
-- [x] Updated subagent documentation
-- [x] Added Browser subagent skill section
-
-## Next Sync
-Recommended: {DATE + 2 weeks}
-
-## Manual Actions Required
-1. Review PreCompact hook for potential skill enhancements
-2. Test new Cursor Browser subagent patterns
-```
-
-### 4.3 Update Version Tracking
-
-Update `docs/.platform-versions.json` with new versions and sync date.
+- `docs/.platform-versions.json` (updated)
+- `docs/analysis/PLATFORM-SYNC-REPORT-YYYY-MM-DD.md`
 
 ---
 
-## Usage
+## Verification
 
-### Basic Sync (Report Only)
-```
-/platform-sync
-```
-
-### Sync Specific Platform
-```
-/platform-sync --platform claude-code
-```
-
-### Interactive Apply Mode
-```
-/platform-sync --apply
-```
-
-### Auto-Apply Safe Changes
-```
-/platform-sync --auto-apply-safe
-```
-
-### Check Since Specific Date
-```
-/platform-sync --since 2026-01-15
-```
-
----
-
-## Integration with Sigma Workflow
-
-**When to Run:**
-- Weekly maintenance (recommended)
-- Before major releases
-- After noticing deprecated warnings
-- When starting new projects
-
-**Pairs Well With:**
-- `/status` — Check overall project health
-- `/gap-analysis` — Verify skill coverage
-- `/validate-methodology` — Ensure step compliance
-
----
-
-## Changelog Sources Reference
-
-### Claude Code
-- **GitHub:** https://github.com/anthropics/claude-code
-- **Releases:** https://github.com/anthropics/claude-code/releases
-- **Docs:** https://docs.anthropic.com/claude-code
-
-### OpenCode
-- **GitHub:** https://github.com/opencode-ai/opencode
-- **Releases:** https://github.com/opencode-ai/opencode/releases
-
-### Cursor
-- **Changelog:** https://www.cursor.com/changelog
-- **Docs:** https://docs.cursor.com
-
-### Factory Droid
-- **GitHub:** https://github.com/factory-ai/factory-droid
-- **Docs:** Factory Droid documentation
-
-### Antigravity
-- **GitHub:** https://github.com/ArcadeLabsInc/antigravity
-- **Skills.sh:** https://skills.sh
-
----
-
-## Appendix: Change Detection Patterns
-
-### Claude Code Patterns to Watch
-```
-- "TaskCreate" / "TaskUpdate" / "TaskList" / "TaskGet"
-- "PreToolUse" / "PostToolUse" / "PreCompact"
-- "SubagentStart" / "SubagentStop"
-- "permissions" / "mcpAutoEnable"
-- "Plugin" / ".claude/plugins/"
-```
-
-### Cursor Patterns to Watch
-```
-- "Agent Skills" / ".cursor/skills/"
-- "Rules" / ".cursor/rules/"
-- "Subagents" / "Explore" / "Bash" / "Browser"
-- "MCP" / "mcp.json"
-```
-
-### Factory Droid Patterns to Watch
-```
-- "reasoningEffort"
-- "Specification Mode"
-- "Anchor-point compression"
-- "7M token"
-```
-
----
-
-<verification>
-## Platform Sync Verification Schema
-
-### Required Outputs (20 points)
-| Output | Path | Points |
-|--------|------|--------|
-| Sync Report | docs/platform-sync-report-*.md | 10 |
-| Version Tracking | docs/.platform-versions.json | 5 |
-| PLATFORMS.md Updated | docs/PLATFORMS.md (if changes) | 5 |
-
-### Process Quality (40 points)
-| Check | Description | Points |
-|-------|-------------|--------|
-| Platforms Checked | All 5 platforms queried | 10 |
-| Changes Categorized | Each change has category | 10 |
-| Impact Analyzed | Skills checked for impact | 10 |
-| HITL Respected | User approved changes | 10 |
-
-### Output Quality (40 points)
-| Check | Description | Points |
-|-------|-------------|--------|
-| Report Complete | Summary, details, next steps | 15 |
-| Versions Updated | .platform-versions.json current | 10 |
-| Recommendations Clear | Actionable items listed | 10 |
-| No Regressions | Skill count stable or increased | 5 |
-
-</verification>
+- Re-run platform-specific tests or lint if configs change
+- Ensure no deprecated commands remain in docs

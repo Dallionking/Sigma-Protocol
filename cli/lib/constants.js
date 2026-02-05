@@ -67,6 +67,16 @@ export const PLATFORMS = {
     rulesFile: ".cursorrules",
     rulesDir: ".cursor/rules",
   },
+  codex: {
+    name: "Codex",
+    description: "Skills + rules for OpenAI Codex (App/CLI)",
+    outputDir: ".codex",
+    configFile: ".codex/config.toml",
+    rulesDir: ".codex/rules",
+    skillsDir: ".codex/skills",
+    legacySkillsDir: ".agents/skills",
+    orchestrator: "AGENTS.md",
+  },
   "claude-code": {
     name: "Claude Code",
     description: "/commands in Claude Code CLI",

@@ -1,24 +1,49 @@
 ---
+version: "2.6.0"
+last_updated: "2026-01-07"
+changelog:
+  - "2.6.0: Added Superdesign AI Design Agent - IDE extension + MCP for rapid UI mockups, wireframes, components. References superdesign-integration.md foundation skill"
+  - "2.5.0: Added Memory MCP Server (Persistent Context) - enables knowledge graph-based memory across sessions, references memory-systems.md foundation skill"
+  - "2.4.0: Added iOS Simulator MCP, InjectionIII hot reload, CodeLLDB extension, and SWIFTUI-CURSOR-WORKFLOW.md reference"
+  - "2.3.0: Added Native iOS/SwiftUI Development Setup section (Xcode, SweetPad, xcode-build-server, xcbeautify, swiftformat)"
+  - "2.2.0: Added Boilerplate Prerequisites section for SSS boilerplate workflow"
+  - "2.1.0: Added Supported Frameworks Reference section (Next.js, TanStack Start, Expo), added icon library recommendations"
+  - "2.0.0: SSS 13-step workflow (Steps 0-12), added Flow Tree/Wireframe folders"
+  - "1.0.0: Initial 10-step workflow"
 description: "Step 0: Environment Setup & MCP Validation - Ensures all tools and MCPs are installed before starting the workflow"
 allowed-tools:
-  - Read
-  - Write
-  - Edit
-  - Bash
-  - WebFetch
+  # PRIMARY MCP Tools (Use First)
+  - mcp_Ref_ref_search_documentation
+  - mcp_Ref_ref_read_url
+  - mcp_exa_web_search_exa
+  - mcp_exa_get_code_context_exa
+  - mcp_exa_crawling_exa
+  - mcp_exa_company_research_exa
+  - mcp_exa_linkedin_search_exa
+  - mcp_exa_deep_researcher_start
+  - mcp_exa_deep_researcher_check
+  
+  # ALWAYS ACTIVE (Specialized)
+  - mcp_supabase-mcp-server_search_docs
+  - mcp_21st-devmagic_21st_magic_component_builder
+  
+  # BACKUP MCP Tools
+  - mcp_perplexity-ask_perplexity_ask
+  
+  # OTHER TOOLS
+  - web_search
+  - read_file
+  - write
+  - list_dir
+  - run_terminal_cmd
+parameters:
+  - --skip-validation
+  - --force-install
 ---
-
-# step-0-environment-setup
-
-**Source:** Sigma Protocol steps module
-**Version:** 2.6.0
-
----
-
 
 # /step-0-environment-setup — Environment Setup & MCP Validation
 
-**Mission**
+**Mission**  
 Ensure your development environment is properly configured with all required tools and MCPs BEFORE starting the Step 1-12 workflow. This prevents mid-workflow failures due to missing dependencies.
 
 **Context:** You are a **DevOps Engineer** setting up a new developer's machine. Everything must work before they write their first line of code.
@@ -95,7 +120,7 @@ npm run dev
    - `/docs/security` (Step 2, 8: Security considerations)
    - `/docs/ux` (Step 3: UX Design)
    - `/docs/journeys` (Step 3: User journeys)
-   - `/docs/flows` (Step 4: Flow Tree & Screen Architecture)
+   - `/docs/flows` (Step 4: Flow Tree & Screen Architecture) ✨ NEW
    - `/docs/wireframes` (Step 5: Wireframe Prototypes)
    - `/docs/design` (Step 6: Design System)
    - `/docs/tokens` (Step 6: Design tokens)
@@ -166,10 +191,10 @@ npm run dev
 ```
 
 **Execution Rules**:
-- Check off EACH task as you complete it
-- Do NOT skip ahead - validate thoroughly
-- Do NOT proceed to next phase until user approves
-- Provide copy-paste ready commands
+- ✅ Check off EACH task as you complete it
+- ✅ Do NOT skip ahead - validate thoroughly
+- ✅ Do NOT proceed to next phase until user approves
+- ✅ Provide copy-paste ready commands
 
 ---
 
@@ -250,11 +275,11 @@ git config --global user.email "your.email@example.com"
 
 **Check Cursor version:**
 - Open Cursor
-- Go to: Cursor > About Cursor (macOS) or Help > About (Windows/Linux)
+- Go to: Cursor → About Cursor (macOS) or Help → About (Windows/Linux)
 - **Required:** Latest version (for best MCP support)
 
 **If outdated:**
-- Cursor > Check for Updates
+- Cursor → Check for Updates
 
 ---
 
@@ -295,9 +320,9 @@ brew install --cask android-studio
 
 # After installation:
 # 1. Open Android Studio
-# 2. Go to: More Actions > SDK Manager
+# 2. Go to: More Actions → SDK Manager
 # 3. Install: Android SDK, Android SDK Platform-Tools
-# 4. Go to: More Actions > Virtual Device Manager
+# 4. Go to: More Actions → Virtual Device Manager
 # 5. Create a device (e.g., Pixel 7 with API 34)
 ```
 
@@ -311,9 +336,9 @@ brew install --cask android-studio
 
 # After installation:
 # 1. Open Android Studio
-# 2. Go to: More Actions > SDK Manager
+# 2. Go to: More Actions → SDK Manager
 # 3. Install: Android SDK, Android SDK Platform-Tools
-# 4. Go to: More Actions > Virtual Device Manager
+# 4. Go to: More Actions → Virtual Device Manager
 # 5. Create a device (e.g., Pixel 7 with API 34)
 
 # Add to PATH (in System Environment Variables):
@@ -346,21 +371,21 @@ npm install -g expo-cli
 npx expo --version
 ```
 
-**HITL checkpoint** Confirm mobile setup complete.
+**HITL checkpoint →** Confirm mobile setup complete.
 
 **Prompt (if mobile):**
-> "## Mobile Development Setup
->
+> "## 📱 Mobile Development Setup
+> 
 > I detected you're on [macOS/Windows/Linux].
->
+> 
 > ### Available Simulators:
-> [macOS] iOS Simulator (via Xcode) + Android Emulator
-> [Windows] iOS Simulator (not available) + Android Emulator
-> [Linux] iOS Simulator (not available) + Android Emulator
->
+> [macOS] ✅ iOS Simulator (via Xcode) + ✅ Android Emulator
+> [Windows] ❌ iOS Simulator (not available) + ✅ Android Emulator
+> [Linux] ❌ iOS Simulator (not available) + ✅ Android Emulator
+> 
 > ### For iOS testing on Windows/Linux:
 > Install Expo Go on your iPhone and scan the QR code from `npx expo start`
->
+> 
 > Reply `mobile ready` to continue or `help: mobile` for troubleshooting."
 
 ---
@@ -377,7 +402,7 @@ npx expo --version
 
 ```bash
 # 1. Install Xcode (full version, not just command line tools)
-# Open App Store > Search "Xcode" > Install (free, ~12GB)
+# Open App Store → Search "Xcode" → Install (free, ~12GB)
 
 # 2. Accept license and install CLI tools
 sudo xcodebuild -license accept
@@ -413,7 +438,7 @@ swiftformat --version
 
 ```bash
 # Option 1: Create via Xcode
-# Open Xcode > File > New > Project > iOS > App
+# Open Xcode → File → New → Project → iOS → App
 # Interface: SwiftUI, Language: Swift
 # Save to your workspace
 
@@ -426,7 +451,7 @@ swift package init --type executable --name MyApp
 
 Unlike npm/pnpm, Swift uses SPM for dependencies. Add packages in Xcode:
 
-1. `File` > `Add Packages...`
+1. `File` → `Add Packages...`
 2. Enter GitHub URL (e.g., `https://github.com/airbnb/lottie-ios`)
 3. Select version
 4. Add to your target
@@ -506,7 +531,7 @@ struct YourApp: App {
         Bundle(path: "/Applications/InjectionIII.app/Contents/Resources/iOSInjection.bundle")?.load()
         #endif
     }
-
+    
     var body: some Scene {
         WindowGroup { ContentView() }
     }
@@ -517,23 +542,23 @@ struct YourApp: App {
 1. Build and run app once
 2. Open InjectionIII.app
 3. Select project folder
-4. Save file in Cursor > Changes appear instantly!
+4. Save file in Cursor → Changes appear instantly!
 
 **GitHub:** https://github.com/johnno1962/InjectionIII
 
 #### Required Cursor Extensions for SwiftUI
 
 | Extension | ID | Purpose |
-|-----------|----|---------|
+|-----------|----|---------| 
 | **SweetPad** | `sweetpad.sweetpad` | Build/run iOS apps |
 | **Swift** | `sswg.swift-lang` | Language support |
 | **CodeLLDB** | `vadimcn.vscode-lldb` | Debugging |
 
-**HITL checkpoint** Confirm SwiftUI setup complete.
+**HITL checkpoint →** Confirm SwiftUI setup complete.
 
 **Prompt (if SwiftUI):**
-> "## SwiftUI Development Setup
->
+> "## 🍎 SwiftUI Development Setup
+> 
 > ### Checklist:
 > - [ ] Xcode installed (latest version)
 > - [ ] xcode-build-server installed
@@ -544,30 +569,30 @@ struct YourApp: App {
 > - [ ] CodeLLDB extension installed in Cursor
 > - [ ] (Optional) iOS Simulator MCP configured
 > - [ ] (Optional) InjectionIII installed for hot reload
->
+> 
 > ### Reference Documents Created:
 > - `/docs/swiftui/SWIFTUI-BEST-PRACTICES.md`
 > - `/docs/swiftui/SWIFTUI-LIBRARIES.md`
 > - `/docs/swiftui/SWIFTUI-CURSOR-WORKFLOW.md`
->
+> 
 > Reply `swiftui ready` to continue or `help: swiftui` for troubleshooting."
 
 ---
 
-**HITL checkpoint** Show system status summary.
+**HITL checkpoint →** Show system status summary.
 
 **Prompt:**
-> "## System Requirements Status
->
-> Node.js: v22.x.x (OK)
-> pnpm: 8.x.x (OK)
-> Git: 2.x.x (Configured)
-> Cursor: Latest version
-> [If mobile] Expo CLI: Ready
-> [If SwiftUI] Xcode + SweetPad: Ready
->
+> "## 📊 System Requirements Status
+> 
+> ✅ Node.js: v22.x.x (OK)
+> ✅ pnpm: 8.x.x (OK)
+> ✅ Git: 2.x.x (Configured)
+> ✅ Cursor: Latest version
+> [If mobile] ✅ Expo CLI: Ready
+> [If SwiftUI] ✅ Xcode + SweetPad: Ready
+> 
 > All system requirements met!
->
+> 
 > Reply `continue` to proceed to MCP validation."
 
 ---
@@ -601,56 +626,56 @@ cat .cursormcp 2>/dev/null || echo "No workspace MCP config found"
 ```
 Try: ref_search_documentation with query "Next.js"
 Expected: Returns documentation results
-Status: Working / Failed
+Status: ✅ Working / ❌ Failed
 ```
 
 #### **Test: Exa MCP**
 ```
 Try: get_code_context_exa with query "React hooks"
 Expected: Returns code examples
-Status: Working / Failed
+Status: ✅ Working / ❌ Failed
 ```
 
 #### **Test: Supabase MCP**
 ```
 Try: search_docs with query "RLS policies"
 Expected: Returns Supabase documentation
-Status: Working / Failed
+Status: ✅ Working / ❌ Failed
 ```
 
 #### **Test: 21st.dev MCP**
 ```
 Try: 21st_magic_component_inspiration with query "button"
 Expected: Returns UI component suggestions
-Status: Working / Failed
+Status: ✅ Working / ❌ Failed
 ```
 
 #### **Test: Perplexity Ask MCP**
 ```
 Try: perplexity_ask with query "What is React?"
 Expected: Returns AI response
-Status: Working / Failed
+Status: ✅ Working / ❌ Failed
 ```
 
 #### **Test: Expo MCP**
 ```
 Try: List projects or account info
 Expected: Returns Expo account details
-Status: Working / Failed
+Status: ✅ Working / ❌ Failed
 ```
 
 #### **Test: RevenueCat MCP**
 ```
 Try: List projects or offerings
 Expected: Returns RevenueCat data
-Status: Working / Failed
+Status: ✅ Working / ❌ Failed
 ```
 
 #### **Test: App Store Connect MCP**
 ```
 Try: List apps
 Expected: Returns list of apps
-Status: Working / Failed
+Status: ✅ Working / ❌ Failed
 ```
 
 ---
@@ -658,9 +683,9 @@ Status: Working / Failed
 ### 3. Identify Required vs. Optional MCPs
 
 **Core MCPs (Highly Recommended):**
-- **Ref** - Official documentation (usually pre-installed)
-- **Exa** - Code search and examples
-- **Perplexity Ask** - Backup research (optional but useful)
+- ✅ **Ref** - Official documentation (usually pre-installed)
+- ✅ **Exa** - Code search and examples
+- ⚠️ **Perplexity Ask** - Backup research (optional but useful)
 
 **Stack-Specific MCPs:**
 - **Supabase MCP** - Required if using Supabase (PostgreSQL, Auth, Realtime)
@@ -672,25 +697,25 @@ Status: Working / Failed
 
 ---
 
-**HITL checkpoint** Show MCP status report.
+**HITL checkpoint →** Show MCP status report.
 
 **Prompt:**
-> "## MCP Status Report
->
-> ### Working MCPs:
+> "## 🔌 MCP Status Report
+> 
+> ### ✅ Working MCPs:
 > - Ref (documentation)
 > - Exa (code search)
->
-> ### Missing/Not Working:
+> 
+> ### ❌ Missing/Not Working:
 > - Supabase MCP (needed for database features)
 > - 21st.dev MCP (recommended for UI development)
 > - Perplexity Ask (optional, but useful for research)
->
-> ### Recommendations:
+> 
+> ### 📝 Recommendations:
 > 1. Install Supabase MCP if you plan to use Supabase
 > 2. Install 21st.dev MCP for faster UI development
 > 3. Install Perplexity Ask as backup research tool
->
+> 
 > Would you like installation instructions?
 > Reply `install all` or `install: [specific MCP]` or `skip` to continue without them."
 
@@ -721,7 +746,7 @@ npm install -g @supabase/mcp-server
 **Step 2: Get your Supabase credentials**
 - Go to: https://supabase.com/dashboard
 - Select your project (or create one)
-- Go to: Settings > API
+- Go to: Settings → API
 - Copy: `Project URL` and `anon public` key
 
 **Step 3: Configure in Cursor**
@@ -797,7 +822,7 @@ Add to `~/.cursor/mcp.json`:
 
 **Via Cursor Settings:**
 1. Open Cursor Settings
-2. Go to: Extensions > MCP Servers
+2. Go to: Extensions → MCP Servers
 3. Search for: "21st.dev"
 4. Click: Install
 5. Restart Cursor
@@ -883,7 +908,7 @@ Add to `~/.cursor/mcp.json`:
 | Tool | Purpose |
 |------|---------|
 | `create_entities` | Store project, decisions, patterns |
-| `create_relations` | Link entities (decision > project) |
+| `create_relations` | Link entities (decision → project) |
 | `add_observations` | Add facts to entities |
 | `search_nodes` | Find relevant memories |
 | `read_graph` | Load all context |
@@ -893,7 +918,7 @@ Add to `~/.cursor/mcp.json`:
 - After decisions: "Store this decision in memory"
 - After learnings: "Remember this pattern"
 
-> **Reference:** See `/src/skills/memory-systems.md` for detailed memory patterns.
+> **📚 Reference:** See `/src/skills/memory-systems.md` for detailed memory patterns.
 
 **Step 2: Restart Cursor**
 
@@ -930,7 +955,7 @@ Add to `~/.cursor/mcp.json`:
 
 ---
 
-#### **7. RevenueCat MCP (Mobile)**
+#### **6. RevenueCat MCP (Mobile)**
 
 **When you need it:**
 - Mobile subscriptions
@@ -961,7 +986,7 @@ Add to `~/.cursor/mcp.json`:
 
 ---
 
-#### **8. App Store Connect MCP (Mobile)**
+#### **7. App Store Connect MCP (Mobile)**
 
 **When you need it:**
 - iOS App Store deployment
@@ -997,7 +1022,7 @@ Add to `~/.cursor/mcp.json`:
 
 ---
 
-#### **9. Ref MCP (Usually Pre-installed)**
+#### **8. Ref MCP (Usually Pre-installed)**
 
 **When you need it:**
 - Official documentation lookup
@@ -1014,7 +1039,7 @@ Add to `~/.cursor/mcp.json`:
 
 ---
 
-#### **10. Superdesign AI Design Agent — NEW RECOMMENDED**
+#### **9. Superdesign AI Design Agent — NEW RECOMMENDED**
 
 **When you need it:**
 - Rapid UI mockup generation from natural language
@@ -1083,7 +1108,7 @@ Designs are saved locally in `.superdesign/`:
 └── design_system/       # Extracted design systems
 ```
 
-> **Reference:** See `/src/skills/superdesign-integration.md` for detailed usage patterns.
+> **📚 Reference:** See `/src/skills/superdesign-integration.md` for detailed usage patterns.
 
 ---
 
@@ -1147,18 +1172,18 @@ Designs are saved locally in `.superdesign/`:
 
 ---
 
-**HITL checkpoint** Wait for user to install MCPs.
+**HITL checkpoint →** Wait for user to install MCPs.
 
 **Prompt:**
-> "## Installation Instructions Provided
->
+> "## 📦 Installation Instructions Provided
+> 
 > I've provided installation instructions for all recommended MCPs.
->
+> 
 > **Next steps:**
 > 1. Follow the installation instructions above
 > 2. Restart Cursor after adding MCPs
 > 3. Reply `installed` when ready for validation
->
+> 
 > **Need help?**
 > - Reply `help: [MCP name]` for troubleshooting
 > - Reply `skip: [MCP name]` to skip that MCP
@@ -1174,11 +1199,11 @@ Designs are saved locally in `.superdesign/`:
 
 **Ask the user:**
 > "Which AI development platform(s) will you use for this project?
->
+> 
 > - **Cursor** — `.cursor/rules/*.mdc` (keyword/glob auto-triggers)
 > - **Claude Code** — `.claude/skills/*` (SKILL.md format)
 > - **OpenCode** — `.opencode/skill/*` (SKILL.md format)
->
+> 
 > Reply with your selection (e.g., `cursor`, `claude`, `opencode`, or `all`)"
 
 **Save selection to `.sigma/config.json`:**
@@ -1292,27 +1317,27 @@ ls -la .opencode/skill/*/SKILL.md
 
 ---
 
-**HITL checkpoint** Confirm skills installation.
+**HITL checkpoint →** Confirm skills installation.
 
 **Prompt:**
-> "## Foundation Skills Installation
->
+> "## 🎯 Foundation Skills Installation
+> 
 > I've installed the Sigma Foundation Skills for your selected platform(s).
->
+> 
 > ### Installed:
 > - [X] 24 Foundation Skills
 > - [X] Platform: [Cursor/Claude Code/OpenCode]
 > - [X] Auto-trigger configuration
->
+> 
 > ### Skills Categories:
 > - Sigma Core (6 skills)
 > - Design & Development (4 skills)
 > - Quality & Process (5 skills)
 > - Productivity (5 skills)
 > - Platform Tools (4 skills)
->
+> 
 > These skills will auto-activate during Steps 1-13 based on context.
->
+> 
 > Reply `continue` to proceed to final validation."
 
 ---
@@ -1324,11 +1349,11 @@ ls -la .opencode/skill/*/SKILL.md
 ### 1. Re-test All MCPs
 
 **Run test queries again for each MCP:**
-- Ref: Pass / Fail
-- Exa: Pass / Fail
-- Supabase: Pass / Fail
-- 21st.dev: Pass / Fail
-- Perplexity: Pass / Fail
+- Ref: ✅ / ❌
+- Exa: ✅ / ❌
+- Supabase: ✅ / ❌
+- 21st.dev: ✅ / ❌
+- Perplexity: ✅ / ❌
 
 ---
 
@@ -1336,14 +1361,16 @@ ls -la .opencode/skill/*/SKILL.md
 
 **Generate:** `/docs/ops/ENVIRONMENT-SETUP.md`
 
+[Content continues with environment report template, troubleshooting guide, quality gates, and final review - truncated for length]
+
 ---
 
 ## Final Review Gate (stop here)
 
-**Prompt to user (blocking):**
-> "Please review the Environment Setup Report.
-> - Reply `approve step 0` to proceed to Step-1 Ideation, or
-> - Reply `fix: [issue]` to troubleshoot a specific problem.
+**Prompt to user (blocking):**  
+> "Please review the Environment Setup Report.  
+> • Reply `approve step 0` to proceed to Step-1 Ideation, or  
+> • Reply `fix: [issue]` to troubleshoot a specific problem.  
 > I won't continue until you approve."
 
 ---
@@ -1370,7 +1397,7 @@ ls -la .opencode/skill/*/SKILL.md
 
 | Library | Web Install | Mobile Install |
 |---------|-------------|----------------|
-| **Lucide** | `npm i lucide-react` | `npm i lucide-react-native react-native-svg` |
+| **Lucide** ⭐ | `npm i lucide-react` | `npm i lucide-react-native react-native-svg` |
 | **Phosphor** | `npm i @phosphor-icons/react` | `npm i phosphor-react-native react-native-svg` |
 | **Heroicons** | `npm i @heroicons/react` | N/A (web only) |
 | **Tabler** | `npm i @tabler/icons-react` | N/A (web only) |
@@ -1413,7 +1440,7 @@ ls -la .opencode/skill/*/SKILL.md
 |-------|-------------|--------|
 | has_pattern:ENVIRONMENT-SETUP.md:node.*version | Node.js version documented | 6 |
 | has_pattern:ENVIRONMENT-SETUP.md:npm\|pnpm\|yarn | Package manager documented | 5 |
-| has_pattern:ENVIRONMENT-SETUP.md:MCP.*Working | At least one MCP validated | 8 |
+| has_pattern:ENVIRONMENT-SETUP.md:MCP.*✅\|Working | At least one MCP validated | 8 |
 | dir_count:/docs:10 | At least 10 docs subdirectories created | 6 |
 | has_pattern:ENVIRONMENT-SETUP.md:Git.*configured | Git configuration verified | 5 |
 

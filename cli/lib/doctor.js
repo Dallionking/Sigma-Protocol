@@ -145,6 +145,39 @@ const CHECKS = {
         },
         fix: "Run: npx sigma-protocol install (select OpenCode)",
       },
+      {
+        id: "codex",
+        name: "Codex configuration",
+        check: async (targetDir) => {
+          const codexDir = path.join(targetDir, ".codex");
+          const codexConfig = path.join(codexDir, "config.toml");
+          const codexSkills = path.join(targetDir, ".agents", "skills");
+          const agentsMd = path.join(targetDir, "AGENTS.md");
+
+          if (
+            !(await fs.pathExists(codexDir)) &&
+            !(await fs.pathExists(codexSkills)) &&
+            !(await fs.pathExists(agentsMd))
+          ) {
+            return { status: "skip", message: "Not configured" };
+          }
+
+          const hasConfig = await fs.pathExists(codexConfig);
+          const hasSkills = await fs.pathExists(codexSkills);
+          const hasAgents = await fs.pathExists(agentsMd);
+
+          if (hasConfig && hasSkills && hasAgents) {
+            return { status: "pass", message: "config.toml, skills, and AGENTS.md present" };
+          }
+
+          if (hasSkills || hasAgents) {
+            return { status: "warn", message: "Partial setup (missing config.toml or skills)" };
+          }
+
+          return { status: "warn", message: "Missing Codex skills" };
+        },
+        fix: "Run: npx sigma-protocol install (select Codex)",
+      },
     ],
   },
   documentation: {
@@ -606,6 +639,12 @@ export async function quickCheck(targetDir) {
   if (await fs.pathExists(path.join(targetDir, ".opencode"))) {
     platforms.push("opencode");
   }
+  if (
+    (await fs.pathExists(path.join(targetDir, ".codex"))) ||
+    (await fs.pathExists(path.join(targetDir, ".agents", "skills")))
+  ) {
+    platforms.push("codex");
+  }
 
   return {
     installed: hasManifest || platforms.length > 0,
@@ -615,4 +654,3 @@ export async function quickCheck(targetDir) {
 }
 
 export default { runDoctor, quickCheck };
-

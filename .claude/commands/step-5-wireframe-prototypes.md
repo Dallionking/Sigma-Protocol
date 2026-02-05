@@ -1,23 +1,54 @@
 ---
-name: step-5-wireframe-prototypes
+version: "3.7.0"
+last_updated: "2026-01-07"
+changelog:
+  - "3.7.0: Added Superdesign AI Design Agent integration - rapid UI mockup generation, wireframe prototyping, design system extraction. References superdesign-integration.md foundation skill"
+  - "3.6.0: Added Section 5B Backend Data Operations - ensures wireframe PRDs document data operations needed, enabling full-stack Step 11 PRDs"
+  - "3.5.0: Added iOS Native (SwiftUI) as platform option with SF Symbols icon reference"
+  - "3.4.0: Added UI Profile import + per-flow UI Profile Compliance blocks so wireframe PRDs match selected professional profile (Cool Professional / Satin Dark) by default"
+  - "3.3.0: Added Phase 0.5 Module Reconciliation - compares flow-tree.json vs provenance, generates module-diff.md, supports safe add/remove actions"
+  - "3.2.0: Added Phase 0 Boilerplate Scaffolding for SSS boilerplate workflow, conditional PRD guidance for boilerplate vs custom builds"
+  - "3.1.0: Added premium mobile animation stack (react-native-screen-transitions, Lottie, @gorhom/bottom-sheet, expo-blur, expo-haptics, Victory Native), Anti-Slop Animation Rules, Splash Screen Animation Spec in PRD template, Lottie workflow documentation, tone-based animation mapping"
+  - "3.0.0: MAJOR - Transformed into specification-only command. No code execution. Generates detailed wireframe PRDs with ASCII diagrams, modern React stack integration (zod, tRPC, react-query, shadcn), shadcn MCP + Exa research. PRDs become handoff to implementation phase."
+  - "2.1.0: Added TanStack Start support, premium icon libraries (Lucide, Phosphor, Tabler), 3D/animation libraries (Three.js, expo-three, Moti), enforced runnable prototypes (no HTML mockups), numbered PRD folder structure"
+  - "2.0.0: NEW command - replaces deprecated Step 3.5 Stitch"
 description: "Step 5: Generate Wireframe PRDs - Create detailed PRDs with ASCII wireframes, component specs, and project setup. USER implements PRDs to build interactive UI prototype (foundation for Step 11)"
-model: claude-sonnet-4-5-20241022
-tools:
-  - Read
-  - Write
-  - Edit
-  - Bash
-  - WebFetch
-  # MCP tools inherited from original command
+allowed-tools:
+  # PRIMARY Research Tools
+  - mcp_exa_get_code_context_exa
+  - mcp_exa_web_search_exa
+  - mcp_exa_crawling_exa
+  - mcp_exa_deep_researcher_start
+  - mcp_exa_deep_researcher_check
+  
+  # Component Generation & Inspiration
+  - mcp_21st-devmagic_21st_magic_component_builder
+  - mcp_21st-devmagic_21st_magic_component_inspiration
+  - mcp_21st-devmagic_21st_magic_component_refiner
+  - mcp_21st-devmagic_logo_search
+  
+  # Mobile-Specific
+  - mcp_expo-mcp_search_documentation
+  - mcp_expo-mcp_add_library
+  - mcp_expo-mcp_learn
+  
+  # Documentation Reference
+  - mcp_Ref_ref_search_documentation
+  - mcp_Ref_ref_read_url
+  
+  # BACKUP MCP Tools (Use only if primary fails)
+  - mcp_perplexity-ask_perplexity_ask
+  
+  # File & Terminal Operations
+  - read_file
+  - write
+  - list_dir
+  - run_terminal_cmd
+parameters:
+  - --platform     # web | mobile (optional, will ask if not provided)
+  - --flow         # specific flow to build (optional)
+  - --new-project  # bootstrap fresh project
 ---
-
-# step-5-wireframe-prototypes
-
-**Source:** Sigma Protocol steps module
-**Version:** 3.7.0
-
----
-
 
 # /step-5-wireframe-prototypes — Flow-Based Wireframe Specification (CMO of a $100M-$1B COMPANY)
 
@@ -130,7 +161,7 @@ After using Superdesign:
 
 ## PHASE 0: BOILERPLATE SCAFFOLDING (OPTIONAL)
 
-**If using Sigma boilerplates, scaffold the project BEFORE generating wireframe PRDs.**
+**If using SSS boilerplates, scaffold the project BEFORE generating wireframe PRDs.**
 
 ### Boilerplate Detection
 
@@ -150,11 +181,11 @@ cat .sigma/boilerplate.json 2>/dev/null
 **Ask User:**
 
 ```
-Do you want to use an Sigma boilerplate template?
+Do you want to use an SSS boilerplate template?
 
 Benefits of boilerplates:
 ✅ Auth, payments, AI already configured
-✅ Sigma commands bundled
+✅ SSS commands bundled
 ✅ Production-ready from day 1
 ✅ 5-minute setup
 
@@ -188,7 +219,7 @@ npm run dev
 
 **After scaffolding:**
 - Provenance file created at `.sigma/boilerplate.json`
-- Sigma commands available in `.cursor/commands/`
+- SSS commands available in `.cursor/commands/`
 - Auth, payments, and base UI ready to extend
 
 ### PRD Guidance for Boilerplate Projects
@@ -228,7 +259,7 @@ This flow extends the `nextjs-saas` boilerplate (v1.0.0).
 
 ## PHASE 0.5: MODULE RECONCILIATION (BOILERPLATE PROJECTS ONLY)
 
-**If using Sigma boilerplates, reconcile modules when flows evolve from Step 4.**
+**If using SSS boilerplates, reconcile modules when flows evolve from Step 4.**
 
 This phase compares the project's selected modules (from initial scaffolding) against the current flow-tree.json to detect drift.
 
@@ -2950,4 +2981,3 @@ Map screens to established UI patterns from "Designing Interfaces":
 | No Code Execution | No package.json changes, no node_modules | 8 |
 | Comprehensive Specs | All screens have detailed wireframes + component specs | 6 |
 | Ready for Implementation | PRDs can be used directly in Cursor to build | 6 |
-

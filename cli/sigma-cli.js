@@ -4,7 +4,7 @@
  * Sigma Protocol CLI
  *
  * Interactive CLI for the Sigma Protocol methodology.
- * Supports Cursor, Claude Code, and OpenCode platforms.
+ * Supports Cursor, Claude Code, OpenCode, and Codex platforms.
  *
  * Usage:
  *   sigma                         # Interactive menu (like `claude`)
@@ -50,6 +50,7 @@ import {
   installClaudeCodeSkills,
   installClaudeCodeCommands,
   installOpenCodeSkills,
+  installCodexSkills,
 } from "./lib/skills/index.js";
 
 // Load .env files from current directory and parent directories
@@ -212,18 +213,17 @@ async function buildClaudeCode(targetDir, modules, spinner) {
           module,
         );
 
-        // Write as agent (full methodology content)
+        // Write as agent (full methodology content) for optional direct use
         const agentFileName = `${module}-${file}.md`;
         await fs.writeFile(
           path.join(targetDir, config.agentsDir, agentFileName),
           claudeCodeContent,
         );
 
-        // Write as command (thin wrapper that invokes the agent)
-        const commandContent = generateClaudeCodeCommand(file, module);
+        // Write as command (full prompt injection, no subagent indirection)
         await fs.writeFile(
           path.join(targetDir, config.commandsDir, `${file}.md`),
-          commandContent,
+          originalContent,
         );
 
         totalCommands++;
@@ -250,7 +250,7 @@ async function buildClaudeCode(targetDir, modules, spinner) {
     );
   }
 
-  spinner.text = `Claude Code: Transformed ${totalCommands} commands (full content preserved)`;
+  spinner.text = `Claude Code: Installed ${totalCommands} commands (full content preserved)`;
 
   // Copy skills from src/skills if they exist
   const skillsSource = path.join(ROOT_DIR, "src", "skills");
@@ -261,10 +261,11 @@ async function buildClaudeCode(targetDir, modules, spinner) {
   // Copy Claude Code commands from platforms if present
   await installClaudeCodeCommands(targetDir, spinner);
 
-  // Copy hooks from claude-code directory if exists
-  const hooksSource = path.join(ROOT_DIR, "claude-code", ".claude", "hooks");
+  // Copy hooks from repo .claude/hooks if present (includes SLAS hooks)
+  const hooksSource = path.join(ROOT_DIR, ".claude", "hooks");
   if (await fs.pathExists(hooksSource)) {
     await fs.copy(hooksSource, path.join(targetDir, config.hooksDir));
+    await makeScriptsExecutable(path.join(targetDir, config.hooksDir));
   }
 
   // Generate CLAUDE.md orchestrator
@@ -725,15 +726,10 @@ async function buildOpenCode(targetDir, modules, spinner) {
 
         const originalContent = await fs.readFile(filePath, "utf8");
 
-        // Generate OpenCode command (thin wrapper with shell injection)
-        const openCodeCommand = transformToOpenCodeCommand(
-          originalContent,
-          file,
-          module,
-        );
+        // Generate OpenCode command (full prompt injection, no agent indirection)
         await fs.writeFile(
           path.join(targetDir, config.commandsDir, `${file}.md`),
-          openCodeCommand,
+          originalContent,
         );
 
         // Generate OpenCode agent (full content)
@@ -826,8 +822,202 @@ async function buildOpenCode(targetDir, modules, spinner) {
   return true;
 }
 
-// Transform original Cursor command to OpenCode command format
-// This creates a thin wrapper that uses OpenCode-specific features
+// Build for Codex platform
+// Codex prefers .codex/skills, but we also write .agents/skills for legacy compatibility
+async function buildCodex(targetDir, modules, spinner) {
+  const config = PLATFORMS.codex;
+
+  // Ensure base directories
+  await fs.ensureDir(path.join(targetDir, config.outputDir));
+  const codexSkillDirs = [config.skillsDir, config.legacySkillsDir].filter(Boolean);
+  for (const dir of codexSkillDirs) {
+    await fs.ensureDir(path.join(targetDir, dir));
+  }
+
+  let totalSkills = 0;
+  const skippedModules = [];
+  const seenNames = new Map();
+
+  // Generate Codex skills from selected modules
+  for (const module of modules) {
+    const moduleSource = path.join(
+      ROOT_DIR,
+      module === "steps" ? "steps" : module,
+    );
+
+    if (await fs.pathExists(moduleSource)) {
+      const files = await fs.readdir(moduleSource);
+
+      for (const file of files) {
+        if (file.startsWith(".")) continue;
+        if (file.toLowerCase().includes("readme")) continue;
+
+        const filePath = path.join(moduleSource, file);
+        const stat = await fs.stat(filePath);
+        if (stat.isDirectory()) continue;
+
+        const originalContent = await fs.readFile(filePath, "utf8");
+        const { description, version } = extractFrontmatterMeta(originalContent);
+        const bodyContent = stripFrontmatter(originalContent);
+
+        let skillName = normalizeCodexSkillName(file);
+        if (seenNames.has(skillName)) {
+          const previous = seenNames.get(skillName);
+          skillName = normalizeCodexSkillName(`${module}-${file}`);
+          seenNames.set(skillName, `${previous},${module}`);
+        } else {
+          seenNames.set(skillName, module);
+        }
+
+        const skillContent = buildCodexSkillContent({
+          name: skillName,
+          description: description || `Sigma ${module} command: ${file}`,
+          version,
+          body: bodyContent,
+        });
+
+        for (const skillsDir of codexSkillDirs) {
+          const skillDir = path.join(targetDir, skillsDir, skillName);
+          await fs.ensureDir(skillDir);
+          await fs.writeFile(path.join(skillDir, "SKILL.md"), skillContent);
+        }
+        totalSkills++;
+      }
+    } else {
+      skippedModules.push({ module, expectedPath: moduleSource });
+    }
+  }
+
+  if (skippedModules.length > 0) {
+    spinner.warn(`Codex: ${skippedModules.length} module(s) not found`);
+    console.log(chalk.yellow(`\n⚠️  Warning: Source directories not found:`));
+    for (const { module, expectedPath } of skippedModules) {
+      console.log(chalk.gray(`   - ${module}: ${expectedPath}`));
+    }
+    console.log("");
+  }
+
+  if (totalSkills === 0) {
+    throw new Error(
+      `No skills generated for Codex. Source directory issue - ROOT_DIR=${ROOT_DIR}`,
+    );
+  }
+
+  spinner.text = `Codex: Generated ${totalSkills} skills (full prompt preserved)`;
+
+  // Copy Codex config template if available and not present
+  const configTemplate = path.join(ROOT_DIR, "platforms", "codex", "config.toml");
+  const configDest = path.join(targetDir, config.configFile);
+  if (await fs.pathExists(configTemplate)) {
+    if (!(await fs.pathExists(configDest))) {
+      await fs.copy(configTemplate, configDest);
+    }
+  }
+
+  // Ensure AGENTS.md exists (Codex reads this automatically)
+  const agentsMdPath = path.join(targetDir, config.orchestrator);
+  if (!(await fs.pathExists(agentsMdPath))) {
+    const agentsMd = generateCodexAgentsMd(modules);
+    await fs.writeFile(agentsMdPath, agentsMd);
+  }
+
+  // Install SLAS skills (session-distill, sigma-exit, developer-preferences) if available
+  const slasSkills = ["session-distill", "sigma-exit", "developer-preferences"];
+  const slasSourceRoot = path.join(ROOT_DIR, "platforms", "codex", "skills");
+  if (await fs.pathExists(slasSourceRoot)) {
+    for (const skill of slasSkills) {
+      const src = path.join(slasSourceRoot, skill);
+      if (await fs.pathExists(src)) {
+        for (const skillsDir of codexSkillDirs) {
+          const dest = path.join(targetDir, skillsDir, skill);
+          if (!(await fs.pathExists(dest))) {
+            await fs.copy(src, dest);
+          }
+        }
+      }
+    }
+  }
+
+  return true;
+}
+
+function normalizeCodexSkillName(name) {
+  return name.replace(/\.[a-z0-9]+$/i, "").replace(/\./g, "-");
+}
+
+function stripFrontmatter(content) {
+  const match = content.match(/^---\n[\s\S]*?\n---\n?/);
+  return match ? content.slice(match[0].length) : content;
+}
+
+function extractFrontmatterMeta(content) {
+  const match = content.match(/^---\n([\s\S]*?)\n---/);
+  if (!match) return { description: "", version: "" };
+
+  const yamlContent = match[1];
+  const descMatch = yamlContent.match(/description:\s*"?([^"\n]+)"?/);
+  const versionMatch = yamlContent.match(/version:\s*"?([^"\n]+)"?/);
+
+  return {
+    description: descMatch?.[1]?.trim() || "",
+    version: versionMatch?.[1]?.trim() || "",
+  };
+}
+
+function yamlEscape(value) {
+  return value.replace(/"/g, '\\"').replace(/\r?\n/g, " ").trim();
+}
+
+function buildCodexSkillContent({ name, description, version, body }) {
+  const headerLines = [
+    "---",
+    `name: ${name}`,
+    `description: "${yamlEscape(description)}"`,
+    "source: sigma-protocol",
+  ];
+  if (version) headerLines.push(`version: "${yamlEscape(version)}"`);
+  headerLines.push("---", "");
+
+  return `${headerLines.join("\n")}${body.trimStart()}`;
+}
+
+function generateCodexAgentsMd(_modules) {
+  return `# Sigma Protocol - Codex Configuration
+
+## Overview
+
+Sigma Protocol is a 13-step product development methodology for AI-assisted development.
+This configuration enables the Sigma workflow in Codex via skills and AGENTS.md.
+
+## Available Steps (Skills)
+
+Invoke skills with:
+\`$step-1-ideation\` (Codex skill invocation)
+
+Key steps include:
+- \`step-1-ideation\`
+- \`step-2-architecture\`
+- \`step-3-ux-design\`
+- \`step-4-flow-tree\`
+- \`step-5-wireframe-prototypes\`
+- \`step-6-design-system\`
+- \`step-7-interface-states\`
+- \`step-8-technical-spec\`
+- \`step-9-landing-page\`
+- \`step-10-feature-breakdown\`
+- \`step-11-prd-generation\`
+- \`step-12-context-engine\`
+- \`step-13-skillpack-generator\`
+
+## Notes
+
+  - Codex loads skills from \`.codex/skills/\` in the repo (legacy: \`.agents/skills/\`).
+  - Project config is optional via \`.codex/config.toml\`.
+`;
+}
+
+// Transform original command to OpenCode command format
+// Full prompt injection (no agent indirection)
 function transformToOpenCodeCommand(originalContent, filename, module) {
   // Parse existing YAML frontmatter
   const frontmatterMatch = originalContent.match(/^---\n([\s\S]*?)\n---/);
@@ -841,35 +1031,16 @@ function transformToOpenCodeCommand(originalContent, filename, module) {
     }
   }
 
-  // OpenCode command - NO shell injection for security
-  // Project state should be gathered via safe API calls, not shell commands
+  // If the source already has frontmatter, return it as-is
+  if (originalContent.startsWith("---\n")) {
+    return originalContent;
+  }
+
   return `---
 description: ${description}
-agent: ${filename}
 ---
 
-# /${filename}
-
-## Context
-
-This command invokes the **@${filename}** agent with full Sigma Protocol methodology.
-
-The agent will automatically:
-- Read project structure from the file system
-- Check for existing specs in \`docs/specs/\`
-- Check for PRDs in \`docs/prds/\`
-- Review recent git history if available
-
-## Your Input
-
-$ARGUMENTS
-
----
-
-**Usage:** \`/${filename} [your input]\`
-
-The agent has access to file read/write, bash (with safety restrictions), and web fetch tools.
-`;
+${originalContent}`;
 }
 
 // Transform original Cursor command to OpenCode agent format
@@ -898,7 +1069,7 @@ function transformToOpenCodeAgent(originalContent, filename, module) {
   // Build OpenCode agent format with FULL original content
   const openCodeAgent = `---
 description: "${existingFrontmatter.description || `Sigma ${module}/${filename}`}"
-mode: subagent
+mode: primary
 model: anthropic/claude-sonnet-4-20250514
 temperature: 0.3
 tools:
@@ -1181,10 +1352,13 @@ async function installCommand(options) {
       chalk.white.bold("Platforms:\n") +
       platforms.map(p => {
         const config = PLATFORMS[p];
+        const skillLines = [];
+        if (config.skillsDir) skillLines.push(`    ${chalk.gray(`Skills: ${config.skillsDir}`)}`);
+        if (config.legacySkillsDir) skillLines.push(`    ${chalk.gray(`Skills (legacy): ${config.legacySkillsDir}`)}`);
         return `  ${chalk.green("✓")} ${config.name}\n` +
                `    ${chalk.gray(`Output: ${config.outputDir}`)}\n` +
                (config.commandsDir ? `    ${chalk.gray(`Commands: ${config.commandsDir}`)}` : "") +
-               (config.skillsDir ? `\n    ${chalk.gray(`Skills: ${config.skillsDir}`)}` : "") +
+               (skillLines.length ? `\n${skillLines.join("\n")}` : "") +
                (config.agentsDir ? `\n    ${chalk.gray(`Agents: ${config.agentsDir}`)}` : "");
       }).join("\n") +
       "\n\n" +
@@ -1200,6 +1374,7 @@ async function installCommand(options) {
         const files = [];
         files.push(`  ${chalk.gray(config.outputDir + "/ (commands)")}`);
         if (config.skillsDir) files.push(`  ${chalk.gray(config.skillsDir + "/ (skills)")}`);
+        if (config.legacySkillsDir) files.push(`  ${chalk.gray(config.legacySkillsDir + "/ (skills, legacy)")}`);
         if (config.agentsDir) files.push(`  ${chalk.gray(config.agentsDir + "/ (agents)")}`);
         if (p === "opencode") files.push(`  ${chalk.gray("opencode.json")}`);
         if (p === "opencode") files.push(`  ${chalk.gray("AGENTS.md")}`);
@@ -1239,6 +1414,9 @@ async function installCommand(options) {
           case "opencode":
             await buildOpenCode(targetDir, modules, spinner);
             break;
+          case "codex":
+            await buildCodex(targetDir, modules, spinner);
+            break;
         }
         
         task.title = `${PLATFORMS[platform].name} installed successfully`;
@@ -1264,6 +1442,22 @@ async function installCommand(options) {
       helpUrl: "https://github.com/sigma-protocol/cli/issues",
     });
     return; // Exit early on failure
+  }
+
+  // Initialize SLAS hooks and session scaffolding for installs
+  const wantsClaudeSLAS = platforms.includes("claude-code");
+  const wantsSLASScaffold = platforms.some((p) => ["opencode", "codex"].includes(p));
+  if (wantsClaudeSLAS || wantsSLASScaffold) {
+    try {
+      const slas = await import("./lib/slas/index.js");
+      if (wantsClaudeSLAS) {
+        await slas.installSLAS(targetDir);
+      } else {
+        await slas.installSLASScaffold(targetDir);
+      }
+    } catch (error) {
+      console.log(chalk.yellow(`⚠️  SLAS initialization skipped: ${error.message}`));
+    }
   }
 
   // Create or update .sigma-manifest.json for version tracking
@@ -1413,6 +1607,8 @@ async function installCommand(options) {
                 return `  ${chalk.cyan("Claude Code:")} Run "claude \\"Run step 1\\""`;
               case "opencode":
                 return `  ${chalk.cyan("OpenCode:")} Use /step-1-ideation to start`;
+              case "codex":
+                return `  ${chalk.cyan("Codex:")} Use $step-1-ideation to start`;
             }
           })
           .join("\n"),
@@ -1513,6 +1709,9 @@ async function buildCommand(options) {
           case "opencode":
             await buildOpenCode(targetDir, modules, spinner);
             break;
+          case "codex":
+            await buildCodex(targetDir, modules, spinner);
+            break;
           default:
             throw new Error(`Unknown platform: ${platform}`);
         }
@@ -1551,7 +1750,7 @@ async function installSkillsCommand(options) {
   const platformArg = options.platform || "all";
   const platforms =
     platformArg === "all"
-      ? ["cursor", "claude-code", "opencode"]
+      ? ["cursor", "claude-code", "opencode", "codex"]
       : [platformArg];
 
   console.log(chalk.white("Installing Foundation Skills...\n"));
@@ -1562,6 +1761,7 @@ async function installSkillsCommand(options) {
     cursor: { installed: 0, skipped: 0 },
     "claude-code": { installed: 0, skipped: 0 },
     opencode: { installed: 0, skipped: 0 },
+    codex: { installed: 0, skipped: 0 },
   };
 
   // Use Listr2 for consistent progress display
@@ -1586,6 +1786,9 @@ async function installSkillsCommand(options) {
             break;
           case "opencode":
             await installOpenCodeSkills(targetDir, spinner, results);
+            break;
+          case "codex":
+            await installCodexSkills(targetDir, spinner, results);
             break;
           default:
             throw new Error(`Unknown platform: ${platform}`);
@@ -2133,6 +2336,9 @@ async function updateCommand(options) {
         case "opencode":
           await buildOpenCode(targetDir, modules, spinner);
           break;
+        case "codex":
+          await buildCodex(targetDir, modules, spinner);
+          break;
       }
     }
 
@@ -2304,7 +2510,7 @@ Documentation: https://github.com/sigma-protocol/cli#installation
   `)
   .option("-t, --target <directory>", "Target directory", process.cwd())
   .option("-y, --yes", "Non-interactive mode (accept all defaults)")
-  .option("-p, --platform <platforms>", "Platform(s) to install: cursor, claude-code, opencode, all (comma-separated)")
+  .option("-p, --platform <platforms>", "Platform(s) to install: cursor, claude-code, opencode, codex, all (comma-separated)")
   .option("-m, --modules <modules>", "Modules to install (comma-separated, or 'all')")
   .option("-n, --dry-run", "Preview what would be installed without making changes")
   .action(installCommand);
@@ -2335,7 +2541,7 @@ Documentation: https://github.com/sigma-protocol/cli#build
   `)
   .option(
     "-p, --platform <platform>",
-    "Platform to build (cursor, claude-code, opencode, all)",
+    "Platform to build (cursor, claude-code, opencode, codex, all)",
     "all",
   )
   .option("-t, --target <directory>", "Target directory", process.cwd())
@@ -2400,7 +2606,7 @@ program
   .description("Install Foundation Skills to your project")
   .option(
     "-p, --platform <platform>",
-    "Platform to install skills for (cursor, claude-code, opencode, all)",
+    "Platform to install skills for (cursor, claude-code, opencode, codex, all)",
     "all",
   )
   .option("-t, --target <directory>", "Target directory", process.cwd())
@@ -2597,6 +2803,40 @@ async function doctorCommand(options) {
           );
         }
       }
+    }
+  }
+
+  if (existing.codex) {
+    const codexPaths = [
+      path.join(targetDir, ".codex", "skills"),
+      path.join(targetDir, ".agents", "skills")
+    ];
+
+    let codexValidated = false;
+    for (const codexPath of codexPaths) {
+      if (await fs.pathExists(codexPath)) {
+        const validation = await validateAllSkills(codexPath);
+        codexValidated = true;
+
+        if (validation.valid && validation.skills > 0) {
+          passed.push(`${PLATFORMS.codex.name}: ${validation.skills} valid skills`);
+        }
+
+        if (validation.warnings && validation.warnings.length > 0) {
+          warnings.push(`${PLATFORMS.codex.name}: ${validation.warnings.length} skill warnings`);
+          if (options.verbose) {
+            console.log(chalk.gray("\n  Skill warnings:"));
+            validation.warnings.forEach((w) =>
+              console.log(chalk.gray(`    - ${w}`))
+            );
+          }
+        }
+        break;
+      }
+    }
+
+    if (!codexValidated) {
+      warnings.push(`${PLATFORMS.codex.name}: No skills directory found`);
     }
   }
 
@@ -3490,6 +3730,9 @@ async function quickstartCommand(options) {
             break;
           case "opencode":
             await buildOpenCode(targetDir, modules, spinner);
+            break;
+          case "codex":
+            await buildCodex(targetDir, modules, spinner);
             break;
         }
       }
@@ -4971,6 +5214,9 @@ async function initCommand(options) {
           case "opencode":
             await buildOpenCode(targetDir, modules, spinner);
             break;
+          case "codex":
+            await buildCodex(targetDir, modules, spinner);
+            break;
         }
         
         task.title = `${PLATFORMS[platform]?.name || platform} installed successfully`;
@@ -5382,6 +5628,192 @@ program
   .option("--validate-only", "Only validate PRD without running")
   .action(ralphCommand);
 
+// SLAS (Self-Learning Agent System) commands
+program
+  .command("slas [action]")
+  .description("Self-Learning Agent System - learn from session history")
+  .addHelpText("after", `
+
+Actions:
+  init              Initialize SLAS in the project
+  bootstrap         Bootstrap preferences from existing session history
+  distill           Run pattern distillation on recent sessions
+  status            Show SLAS health and configuration
+  sync              Sync preferences to all platforms
+
+Examples:
+  sigma slas init                    # Initialize SLAS
+  sigma slas bootstrap               # Learn from existing sessions
+  sigma slas distill --sessions=100  # Analyze 100 recent sessions
+  sigma slas status                  # Check SLAS health
+  sigma slas sync                    # Sync to Cursor, OpenCode, etc.
+`)
+  .option("-t, --target <directory>", "Target project directory", process.cwd())
+  .option("-s, --sessions <n>", "Number of sessions to analyze", "50")
+  .option("--transcripts <path>", "Path to session transcripts")
+  .option("--dry-run", "Preview without writing files")
+  .option("-v, --verbose", "Show detailed output")
+  .action(async (action, options) => {
+    const slasAction = action || "status";
+    const targetDir = options.target;
+
+    try {
+      const slas = await import("./lib/slas/index.js");
+
+      switch (slasAction) {
+        case "init": {
+          console.log(chalk.cyan("\n🧠 Initializing SLAS...\n"));
+          const result = await slas.installSLAS(targetDir, options);
+
+          if (result.success) {
+            console.log(chalk.green("✓ SLAS installed successfully\n"));
+            console.log(chalk.gray("Directories created:"));
+            result.directories.forEach(d => console.log(chalk.gray(`  - ${d}`)));
+            console.log("");
+            console.log(chalk.yellow("Next steps:"));
+            console.log(chalk.gray("  1. Run 'sigma slas bootstrap' to learn from existing sessions"));
+            console.log(chalk.gray("  2. Use '/sigma-exit' skill before ending sessions"));
+            console.log(chalk.gray("  3. Run 'sigma slas distill' periodically to update preferences"));
+          } else {
+            console.log(chalk.red("✗ Installation failed"));
+            result.errors.forEach(e => console.log(chalk.red(`  - ${e}`)));
+          }
+          break;
+        }
+
+        case "bootstrap": {
+          console.log(chalk.cyan("\n🧠 Bootstrapping from session history...\n"));
+
+          const transcriptsPath = options.transcripts ||
+            path.join(process.env.HOME, ".claude", "projects");
+
+          const result = await slas.bootstrapFromHistory(targetDir, transcriptsPath, {
+            sessions: parseInt(options.sessions, 10)
+          });
+
+          if (result.success) {
+            console.log(chalk.green(`✓ Bootstrap complete\n`));
+            console.log(chalk.gray(`Sessions analyzed: ${result.sessionsAnalyzed}`));
+            console.log(chalk.gray(`Confidence: ${Math.round(result.confidence * 100)}%`));
+            console.log("");
+
+            if (result.patterns?.autonomy_level) {
+              console.log(chalk.yellow("Key findings:"));
+              console.log(chalk.gray(`  Autonomy: ${result.patterns.autonomy_level.label}`));
+              console.log(chalk.gray(`  Verbosity: ${result.patterns.communication?.verbosity || 'standard'}`));
+            }
+
+            if (result.artifacts) {
+              console.log("");
+              console.log(chalk.yellow("Generated artifacts:"));
+              if (result.artifacts.skills?.length) {
+                console.log(chalk.gray(`  Skills: ${result.artifacts.skills.length}`));
+              }
+              if (result.artifacts.hooks?.length) {
+                console.log(chalk.gray(`  Hooks: ${result.artifacts.hooks.length}`));
+              }
+              if (result.artifacts.rules?.length) {
+                console.log(chalk.gray(`  Rules: ${result.artifacts.rules.length}`));
+              }
+              if (result.artifacts.updated?.length) {
+                console.log(chalk.gray(`  Updated: ${result.artifacts.updated.join(", ")}`));
+              }
+            }
+          } else {
+            console.log(chalk.red(`✗ Bootstrap failed: ${result.error}`));
+          }
+          break;
+        }
+
+        case "distill": {
+          console.log(chalk.cyan("\n🧠 Running session distillation...\n"));
+
+          const result = await slas.distillSessions({
+            targetDir,
+            sessions: parseInt(options.sessions, 10),
+            transcriptsPath: options.transcripts,
+            dryRun: options.dryRun
+          });
+
+          if (result.success) {
+            if (options.dryRun) {
+              console.log(chalk.yellow("Dry run - no files modified\n"));
+            }
+            console.log(chalk.green(`✓ Distillation complete\n`));
+            console.log(chalk.gray(`Sessions analyzed: ${result.filesAnalyzed}`));
+            console.log(chalk.gray(`Confidence: ${Math.round(result.confidence * 100)}%`));
+
+            if (result.patterns?.frustration_triggers?.length) {
+              console.log("");
+              console.log(chalk.yellow("Top frustration triggers:"));
+              result.patterns.frustration_triggers.slice(0, 3).forEach(f => {
+                console.log(chalk.gray(`  - ${f.trigger.slice(0, 60)}...`));
+              });
+            }
+          } else {
+            console.log(chalk.red(`✗ Distillation failed: ${result.error}`));
+          }
+          break;
+        }
+
+        case "status": {
+          console.log(chalk.cyan("\n🧠 SLAS Status\n"));
+
+          const status = await slas.getSLASStatus(targetDir);
+
+          const check = (val) => val ? chalk.green("✓") : chalk.red("✗");
+
+          console.log(`${check(status.installed)} SLAS installed`);
+          console.log(`${check(status.hooksConfigured)} Hooks configured`);
+          console.log(`${check(status.profileExists)} Developer profile`);
+          console.log(`${check(status.patternsExist)} Pattern cache`);
+
+          if (status.lastDistillation) {
+            console.log("");
+            console.log(chalk.gray(`Last distillation: ${status.lastDistillation}`));
+            console.log(chalk.gray(`Sessions analyzed: ${status.sessionsAnalyzed}`));
+            console.log(chalk.gray(`Confidence: ${Math.round(status.confidence * 100)}%`));
+          }
+
+          if (!status.installed) {
+            console.log("");
+            console.log(chalk.yellow("Run 'sigma slas init' to initialize SLAS"));
+          } else if (!status.patternsExist) {
+            console.log("");
+            console.log(chalk.yellow("Run 'sigma slas bootstrap' to learn from sessions"));
+          }
+          break;
+        }
+
+        case "sync": {
+          console.log(chalk.cyan("\n🧠 Syncing to platforms...\n"));
+
+          const result = await slas.syncToPlatforms(targetDir);
+
+          if (result.success) {
+            console.log(chalk.green("✓ Sync complete\n"));
+            console.log(chalk.gray(`Claude Code: ${result.claudeCode ? 'synced' : 'skipped'}`));
+            console.log(chalk.gray(`Cursor: ${result.cursor ? 'synced' : 'skipped'}`));
+            console.log(chalk.gray(`OpenCode: ${result.opencode ? 'synced' : 'skipped'}`));
+          } else {
+            console.log(chalk.red(`✗ Sync failed: ${result.error}`));
+          }
+          break;
+        }
+
+        default:
+          console.log(chalk.red(`Unknown SLAS action: ${slasAction}`));
+          console.log(chalk.gray("Valid actions: init, bootstrap, distill, status, sync"));
+      }
+    } catch (error) {
+      console.error(chalk.red(`\nError: ${error.message}`));
+      if (options.verbose) {
+        console.error(error.stack);
+      }
+      process.exit(1);
+    }
+  });
+
 // Interactive mode handler
 async function interactiveCommand(options) {
   const { runInteractiveMode, handleMenuAction } = await import("./lib/interactive.js");
@@ -5407,7 +5839,7 @@ const commands = [
   "install", "status", "build", "update", "retrofit", "install-skills",
   "install-harness", "doctor", "orchestrate", "approve", "new", "tutorial",
   "maid", "search", "config", "init", "help", "deps", "sandbox", "thread",
-  "f-thread", "merge", "health", "rollback", "ralph", "quickstart",
+  "f-thread", "merge", "health", "rollback", "ralph", "quickstart", "slas",
   "-h", "--help", "-V", "--version"
 ];
 const hasCommand = args.some(arg => commands.includes(arg));
@@ -5470,4 +5902,3 @@ if (!hasCommand && args.length === 0) {
 
   program.parse();
 }
-

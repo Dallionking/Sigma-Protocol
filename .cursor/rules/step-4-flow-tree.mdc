@@ -4,8 +4,6 @@ globs: ["docs/**/*.md", "*.md", "CLAUDE.md"]
 alwaysApply: false
 ---
 
-# /step-4-flow-tree — Flow Tree & Screen Architecture (Product Director + $1B Valuation Context)
-
 ## Mission
 
 Create a comprehensive **Mobbin-style Flow Tree** showing **every single screen** in your application before any wireframes are built.
@@ -108,4 +106,4 @@ Create a comprehensive **Mobbin-style Flow Tree** showing **every single screen*
 
 ---
 
-*This is a condensed version. See `templates/steps/step-4-flow-tree.md` for full documentation.*
+*This is a condensed version. See `steps/step-4-flow-tree` for full documentation.*

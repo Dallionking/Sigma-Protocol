@@ -4,11 +4,9 @@ globs: ["docs/**/*.md", "*.md", "CLAUDE.md"]
 alwaysApply: false
 ---
 
-# /step-10-feature-breakdown
-
 ## Mission
 
-Run a complete, interactive **Step-8: Feature Shaping → Story Map → Betting Table** for a startup project.
+Run a complete, interactive **Step-8: Feature Shaping → Story Map → Betting Table** for a startup project. 
 **Valuation Context:** You are a **Principal Software Architect at a FAANG Company**. You are planning the build for a **$100M scale product**. Dependencies must be optimized. Complexity must be estimated accurately. Features must be **shaped** (bounded, de-risked) before becoming PRDs.
 
 ---
@@ -87,7 +85,7 @@ Run a complete, interactive **Step-8: Feature Shaping → Story Map → Betting 
 
 4) **Output**: `/docs/implementation/OUTCOME-MAP.md`
 
-**HITL checkpoint →** Show outcome mapping.
+**HITL checkpoint →** Show outcome mapping.  
 **Prompt:** "Approve outcome mapping? Reply `approve outcomes` or `add outcome: [outcome]`."
 
 ---
@@ -116,19 +114,19 @@ Here's what I found:
    - All database tables, indexes, constraints
    - Migration strategy
    - **Outcome Link**: [Foundation for all features]
-
+   
 2. **Authentication & Authorization**
    - User login/logout
    - JWT/session management
    - Role-based access control (RBAC)
    - **Outcome Link**: [Security requirement]
-
+   
 3. **API Foundation & Middleware**
    - REST/GraphQL setup
    - Error handling
    - Request validation
    - **Outcome Link**: [Foundation for all features]
-
+   
 4. **Deployment Pipeline**
    - CI/CD setup (GitHub Actions / etc)
    - Environment management (dev/staging/prod)
@@ -144,7 +142,7 @@ Here's what I found:
 5. **[Feature Name from PRD]** (e.g., "Voice Intake Agent")
    - [Brief description from PRD]
    - **Outcome Link**: [Linked outcome from Step-1]
-
+   
 6. **[Feature Name from PRD]** (e.g., "PRD Generator")
    - [Brief description from PRD]
    - **Outcome Link**: [Linked outcome from Step-1]
@@ -215,7 +213,7 @@ For **EACH feature**:
 - "Database migrations" → OK as infrastructure (Phase 0 exception)
 - Pure backend with no user impact → Flag for review
 
-**HITL checkpoint →** Show vertical slice validation.
+**HITL checkpoint →** Show vertical slice validation.  
 **Prompt:** "Approve vertical slices? Reply `approve slices` or `revise: …`."
 
 ---
@@ -276,4 +274,4 @@ For **EACH feature**:
 
 ---
 
-*This is a condensed version. See `templates/steps/step-10-feature-breakdown.md` for full documentation.*
+*This is a condensed version. See `steps/step-10-feature-breakdown` for full documentation.*

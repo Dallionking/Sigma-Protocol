@@ -1,36 +1,49 @@
 ---
-description: "Run Sigma steps/step-6-design-system"
+version: "2.5.0"
+last_updated: "2026-01-07"
+changelog:
+  - "2.5.0: Added react-performance.md reference in animation implementation checklist"
+  - "2.4.0: Added SwiftUI Design Tokens format (Swift DesignTokens struct with Colors, Typography, Spacing, Radius, Shadows, Motion)"
+  - "2.3.2: Added App Shell layout guardrails (wide vs narrow containers, sidebar width rules, dashboard grid patterns, surface layering checks) to prevent narrow/flat dashboards"
+  - "2.3.1: Clarified Magic UI BorderBeam reference paths for boilerplate repos vs commands repo"
+  - "2.3.0: Added UI Profile input + Effects Layer spec (hover depth, border beam, focus trail) including Satin Dark / Soft Depth guidance"
+  - "2.2.0: Added Boilerplate Theming section for extending SSS boilerplate design foundations"
+  - "2.1.0: Expanded icon library recommendations (Lucide, Phosphor, Tabler, Heroicons) for web and mobile, added code examples"
+  - "2.0.0: Renumbered from Step 4 to Step 6 in 13-step workflow"
+  - "1.0.0: Initial release as Step 4"
+description: "Step 6: Design System & Style Guide - Visual specifications with tokens, components, and accessibility standards"
 allowed-tools:
-  - Read
-  - Write
-  - Edit
-  - Bash
-  - WebFetch
+  # PRIMARY MCP Tools (Use First)
+  - mcp_Ref_ref_search_documentation
+  - mcp_Ref_ref_read_url
+  - mcp_exa_web_search_exa
+  - mcp_exa_get_code_context_exa
+  - mcp_exa_crawling_exa
+  - mcp_exa_company_research_exa
+  - mcp_exa_linkedin_search_exa
+  - mcp_exa_deep_researcher_start
+  - mcp_exa_deep_researcher_check
+  
+  # ALWAYS ACTIVE (Specialized)
+  - mcp_21st-devmagic_21st_magic_component_builder
+  
+  # BACKUP MCP Tools (Use only if primary fails)
+  - mcp_perplexity-ask_perplexity_ask
+  
+  # OTHER TOOLS
+  - web_search
+  - read_file
+  - write
+  - list_dir
+  - run_terminal_cmd
+parameters:
+  - --theme
 ---
-
-# /step-6-design-system
-
-Invoke the **step-6-design-system** agent from Sigma Protocol.
-
-This command runs the full step-6-design-system workflow including:
-- All HITL (Human-in-the-Loop) checkpoints
-- MCP research integration
-- Quality verification gates
-
-**Usage:** `/step-6-design-system [your input here]`
-
-# step-6-design-system
-
-**Source:** Sigma Protocol steps module
-**Version:** 2.5.0
-
----
-
 
 # /step-6-design-system — Design System & Style Guide Creation (Senior Design Systems Architect + $1B Valuation Context)
 
-**Mission**
-Run a complete, interactive **Step-4: Design System → Visual Specifications** for a startup project in one go.
+**Mission**  
+Run a complete, interactive **Step-4: Design System → Visual Specifications** for a startup project in one go. 
 **Valuation Context:** You are a **Senior Design Systems Architect at a FAANG Company**. Your design system must be **scalable, accessible, and visually stunning**. It is the foundation of a **premium product**.
 
 **Perceived Value Principle:**
@@ -40,9 +53,9 @@ The UI must *look* expensive to justify "Grand Slam Pricing".
 
 ---
 
-## BOILERPLATE THEMING (NEW - If Using Sigma Boilerplate)
+## BOILERPLATE THEMING (NEW - If Using SSS Boilerplate)
 
-**If your project uses an Sigma boilerplate, the design system EXTENDS (not replaces) the foundation.**
+**If your project uses an SSS boilerplate, the design system EXTENDS (not replaces) the foundation.**
 
 ### Detection
 
@@ -74,15 +87,15 @@ cat .sigma/boilerplate.json 2>/dev/null
   /* ═══════════════════════════════════════════════════
    * BRAND OVERRIDES (Step 6 Design System)
    * ═══════════════════════════════════════════════════ */
-
+  
   /* Primary - Your brand color */
   --primary: 220 90% 56%;           /* Blue example */
   --primary-foreground: 0 0% 100%;
-
+  
   /* Accent - Secondary brand color */
   --accent: 280 65% 60%;            /* Purple example */
   --accent-foreground: 0 0% 100%;
-
+  
   /* Custom semantic colors */
   --brand: 220 90% 56%;
   --brand-subtle: 220 90% 96%;
@@ -119,7 +132,7 @@ const outfit = Outfit({
 | `components/ui/button.tsx` | shadcn managed - use variants instead |
 | `components/ui/input.tsx` | shadcn managed |
 | `lib/supabase/*` | Core infrastructure |
-| `.cursor/commands/*` | Sigma methodology |
+| `.cursor/commands/*` | SSS methodology |
 
 ### What TO Create
 
@@ -130,7 +143,7 @@ const outfit = Outfit({
 | `components/[project]/hero.tsx` | Custom hero section |
 | `public/fonts/*` | Custom brand fonts |
 
-**HITL checkpoint** Confirm boilerplate extension approach.
+**HITL checkpoint →** Confirm boilerplate extension approach.
 **Prompt:** "Using boilerplate theming. Reply `confirm extend` to continue, or `custom system` to build from scratch."
 
 ---
@@ -206,7 +219,7 @@ Typography is 90% of design. Choose fonts that **evoke the right feeling**:
 
 | Emotion Wanted | Font Characteristics | Examples |
 |----------------|---------------------|----------|
-| **Trust/Professional** | Clean sans-serif, balanced x-height | Inter, SF Pro, Sohne |
+| **Trust/Professional** | Clean sans-serif, balanced x-height | Inter, SF Pro, Söhne |
 | **Modern/Tech** | Geometric sans, monospace accents | Geist, Space Grotesk, JetBrains Mono |
 | **Warm/Approachable** | Rounded corners, open counters | Nunito, Poppins, Plus Jakarta Sans |
 | **Premium/Luxury** | High contrast serif, refined details | Playfair Display, Editorial New |
@@ -258,8 +271,8 @@ This command:
 ---
 
 ## Preflight (auto)
-1) **Get date**: run `date +"%Y-%m-%d"` and capture `TODAY`, and derive `YEAR`.
-2) **Detect research tools** (preferred to fallback):
+1) **Get date**: run `date +"%Y-%m-%d"` and capture `TODAY`, and derive `YEAR`.  
+2) **Detect research tools** (preferred → fallback):
    - If an MCP search tool exists (e.g., `perplexity`, `tavily`, `brave`, `browsertools-mcp`), prefer it.
    - Else, use Cursor's web browsing.
 3) **Create folders (idempotent)** if missing:
@@ -334,12 +347,12 @@ This command:
 - [ ] HITL checkpoint: Present icons & imagery
 - [ ] Wait for approval
 
-### Phase F.5: Effects Layer (Cool, Not Toy) NEW
+### Phase F.5: Effects Layer (Cool, Not Toy) ⭐ NEW
 - [ ] Read UI Profile cool layer settings (on/off) and motion intensity
 - [ ] Define **Hover Depth** spec (subtle lift + shadow/border lift)
 - [ ] Define **Border Beam / Focus Trail** spec (hover/focus only for professional profiles)
 - [ ] Define apply-to allow-list (interactive cards, CTAs, inputs only)
-- [ ] Define reduced-motion fallback (beam to border lift)
+- [ ] Define reduced-motion fallback (beam → border lift)
 - [ ] HITL checkpoint: Present effects layer rules
 - [ ] Wait for approval
 
@@ -370,12 +383,12 @@ This command:
 ```
 
 **Execution Rules**:
-- Check off EACH task as you complete it
-- Do NOT skip ahead - complete tasks in order
-- Do NOT proceed to next phase until user approves
-- Use MCP search for research
-- Take notes to maintain context
-- Write files in small chunks
+- ✅ Check off EACH task as you complete it
+- ✅ Do NOT skip ahead - complete tasks in order
+- ✅ Do NOT proceed to next phase until user approves
+- ✅ Use MCP search for research
+- ✅ Take notes to maintain context
+- ✅ Write files in small chunks
 
 ---
 
@@ -452,7 +465,7 @@ Based on wireframe outputs, create initial design tokens:
 ```markdown
 # Preliminary Design Tokens (From Wireframes)
 
-**Date:** [Date]
+**Date:** [Date]  
 **Source:** Step 5 Wireframe Prototypes
 
 ---
@@ -623,15 +636,15 @@ Compare wireframe tokens with complete design system requirements:
 - Expand color scales using color theory
 - Add missing component states using best practices
 
-**HITL checkpoint** Present preliminary tokens and gaps.
+**HITL checkpoint →** Present preliminary tokens and gaps.  
 **Prompt:** "Review wireframe-extracted tokens? Reply `approve wireframe tokens` to proceed with wireframe-based design system, or `start fresh` to ignore wireframes and create from scratch."
 
 ## Phase A — Design System Research (current-year aware)
 **Goal:** Ground design decisions in current best practices, design trends, and proven component libraries.
 
-1) Build YEAR-aware queries (e.g., "design system trends {YEAR}", "color theory accessibility {YEAR}", "typography scale {YEAR}", "component library best practices {YEAR}", "design tokens {YEAR}").
-2) Run **MCP search** if available; else use web browsing.
-3) Capture **5-10 sources** with titles, dates, and permalinks; group by topic:
+1) Build YEAR-aware queries (e.g., "design system trends {YEAR}", "color theory accessibility {YEAR}", "typography scale {YEAR}", "component library best practices {YEAR}", "design tokens {YEAR}").  
+2) Run **MCP search** if available; else use web browsing.  
+3) Capture **5–10 sources** with titles, dates, and permalinks; group by topic:
    - Design system architecture (atomic design, tokens, versioning)
    - Color systems (accessibility, palettes, semantic colors)
    - Typography scales (modular scale, responsive type)
@@ -639,7 +652,7 @@ Compare wireframe tokens with complete design system requirements:
    - Design-to-code workflows (Figma Tokens, Style Dictionary)
 4) Write `/docs/research/DESIGN-SOURCES-${TODAY}.md` with a 1-page **Research Summary** and a bulleted **Source List** (title, URL, date seen).
 
-**HITL checkpoint** Show the "current design landscape" bullets and sources.
+**HITL checkpoint →** Show the "current design landscape" bullets and sources.  
 **Prompt:** "Add/remove sources or constraints? Reply `ok research` to continue."
 
 ---
@@ -677,8 +690,8 @@ Before choosing colors, read the UI Profile:
    - All UI components meet 3:1 contrast
    - Color-blind simulation (deuteranopia, protanopia, tritanopia)
 
-**HITL checkpoint** Show color palette with contrast ratios.
-**Prompt:** "Approve color system? Reply `approve colors` or `revise: ...`."
+**HITL checkpoint →** Show color palette with contrast ratios.  
+**Prompt:** "Approve color system? Reply `approve colors` or `revise: …`."
 
 ---
 
@@ -714,8 +727,8 @@ Before choosing colors, read the UI Profile:
    - Desktop optimal sizes
    - Fluid typography (clamp for scaling)
 
-**HITL checkpoint** Show typography scale and hierarchy.
-**Prompt:** "Approve typography system? Reply `approve typography` or `revise: ...`."
+**HITL checkpoint →** Show typography scale and hierarchy.  
+**Prompt:** "Approve typography system? Reply `approve typography` or `revise: …`."
 
 ---
 
@@ -747,9 +760,9 @@ Before choosing colors, read the UI Profile:
    - Popover: 60
    - Tooltip: 70
 
-5) **App Shell layout guardrails** (CRITICAL — prevents "narrow/centered AI dashboards"):
+5) **App Shell layout guardrails** (CRITICAL — prevents “narrow/centered AI dashboards”):
 
-**Rule: Do NOT use `container mx-auto` for app interior screens** (dashboards, tables, command centers, authenticated areas). Tailwind `container` is intended for **marketing/content** pages and will make app UIs feel "floating" on large screens.
+**Rule: Do NOT use `container mx-auto` for app interior screens** (dashboards, tables, command centers, authenticated areas). Tailwind `container` is intended for **marketing/content** pages and will make app UIs feel “floating” on large screens.
 
 **Use one of these wrappers instead** (and keep it consistent across the app):
 
@@ -764,8 +777,8 @@ Before choosing colors, read the UI Profile:
 - Spacious: `py-8 space-y-8` (gap 32px)
 
 **Sidebar proportion rules**:
-- Expanded sidebar width: **240-300px** (default: **280px**)
-- Collapsed sidebar width: **48-64px** (default: **64px**)
+- Expanded sidebar width: **240–300px** (default: **280px**)
+- Collapsed sidebar width: **48–64px** (default: **64px**)
 - **Hard rule**: collapsing the sidebar must **increase main content width** (no fixed center column).
 
 Example (CSS grid shell):
@@ -780,7 +793,7 @@ Example (CSS grid shell):
 </div>
 ```
 
-**Dashboard grid pattern** (cards scale 1 to 2 to 4 columns):
+**Dashboard grid pattern** (cards scale 1 → 2 → 4 columns):
 ```tsx
 <section className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
   <Card className="satin-card">...</Card>
@@ -795,8 +808,8 @@ Example (CSS grid shell):
 - Cards/panels use **raised** surface token + hairline border (`--border-subtle`) and/or subtle shadow.
 - Popovers/modals use **elevated** surface token.
 
-**HITL checkpoint** Confirm spacing system and grid.
-**Prompt:** "Approve spacing & layout? Reply `approve spacing` or `revise: ...`."
+**HITL checkpoint →** Confirm spacing system and grid.  
+**Prompt:** "Approve spacing & layout? Reply `approve spacing` or `revise: …`."
 
 ---
 
@@ -825,8 +838,8 @@ Example (CSS grid shell):
    - Responsive behavior
    - Animation/transition specs
 
-**HITL checkpoint** Show component list with variants.
-**Prompt:** "Approve component library? Reply `approve components` or `revise: ...`."
+**HITL checkpoint →** Show component list with variants.  
+**Prompt:** "Approve component library? Reply `approve components` or `revise: …`."
 
 ---
 
@@ -848,7 +861,7 @@ Example (CSS grid shell):
 
 | Library | Style | Install | Best For |
 |---------|-------|---------|----------|
-| **Lucide React** | Clean, consistent stroke | `npm i lucide-react` | Primary choice - 1400+ icons, tree-shakeable |
+| **Lucide React** ⭐ | Clean, consistent stroke | `npm i lucide-react` | Primary choice - 1400+ icons, tree-shakeable |
 | **Phosphor Icons** | 6 weight variants per icon | `npm i @phosphor-icons/react` | Flexible - thin to bold |
 | **Tabler Icons** | Stroke-based, extensive | `npm i @tabler/icons-react` | 5000+ icons, MIT license |
 | **Heroicons** | Tailwind official | `npm i @heroicons/react` | Solid + Outline variants |
@@ -868,7 +881,7 @@ import { Home, Settings, User, ChevronRight } from 'lucide-react';
 
 | Library | Style | Install | Best For |
 |---------|-------|---------|----------|
-| **Lucide React Native** | Matches web | `npm i lucide-react-native react-native-svg` | Primary - consistent with web |
+| **Lucide React Native** ⭐ | Matches web | `npm i lucide-react-native react-native-svg` | Primary - consistent with web |
 | **@expo/vector-icons** | Built-in | Included with Expo | FontAwesome, Ionicons, MaterialIcons |
 | **Phosphor React Native** | 6 weights | `npm i phosphor-react-native react-native-svg` | Flexible weights |
 | **Hugeicons React Native** | Modern, detailed | `npm i @hugeicons/react-native` | Premium feel, 4000+ icons |
@@ -904,14 +917,14 @@ import { Home, Settings, User } from 'lucide-react-native';
 4) **Responsive images**: srcset with 1x, 2x, 3x densities
 5) **Placeholder strategy**: blur-up, dominant color, skeleton
 
-**HITL checkpoint** Confirm icon system and imagery.
-**Prompt:** "Approve icons & imagery? Reply `approve icons` or `revise: ...`."
+**HITL checkpoint →** Confirm icon system and imagery.  
+**Prompt:** "Approve icons & imagery? Reply `approve icons` or `revise: …`."
 
 ---
 
-## Phase F.5 — Effects Layer (Cool, Not Toy) NEW
+## Phase F.5 — Effects Layer (Cool, Not Toy) ⭐ NEW
 
-**Goal:** Define a profile-aware "cool layer" (hover depth + border beam/focus trail) that adds polish without making the UI look like a toy.
+**Goal:** Define a profile-aware “cool layer” (hover depth + border beam/focus trail) that adds polish without making the UI look like a toy.
 
 ### F5.0 Read UI Profile (Mandatory)
 
@@ -919,18 +932,18 @@ From `/docs/design/UI-PROFILE.md` + `/docs/design/ui-profile.json`, extract:
 - Profile ID + name
 - `dials.coolLayer` (on/off)
 - `dials.motionIntensity`
-- Guardrails (`rules.*`) used to prevent "toy" aesthetics
+- Guardrails (`rules.*`) used to prevent “toy” aesthetics
 
 If cool layer is **off**, you still must define **focus-visible** styles (accessibility).
 
 ### F5.1 Apply-To Allow List (Hard Rule)
 
-Allowed:
+✅ Allowed:
 - Interactive cards (clickable)
 - Primary/secondary CTAs
 - Inputs (focus-visible only)
 
-Not allowed:
+🚫 Not allowed:
 - Static cards or decorative surfaces
 - Always-on background effects
 
@@ -985,12 +998,12 @@ If `prefers-reduced-motion: reduce`:
 - Disable border beam animation
 - Keep border lift + focus ring only
 
-**HITL checkpoint** Approve effects layer rules and allow-list.
-**Prompt:** "Approve effects layer? Reply `approve effects` or `revise: ...`."
+**HITL checkpoint →** Approve effects layer rules and allow-list.  
+**Prompt:** "Approve effects layer? Reply `approve effects` or `revise: …`."
 
 ## Phase G — Motion & Animation
 
-> **Animation Quality Reference:** See `/commands/MOBILE_APP_DESIGN_LEARNINGS.md` for premium animation benchmarks, component examples, and quality direction.
+> **📚 Animation Quality Reference:** See `/commands/MOBILE_APP_DESIGN_LEARNINGS.md` for premium animation benchmarks, component examples, and quality direction.
 
 ### G1: Animation Principles (Foundation)
 
@@ -1037,13 +1050,13 @@ npx motion-primitives@latest add glow-effect
 export const springPresets = {
   // Snappy - buttons, toggles, quick interactions
   snappy: { type: "spring", stiffness: 400, damping: 30 },
-
+  
   // Smooth - modals, drawers, page transitions
   smooth: { type: "spring", stiffness: 300, damping: 25 },
-
+  
   // Bouncy - success states, celebrations, playful UI
   bouncy: { type: "spring", stiffness: 500, damping: 15 },
-
+  
   // Gentle - subtle hovers, focus states
   gentle: { type: "spring", stiffness: 200, damping: 20 },
 };
@@ -1118,12 +1131,12 @@ These represent the **quality benchmark** for premium animations — use when ap
 }
 ```
 
-**HITL checkpoint** Confirm animation system.
-**Prompt:** "Approve motion & animation? Reply `approve motion` or `revise: ...`."
+**HITL checkpoint →** Confirm animation system.  
+**Prompt:** "Approve motion & animation? Reply `approve motion` or `revise: …`."
 
 ---
 
-## Phase G.5 — Animation Implementation Quality Framework NEW
+## Phase G.5 — Animation Implementation Quality Framework ⭐ NEW
 
 > **Philosophy:** This section ensures animations are **implemented well** (technical quality), not what animations to use (style is determined by Design DNA in Step 3). High-quality implementation = smooth, performant, accessible.
 
@@ -1184,7 +1197,7 @@ These represent the **quality benchmark** for premium animations — use when ap
 - [ ] **Battery-aware**: Reduced animations on low-power mode (mobile)
 ```
 
-> **React Performance Reference:** For detailed React-specific optimization patterns (memoization to prevent re-render during animation, virtualization, code splitting), see `/src/foundation-skills/react-performance.md`.
+> **📚 React Performance Reference:** For detailed React-specific optimization patterns (memoization to prevent re-render during animation, virtualization, code splitting), see `/src/foundation-skills/react-performance.md`.
 
 ### G.5.3 Animation Testing Requirements
 
@@ -1246,21 +1259,21 @@ const usePrefersReducedMotion = () => {
   const [prefersReduced, setPrefersReduced] = useState(
     window.matchMedia('(prefers-reduced-motion: reduce)').matches
   );
-
+  
   useEffect(() => {
     const mediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
     const handler = (e) => setPrefersReduced(e.matches);
     mediaQuery.addEventListener('change', handler);
     return () => mediaQuery.removeEventListener('change', handler);
   }, []);
-
+  
   return prefersReduced;
 };
 
 // Usage in components
 const MyAnimatedComponent = () => {
   const prefersReduced = usePrefersReducedMotion();
-
+  
   return (
     <motion.div
       animate={{ opacity: 1, y: 0 }}
@@ -1303,8 +1316,8 @@ const [animationName] = {
 - Screen reader: [Announcement if needed]
 
 ### Performance
-- GPU accelerated: Yes
-- Composited: Yes (uses transform only)
+- GPU accelerated: ✅
+- Composited: ✅ (uses transform only)
 - Bundle impact: 0KB (CSS) / 2KB (Framer variant)
 ```
 
@@ -1345,30 +1358,30 @@ const [animationName] = {
 import SwiftUI
 
 struct DesignTokens {
-
+    
     // MARK: - Colors
     struct Colors {
         // Semantic colors (adapt to Dark Mode automatically)
         static let textPrimary = Color.primary
         static let textSecondary = Color.secondary
         static let textTertiary = Color(.tertiaryLabel)
-
+        
         // Surfaces
         static let background = Color(.systemBackground)
         static let surfaceRaised = Color(.secondarySystemBackground)
         static let surfaceElevated = Color(.tertiarySystemBackground)
-
+        
         // Brand (define in Assets.xcassets with dark variants)
         static let brandPrimary = Color("BrandPrimary")
         static let brandSecondary = Color("BrandSecondary")
-
+        
         // Status
         static let success = Color(.systemGreen)
         static let warning = Color(.systemOrange)
         static let error = Color(.systemRed)
         static let info = Color(.systemBlue)
     }
-
+    
     // MARK: - Typography (uses SF Pro automatically)
     struct Typography {
         // Headings
@@ -1380,18 +1393,18 @@ struct DesignTokens {
         static let h4 = Font.title3.weight(.medium)
         static let h5 = Font.headline
         static let h6 = Font.subheadline.weight(.semibold)
-
+        
         // Body
         static let bodyLarge = Font.body
         static let bodyMedium = Font.callout
         static let bodySmall = Font.footnote
-
+        
         // Utility
         static let caption = Font.caption
         static let captionSmall = Font.caption2
         static let button = Font.body.weight(.semibold)
     }
-
+    
     // MARK: - Spacing (4pt base unit)
     struct Spacing {
         static let xxxs: CGFloat = 2   // 0.5x
@@ -1404,7 +1417,7 @@ struct DesignTokens {
         static let xxl: CGFloat = 48   // 12x
         static let xxxl: CGFloat = 64  // 16x
     }
-
+    
     // MARK: - Corner Radius
     struct Radius {
         static let xs: CGFloat = 4
@@ -1414,20 +1427,20 @@ struct DesignTokens {
         static let xl: CGFloat = 24
         static let full: CGFloat = 9999
     }
-
+    
     // MARK: - Shadows
     struct Shadows {
         static let sm = ShadowStyle(color: .black.opacity(0.08), radius: 2, x: 0, y: 1)
         static let md = ShadowStyle(color: .black.opacity(0.12), radius: 8, x: 0, y: 4)
         static let lg = ShadowStyle(color: .black.opacity(0.16), radius: 16, x: 0, y: 8)
     }
-
+    
     // MARK: - Animation
     struct Motion {
         static let fast: Double = 0.15
         static let normal: Double = 0.25
         static let slow: Double = 0.35
-
+        
         static let springSnappy = Animation.spring(response: 0.2, dampingFraction: 0.8)
         static let springSmooth = Animation.spring(response: 0.3, dampingFraction: 0.7)
         static let springBouncy = Animation.spring(response: 0.3, dampingFraction: 0.6)
@@ -1461,15 +1474,15 @@ Text("Hello")
     .shadow(DesignTokens.Shadows.md)
 ```
 
-**Reference:** `/docs/swiftui/SWIFTUI-BEST-PRACTICES.md` Design Tokens section
+**Reference:** `/docs/swiftui/SWIFTUI-BEST-PRACTICES.md` → Design Tokens section
 
 4) **Theming support**:
    - Light theme (default)
    - Dark theme (optional)
    - Theme switching mechanism
 
-**HITL checkpoint** Confirm design token structure.
-**Prompt:** "Approve design tokens? Reply `approve tokens` or `revise: ...`."
+**HITL checkpoint →** Confirm design token structure.  
+**Prompt:** "Approve design tokens? Reply `approve tokens` or `revise: …`."
 
 ---
 
@@ -1541,9 +1554,9 @@ Text("Hello")
 - All components have **accessibility** specs (ARIA, keyboard).
 - **Design tokens** are exported as CSS variables and JSON.
 - **Animation** specs include **prefers-reduced-motion** support.
-- Research file has **5-10 credible sources** with URLs and dates.
+- Research file has **5–10 credible sources** with URLs and dates.
 
-**Animation Implementation Quality Gates (must pass)** NEW
+**Animation Implementation Quality Gates (must pass)** ⭐ NEW
 - **Performance budget defined**: Animation limits (duration, FPS, bundle size) documented.
 - **GPU-only enforcement**: All animations use only `transform` and `opacity`.
 - **Reduced motion global fallback**: CSS/JS fallback exists for ALL animations.
@@ -1554,10 +1567,10 @@ Text("Hello")
 ---
 
 ## Final Review Gate (stop here)
-**Prompt to user (blocking):**
-> "Please review the Design System and files.
-> Reply `approve step 6` to proceed to Step-7 Interface States, or
-> Reply `revise step 6: <notes>` to iterate.
+**Prompt to user (blocking):**  
+> "Please review the Design System and files.  
+> • Reply `approve step 6` to proceed to Step-7 Interface States, or  
+> • Reply `revise step 6: <notes>` to iterate.  
 > I won't continue until you approve."
 
 ---
@@ -1622,7 +1635,7 @@ Text("Hello")
 | Atomic Structure | Components follow atoms/molecules/organisms | 3 |
 | Dark Mode | Dark mode tokens defined (if applicable) | 3 |
 
-### Animation Implementation Quality (15 bonus points) NEW
+### Animation Implementation Quality (15 bonus points) ⭐ NEW
 
 | Check | Description | Points |
 |-------|-------------|--------|
@@ -1632,5 +1645,4 @@ Text("Hello")
 | has_pattern:MOTION.md:checklist\|Implementation | Implementation checklist present | 4 |
 
 </verification>
-
 

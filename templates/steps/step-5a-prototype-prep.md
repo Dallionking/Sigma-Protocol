@@ -1,31 +1,29 @@
 ---
-description: "Run Sigma steps/step-5a-prototype-prep"
+version: "1.1.0"
+last_updated: "2026-01-21"
+changelog:
+  - "1.1.0: Renamed from step-5.25 to step-5a for correct sort order; added auto-install missing skills"
+  - "1.0.0: Initial release - Prototype preparation step ensuring Foundation Skills are installed and environment is ready for Step 5b PRD implementation"
+description: "Step 5a: Prototype Prep - Validate Foundation Skills, check environment, auto-install missing skills, and prepare for prototype implementation via Ralph Loop"
 allowed-tools:
-  - Read
-  - Write
-  - Edit
-  - Bash
-  - WebFetch
+  # File Operations
+  - read_file
+  - write
+  - list_dir
+  - glob_file_search
+  - grep
+
+  # Terminal Operations
+  - run_terminal_cmd
+
+  # Documentation Reference
+  - mcp_Ref_ref_search_documentation
+  - mcp_Ref_ref_read_url
+parameters:
+  - --quick        # Skip detailed validation, just check essentials
+  - --fix          # Auto-fix issues where possible
+  - --platform     # cursor | claude-code | opencode (optional, auto-detect)
 ---
-
-# /step-5a-prototype-prep
-
-Invoke the **step-5a-prototype-prep** agent from Sigma Protocol.
-
-This command runs the full step-5a-prototype-prep workflow including:
-- All HITL (Human-in-the-Loop) checkpoints
-- MCP research integration
-- Quality verification gates
-
-**Usage:** `/step-5a-prototype-prep [your input here]`
-
-# step-5a-prototype-prep
-
-**Source:** Sigma Protocol steps module
-**Version:** 1.1.0
-
----
-
 
 # /step-5a-prototype-prep — Prototype Implementation Preparation
 
@@ -163,14 +161,14 @@ ls -d .opencode/skill/*/ 2>/dev/null | wc -l
 
 ### B.3 Auto-Install Missing Skills
 
-**This step automatically installs missing Foundation Skills from Sigma Protocol source.**
+**This step automatically installs missing Foundation Skills from SSS Protocol source.**
 
 ```typescript
 // Auto-install logic executed when --fix flag is used or skills are missing
 
 interface SkillInstallConfig {
   skillName: string;
-  sourcePath: string;  // Relative to Sigma Protocol package
+  sourcePath: string;  // Relative to SSS Protocol package
   required: boolean;
 }
 
@@ -182,9 +180,9 @@ const REQUIRED_SKILLS: SkillInstallConfig[] = [
 ];
 
 async function autoInstallMissingSkills(platform: 'cursor' | 'claude-code' | 'opencode', missingSkills: string[]) {
-  // Determine Sigma Protocol source directory
+  // Determine SSS Protocol source directory
   const sssProtocolDir = await findSssProtocolDir();
-  // Options: node_modules/sigma-protocol, ~/.sigma-protocol, or global install
+  // Options: node_modules/sss-protocol, ~/.sss-protocol, or global install
 
   // Determine target directory based on platform
   const targetConfig = {
@@ -223,9 +221,9 @@ async function autoInstallMissingSkills(platform: 'cursor' | 'claude-code' | 'op
 async function findSssProtocolDir(): Promise<string> {
   // Check locations in order of preference
   const locations = [
-    'node_modules/sigma-protocol',           // Local install
-    `${process.env.HOME}/.sigma-protocol`,   // User home
-    '/usr/local/share/sigma-protocol',       // Global install
+    'node_modules/sss-protocol',           // Local install
+    `${process.env.HOME}/.sss-protocol`,   // User home
+    '/usr/local/share/sss-protocol',       // Global install
   ];
 
   for (const loc of locations) {
@@ -234,13 +232,13 @@ async function findSssProtocolDir(): Promise<string> {
     }
   }
 
-  throw new Error('Sigma Protocol not found. Run: npm install sigma-protocol');
+  throw new Error('SSS Protocol not found. Run: npm install sss-protocol');
 }
 ```
 
 **Auto-Install Behavior:**
 - **Detects missing required skills** (frontend-design, systematic-debugging)
-- **Copies from Sigma Protocol source directory** (node_modules or ~/.sigma-protocol)
+- **Copies from SSS Protocol source directory** (node_modules or ~/.sss-protocol)
 - **Creates directory structure if needed** (for Claude Code/OpenCode)
 - **Reports each skill installed**
 - **Works with `--fix` flag or automatically when required skills are missing**
@@ -257,15 +255,15 @@ async function findSssProtocolDir(): Promise<string> {
 **Manual Installation (Alternative):**
 
 ```bash
-# Via Sigma CLI
-npx sigma-protocol install-skills --platform [cursor|claude-code|opencode]
+# Via SSS CLI
+npx sss-protocol install-skills --platform [cursor|claude-code|opencode]
 
 # Or copy manually for Cursor
-cp node_modules/sigma-protocol/src/skills/frontend-design.md .cursor/rules/sss-frontend-design.mdc
+cp node_modules/sss-protocol/src/skills/frontend-design.md .cursor/rules/sss-frontend-design.mdc
 
 # Or copy manually for Claude Code
 mkdir -p .claude/skills/frontend-design
-cp node_modules/sigma-protocol/src/skills/frontend-design.md .claude/skills/frontend-design/SKILL.md
+cp node_modules/sss-protocol/src/skills/frontend-design.md .claude/skills/frontend-design/SKILL.md
 ```
 
 **Quality Gate B:**
@@ -439,7 +437,7 @@ After each PRD implementation:
 
 1. Run `/step-5b-prd-to-json` to convert PRDs to Ralph backlog
 2. Run `sigma ralph` to start autonomous implementation
-3. Monitor progress in `.sigma/ralph-backlog.json`
+3. Monitor progress in `.sss/ralph-backlog.json`
 ```
 
 ### D.2 Write Guide to File
@@ -498,7 +496,7 @@ Verify the ralph-backlog schema is available:
 
 ```bash
 # Check for schema files
-ls schemas/ralph-backlog.schema.json 2>/dev/null || ls .sigma/schemas/ralph-backlog.schema.json 2>/dev/null
+ls schemas/ralph-backlog.schema.json 2>/dev/null || ls .sss/schemas/ralph-backlog.schema.json 2>/dev/null
 ```
 
 ### E.5 Generate Readiness Report
@@ -592,7 +590,7 @@ After passing this step:
 
 3. **Monitor Progress:** Check backlog status
    ```bash
-   cat .sigma/ralph-backlog.json | jq '.stories[] | select(.passes == false) | .title'
+   cat .sss/ralph-backlog.json | jq '.stories[] | select(.passes == false) | .title'
    ```
 
 ---
@@ -603,7 +601,7 @@ After passing this step:
 
 ```bash
 # Reinstall Foundation Skills
-npx sigma-protocol install-skills --platform [your-platform]
+npx sss-protocol install-skills --platform [your-platform]
 
 # Verify installation
 ls -la .cursor/rules/sss-*.mdc   # For Cursor
@@ -627,4 +625,3 @@ npm install
 # Verify TypeScript
 npx tsc --noEmit
 ```
-

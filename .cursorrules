@@ -1,0 +1,49 @@
+# === Sigma Context Router ===
+# Auto-loads modular rules from .cursor/rules based on intent.
+
+# Core Governance (Always Active)
+# @import .cursor/rules/cursor_rules.mdc
+# @import .cursor/rules/agentation.mdc
+# @import .cursor/rules/brainstorming.mdc
+# @import .cursor/rules/writing-clearly.mdc
+# @import .cursor/rules/test-driven-development.mdc
+# @import .cursor/rules/sigma-skills.mdc
+# @import .cursor/rules/dev-loop.mdc
+
+# Workflow Steps (0-13)
+# @import .cursor/rules/step-0-environment-setup.mdc
+# @import .cursor/rules/step-1-ideation.mdc
+# @import .cursor/rules/step-1.5-offer-architecture.mdc
+# @import .cursor/rules/step-2-architecture.mdc
+# @import .cursor/rules/step-3-ux-design.mdc
+# @import .cursor/rules/step-4-flow-tree.mdc
+# @import .cursor/rules/step-5-wireframe-prototypes.mdc
+# @import .cursor/rules/step-5a-prototype-prep.mdc
+# @import .cursor/rules/step-5b-prd-to-json.mdc
+# @import .cursor/rules/step-6-design-system.mdc
+# @import .cursor/rules/step-7-interface-states.mdc
+# @import .cursor/rules/step-8-technical-spec.mdc
+# @import .cursor/rules/step-9-landing-page.mdc
+# @import .cursor/rules/step-10-feature-breakdown.mdc
+# @import .cursor/rules/step-11-prd-generation.mdc
+# @import .cursor/rules/step-11a-prd-to-json.mdc
+# @import .cursor/rules/step-11b-prd-swarm.mdc
+# @import .cursor/rules/step-12-context-engine.mdc
+# @import .cursor/rules/step-13-skillpack-generator.mdc
+# @import .cursor/rules/validate-methodology.mdc
+# @import .cursor/rules/step-verify.mdc
+
+# Design System & UI (when relevant)
+# @import .cursor/rules/tailwind-design-system.mdc
+
+---
+
+## MCP Priority
+Strategy: Ref (docs) -> Exa (code) | Context7 -> Perplexity (backup)
+
+1. Ref (mcp_Ref): Official docs/API refs
+2. Exa (exa): Code examples/real-world usage
+3. Context7 (mcp_context7): Backup docs
+4. Perplexity (mcp_perplexity-ask): Backup research
+5. Supabase (mcp_supabase-mcp-server): DB/Auth specifics
+6. 21st.dev (mcp_21st-devmagic): UI components

@@ -1,6 +1,6 @@
 # Factory Droid Integration Guide
 
-**Version:** 1.0.0
+**Version:** 1.0.0-alpha.1
 **Last Updated:** 2026-01-23
 **Status:** New Platform Support
 

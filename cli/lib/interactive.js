@@ -97,6 +97,12 @@ async function detectProjectContext(targetDir) {
   if (await fs.pathExists(path.join(targetDir, ".opencode"))) {
     context.platforms.push("opencode");
   }
+  if (
+    (await fs.pathExists(path.join(targetDir, ".codex"))) ||
+    (await fs.pathExists(path.join(targetDir, ".agents", "skills")))
+  ) {
+    context.platforms.push("codex");
+  }
 
   return context;
 }
@@ -709,4 +715,3 @@ export async function runInteractiveMode(options = {}) {
 
   return "exit";
 }
-

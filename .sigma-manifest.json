@@ -1,5 +1,5 @@
 {
-  "sigma_version": "3.0.0",
+  "sigma_version": "1.0.0-alpha.1",
   "initialized": "2026-01-14T05:22:36.553Z",
   "retrofit": true,
   "detected_stack": {

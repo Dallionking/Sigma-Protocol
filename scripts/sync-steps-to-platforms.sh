@@ -1,6 +1,6 @@
 #!/bin/bash
 # sync-steps-to-platforms.sh
-# Syncs step templates from templates/steps/ to all platform directories
+# Syncs step sources from steps/ to all platform directories
 # Creates condensed .mdc versions for Cursor
 
 set -euo pipefail
@@ -9,7 +9,7 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
 
 # Source directory
-TEMPLATES_STEPS="$PROJECT_ROOT/templates/steps"
+STEPS_DIR="$PROJECT_ROOT/steps"
 
 # Target directories
 CLAUDE_COMMANDS="$PROJECT_ROOT/.claude/commands"
@@ -18,17 +18,17 @@ FACTORY_COMMANDS="$PROJECT_ROOT/.factory/commands"
 CURSOR_RULES="$PROJECT_ROOT/.cursor/rules"
 
 echo "=== Sigma Protocol Step Sync ==="
-echo "Source: $TEMPLATES_STEPS"
+echo "Source: $STEPS_DIR"
 echo ""
 
 # Check source directory exists
-if [[ ! -d "$TEMPLATES_STEPS" ]]; then
-    echo "ERROR: Source directory not found: $TEMPLATES_STEPS"
+if [[ ! -d "$STEPS_DIR" ]]; then
+    echo "ERROR: Source directory not found: $STEPS_DIR"
     exit 1
 fi
 
 # Count source files
-source_count=$(ls -1 "$TEMPLATES_STEPS"/*.md 2>/dev/null | wc -l | tr -d ' ')
+source_count=$(find "$STEPS_DIR" -maxdepth 1 -type f | wc -l | tr -d ' ')
 echo "Source step files: $source_count"
 echo ""
 
@@ -199,16 +199,18 @@ MDC_HEADER
     echo "" >> "$target_file"
     echo "---" >> "$target_file"
     echo "" >> "$target_file"
-    echo "*This is a condensed version. See \`templates/steps/$(basename "$source_file")\` for full documentation.*" >> "$target_file"
+    echo "*This is a condensed version. See \`steps/$(basename "$source_file")\` for full documentation.*" >> "$target_file"
 }
 
 # Sync to Claude Code (.claude/commands/)
 echo "--- Syncing to Claude Code (.claude/commands/) ---"
-for step_file in "$TEMPLATES_STEPS"/*.md; do
+for step_file in "$STEPS_DIR"/*; do
     [[ ! -f "$step_file" ]] && continue
     
-    step_name=$(basename "$step_file")
-    target_file="$CLAUDE_COMMANDS/$step_name"
+    step_name="$(basename "$step_file")"
+    step_name="${step_name%.md}"
+    [[ "$step_name" == "README" ]] && continue
+    target_file="$CLAUDE_COMMANDS/$step_name.md"
     
     # Copy if not exists or source is newer
     if [[ ! -f "$target_file" ]] || [[ "$step_file" -nt "$target_file" ]]; then
@@ -224,11 +226,13 @@ echo ""
 
 # Sync to OpenCode (platforms/opencode/commands/)
 echo "--- Syncing to OpenCode (platforms/opencode/commands/) ---"
-for step_file in "$TEMPLATES_STEPS"/*.md; do
+for step_file in "$STEPS_DIR"/*; do
     [[ ! -f "$step_file" ]] && continue
     
-    step_name=$(basename "$step_file")
-    target_file="$OPENCODE_COMMANDS/$step_name"
+    step_name="$(basename "$step_file")"
+    step_name="${step_name%.md}"
+    [[ "$step_name" == "README" ]] && continue
+    target_file="$OPENCODE_COMMANDS/$step_name.md"
     
     if [[ ! -f "$target_file" ]] || [[ "$step_file" -nt "$target_file" ]]; then
         cp "$step_file" "$target_file"
@@ -243,11 +247,13 @@ echo ""
 
 # Sync to Factory Droid (.factory/commands/)
 echo "--- Syncing to Factory Droid (.factory/commands/) ---"
-for step_file in "$TEMPLATES_STEPS"/*.md; do
+for step_file in "$STEPS_DIR"/*; do
     [[ ! -f "$step_file" ]] && continue
     
-    step_name=$(basename "$step_file")
-    target_file="$FACTORY_COMMANDS/$step_name"
+    step_name="$(basename "$step_file")"
+    step_name="${step_name%.md}"
+    [[ "$step_name" == "README" ]] && continue
+    target_file="$FACTORY_COMMANDS/$step_name.md"
     
     if [[ ! -f "$target_file" ]] || [[ "$step_file" -nt "$target_file" ]]; then
         cp "$step_file" "$target_file"
@@ -262,10 +268,12 @@ echo ""
 
 # Create condensed .mdc versions for Cursor
 echo "--- Creating Cursor .mdc files (.cursor/rules/) ---"
-for step_file in "$TEMPLATES_STEPS"/*.md; do
+for step_file in "$STEPS_DIR"/*; do
     [[ ! -f "$step_file" ]] && continue
     
-    step_basename=$(basename "$step_file" .md)
+    step_basename=$(basename "$step_file")
+    step_basename="${step_basename%.md}"
+    [[ "$step_basename" == "README" ]] && continue
     
     # Handle step-verify -> validate-methodology naming
     if [[ "$step_basename" == "step-verify" ]]; then

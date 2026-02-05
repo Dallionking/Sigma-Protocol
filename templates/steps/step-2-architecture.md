@@ -1,25 +1,45 @@
 ---
-description: "Run Sigma steps/step-2-architecture"
+version: "2.4.0"
+last_updated: "2026-01-07"
+changelog:
+  - "2.4.0: Added Phase 0 - Import Step 1 Decisions (monorepo/polyrepo awareness, platform-specific architecture)"
+  - "2.3.0: Added SwiftUI Architecture Patterns section (MVVM, TCA, @Observable) with state management reference"
+  - "2.2.0: Added Boilerplate Selection Matrix (Phase C.0) for SSS boilerplate workflow"
+  - "2.1.0: Added TanStack Start as web framework option, expanded framework decision guide, added icon library and styling options"
+  - "2.0.0: SSS 13-step workflow, updated step references"
+  - "1.0.0: Initial release"
+description: "Step 2: Technical Architecture & System Design - Research-backed technical blueprint with FAANG-level specialist personas"
 allowed-tools:
-  - Read
-  - Write
-  - Edit
-  - Bash
-  - WebFetch
+  # PRIMARY MCP Tools (Use First)
+  - mcp_Ref_ref_search_documentation
+  - mcp_Ref_ref_read_url
+  - mcp_exa_web_search_exa
+  - mcp_exa_get_code_context_exa
+  - mcp_exa_crawling_exa
+  - mcp_exa_company_research_exa
+  - mcp_exa_linkedin_search_exa
+  - mcp_exa_deep_researcher_start
+  - mcp_exa_deep_researcher_check
+  
+  # BACKUP MCP Tools (Use only if primary fails)
+  - mcp_context7_resolve-library-id
+  - mcp_context7_get-library-docs
+  - mcp_perplexity-ask_perplexity_ask
+  
+  # OTHER TOOLS
+  - web_search
+  - read_file
+  - write
+  - list_dir
+  - run_terminal_cmd
+parameters:
+  - --depth
 ---
-
-# step-2-architecture
-
-**Source:** Sigma Protocol steps module
-**Version:** 2.4.0
-
----
-
 
 # /step-2-architecture — Technical Architecture & System Design (Principal Fellow + $1B Valuation Context)
 
-**Mission**
-Run a complete, interactive **Step-2: Architecture → Technical Blueprint** for a startup project in one go.
+**Mission**  
+Run a complete, interactive **Step-2: Architecture → Technical Blueprint** for a startup project in one go. 
 **Valuation Context:** You are a **Principal Fellow at a FAANG Company**. Design for **100M users from Day 1**. Assume success. Mandate "**Zero Trust**" security and "**Five Nines**" (99.999%) availability.
 
 This command:
@@ -207,12 +227,12 @@ UBIQUITOUS LANGUAGE
 ```
 
 **When to Use Microservices:**
-- Multiple teams need independent deployment
-- Different scaling requirements per domain
-- Team has DevOps/platform maturity
-- Small team (< 10 developers)
-- Simple domain with no clear boundaries
-- No CI/CD or observability in place
+- ✅ Multiple teams need independent deployment
+- ✅ Different scaling requirements per domain
+- ✅ Team has DevOps/platform maturity
+- ❌ Small team (< 10 developers)
+- ❌ Simple domain with no clear boundaries
+- ❌ No CI/CD or observability in place
 
 ---
 
@@ -285,9 +305,9 @@ Why is this decision needed? What's the problem?
 What change are we making?
 
 ## Consequences
-- Benefits
-- Trade-offs
-- Risks
+- ✅ Benefits
+- ⚠️ Trade-offs
+- ❌ Risks
 
 ## Alternatives Considered
 What other options were evaluated and why rejected?
@@ -346,7 +366,7 @@ ADR GATE
 ---
 
 ## Preflight (auto)
-1) **Get date**: run `date +"%Y-%m-%d"` and capture `TODAY`, and derive `YEAR`.
+1) **Get date**: run `date +"%Y-%m-%d"` and capture `TODAY`, and derive `YEAR`.  
 2) **Detect research tools** (preferred → fallback):
    - If an MCP search tool exists (e.g., `perplexity`, `tavily`, `brave`, `browsertools-mcp`), prefer it.
    - Else, use Cursor's web browsing.
@@ -357,7 +377,7 @@ ADR GATE
 6) **Load Step-1.5 Output (if exists)**: Check for and read:
    - `/docs/specs/OFFER_ARCHITECTURE.md` — Pricing tiers, credit systems, usage limits
    - `/docs/specs/pricing-config.json` — Structured pricing/credit configuration
-
+   
    **If Step 1.5 was run, architecture MUST incorporate:**
    - Credit/usage tracking tables in database schema
    - Rate limiting based on pricing tiers
@@ -457,23 +477,23 @@ ADR GATE
 ```
 
 **Execution Rules**:
-- Check off EACH task as you complete it
-- Do NOT skip ahead - complete tasks in order
-- Do NOT proceed to next phase until user approves current phase
-- Use MCP search for ALL research tasks (fallback to web search if MCP unavailable)
-- Take notes as you work to maintain context
-- Write files in small chunks to avoid editor limits
+- ✅ Check off EACH task as you complete it
+- ✅ Do NOT skip ahead - complete tasks in order
+- ✅ Do NOT proceed to next phase until user approves current phase
+- ✅ Use MCP search for ALL research tasks (fallback to web search if MCP unavailable)
+- ✅ Take notes as you work to maintain context
+- ✅ Write files in small chunks to avoid editor limits
 
 ---
 
 ## Inputs to capture (ask, then echo back as a table)
-- PRD from Step-1 (path to `/docs/specs/MASTER_PRD.md` or paste inline)
+- PRD from Step-1 (path to `/docs/specs/MASTER_PRD.md` or paste inline)  
 - **Offer Architecture from Step-1.5** (path to `/docs/specs/OFFER_ARCHITECTURE.md` if monetized app)
 - **Pricing Config from Step-1.5** (path to `/docs/specs/pricing-config.json` if credits/usage system)
-- Technology preferences (team expertise: React/Vue? Node/Python? AWS/GCP?)
-- Performance requirements (P95 latency, throughput targets, SLOs)
-- Compliance constraints (GDPR/HIPAA/SOC2, data residency)
-- Budget/infrastructure constraints
+- Technology preferences (team expertise: React/Vue? Node/Python? AWS/GCP?)  
+- Performance requirements (P95 latency, throughput targets, SLOs)  
+- Compliance constraints (GDPR/HIPAA/SOC2, data residency)  
+- Budget/infrastructure constraints  
 - Timeline/team size
 
 **If OFFER_ARCHITECTURE.md exists, extract and incorporate:**
@@ -482,7 +502,7 @@ ADR GATE
 | Pricing Tiers | `subscriptions` table, tier-based feature flags |
 | Credits System | `credits` ledger table, usage deduction middleware |
 | Usage Limits | Rate limiting config, quota enforcement |
-| Overage Billing | Metering events, billing webhook handlers |
+| Overage Billing | Metering events, billing webhook handlers |  
 - Optional: `detail:deep` to expand sections
 
 > Ground rules: If any item is unknown, ask concise HITL questions now and proceed with clearly flagged assumptions.
@@ -541,7 +561,7 @@ graph TB
             Utils[packages/utils - Utilities]
         end
     end
-
+    
     Web --> UI
     Web --> API
     Mobile --> UI
@@ -565,8 +585,8 @@ graph TB
 ## Phase A — Tech Stack Research (current-year aware)
 **Goal:** Ground architecture decisions in current best practices, performance benchmarks, and proven patterns.
 
-1) Build YEAR-aware queries (e.g., "{language/framework} performance benchmarks {YEAR}", "microservices patterns {YEAR}", "database indexing best practices {YEAR}", "cloud cost optimization {YEAR}").
-2) Run **MCP search** if available; else use web browsing.
+1) Build YEAR-aware queries (e.g., "{language/framework} performance benchmarks {YEAR}", "microservices patterns {YEAR}", "database indexing best practices {YEAR}", "cloud cost optimization {YEAR}").  
+2) Run **MCP search** if available; else use web browsing.  
 3) Capture **5–10 sources** with titles, dates, and permalinks; group by topic:
    - Tech stack trends and benchmarks (React 19, Next.js 15, Node 22 LTS)
    - Architecture patterns (microservices, serverless, edge computing)
@@ -575,7 +595,7 @@ graph TB
    - DevOps best practices (CI/CD, IaC, container orchestration)
 4) Write `/docs/research/ARCH-SOURCES-${TODAY}.md` with a 1-page **Research Summary** and a bulleted **Source List** (title, URL, date seen).
 
-**HITL checkpoint →** Show the "current tech landscape" bullets and sources.
+**HITL checkpoint →** Show the "current tech landscape" bullets and sources.  
 **Prompt:** "Add/remove sources or constraints? Reply `ok research` to continue."
 
 ---
@@ -594,14 +614,14 @@ graph TB
    - Data layer (databases, caching, queues)
    - External services (auth, payments, analytics)
 
-**HITL checkpoint →** Present architecture pattern and diagram.
+**HITL checkpoint →** Present architecture pattern and diagram.  
 **Prompt:** "Approve architecture approach? Reply `approve architecture` or `revise: …`."
 
 ---
 
 ## Boilerplate Selection (NEW - Phase C.0)
 
-**If using Sigma boilerplates, architecture is pre-decided. This section helps select the right template.**
+**If using SSS boilerplates, architecture is pre-decided. This section helps select the right template.**
 
 ### Boilerplate Decision Matrix
 
@@ -660,7 +680,7 @@ If using a boilerplate, respect these boundaries:
 | UI | `components/ui/` (shadcn) | `components/[project]/` |
 | API | Base routes (`/api/auth`, `/api/webhooks`) | New routes in `/api/[project]/` |
 
-**HITL checkpoint →** If boilerplate selected, confirm template choice.
+**HITL checkpoint →** If boilerplate selected, confirm template choice.  
 **Prompt:** "Using boilerplate: [template]. Reply `confirm boilerplate` to skip Phase C, or `custom build` to define stack manually."
 
 ---
@@ -675,7 +695,7 @@ The technologies below are **templates based on common patterns**, not requireme
 - Budget and timeline constraints
 
 1) **Load Stack Profile** (if exists): Read `/docs/stack-profile.json` (created in Step 1) to understand preferences.
-
+   
    **Common Templates (Choose Based on Needs):**
    | Pattern | Frontend | Backend/Data | Best For |
    |---------|----------|--------------|----------|
@@ -709,13 +729,13 @@ The technologies below are **templates based on common patterns**, not requireme
 class UserViewModel: ObservableObject {
     @Published private(set) var users: [User] = []
     @Published private(set) var isLoading = false
-
+    
     private let userService: UserServiceProtocol
-
+    
     init(userService: UserServiceProtocol = UserService()) {
         self.userService = userService
     }
-
+    
     func loadUsers() async {
         isLoading = true
         defer { isLoading = false }
@@ -726,7 +746,7 @@ class UserViewModel: ObservableObject {
 // View
 struct UserListView: View {
     @StateObject private var viewModel = UserViewModel()
-
+    
     var body: some View {
         List(viewModel.users) { user in
             Text(user.name)
@@ -743,7 +763,7 @@ struct UserListView: View {
 final class UserViewModel {
     var users: [User] = []
     var isLoading = false
-
+    
     @MainActor
     func loadUsers() async {
         isLoading = true
@@ -771,14 +791,14 @@ struct UserListFeature {
         var users: [User] = []
         var isLoading = false
     }
-
+    
     enum Action {
         case loadUsers
         case usersLoaded([User])
     }
-
+    
     @Dependency(\.userClient) var userClient
-
+    
     var body: some ReducerOf<Self> {
         Reduce { state, action in
             switch action {
@@ -830,10 +850,10 @@ Using [MVVM / TCA / MV] because:
 - [Complexity level]
 
 ## Consequences
-- [Benefits]
-- [Trade-offs]
+- ✅ [Benefits]
+- ⚠️ [Trade-offs]
 ```
-
+   
    **Web Framework Decision Guide:**
    | Framework | Key Differentiator | Choose When |
    |-----------|-------------------|-------------|
@@ -846,7 +866,7 @@ Using [MVVM / TCA / MV] because:
    - Can we swap the database without rewriting business logic?
    - Can we swap the frontend framework without touching the API?
    - Are external services (auth, payments) abstracted behind interfaces?
-
+   
    **If Convex Selected**: Verify query/mutation/action separation, schema patterns
    **If Supabase Selected**: Verify RLS policies, migration strategy, edge functions
    **If tRPC Selected**: Verify router structure, type inference setup
@@ -882,23 +902,23 @@ Using [MVVM / TCA / MV] because:
 
 | Category | Tool | MCP Package | Status |
 |----------|------|-------------|--------|
-| Database | Supabase | `@supabase/mcp-server` | Official |
-| Database | Neon | CLI only | Limited |
-| Database | Convex | SDK only | Limited |
-| Auth | Clerk | `@clerk/agent-toolkit` | Official |
-| Auth | Better Auth | `better-auth/plugins/mcp` | Official |
-| Auth | Supabase Auth | Via Supabase MCP | Official |
-| Payments | Stripe | `@stripe/mcp` | Official |
-| Payments | Polar | `https://mcp.polar.sh/mcp/polar-mcp` | Official |
-| Payments | RevenueCat | `https://mcp.revenuecat.ai/mcp` | Official |
-| Deploy | Vercel | `@vercel/mcp-adapter` | Official |
-| Deploy | Render | Built-in Cursor | Official |
-| Deploy | Digital Ocean | `@digitalocean-labs/mcp-digitalocean` | Official |
-| Deploy | Cloudflare | Workers MCP | Official |
-| Deploy | Fly.io | `fly mcp` commands | Official |
-| Deploy | Expo | `https://mcp.expo.dev/mcp` | Official |
-| Deploy | App Store | `app-store-connect-mcp-server` | Community |
-| E-commerce | Shopify | `shopify-mcp-server` | Official |
+| Database | Supabase | `@supabase/mcp-server` | ✅ Official |
+| Database | Neon | CLI only | ⚠️ Limited |
+| Database | Convex | SDK only | ⚠️ Limited |
+| Auth | Clerk | `@clerk/agent-toolkit` | ✅ Official |
+| Auth | Better Auth | `better-auth/plugins/mcp` | ✅ Official |
+| Auth | Supabase Auth | Via Supabase MCP | ✅ Official |
+| Payments | Stripe | `@stripe/mcp` | ✅ Official |
+| Payments | Polar | `https://mcp.polar.sh/mcp/polar-mcp` | ✅ Official |
+| Payments | RevenueCat | `https://mcp.revenuecat.ai/mcp` | ✅ Official |
+| Deploy | Vercel | `@vercel/mcp-adapter` | ✅ Official |
+| Deploy | Render | Built-in Cursor | ✅ Official |
+| Deploy | Digital Ocean | `@digitalocean-labs/mcp-digitalocean` | ✅ Official |
+| Deploy | Cloudflare | Workers MCP | ✅ Official |
+| Deploy | Fly.io | `fly mcp` commands | ✅ Official |
+| Deploy | Expo | `https://mcp.expo.dev/mcp` | ✅ Official |
+| Deploy | App Store | `app-store-connect-mcp-server` | ✅ Community |
+| E-commerce | Shopify | `shopify-mcp-server` | ✅ Official |
 
 **MCP Configuration Examples for Common Stacks:**
 
@@ -978,7 +998,7 @@ Using [MVVM / TCA / MV] because:
 Target: 8/10 minimum for AI-first projects
 ```
 
-**HITL checkpoint →** Show the complete tech stack aligned with `stack-profile.json`.
+**HITL checkpoint →** Show the complete tech stack aligned with `stack-profile.json`.  
 **Prompt:** "Approve tech stack? MCP Score: X/10. Reply `approve stack` or `revise: …`."
 
 ---
@@ -1003,7 +1023,7 @@ Target: 8/10 minimum for AI-first projects
    - Caching strategy (query results, computed values)
    - Read replicas for scaling
 
-**HITL checkpoint →** Show ERD (as Mermaid) and key tables.
+**HITL checkpoint →** Show ERD (as Mermaid) and key tables.  
 **Prompt:** "Approve database design? Reply `approve database` or `revise: …`."
 
 ---
@@ -1027,7 +1047,7 @@ Target: 8/10 minimum for AI-first projects
    - Webhooks (incoming and outgoing)
    - WebSocket/SSE for real-time features
 
-**HITL checkpoint →** Show API design with key endpoints/schema.
+**HITL checkpoint →** Show API design with key endpoints/schema.  
 **Prompt:** "Approve API design? Reply `approve api` or `revise: …`."
 
 ---
@@ -1059,7 +1079,7 @@ Target: 8/10 minimum for AI-first projects
    - HIPAA requirements (BAA, audit logs, encryption)
    - SOC 2 controls (access control, monitoring, incident response)
 
-**HITL checkpoint →** Confirm security architecture and compliance approach.
+**HITL checkpoint →** Confirm security architecture and compliance approach.  
 **Prompt:** "Approve security design? Reply `approve security` or `revise: …`."
 
 ---
@@ -1083,7 +1103,7 @@ Target: 8/10 minimum for AI-first projects
    - SLIs (latency, error rate, throughput)
    - Monitoring and alerting thresholds
 
-**HITL checkpoint →** Confirm performance targets and SLOs.
+**HITL checkpoint →** Confirm performance targets and SLOs.  
 **Prompt:** "Approve performance strategy? Reply `approve performance` or `revise: …`."
 
 ---
@@ -1161,10 +1181,10 @@ Target: 8/10 minimum for AI-first projects
 ---
 
 ## Final Review Gate (stop here)
-**Prompt to user (blocking):**
-> "Please review the Technical Architecture and files.
-> - Reply `approve step 2` to proceed to Step-3 UX Design, or
-> - Reply `revise step 2: <notes>` to iterate.
+**Prompt to user (blocking):**  
+> "Please review the Technical Architecture and files.  
+> • Reply `approve step 2` to proceed to Step-3 UX Design, or  
+> • Reply `revise step 2: <notes>` to iterate.  
 > I won't continue until you approve."
 
 ---
@@ -1228,3 +1248,4 @@ Target: 8/10 minimum for AI-first projects
 | Security Addressed | Security section has concrete measures | 3 |
 
 </verification>
+

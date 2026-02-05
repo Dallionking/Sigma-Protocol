@@ -1,25 +1,44 @@
 ---
-description: "Run Sigma steps/step-3-ux-design"
+version: "2.4.0"
+last_updated: "2026-01-07"
+changelog:
+  - "2.4.0: Added Superdesign AI Design Agent reference for rapid UI exploration during UX design. References superdesign-integration.md foundation skill"
+  - "2.3.0: Added Data Flow Awareness to Phase B (User Journey Mapping) - documents data requirements per screen to bridge UX to backend"
+  - "2.2.0: Added Apple HIG Native (SwiftUI) UI Profile option with SwiftUI-specific ui-profile.json, Framework 4b HIG reference"
+  - "2.1.1: Added optional layout constraints to ui-profile.json (content max widths, responsive padding, sidebar widths, grid gutters) to prevent narrow centered app UIs"
+  - "2.1.0: Added UI Profile selection (Cool Professional + Satin Dark) with UI-PROFILE artifacts; refined anti-AI-slop guidance to be restraint-first for professional profiles"
+  - "2.0.0: SSS 13-step workflow, added IA frameworks, Design DNA integration"
+  - "1.0.0: Initial release"
+description: "Step 3: UX Design & Interface Planning - User experience specifications with journey mapping and interaction design personas"
 allowed-tools:
-  - Read
-  - Write
-  - Edit
-  - Bash
-  - WebFetch
+  # PRIMARY MCP Tools (Use First)
+  - mcp_Ref_ref_search_documentation
+  - mcp_Ref_ref_read_url
+  - mcp_exa_web_search_exa
+  - mcp_exa_get_code_context_exa
+  - mcp_exa_crawling_exa
+  - mcp_exa_company_research_exa
+  - mcp_exa_linkedin_search_exa
+  - mcp_exa_deep_researcher_start
+  - mcp_exa_deep_researcher_check
+  
+  # BACKUP MCP Tools (Use only if primary fails)
+  - mcp_perplexity-ask_perplexity_ask
+  
+  # OTHER TOOLS
+  - web_search
+  - read_file
+  - write
+  - list_dir
+  - run_terminal_cmd
+parameters:
+  - --depth
 ---
-
-# step-3-ux-design
-
-**Source:** Sigma Protocol steps module
-**Version:** 2.4.0
-
----
-
 
 # /step-3-ux-design — User Experience Design & Interface Planning (Chief Design Officer + $1B Valuation Context)
 
-**Mission**
-Run a complete, interactive **Step-3: UX Design → Interface Specifications** for a startup project in one go.
+**Mission**  
+Run a complete, interactive **Step-3: UX Design → Interface Specifications** for a startup project in one go. 
 **Valuation Context:** You are the **Chief Design Officer (Apple/Airbnb level)**. If it's not "**pixel-perfect**" and "**delightful**", it's a bug. Every state (loading, error, empty) must be a piece of art.
 
 **Value Equation Context (Hormozi):**
@@ -51,14 +70,15 @@ Design EVERY screen and interaction at all three levels:
 Design must satisfy ALL levels, not just "usable":
 
 ```
-        PLEASURABLE ← THIS IS THE GOAL!
-        "Does it delight?"
-      USABLE
-        "Can they figure it out?"
-    RELIABLE
-     "Does it work every time?"
-  FUNCTIONAL
-    "Does it do what it should?"
+        ▲ PLEASURABLE ← THIS IS THE GOAL!
+       ╱ ╲    "Does it delight?"
+      ╱   ╲ USABLE
+     ╱     ╲    "Can they figure it out?"
+    ╱ RELIABLE ╲
+   ╱     "Does it work every time?"  ╲
+  ╱───────── FUNCTIONAL ─────────────╲
+ ╱    "Does it do what it should?"    ╲
+▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔
 ```
 
 **Key Insight:** *"We've been designing usable interfaces, which is like a chef cooking edible food. We also crave flavor."* — Aarron Walter
@@ -88,11 +108,11 @@ When designing, reference these apps for emotional resonance:
 | **Stripe** | Developer experience as design, beautiful docs | Information hierarchy, trust signals |
 | **Figma** | Collaborative magic, smooth multiplayer | Real-time feedback, collaborative delight |
 | **Vercel** | Minimal yet powerful, developer delight | Clarity, progressive disclosure |
-| **Cal AI** | Apple-esque micro-infographics, circular progress rings | Data visualization as art, gamified onboarding |
-| **Quittr** | Cosmic atmospheres, gamified depth | Glowing orbs, "light up" progression, tactile interactions |
+| **Cal AI** ⭐ | Apple-esque micro-infographics, circular progress rings | Data visualization as art, gamified onboarding |
+| **Quittr** ⭐ | Cosmic atmospheres, gamified depth | Glowing orbs, "light up" progression, tactile interactions |
 | **Cash App** | Bold branding, spatial illustrations | Trust signals, materiality, fintech patterns |
 
-> **Animation Research Reference:** See `/commands/MOBILE_APP_DESIGN_LEARNINGS.md` for comprehensive animation patterns, code examples, and library recommendations.
+> **📚 Animation Research Reference:** See `/commands/MOBILE_APP_DESIGN_LEARNINGS.md` for comprehensive animation patterns, code examples, and library recommendations.
 
 ### Framework 4b: Apple Human Interface Guidelines (SwiftUI Native Apps)
 
@@ -108,7 +128,7 @@ When designing, reference these apps for emotional resonance:
 
 | Requirement | Specification | SwiftUI Implementation |
 |-------------|---------------|------------------------|
-| **Touch Target** | 44pt x 44pt | `.frame(minWidth: 44, minHeight: 44)` |
+| **Touch Target** | ≥44pt × 44pt | `.frame(minWidth: 44, minHeight: 44)` |
 | **Dynamic Type** | 1x to 3x scaling | `.font(.body)` (semantic styles) |
 | **Safe Areas** | Respect all insets | Default behavior, `.safeAreaInset()` |
 | **Dark Mode** | Both appearances | Semantic colors `Color(.systemBackground)` |
@@ -133,13 +153,13 @@ For EACH user journey, map the **emotional arc**:
 ```
 EMOTION
    ↑
-   │    Delight Peak
-   │   /  \
-   │  /    \     Success
-   │ /      \   /
- ──┼─────────\─/──────────→ Journey
-   │          \
-   │           Frustration Point
+   │    😊 Delight Peak
+   │   ╱  ╲
+   │  ╱    ╲     😊 Success
+   │ ╱      ╲   ╱
+ ──┼─────────╲─╱──────────→ Journey
+   │          ╲
+   │           😟 Frustration Point
    │                (minimize these)
 ```
 
@@ -231,30 +251,30 @@ Reply with the number or name of your chosen philosophy.
 ### What NOT To Do (The "AI-ish" Look)
 Apps that look "AI-generated" share these traits — **AVOID ALL**:
 
-1. Using **emojis** instead of custom icons/illustrations
-2. **Buttons with no craft** (default component look, weak hierarchy, missing states)
-3. **Generic system fonts** without hierarchy
-4. **No visual imagery** — just text and basic shapes
-5. **One-note surfaces** (no layering, no hierarchy, no material cues when needed)
-6. **No interaction feedback** (hover/focus/pressed/disabled/loading not designed)
-7. **Generic placeholder images** instead of real photos
-8. **Crowded layouts** without proper spacing
-9. **Inconsistent styling** across screens
-10. **No social proof** or trust indicators
+1. ❌ Using **emojis** instead of custom icons/illustrations
+2. ❌ **Buttons with no craft** (default component look, weak hierarchy, missing states)
+3. ❌ **Generic system fonts** without hierarchy
+4. ❌ **No visual imagery** — just text and basic shapes
+5. ❌ **One-note surfaces** (no layering, no hierarchy, no material cues when needed)
+6. ❌ **No interaction feedback** (hover/focus/pressed/disabled/loading not designed)
+7. ❌ **Generic placeholder images** instead of real photos
+8. ❌ **Crowded layouts** without proper spacing
+9. ❌ **Inconsistent styling** across screens
+10. ❌ **No social proof** or trust indicators
 
 ### What TO Do (The Professional Look)
 Premium apps share these traits — **REQUIRE ALL**:
 
-1. **Custom illustrations** and icons (consistent style)
-2. **Restraint-first polish**: hierarchy, spacing rhythm, semantic tokens (gradients are optional and profile-dependent)
-3. **Beautiful photography** where relevant
-4. **Proper typography hierarchy** (size, weight, color)
-5. **Generous whitespace** and padding
-6. **Purposeful micro-interactions** (professional profiles avoid bounce-by-default)
-7. **Social proof badges** and awards
-8. **Clear value proposition** on paywalls
-9. **Consistent design system** throughout
-10. **Real product screenshots** showing the app in use
+1. ✅ **Custom illustrations** and icons (consistent style)
+2. ✅ **Restraint-first polish**: hierarchy, spacing rhythm, semantic tokens (gradients are optional and profile-dependent)
+3. ✅ **Beautiful photography** where relevant
+4. ✅ **Proper typography hierarchy** (size, weight, color)
+5. ✅ **Generous whitespace** and padding
+6. ✅ **Purposeful micro-interactions** (professional profiles avoid bounce-by-default)
+7. ✅ **Social proof badges** and awards
+8. ✅ **Clear value proposition** on paywalls
+9. ✅ **Consistent design system** throughout
+10. ✅ **Real product screenshots** showing the app in use
 
 ### Premium Signals (Profile-Aware)
 | Element | Avoid (AI Slop) | Target (Premium) |
@@ -275,12 +295,12 @@ Premium apps share these traits — **REQUIRE ALL**:
 ## UI PROFILE SELECTION (NEW - MANDATORY)
 
 ### Why this exists
-To eliminate "prompt reverse-engineering" and ensure every project starts from a **professional baseline**. The UI Profile becomes the **single source of truth** for downstream steps (Step 4/5/6/11 + implement/ui-healer).
+To eliminate “prompt reverse-engineering” and ensure every project starts from a **professional baseline**. The UI Profile becomes the **single source of truth** for downstream steps (Step 4/5/6/11 + implement/ui-healer).
 
 ### HITL Checkpoint → Select UI Profile
 
 ```markdown
-## Select UI Profile
+## 🎨 Select UI Profile
 
 Choose the visual personality for this project:
 
@@ -485,7 +505,7 @@ If user selects **Apple HIG Native (SwiftUI)**, use this specialized profile:
 - [ ] **Typography**: Using SF Pro via `.font(.body)` semantic styles
 - [ ] **Icons**: Using SF Symbols via `Image(systemName:)`
 - [ ] **Colors**: Using semantic system colors that adapt to Dark Mode
-- [ ] **Touch Targets**: All interactive elements 44pt x 44pt
+- [ ] **Touch Targets**: All interactive elements ≥44pt × 44pt
 - [ ] **Safe Areas**: Respecting notch, home indicator, Dynamic Island
 - [ ] **Dynamic Type**: All text scales with user preference (1x to 3x)
 - [ ] **Dark Mode**: Both light and dark appearances supported
@@ -502,7 +522,7 @@ This command:
 ---
 
 ## Preflight (auto)
-1) **Get date**: run `date +"%Y-%m-%d"` and capture `TODAY`, and derive `YEAR`.
+1) **Get date**: run `date +"%Y-%m-%d"` and capture `TODAY`, and derive `YEAR`.  
 2) **Detect research tools** (preferred → fallback):
    - If an MCP search tool exists (e.g., `perplexity`, `tavily`, `brave`, `browsertools-mcp`), prefer it.
    - Else, use Cursor's web browsing.
@@ -609,12 +629,12 @@ This command:
 ```
 
 **Execution Rules**:
-- Check off EACH task as you complete it
-- Do NOT skip ahead - complete tasks in order
-- Do NOT proceed to next phase until user approves current phase
-- Use MCP search for ALL research tasks
-- Take notes as you work to maintain context
-- Write files in small chunks to avoid editor limits
+- ✅ Check off EACH task as you complete it
+- ✅ Do NOT skip ahead - complete tasks in order
+- ✅ Do NOT proceed to next phase until user approves current phase
+- ✅ Use MCP search for ALL research tasks
+- ✅ Take notes as you work to maintain context
+- ✅ Write files in small chunks to avoid editor limits
 
 ---
 
@@ -650,8 +670,8 @@ This command:
 ## Phase A — UX Research (current-year aware)
 **Goal:** Ground UX decisions in current best practices, user behavior research, and proven patterns.
 
-1) Build YEAR-aware queries (e.g., "mobile UX trends {YEAR}", "conversion optimization patterns {YEAR}", "WCAG 2.2 {YEAR}", "micro-interactions best practices {YEAR}", "progressive web app patterns {YEAR}").
-2) Run **MCP search** if available; else use web browsing.
+1) Build YEAR-aware queries (e.g., "mobile UX trends {YEAR}", "conversion optimization patterns {YEAR}", "WCAG 2.2 {YEAR}", "micro-interactions best practices {YEAR}", "progressive web app patterns {YEAR}").  
+2) Run **MCP search** if available; else use web browsing.  
 3) Capture **5–10 sources** with titles, dates, and permalinks; group by topic:
    - UX patterns and trends (component libraries, interaction patterns)
    - Accessibility standards (**WCAG 2.2**, **ARIA** patterns, inclusive design)
@@ -660,7 +680,7 @@ This command:
    - User research methodologies (Jobs-to-be-Done, usability testing)
 4) Write `/docs/research/UX-SOURCES-${TODAY}.md` with a 1-page **Research Summary** and a bulleted **Source List** (title, URL, date seen).
 
-**HITL checkpoint →** Show the "current UX landscape" bullets and sources.
+**HITL checkpoint →** Show the "current UX landscape" bullets and sources.  
 **Prompt:** "Add/remove sources or constraints? Reply `ok research` to continue."
 
 
@@ -678,10 +698,10 @@ This command:
 ### Step 1: Prompt for Inspiration
 
 **Interactive Prompt:**
-> "## Let's Gather Design Inspiration!
->
+> "## 🎨 Let's Gather Design Inspiration!
+> 
 > Do you have any visual references for this project?
->
+> 
 > **Options:**
 > 1. `figma: [URL]` → I'll analyze your Figma file and extract design tokens
 > 2. `screenshot: [describe or upload]` → I'll analyze design screenshots
@@ -689,15 +709,15 @@ This command:
 > 4. `similar: [product name]` → I'll find and analyze similar products
 > 5. `dribbble: [URL]` → I'll analyze Dribbble shots
 > 6. `skip` → I'll use industry best practices only
->
+> 
 > **You can provide multiple references!**
->
+> 
 > Examples:
 > - `figma: https://figma.com/file/abc123`
 > - `website: https://linear.app`
 > - `similar: Notion, Airtable`
 > - `skip`
->
+> 
 > Reply with your choice(s):"
 
 ---
@@ -715,23 +735,23 @@ This command:
 2. **Create extraction report:**
    ```markdown
    ### Figma Analysis: [File Name]
-
+   
    **Colors Extracted:**
    - Primary: #3B82F6 (Blue-600)
    - Secondary: #8B5CF6 (Purple-600)
    - Success: #10B981 (Green-500)
    - Error: #EF4444 (Red-500)
    - Neutral: #6B7280 (Gray-500)
-
+   
    **Typography:**
    - Headings: Poppins (600, 700)
    - Body: Inter (400, 500)
    - Sizes: 12, 14, 16, 18, 20, 24, 32, 48px
-
+   
    **Spacing:**
    - Base unit: 8px
    - Scale: 8, 16, 24, 32, 40, 48, 64px
-
+   
    **Components:**
    - Button: Rounded-lg (8px), padding 12px 24px
    - Card: Rounded-xl (12px), shadow-md
@@ -749,18 +769,18 @@ This command:
 2. **Create analysis report:**
    ```markdown
    ### Website Analysis: [Site Name]
-
+   
    **Visual Style:**
    - Overall aesthetic: [Modern/Minimal/Bold/Playful]
    - Color scheme: [Monochromatic/Complementary/Triadic]
    - Whitespace usage: [Generous/Moderate/Compact]
-
+   
    **Key Patterns:**
    - Navigation: [Top nav/Side nav/Bottom tabs]
    - Hero section: [Full-screen/Split/Centered]
    - Content layout: [Cards/List/Grid]
    - CTA style: [Primary button style description]
-
+   
    **Extracted Tokens:**
    [Same format as Figma extraction]
    ```
@@ -774,17 +794,17 @@ This command:
 2. **Create comparison report:**
    ```markdown
    ### Similar Products Analysis
-
+   
    **Products Analyzed:**
    1. [Product 1] - [URL]
    2. [Product 2] - [URL]
    3. [Product 3] - [URL]
-
+   
    **Common Patterns:**
    - All use: [Common pattern 1]
    - Most use: [Common pattern 2]
    - Unique to [Product]: [Unique pattern]
-
+   
    **Recommendations:**
    - Adopt: [Pattern to use]
    - Differentiate: [How to be different]
@@ -822,7 +842,7 @@ This command:
 ```markdown
 # Design Inspiration
 
-**Date:** [Current Date]
+**Date:** [Current Date]  
 **Sources:** [Number] references provided
 
 ---
@@ -830,7 +850,7 @@ This command:
 ## Visual References
 
 ### Reference 1: [Name/URL]
-**Type:** [Figma/Website/Screenshot/Similar Product]
+**Type:** [Figma/Website/Screenshot/Similar Product]  
 **Why this reference:** [What we like about it]
 
 **Screenshots/Links:**
@@ -908,18 +928,18 @@ This command:
 ## Recommendations for Step 6
 
 When creating the Design System (Step 6):
-- Use extracted color palette as starting point
-- Use extracted typography for font selection
-- Use extracted spacing as base unit
-- Reference component styles for consistency
-- Validate all colors for WCAG contrast ratios
-- Ensure fonts are licensed/available
-- Adapt patterns to our specific use case
+- ✅ Use extracted color palette as starting point
+- ✅ Use extracted typography for font selection
+- ✅ Use extracted spacing as base unit
+- ✅ Reference component styles for consistency
+- ⚠️ Validate all colors for WCAG contrast ratios
+- ⚠️ Ensure fonts are licensed/available
+- ⚠️ Adapt patterns to our specific use case
 
 ---
 
-**Created:** [Date]
-**References:** [Number] sources analyzed
+**Created:** [Date]  
+**References:** [Number] sources analyzed  
 **Status:** Ready for Step 4 (Flow Tree) → Step 6 (Design System)
 ```
 
@@ -930,13 +950,14 @@ When creating the Design System (Step 6):
 ```markdown
 # Extracted Design Patterns
 
-**Date:** [Current Date]
+**Date:** [Current Date]  
 **Purpose:** Quick reference for extracted design tokens
 
 ---
 
 ## Color Palette (Copy-Paste Ready)
 
+```css
 /* Primary Colors */
 --color-primary-50: #EFF6FF;
 --color-primary-100: #DBEAFE;
@@ -951,11 +972,13 @@ When creating the Design System (Step 6):
 --color-primary-950: #172554;
 
 /* [Additional color scales extracted] */
+```
 
 ---
 
 ## Typography (Copy-Paste Ready)
 
+```css
 /* Font Families */
 --font-heading: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
 --font-body: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
@@ -976,11 +999,13 @@ When creating the Design System (Step 6):
 --font-medium: 500;
 --font-semibold: 600;
 --font-bold: 700;
+```
 
 ---
 
 ## Spacing (Copy-Paste Ready)
 
+```css
 /* Spacing Scale */
 --space-1: 0.25rem;  /* 4px */
 --space-2: 0.5rem;   /* 8px */
@@ -992,11 +1017,13 @@ When creating the Design System (Step 6):
 --space-10: 2.5rem;  /* 40px */
 --space-12: 3rem;    /* 48px */
 --space-16: 4rem;    /* 64px */
+```
 
 ---
 
 ## Component Styles (Copy-Paste Ready)
 
+```css
 /* Button Styles */
 .btn-primary {
   padding: 12px 24px;
@@ -1033,10 +1060,11 @@ When creating the Design System (Step 6):
   border-color: var(--color-primary-500);
   box-shadow: 0 0 0 3px var(--color-primary-100);
 }
+```
 
 ---
 
-**Status:** Ready for use in Step 4
+**Status:** ✅ Ready for use in Step 4
 ```
 
 ---
@@ -1044,25 +1072,25 @@ When creating the Design System (Step 6):
 **HITL checkpoint →** Present inspiration analysis and extracted patterns.
 
 **Prompt:**
-> "## Inspiration Analysis Complete!
->
-> ### Summary:
+> "## 🎨 Inspiration Analysis Complete!
+> 
+> ### 📊 Summary:
 > - **References analyzed:** [X]
 > - **Colors extracted:** [Y] tokens
 > - **Fonts identified:** [Font names]
 > - **Patterns documented:** [Z] components
->
-> ### Files Created:
+> 
+> ### 📄 Files Created:
 > - `/docs/design/INSPIRATION.md` (full analysis with screenshots/links)
 > - `/docs/design/EXTRACTED-PATTERNS.md` (copy-paste ready tokens)
->
-> ### Key Takeaways:
+> 
+> ### 🎯 Key Takeaways:
 > - [Takeaway 1]
 > - [Takeaway 2]
 > - [Takeaway 3]
->
+> 
 > **These extracted tokens will be used in Step 6 (Design System).**
->
+> 
 > Reply `approve inspiration` to continue to Phase B (User Journey Mapping), or
 > Reply `add more: [reference]` to add additional references."
 
@@ -1094,12 +1122,12 @@ When creating the Design System (Step 6):
    - Conversion optimization opportunities
 
 4) **Data Flow Awareness (NEW — Bridges UX to Backend)**:
-
+   
    For each journey step, document the data requirements:
 
    ```markdown
    ### Journey: [Journey Name] — Data Flow
-
+   
    | Step | Screen | Data Needed (READ) | Operations (WRITE) | Real-Time? |
    |------|--------|-------------------|-------------------|------------|
    | 1 | Login | None | Create session | No |
@@ -1118,15 +1146,15 @@ When creating the Design System (Step 6):
    **Data Flow Summary:**
    ```markdown
    ## Data Flow Summary for [Journey Name]
-
+   
    ### Entities Touched
    - [Entity 1]: READ at steps [X, Y], WRITE at step [Z]
    - [Entity 2]: READ at steps [A], no writes
-
+   
    ### Real-Time Requirements
    - [Screen X]: Live updates needed for [data type]
    - [Screen Y]: No real-time requirements
-
+   
    ### Validation Points
    - [Form 1]: Email format, password strength
    - [Form 2]: Required fields, unique constraint
@@ -1138,7 +1166,7 @@ When creating the Design System (Step 6):
    - Ensures backend team knows what to build before UI is complete
    - Makes Step 11 PRDs accurate from day one
 
-**HITL checkpoint →** Present user journeys with state coverage and data flow.
+**HITL checkpoint →** Present user journeys with state coverage and data flow.  
 **Prompt:** "Approve user journeys? Reply `approve journeys` or `revise: …`."
 
 ---
@@ -1162,7 +1190,7 @@ When creating the Design System (Step 6):
    - What requires explicit action
    - Complexity management strategy
 
-**HITL checkpoint →** Show IA and navigation structure.
+**HITL checkpoint →** Show IA and navigation structure.  
 **Prompt:** "Approve information architecture? Reply `approve ia` or `revise: …`."
 
 ---
@@ -1189,7 +1217,7 @@ When creating the Design System (Step 6):
    - Loading and empty states
    - Success confirmations
 
-**HITL checkpoint →** Show interface patterns and state specs.
+**HITL checkpoint →** Show interface patterns and state specs.  
 **Prompt:** "Approve interface states? Reply `approve states` or `revise: …`."
 
 ---
@@ -1219,7 +1247,7 @@ When creating the Design System (Step 6):
    - Text scaling (up to 200%)
    - Clear language (grade 8 reading level)
 
-**HITL checkpoint →** Confirm accessibility requirements.
+**HITL checkpoint →** Confirm accessibility requirements.  
 **Prompt:** "Approve accessibility specs? Reply `approve a11y` or `revise: …`."
 
 ---
@@ -1242,7 +1270,7 @@ When creating the Design System (Step 6):
    - Android: Material Design 3, FABs, navigation rail
    - Web: progressive web app features, installability
 
-**HITL checkpoint →** Confirm responsive and mobile strategy.
+**HITL checkpoint →** Confirm responsive and mobile strategy.  
 **Prompt:** "Approve responsive design? Reply `approve responsive` or `revise: …`."
 
 ---
@@ -1309,13 +1337,13 @@ Design progressive commitment into your conversion flows:
 ### 1) Outcome-Based CTA Design (Hormozi Method)
 **Primary Formula**: [Action Verb] + [Specific Outcome] + [Timeframe if true]
 
-**GOOD Examples**:
+**✅ GOOD Examples**:
 - "Generate Your PRD in 15 Minutes"
 - "Start Saving 10 Hours/Week"
 - "Get 10 Templates Free"
 - "See Your Results Now"
 
-**BANNED Phrases** (never use alone):
+**❌ BANNED Phrases** (never use alone):
 - "Submit"
 - "Click Here"
 - "Sign Up" (unless paired: "Sign Up to Ship in 15 Min")
@@ -1342,9 +1370,9 @@ Design progressive commitment into your conversion flows:
 
 ### 3) 2-Step Opt-In Pattern (Recommended)
 **When to Use** (boosts micro-commitment):
-- Cold traffic (ads, SEO)
-- Higher-commitment asks (demo, pricing access)
-- Multi-field forms
+- ✅ Cold traffic (ads, SEO)
+- ✅ Higher-commitment asks (demo, pricing access)
+- ✅ Multi-field forms
 
 **When to Skip** (show form immediately):
 - Value is obvious/urgent (instant download)
@@ -1377,7 +1405,7 @@ Design progressive commitment into your conversion flows:
 - Exit intent (save progress, offer help)
 - Social proof (testimonials, user counts)
 
-**HITL checkpoint →** Confirm CTA design, fast win, 2-step opt-in, and conversion strategy.
+**HITL checkpoint →** Confirm CTA design, fast win, 2-step opt-in, and conversion strategy.  
 **Prompt:** "Approve conversion strategy? Reply `approve conversion` or `revise: …`."
 
 ---
@@ -1468,25 +1496,25 @@ Design progressive commitment into your conversion flows:
 
 
 **Pass/Fail Notes**:
-- Passed: [list items that passed]
-- Failed: [list items needing fixes, e.g., "CTA on pricing page says 'Submit' instead of outcome"]
+- ✅ Passed: [list items that passed]
+- ❌ Failed: [list items needing fixes, e.g., "CTA on pricing page says 'Submit' instead of outcome"]
 
 ---
 
 ## Final Review Gate (stop here)
-**Prompt to user (blocking):**
-> "Please review the UX Specification and files.
->
+**Prompt to user (blocking):**  
+> "Please review the UX Specification and files.  
+> 
 > **Deliverables:**
-> - UX Specification with user flows and journeys
-> - Visual inspiration gathered and analyzed
-> - Design principles and accessibility requirements defined
->
+> - ✅ UX Specification with user flows and journeys
+> - ✅ Visual inspiration gathered and analyzed
+> - ✅ Design principles and accessibility requirements defined
+> 
 > **Next Step:**
 > - Proceed to **Step 4 (Flow Tree & Screen Architecture)** to create a comprehensive Mobbin-style screen map of your entire application.
->
-> - Reply `approve step 3` to proceed to Step 4 (Flow Tree), or
-> - Reply `revise step 3: <notes>` to iterate.
+> 
+> • Reply `approve step 3` to proceed to Step 4 (Flow Tree), or  
+> • Reply `revise step 3: <notes>` to iterate.  
 > I won't continue until you approve."
 
 ---
@@ -1557,3 +1585,4 @@ Design progressive commitment into your conversion flows:
 | Conversion Strategy | CTAs and fast win documented | 3 |
 
 </verification>
+

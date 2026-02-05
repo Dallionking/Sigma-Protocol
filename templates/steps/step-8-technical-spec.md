@@ -1,38 +1,47 @@
 ---
-description: "Run Sigma steps/step-8-technical-spec"
+version: "2.3.0"
+last_updated: "2026-01-07"
+changelog:
+  - "2.3.0: Added Step 11 PRD Framework Alignment section in Phase H - ensures technical specs align with Step 11's new backend frameworks (OWASP, RLS, Result Pattern, etc.)"
+  - "2.2.0: Added Boilerplate Foundation section for documenting extensions vs full system specs"
+  - "2.1.0: Added TanStack Start as web framework option, added icon library recommendations (Lucide, Phosphor), expanded framework decision guide"
+  - "2.0.0: Renumbered from Step 6 to Step 8 in 13-step workflow"
+  - "1.0.0: Initial release as Step 6"
+description: "Step 8: Technical Specification & Development Blueprint - Most comprehensive spec combining all previous steps into development-ready documentation"
 allowed-tools:
-  - Read
-  - Write
-  - Edit
-  - Bash
-  - WebFetch
+  # PRIMARY MCP Tools (Use First)
+  - mcp_Ref_ref_search_documentation
+  - mcp_Ref_ref_read_url
+  - mcp_exa_web_search_exa
+  - mcp_exa_get_code_context_exa
+  - mcp_exa_crawling_exa
+  - mcp_exa_company_research_exa
+  - mcp_exa_linkedin_search_exa
+  - mcp_exa_deep_researcher_start
+  - mcp_exa_deep_researcher_check
+  
+  # ALWAYS ACTIVE (Specialized)
+  - mcp_supabase-mcp-server_search_docs
+  
+  # BACKUP MCP Tools (Use only if primary fails)
+  - mcp_context7_resolve-library-id
+  - mcp_context7_get-library-docs
+  - mcp_perplexity-ask_perplexity_ask
+  
+  # OTHER TOOLS
+  - web_search
+  - read_file
+  - write
+  - list_dir
+  - run_terminal_cmd
+parameters:
+  - --depth
 ---
-
-# /step-8-technical-spec
-
-Invoke the **step-8-technical-spec** agent from Sigma Protocol.
-
-This command runs the full step-8-technical-spec workflow including:
-- All HITL (Human-in-the-Loop) checkpoints
-- MCP research integration
-- Quality verification gates
-
-**Usage:** `/step-8-technical-spec [your input here]`
-
----
-
-# step-8-technical-spec
-
-**Source:** Sigma Protocol steps module
-**Version:** 2.3.0
-
----
-
 
 # /step-8-technical-spec — Technical Specification & Development Blueprint (Distinguished Engineer + $1B Valuation Context)
 
-**Mission**
-Run a complete, interactive **Step-6: Technical Specification → Development Blueprint** for a startup project in one go.
+**Mission**  
+Run a complete, interactive **Step-6: Technical Specification → Development Blueprint** for a startup project in one go. 
 **Valuation Context:** You are a **Distinguished Engineer at a FAANG Company**. This is the **definitive development blueprint**. It must be **comprehensive, rigorous, and implementation-ready**. No vague "TBDs".
 
 This command:
@@ -43,9 +52,9 @@ This command:
 
 ---
 
-## BOILERPLATE FOUNDATION (NEW - If Using Sigma Boilerplate)
+## BOILERPLATE FOUNDATION (NEW - If Using SSS Boilerplate)
 
-**If your project uses an Sigma boilerplate, technical specs document EXTENSIONS, not the entire system.**
+**If your project uses an SSS boilerplate, technical specs document EXTENSIONS, not the entire system.**
 
 ### Detection
 
@@ -273,7 +282,7 @@ FRAMEWORKS & DRIVERS
 ### ADR: [Decision Title]
 **Context:** Why is this decision needed?
 **Decision:** What did we choose?
-**Consequences:**
+**Consequences:** 
 - ✅ Benefits
 - ⚠️ Trade-offs
 **Alternatives Rejected:** What else was considered?
@@ -392,7 +401,7 @@ TESTABILITY GATE
 ---
 
 ## Preflight (auto)
-1) **Get date**: run `date +"%Y-%m-%d"` and capture `TODAY`.
+1) **Get date**: run `date +"%Y-%m-%d"` and capture `TODAY`.  
 2) **Create folders (idempotent)** if missing:
    - `/docs/technical`, `/docs/implementation`, `/docs/testing`, `/docs/adrs`
 3) **Writing policy**: For large files, **write in small chunks** to avoid editor limits.
@@ -590,7 +599,7 @@ TESTABILITY GATE
    - Phase 2: Core Features (weeks X-Y)
    - Phase 3: Enhancement (weeks Y-Z)
 
-**HITL checkpoint →** Confirm executive summary and timeline.
+**HITL checkpoint →** Confirm executive summary and timeline.  
 **Prompt:** "Approve exec summary? Reply `approve exec` or `revise: …`."
 
 ---
@@ -619,7 +628,7 @@ TESTABILITY GATE
    - Network (CDN, load balancers, DNS)
    - Monitoring (logs, metrics, traces)
 
-**HITL checkpoint →** Show architecture diagrams and components.
+**HITL checkpoint →** Show architecture diagrams and components.  
 **Prompt:** "Approve system architecture? Reply `approve architecture` or `revise: …`."
 
 ---
@@ -632,7 +641,7 @@ Reference Step 2 Architecture decisions. The technologies below are **templates*
 **Load from Step 2:** Read `/docs/architecture/TECH-STACK.md` and ADRs for context.
 
 1) **Frontend Stack** (document with versions and ADR reference):
-
+   
    **Common Options (Choose Based on Project):**
    | Category | Options | Document Version |
    |----------|---------|------------------|
@@ -642,7 +651,7 @@ Reference Step 2 Architecture decisions. The technologies below are **templates*
    | State | Zustand / Redux / Jotai / TanStack Query | e.g., Zustand 5.0 |
    | Forms | React Hook Form + Zod / Formik + Yup | Document choice |
    | Icons | Lucide React / Phosphor / Tabler / Heroicons | Lucide (recommended) |
-
+   
    **Web Framework Decision Guide:**
    | Framework | Best For | Key Differentiator |
    |-----------|----------|-------------------|
@@ -652,7 +661,7 @@ Reference Step 2 Architecture decisions. The technologies below are **templates*
    | **Expo** | iOS/Android mobile apps | React Native + managed workflow |
 
 2) **Backend Stack** (document with versions and ADR reference):
-
+   
    **Common Options:**
    | Category | Options | Document Version |
    |----------|---------|------------------|
@@ -661,7 +670,7 @@ Reference Step 2 Architecture decisions. The technologies below are **templates*
    | Auth | NextAuth / Supabase Auth / Clerk / Auth0 | Document choice |
 
 3) **Database & Data** (document with schema approach):
-
+   
    **Common Options:**
    | Category | Options | Document Version |
    |----------|---------|------------------|
@@ -670,7 +679,7 @@ Reference Step 2 Architecture decisions. The technologies below are **templates*
    | Validation | Zod / Yup / Valibot | e.g., Zod 3.24 |
 
 4) **AI & Realtime** (if applicable):
-
+   
    **Common Options:**
    | Category | Options | When to Use |
    |----------|---------|-------------|
@@ -679,7 +688,7 @@ Reference Step 2 Architecture decisions. The technologies below are **templates*
    | Voice | LiveKit / Daily.co / Twilio | Voice/video |
 
 5) **Infrastructure** (document with ADR for hosting choice):
-
+   
    **Common Options:**
    | Category | Options | Trade-offs |
    |----------|---------|------------|
@@ -690,7 +699,7 @@ Reference Step 2 Architecture decisions. The technologies below are **templates*
 
 **Every tech choice needs an ADR** — Document WHY this technology for THIS project.
 
-**HITL checkpoint →** Show complete tech stack with versions.
+**HITL checkpoint →** Show complete tech stack with versions.  
 **Prompt:** "Approve tech stack? Reply `approve stack` or `revise: …`."
 
 ---
@@ -729,7 +738,7 @@ Reference Step 2 Architecture decisions. The technologies below are **templates*
    - Read replicas for scaling
    - Partitioning strategy (if needed)
 
-**HITL checkpoint →** Show ERD and key tables.
+**HITL checkpoint →** Show ERD and key tables.  
 **Prompt:** "Approve database design? Reply `approve database` or `revise: …`."
 
 ---
@@ -794,7 +803,7 @@ Reference Step 2 Architecture decisions. The technologies below are **templates*
    }
    ```
 
-**HITL checkpoint →** Show API spec with key endpoints.
+**HITL checkpoint →** Show API spec with key endpoints.  
 **Prompt:** "Approve API design? Reply `approve api` or `revise: …`."
 
 ---
@@ -830,7 +839,7 @@ Reference Step 2 Architecture decisions. The technologies below are **templates*
    - **HIPAA**: BAA, audit logs, encryption, access controls
    - **SOC 2**: Access control, monitoring, incident response, change management
 
-**HITL checkpoint →** Confirm security architecture.
+**HITL checkpoint →** Confirm security architecture.  
 **Prompt:** "Approve security design? Reply `approve security` or `revise: …`."
 
 ---
@@ -870,12 +879,12 @@ Reference Step 2 Architecture decisions. The technologies below are **templates*
      - **Flow PRDs: `/docs/prds/flows/FLOW-*.md`** ⭐
      - **Wireframe Tracker: `/docs/prds/flows/WIREFRAME-TRACKER.md`** ⭐
      - **Zero Omission Certificate: `/docs/prds/flows/ZERO-OMISSION-CERTIFICATE.md`** ⭐
-
+   
    - **⚠️ CRITICAL: Verify Completeness First:**
      Before integrating wireframes, confirm Zero Omission Certificate shows:
      - Step-4 Screens = Step-5 Wireframes (100% coverage)
      - No screens marked as TBD or deferred
-
+   
    - **Integration Strategy:**
      Since Step 5 produces foundation code (not just exports), the wireframes project can evolve into production:
      1. **Review Wireframe Components:** Analyze `/src/components/flows/` structure
@@ -883,7 +892,7 @@ Reference Step 2 Architecture decisions. The technologies below are **templates*
      3. **Apply Design System:** Ensure design tokens are formalized (Step 6)
      4. **Migrate or Extend:** Either migrate components to main app or extend wireframes project
      5. **Cross-Reference Flow PRDs:** Each flow has a dedicated PRD with component decisions
-
+   
    - **Foundation Code Benefits:**
      ```typescript
      // Wireframe component already exists at /wireframes/src/components/ui/Button.tsx
@@ -893,17 +902,17 @@ Reference Step 2 Architecture decisions. The technologies below are **templates*
      // - Accessibility attributes
      // - Unit tests
      ```
-
+   
    - **Component Review from Wireframes:**
      - Read `/docs/wireframes/PROTOTYPE-SUMMARY.md` for component inventory
      - Review each component in `/wireframes/src/components/`
      - Compare against screenshots in `/docs/wireframes/screenshots/`
-
+   
    - **Priority Components (from Wireframes):**
      - List from PROTOTYPE-SUMMARY.md (P0 screens first)
      - Build in order: Atoms → Molecules → Organisms
      - Test each refined component against wireframe screenshots
-
+   
    - **Quality Gates:**
      - [ ] Visual match: Production component matches wireframe screenshot
      - [ ] Responsive: Works on mobile/tablet/desktop
@@ -911,7 +920,7 @@ Reference Step 2 Architecture decisions. The technologies below are **templates*
      - [ ] Performant: No layout shifts, fast render
      - [ ] Type-safe: Full TypeScript coverage
 
-**HITL checkpoint →** Confirm frontend architecture with wireframe integration.
+**HITL checkpoint →** Confirm frontend architecture with wireframe integration.  
 **Prompt:** "Approve frontend spec? Reply `approve frontend` or `revise: …`."
 
 ---
@@ -968,7 +977,7 @@ Reference Step 2 Architecture decisions. The technologies below are **templates*
    - [ ] API conventions defined → PRDs follow conventions
    - [ ] Security baseline documented → PRDs inherit baseline + add feature-specific
 
-**HITL checkpoint →** Confirm backend architecture.
+**HITL checkpoint →** Confirm backend architecture.  
 **Prompt:** "Approve backend spec? Reply `approve backend` or `revise: …`."
 
 ---
@@ -1015,7 +1024,7 @@ Reference Step 2 Architecture decisions. The technologies below are **templates*
    - **Traces**: (optional) OpenTelemetry
    - **Uptime**: (optional) UptimeRobot, Better Uptime
 
-**HITL checkpoint →** Confirm infrastructure and deployment.
+**HITL checkpoint →** Confirm infrastructure and deployment.  
 **Prompt:** "Approve infrastructure? Reply `approve infra` or `revise: …`."
 
 ---
@@ -1044,7 +1053,7 @@ Reference Step 2 Architecture decisions. The technologies below are **templates*
    - Critical paths: 100%
    - Mutation score: 70%+
 
-**HITL checkpoint →** Confirm testing strategy.
+**HITL checkpoint →** Confirm testing strategy.  
 **Prompt:** "Approve testing strategy? Reply `approve testing` or `revise: …`."
 
 ---
@@ -1074,7 +1083,7 @@ Reference Step 2 Architecture decisions. The technologies below are **templates*
    - Sprint planning, retros
    - Code review guidelines
 
-**HITL checkpoint →** Confirm development workflow.
+**HITL checkpoint →** Confirm development workflow.  
 **Prompt:** "Approve workflow? Reply `approve workflow` or `revise: …`."
 
 ---
@@ -1092,7 +1101,7 @@ Reference Step 2 Architecture decisions. The technologies below are **templates*
    - **Scope creep**: Change management, feature freezes
    - **Quality**: Automated testing, CI/CD, code reviews
 
-**HITL checkpoint →** Confirm risk assessment.
+**HITL checkpoint →** Confirm risk assessment.  
 **Prompt:** "Approve risk assessment? Reply `approve risks` or `revise: …`."
 
 ---
@@ -1140,11 +1149,11 @@ Reference Step 2 Architecture decisions. The technologies below are **templates*
 ---
 
 ## Final Review Gate (stop here)
-**Prompt to user (blocking):**
-> "Please review the COMPLETE Technical Specification (12 sections) and all files.
-> This is the **definitive development blueprint**. Take your time.
-> • Reply `approve step 8` to proceed to Step-9 Landing Page (optional) or Step-10, or
-> • Reply `revise step 8: <notes>` to iterate.
+**Prompt to user (blocking):**  
+> "Please review the COMPLETE Technical Specification (12 sections) and all files.  
+> This is the **definitive development blueprint**. Take your time.  
+> • Reply `approve step 8` to proceed to Step-9 Landing Page (optional) or Step-10, or  
+> • Reply `revise step 8: <notes>` to iterate.  
 > I won't continue until you approve."
 
 ---
@@ -1200,3 +1209,4 @@ Reference Step 2 Architecture decisions. The technologies below are **templates*
 | Security Addressed | Auth, validation, and security documented | 3 |
 
 </verification>
+

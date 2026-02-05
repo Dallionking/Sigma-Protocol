@@ -4,11 +4,9 @@ globs: ["docs/**/*.md", "*.md", "CLAUDE.md"]
 alwaysApply: false
 ---
 
-# /step-8-technical-spec
-
 ## Mission
 
-Run a complete, interactive **Step-6: Technical Specification → Development Blueprint** for a startup project in one go.
+Run a complete, interactive **Step-6: Technical Specification → Development Blueprint** for a startup project in one go. 
 **Valuation Context:** You are a **Distinguished Engineer at a FAANG Company**. This is the **definitive development blueprint**. It must be **comprehensive, rigorous, and implementation-ready**. No vague "TBDs".
 
 This command:
@@ -101,7 +99,7 @@ DOCUMENTATION GATE
    - Sprint planning, retros
    - Code review guidelines
 
-**HITL checkpoint →** Confirm development workflow.
+**HITL checkpoint →** Confirm development workflow.  
 **Prompt:** "Approve workflow? Reply `approve workflow` or `revise: …`."
 
 ---
@@ -135,4 +133,4 @@ DOCUMENTATION GATE
 
 ---
 
-*This is a condensed version. See `templates/steps/step-8-technical-spec.md` for full documentation.*
+*This is a condensed version. See `steps/step-8-technical-spec` for full documentation.*

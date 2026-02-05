@@ -17,6 +17,7 @@
 #   cursor        - Condensed .mdc format to .cursor/rules/
 #   factory       - Direct copy to platforms/factory-droid/skills/
 #   antigravity   - SKILL.md folder format to platforms/antigravity/skills/
+#   codex         - SKILL.md folder format to platforms/codex/skills/
 
 set -eo pipefail
 
@@ -37,30 +38,32 @@ PROJECT_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
 CANONICAL_SOURCE="$PROJECT_ROOT/.claude/skills"
 
 # Platform configurations (bash 3.x compatible)
-PLATFORMS="opencode cursor factory antigravity"
+PLATFORMS="opencode cursor factory antigravity codex"
 
 # Get platform target directory
 get_platform_target() {
     local platform="$1"
     case "$platform" in
-        opencode)    echo "$PROJECT_ROOT/platforms/opencode/skill" ;;
-        cursor)      echo "$PROJECT_ROOT/.cursor/rules" ;;
-        factory)     echo "$PROJECT_ROOT/platforms/factory-droid/skills" ;;
-        antigravity) echo "$PROJECT_ROOT/platforms/antigravity/skills" ;;
-        *)           echo "" ;;
-    esac
+    opencode)    echo "$PROJECT_ROOT/platforms/opencode/skill" ;;
+    cursor)      echo "$PROJECT_ROOT/.cursor/rules" ;;
+    factory)     echo "$PROJECT_ROOT/platforms/factory-droid/skills" ;;
+    antigravity) echo "$PROJECT_ROOT/platforms/antigravity/skills" ;;
+    codex)       echo "$PROJECT_ROOT/platforms/codex/skills" ;;
+    *)           echo "" ;;
+  esac
 }
 
 # Get platform format type
 get_platform_format() {
     local platform="$1"
     case "$platform" in
-        opencode)    echo "direct" ;;
-        cursor)      echo "condense" ;;
-        factory)     echo "direct" ;;
-        antigravity) echo "folder" ;;
-        *)           echo "unknown" ;;
-    esac
+    opencode)    echo "direct" ;;
+    cursor)      echo "condense" ;;
+    factory)     echo "direct" ;;
+    antigravity) echo "folder" ;;
+    codex)       echo "direct" ;;
+    *)           echo "unknown" ;;
+  esac
 }
 
 # Options
@@ -119,7 +122,7 @@ ${BOLD}USAGE${NC}
 
 ${BOLD}OPTIONS${NC}
     --dry-run         Show what would be done without making changes
-    --platform NAME   Sync only to specified platform (opencode, cursor, factory, antigravity)
+    --platform NAME   Sync only to specified platform (opencode, cursor, factory, antigravity, codex)
     --verbose         Show detailed output
     --force           Overwrite existing files (default: skip existing)
     --help            Show this help message
@@ -129,6 +132,7 @@ ${BOLD}PLATFORMS${NC}
     cursor        Condensed .mdc format (requires condense-for-cursor.py)
     factory       Direct copy (same format)
     antigravity   SKILL.md folder format (requires transform-for-antigravity.py)
+    codex         Direct copy (SKILL.md folder format)
 
 ${BOLD}EXAMPLES${NC}
     $0 --dry-run                    # Preview all changes
@@ -175,7 +179,7 @@ check_python_scripts() {
 is_valid_platform() {
     local platform="$1"
     case "$platform" in
-        opencode|cursor|factory|antigravity) return 0 ;;
+        opencode|cursor|factory|antigravity|codex) return 0 ;;
         *) return 1 ;;
     esac
 }

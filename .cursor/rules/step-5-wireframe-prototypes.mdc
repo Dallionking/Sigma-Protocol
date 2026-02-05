@@ -4,8 +4,6 @@ globs: ["docs/**/*.md", "*.md", "CLAUDE.md"]
 alwaysApply: false
 ---
 
-# step-5-wireframe-prototypes
-
 ## Mission
 
 Generate comprehensive **Flow PRDs** with detailed ASCII wireframes, modern React stack integration specs, and researched component selections. The **USER** then implements these PRDs in Cursor to build an interactive UI prototype. This prototype code becomes the **foundation for Step 11** feature development.
@@ -191,4 +189,4 @@ For each screen in a finance flow, verify:
 
 ---
 
-*This is a condensed version. See `templates/steps/step-5-wireframe-prototypes.md` for full documentation.*
+*This is a condensed version. See `steps/step-5-wireframe-prototypes` for full documentation.*

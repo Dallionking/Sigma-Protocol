@@ -1,27 +1,44 @@
 ---
-description: "Run Sigma steps/step-1.5-offer-architecture"
+version: "1.0.0"
+last_updated: "2025-12-05"
+changelog:
+  - "1.0.0: Initial release - Offer architecture as official step with doc sync"
+description: "Step 1.5: Offer Architecture → Design Grand Slam Offers and sync pricing/monetization across all project docs"
 allowed-tools:
-  - Read
-  - Write
-  - Edit
-  - Bash
-  - WebFetch
+  # PRIMARY MCP Tools (Use First)
+  - mcp_Ref_ref_search_documentation
+  - mcp_Ref_ref_read_url
+  - mcp_exa_web_search_exa
+  - mcp_exa_get_code_context_exa
+  - mcp_exa_crawling_exa
+  - mcp_exa_company_research_exa
+  - mcp_exa_linkedin_search_exa
+  - mcp_exa_deep_researcher_start
+  - mcp_exa_deep_researcher_check
+  
+  # BACKUP MCP Tools (Use only if primary fails)
+  - mcp_perplexity-ask_perplexity_ask
+  
+  # OTHER TOOLS
+  - read_file
+  - write
+  - list_dir
+  - glob_file_search
+  - grep
+  - run_terminal_cmd
+parameters:
+  - --market=[target-market]
+  - --product=[product-name]
+  - --research-depth=[shallow|deep]
+  - --skip-sync  # Skip document synchronization (not recommended)
 ---
-
-# step-1.5-offer-architecture
-
-**Source:** Sigma Protocol steps module
-**Version:** 1.0.0
-
----
-
 
 # /step-1.5-offer-architecture — Grand Slam Offer Design with Document Sync
 
-**Mission**
+**Mission**  
 Design irresistible offers using Alex Hormozi's $100M framework, then **automatically synchronize** pricing and monetization decisions across all project documentation.
 
-**Why This Step Exists:**
+**Why This Step Exists:**  
 For monetized apps (especially AI apps with credit systems, usage tiers, subscriptions), the offer architecture directly impacts:
 - **Database schema** — credit ledgers, usage tracking, subscription tiers
 - **API design** — rate limiting, quota enforcement, metering endpoints
@@ -32,22 +49,22 @@ For monetized apps (especially AI apps with credit systems, usage tiers, subscri
 
 ---
 
-## When to Use This Step
+## 🔍 When to Use This Step
 
 ### Automatically Suggested After Step 1 When:
-- Project type is SaaS, AI tool, or subscription service
-- MASTER_PRD mentions: pricing, tiers, credits, subscriptions, monetization
-- stack-profile.json includes a `payments` field
-- User indicated revenue generation in ideation
+- ✅ Project type is SaaS, AI tool, or subscription service
+- ✅ MASTER_PRD mentions: pricing, tiers, credits, subscriptions, monetization
+- ✅ stack-profile.json includes a `payments` field
+- ✅ User indicated revenue generation in ideation
 
 ### Skip This Step If:
-- Internal tool or hobby project
-- Open-source with no monetization
-- Enterprise contract (custom pricing handled separately)
+- ❌ Internal tool or hobby project
+- ❌ Open-source with no monetization
+- ❌ Enterprise contract (custom pricing handled separately)
 
 ---
 
-## Preflight (auto)
+## ⚡ Preflight (auto)
 
 ```typescript
 // 1. Get date
@@ -75,7 +92,7 @@ const costCenters = {
 // 6. Display context summary
 console.log(`
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-STEP 1.5: OFFER ARCHITECTURE
+🎯 STEP 1.5: OFFER ARCHITECTURE
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 Date: ${today}
 Existing Offer: ${existingOffer ? 'Yes (will update)' : 'No (will create)'}
@@ -86,18 +103,18 @@ Cost Centers: ${Object.keys(costCenters).filter(k => costCenters[k]).join(', ')}
 
 ---
 
-## Task Execution Flow
+## 📋 Task Execution Flow
 
 ```
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-STEP 1.5: OFFER ARCHITECTURE WORKFLOW
+🏆 STEP 1.5: OFFER ARCHITECTURE WORKFLOW
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 Phase A: Context Loading
   [ ] A1: Read MASTER_PRD for product context
   [ ] A2: Read stack-profile.json for tech context
   [ ] A3: Calculate COGS (Cost of Goods Sold)
-  CHECKPOINT: Review cost analysis
+  ⏸️  CHECKPOINT: Review cost analysis
 
 Phase B: Offer Design (invoke @04-offer-architect core)
   [ ] B1: Define target avatar & dream outcome
@@ -107,27 +124,27 @@ Phase B: Offer Design (invoke @04-offer-architect core)
   [ ] B5: Engineer guarantee
   [ ] B6: Add scarcity/urgency triggers
   [ ] B7: Name the offer
-  CHECKPOINT: Human approves offer design
+  ⏸️  CHECKPOINT: Human approves offer design
 
 Phase C: Document Synchronization (CRITICAL)
   [ ] C1: Create/Update OFFER_ARCHITECTURE.md
   [ ] C2: Update MASTER_PRD.md (Business Model section)
   [ ] C3: Update stack-profile.json (pricing config)
   [ ] C4: Create pricing-config.json (if credits/usage)
-  CHECKPOINT: Review all document changes
+  ⏸️  CHECKPOINT: Review all document changes
 
 Phase D: Verification
   [ ] D1: Verify all docs reference same pricing
   [ ] D2: Confirm stack-profile has billing provider
   [ ] D3: Generate offer summary for handoff
-  FINAL: Human confirms, ready for Step 2
+  ⏸️  FINAL: Human confirms, ready for Step 2
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 ```
 
 ---
 
-## Phase A: Context & Cost Analysis
+## 🔄 Phase A: Context & Cost Analysis
 
 ### A1-A2: Load Project Context
 
@@ -141,7 +158,7 @@ Read and summarize:
 **For AI Apps - Critical Cost Factors:**
 
 ```markdown
-## COGS Analysis
+## 💰 COGS Analysis
 
 ### Variable Costs Per User (Monthly)
 
@@ -175,7 +192,7 @@ Read and summarize:
 
 ---
 
-## Phase B: Offer Design
+## 🔄 Phase B: Offer Design
 
 **Invoke the core offer design process from @04-offer-architect:**
 
@@ -184,7 +201,7 @@ Read and summarize:
 Pull from MASTER_PRD's Target Audience section, then refine:
 
 ```markdown
-## Target Avatar (Refined for Offer)
+## 🎯 Target Avatar (Refined for Offer)
 
 **Primary Avatar:**
 - **Who:** [Specific role, company size, industry]
@@ -208,7 +225,7 @@ Pull from MASTER_PRD's Target Audience section, then refine:
 ### B2: Problem → Solution → Delivery Matrix
 
 ```markdown
-## Problem → Solution Matrix
+## 🔧 Problem → Solution Matrix
 
 ### Problem 1: [Core obstacle preventing dream outcome]
 - **Pain Statement:** "I can't [X] because [Y]"
@@ -226,24 +243,24 @@ Pull from MASTER_PRD's Target Audience section, then refine:
 ### B3: Pricing Tiers (Decoy Strategy)
 
 ```markdown
-## Pricing Architecture
+## 💰 Pricing Architecture
 
 ### Tier Structure
 
 | Tier | Name | Monthly | Annual | Target Segment | Conversion Goal |
 |------|------|---------|--------|----------------|-----------------|
 | 1 | **Starter** | $XX | $XX/yr | Testers, hobbyists | Anchor (make Pro look good) |
-| 2 | **Pro** | $XX | $XX/yr | Core customers | Primary revenue driver |
+| 2 | **Pro** ⭐ | $XX | $XX/yr | Core customers | Primary revenue driver |
 | 3 | **Team/Agency** | $XX | $XX/yr | Power users | High-value accounts |
 
 ### Feature Matrix
 
-| Feature | Starter | Pro | Team |
+| Feature | Starter | Pro ⭐ | Team |
 |---------|---------|--------|------|
-| [Core Feature 1] | Limited | Full | Full |
-| [Core Feature 2] | No | Yes | Yes |
-| [Premium Feature] | No | Yes | Yes |
-| [Team Feature] | No | No | Yes |
+| [Core Feature 1] | ✅ Limited | ✅ Full | ✅ Full |
+| [Core Feature 2] | ❌ | ✅ | ✅ |
+| [Premium Feature] | ❌ | ✅ | ✅ |
+| [Team Feature] | ❌ | ❌ | ✅ |
 | **Credits/Usage** | X/mo | Y/mo | Z/mo |
 | **Support** | Community | Email | Priority |
 
@@ -260,7 +277,7 @@ Pull from MASTER_PRD's Target Audience section, then refine:
 ### B4: Bonus Stack
 
 ```markdown
-## Bonus Stack
+## 🎁 Bonus Stack
 
 | Bonus | Description | Perceived Value | Actual Cost | Tier |
 |-------|-------------|-----------------|-------------|------|
@@ -276,7 +293,7 @@ Pull from MASTER_PRD's Target Audience section, then refine:
 ### B5: Guarantee Engineering
 
 ```markdown
-## Risk Reversal (Guarantee)
+## 🛡️ Risk Reversal (Guarantee)
 
 ### Selected Guarantee Type: [Unconditional / Conditional / Anti-Guarantee]
 
@@ -297,14 +314,14 @@ Pull from MASTER_PRD's Target Audience section, then refine:
 ### B6: Scarcity & Urgency
 
 ```markdown
-## Scarcity & Urgency Triggers
+## ⏰ Scarcity & Urgency Triggers
 
 ### Active Triggers:
 
 | Trigger | Type | Authentic? | Implementation |
 |---------|------|------------|----------------|
-| [Trigger 1] | Scarcity | Yes | [How it works] |
-| [Trigger 2] | Urgency | Yes | [How it works] |
+| [Trigger 1] | Scarcity | ✅ | [How it works] |
+| [Trigger 2] | Urgency | ✅ | [How it works] |
 
 ### Trigger Statements:
 - Launch: "[Founding member pricing for first 100 customers]"
@@ -314,7 +331,7 @@ Pull from MASTER_PRD's Target Audience section, then refine:
 ### B7: Offer Naming
 
 ```markdown
-## Offer Name
+## 📛 Offer Name
 
 **Final Offer Name:** [The X System / X Pro / etc.]
 
@@ -330,7 +347,7 @@ Pull from MASTER_PRD's Target Audience section, then refine:
 
 ---
 
-## Phase C: Document Synchronization (CRITICAL)
+## 🔄 Phase C: Document Synchronization (CRITICAL)
 
 **This is what makes Step 1.5 essential — keeping all docs in sync.**
 
@@ -390,7 +407,7 @@ Pull from MASTER_PRD's Target Audience section, then refine:
 ```markdown
 ## Business Model & Monetization
 
-> **Source of Truth:** See [OFFER_ARCHITECTURE.md](./OFFER_ARCHITECTURE.md) for complete offer details.
+> 📎 **Source of Truth:** See [OFFER_ARCHITECTURE.md](./OFFER_ARCHITECTURE.md) for complete offer details.
 
 ### Revenue Model
 - **Primary:** [Subscription/Usage/Transaction]
@@ -400,7 +417,7 @@ Pull from MASTER_PRD's Target Audience section, then refine:
 | Tier | Price | Target Segment |
 |------|-------|----------------|
 | Starter | $XX/mo | [Who] |
-| Pro | $XX/mo | [Who] |
+| Pro ⭐ | $XX/mo | [Who] |
 | Team | $XX/mo | [Who] |
 
 ### Unit Economics (Target)
@@ -464,7 +481,7 @@ Pull from MASTER_PRD's Target Audience section, then refine:
   "$schema": "pricing-config-v1",
   "created": "{TODAY}",
   "offer_name": "[Offer Name]",
-
+  
   "tiers": {
     "starter": {
       "name": "Starter",
@@ -516,13 +533,13 @@ Pull from MASTER_PRD's Target Audience section, then refine:
       }
     }
   },
-
+  
   "overages": {
     "credits": { "rate": 0.05, "unit": "per credit" },
     "storage": { "rate": 0.10, "unit": "per GB" },
     "api_calls": { "rate": 0.001, "unit": "per call" }
   },
-
+  
   "guarantee": {
     "type": "conditional",
     "days": 30,
@@ -535,19 +552,19 @@ Pull from MASTER_PRD's Target Audience section, then refine:
 
 ---
 
-## Phase D: Verification
+## 🔄 Phase D: Verification
 
 ### D1: Cross-Reference Check
 
 ```markdown
-## Document Sync Verification
+## ✅ Document Sync Verification
 
 | Document | Pricing Match | Credits Match | Updated |
 |----------|---------------|---------------|---------|
-| OFFER_ARCHITECTURE.md | Yes | Yes | Yes |
-| MASTER_PRD.md | Yes | Yes | Yes |
-| stack-profile.json | Yes | Yes | Yes |
-| pricing-config.json | Yes | Yes | Yes |
+| OFFER_ARCHITECTURE.md | ✅ | ✅ | ✅ |
+| MASTER_PRD.md | ✅ | ✅ | ✅ |
+| stack-profile.json | ✅ | ✅ | ✅ |
+| pricing-config.json | ✅ | ✅ | ✅ |
 
 **Consistency Check:** All pricing references match? [YES/NO]
 ```
@@ -555,7 +572,7 @@ Pull from MASTER_PRD's Target Audience section, then refine:
 ### D2: Stack Readiness
 
 ```markdown
-## Stack Readiness for Pricing
+## 🔧 Stack Readiness for Pricing
 
 - [ ] Payment provider selected: [Stripe/Polar/RevenueCat]
 - [ ] Subscription model compatible: [Yes/No]
@@ -566,7 +583,7 @@ Pull from MASTER_PRD's Target Audience section, then refine:
 ### D3: Handoff Summary
 
 ```markdown
-## Step 1.5 Complete - Handoff Summary
+## 📋 Step 1.5 Complete - Handoff Summary
 
 **Offer:** [Offer Name]
 **Tiers:** Starter ($X) | Pro ($Y) | Team ($Z)
@@ -574,10 +591,10 @@ Pull from MASTER_PRD's Target Audience section, then refine:
 **Credits:** [Yes/No] - [X/Y/Z per tier]
 
 **Documents Updated:**
-- /docs/specs/OFFER_ARCHITECTURE.md (created)
-- /docs/specs/MASTER_PRD.md (Business Model section)
-- /docs/stack-profile.json (pricing config)
-- /docs/specs/pricing-config.json (if credits)
+- ✅ /docs/specs/OFFER_ARCHITECTURE.md (created)
+- ✅ /docs/specs/MASTER_PRD.md (Business Model section)
+- ✅ /docs/stack-profile.json (pricing config)
+- ✅ /docs/specs/pricing-config.json (if credits)
 
 **Ready for Step 2:** Architecture will incorporate:
 - Credit/usage tracking tables
@@ -588,7 +605,7 @@ Pull from MASTER_PRD's Target Audience section, then refine:
 
 ---
 
-## Quality Gates
+## ✅ Quality Gates
 
 **Step 1.5 complete when:**
 
@@ -603,21 +620,21 @@ Pull from MASTER_PRD's Target Audience section, then refine:
 
 ---
 
-## Final Review Gate
+## 🚫 Final Review Gate
 
 ```
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-STEP 1.5 COMPLETE - OFFER ARCHITECTURE
+🏆 STEP 1.5 COMPLETE - OFFER ARCHITECTURE
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 Offer: [Name]
-Pricing: Starter $X | Pro $Y | Team $Z
+Pricing: Starter $X | Pro $Y ⭐ | Team $Z
 
 Documents Synced:
-OFFER_ARCHITECTURE.md (source of truth)
-MASTER_PRD.md (Business Model updated)
-stack-profile.json (pricing config added)
-pricing-config.json (credit system)
+✅ OFFER_ARCHITECTURE.md (source of truth)
+✅ MASTER_PRD.md (Business Model updated)
+✅ stack-profile.json (pricing config added)
+✅ pricing-config.json (credit system)
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
@@ -628,7 +645,7 @@ Reply `revise: [feedback]` to modify offer
 
 ---
 
-## Related Commands
+## 🔗 Related Commands
 
 | Command | Relationship |
 |---------|--------------|
@@ -639,7 +656,7 @@ Reply `revise: [feedback]` to modify offer
 
 ---
 
-## Notes for Step 2 (Architecture)
+## 📝 Notes for Step 2 (Architecture)
 
 When proceeding to Step 2, explicitly incorporate:
 
