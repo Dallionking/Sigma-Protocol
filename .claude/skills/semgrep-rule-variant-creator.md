@@ -5,6 +5,7 @@ description: Creates language variants of existing Semgrep rules. Use when porti
 name: semgrep-rule-variant-creator
 source: trailofbits
 version: 1.0.0
+user-invocable: false
 ---
 
 # Semgrep Rule Variant Creator

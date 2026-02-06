@@ -10,6 +10,7 @@ description: 'Verifies that git commits address security audit findings without 
 name: fix-review
 source: trailofbits
 version: 1.0.0
+user-invocable: false
 ---
 
 # Fix Review

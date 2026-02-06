@@ -6,6 +6,7 @@ description: 'Techniques for patching code to overcome fuzzing obstacles. Use wh
 name: fuzzing-obstacles
 source: trailofbits
 version: 1.0.0
+user-invocable: false
 ---
 
 # Overcoming Fuzzing Obstacles

@@ -7,6 +7,7 @@ description: When the user needs marketing ideas, inspiration, or strategies for
 name: marketing-ideas
 source: marketing
 version: 1.0.0
+user-invocable: false
 ---
 
 # Marketing Ideas for SaaS

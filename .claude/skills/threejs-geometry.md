@@ -5,6 +5,7 @@ description: Three.js geometry creation - built-in shapes, BufferGeometry, custo
 name: threejs-geometry
 source: threejs
 version: 1.0.0
+user-invocable: false
 ---
 
 # Three.js Geometry

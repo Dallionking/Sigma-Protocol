@@ -9,6 +9,7 @@ triggers:
   - new-skill
   - skill-development
   - claude-code-extension
+disable-model-invocation: true
 ---
 
 # Skill Creator Skill

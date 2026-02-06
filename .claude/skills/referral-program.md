@@ -6,6 +6,7 @@ description: When the user wants to create, optimize, or analyze a referral prog
 name: referral-program
 source: marketing
 version: 1.0.0
+user-invocable: false
 ---
 
 # Referral & Affiliate Programs

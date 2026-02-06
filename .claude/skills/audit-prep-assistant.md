@@ -6,6 +6,7 @@ description: Prepare your codebase for security review using Trail of Bits' chec
 name: audit-prep-assistant
 source: trailofbits
 version: 1.0.0
+user-invocable: false
 ---
 
 # Audit Prep Assistant

@@ -4,6 +4,7 @@ description: Unified fuzzing decision tree for selecting and integrating the rig
 version: 1.0.0
 tags: [fuzzing, testing, security, afl, libfuzzer, cargo-fuzz, ci]
 triggers: [fuzz, fuzzing, fuzzer, harness, coverage, afl, libfuzzer, security-testing]
+user-invocable: false
 ---
 
 # Fuzzing Integration

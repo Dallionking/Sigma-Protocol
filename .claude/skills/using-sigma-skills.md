@@ -10,6 +10,7 @@ triggers:
   - how to use skills
   - skill composition
   - chain skills
+disable-model-invocation: true
 ---
 
 # Using Sigma Skills

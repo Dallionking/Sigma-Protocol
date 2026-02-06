@@ -6,6 +6,7 @@ description: Provides guidance for property-based testing across multiple langua
 name: property-based-testing
 source: trailofbits
 version: 1.0.0
+user-invocable: false
 ---
 
 # Property-Based Testing Guide

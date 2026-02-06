@@ -5,6 +5,7 @@ description: Use when receiving code review feedback, before implementing sugges
 name: receiving-code-review
 source: superpowers
 version: 1.0.0
+user-invocable: false
 ---
 
 # Code Review Reception

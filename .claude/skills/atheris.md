@@ -6,6 +6,7 @@ description: 'Atheris is a coverage-guided Python fuzzer based on libFuzzer. Use
 name: atheris
 source: trailofbits
 version: 1.0.0
+user-invocable: false
 ---
 
 # Atheris

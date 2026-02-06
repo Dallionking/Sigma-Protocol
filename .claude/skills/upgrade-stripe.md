@@ -3,6 +3,7 @@ description: Guide for upgrading Stripe API versions and SDKs
 name: upgrade-stripe
 source: stripe
 version: 1.0.0
+user-invocable: false
 ---
 
 # Upgrading Stripe Versions

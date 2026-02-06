@@ -9,6 +9,7 @@ description: When the user wants to optimize, improve, or increase conversions o
 name: page-cro
 source: marketing
 version: 1.0.0
+user-invocable: false
 ---
 
 # Page Conversion Rate Optimization (CRO)

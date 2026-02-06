@@ -5,6 +5,7 @@ description: Three.js materials - PBR, basic, phong, shader materials, material 
 name: threejs-materials
 source: threejs
 version: 1.0.0
+user-invocable: false
 ---
 
 # Three.js Materials

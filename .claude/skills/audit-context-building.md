@@ -4,6 +4,7 @@ description: Enables ultra-granular, line-by-line code analysis to build deep ar
 name: audit-context-building
 source: trailofbits
 version: 1.0.0
+user-invocable: false
 ---
 
 # Deep Context Builder Skill (Ultra-Granular Pure Context Mode)

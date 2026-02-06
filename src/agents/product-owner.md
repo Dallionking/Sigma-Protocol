@@ -8,6 +8,9 @@ name: "Product Owner"
 role: "Feature Breakdown & PRD Generation"
 model: anthropic/claude-sonnet-4-20250514
 temperature: 0.3
+skills:
+  - hormozi-frameworks
+  - brainstorming
 steps:
   - step-10-feature-breakdown
   - step-11-prd-generation

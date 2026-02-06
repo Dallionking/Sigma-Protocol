@@ -4,6 +4,7 @@ description: Advanced Hypothesis and fast-check patterns for property-based test
 version: 1.0.0
 tags: [testing, property-based, hypothesis, fast-check, generators, shrinking, state-machine]
 triggers: [property-test, hypothesis, fast-check, quickcheck, generator, shrinking, stateful-test]
+user-invocable: false
 ---
 
 # Property-Based Testing Advanced

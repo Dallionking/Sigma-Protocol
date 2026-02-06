@@ -6,6 +6,7 @@ description: 'Coverage-guided fuzzer built into LLVM for C/C++ projects. Use for
 name: libfuzzer
 source: trailofbits
 version: 1.0.0
+user-invocable: false
 ---
 
 # libFuzzer

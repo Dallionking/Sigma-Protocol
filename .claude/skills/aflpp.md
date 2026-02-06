@@ -6,6 +6,7 @@ description: 'AFL++ is a fork of AFL with better fuzzing performance and advance
 name: aflpp
 source: trailofbits
 version: 1.0.0
+user-invocable: false
 ---
 
 # AFL++

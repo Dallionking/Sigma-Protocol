@@ -4,6 +4,7 @@ description: Use Expo DOM components to run web code in a webview on native and 
 name: use-dom
 source: expo
 version: 1.0.0
+user-invocable: false
 ---
 
 ## What are DOM Components?

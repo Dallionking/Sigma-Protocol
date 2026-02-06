@@ -8,6 +8,7 @@ triggers:
   - event-hook
   - plugin-development
   - opencode-extension
+disable-model-invocation: true
 ---
 
 # Creating OpenCode Plugins Skill

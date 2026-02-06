@@ -1,7 +1,9 @@
 ---
-version: "3.0.0"
-last_updated: "2026-02-05"
+version: "4.0.0"
+last_updated: "2026-02-06"
 changelog:
+  - "4.0.0: v2.1.33 optimization - skill categorization flags (disable-model-invocation, user-invocable: false), agent color field from matte palette, Claude Code native frontmatter format, SLASH_COMMAND_TOOL_CHAR_BUDGET awareness"
+  - "3.1.0: Added agent generation from domain scan - generates .claude/agents/ with project-appropriate agents, binds skills via frontmatter, generates skill-agent registry in CLAUDE.md, security team agent generation"
   - "3.0.0: Enhanced skill frontmatter (context: fork, agent:, allowed-tools:, dynamic context, $ARGUMENTS), skill-agent category mapping"
   - "2.0.0: Claude Code-first refactor - .claude/skills/ is primary output; Cursor .mdc generation is conditional on detection"
   - "1.6.0: Added Codex skill generation (.agents/skills/*) and platform selection support"
@@ -27,17 +29,19 @@ parameters:
 # /step-13-skillpack-generator — Project Skillpack Generator (Overlay Pattern)
 
 **Mission**
-Generate a **project-tailored Skillpack** that makes the right "expert mode" auto-trigger.
+Generate a **project-tailored Skillpack** and **agent team** that makes the right "expert mode" auto-trigger.
 
-**Primary output:**
+**Primary outputs:**
 - **Claude Code** (skills): `.claude/skills/*/SKILL.md` + a reusable plugin scaffold
+- **Claude Code** (agents): `.claude/agents/*.md` with project-appropriate agents and skill binding
+- **Skill-Agent Registry**: Injected into CLAUDE.md for delegation routing
 
 **Secondary outputs (conditional on detection):**
 - **Cursor IDE** (rule modules): `.cursor/rules/*.mdc` + router updates in `.cursorrules` (if Cursor detected)
 - **OpenCode** (skills): `.opencode/skill/*/SKILL.md` + optional agents (if OpenCode detected)
 - **Codex** (skills): `.agents/skills/*/SKILL.md` + optional `.codex/config.toml` (if Codex detected)
 
-**Context:** You are the **Skillpack Architect**. You do not write generic prompts; you produce *auto-triggering, project-constrained* skill modules that build on the Foundation Skills installed in Step 0.
+**Context:** You are the **Skillpack Architect**. You do not write generic prompts; you produce *auto-triggering, project-constrained* skill modules and purpose-built agents that build on the Foundation Skills installed in Step 0.
 
 ---
 
@@ -248,6 +252,10 @@ Detect which domains to generate based on evidence:
 | **API Security (NEW)** | PRDs mention `OWASP` or `RLS` OR `supabase` in stack | `api-security` |
 | **Server Actions (NEW)** | repo has `actions/**` OR PRDs contain `use server` patterns | `server-actions-patterns` |
 | **Agentic PRD (NEW)** | PRDs contain `SECTION 15` or `File Manifest` or `Implementation Order` | `agentic-prd-compliance` |
+| **AI/LLM** | `openai`, `anthropic`, `langchain`, `llm`, `ai-sdk` in package.json/code | Agent: `sigma-security-ai-safety` |
+| **Mobile** | `react-native`, `expo` in package.json OR `ios/`, `android/` directories | Agent: `sigma-security-mobile` |
+| **Infrastructure** | `Dockerfile`, `docker-compose.*`, `.github/workflows/`, `terraform/` | Agent: `sigma-security-infra` |
+| **Compliance** | GDPR/HIPAA/SOC2/PCI mentions in docs, privacy policy files | Agent: `sigma-security-compliance` |
 
 Keep the initial set small; prioritize quality over breadth.
 
@@ -277,7 +285,7 @@ Create/update:
 name: frontend-aesthetics
 description: "This skill should be used when building UI components, pages, or layouts. It provides project-specific design system enforcement and component patterns."
 version: "1.0.0"
-# Claude Code v2.1.32 enhanced frontmatter:
+# Claude Code v2.1.33 enhanced frontmatter:
 user-invocable: true
 argument-hint: "[component-name or file:line]"
 allowed-tools:
@@ -301,12 +309,38 @@ agent: sigma-frontend  # Routes to the frontend agent from .claude/agents/
 | `name` | Yes | Skill identifier (kebab-case) |
 | `description` | Yes | Third-person trigger description |
 | `version` | Yes | Semver version |
-| `user-invocable` | No | If `true`, available as `/skill-name` command |
+| `user-invocable` | No | If `false`, hidden from `/` menu but Claude can still auto-invoke |
+| `disable-model-invocation` | No | If `true`, Claude will NEVER auto-invoke — must use `/skill-name` explicitly |
 | `argument-hint` | No | Placeholder shown in command palette |
 | `allowed-tools` | No | Restricts which tools this skill can use |
 | `model` | No | Model override (`sonnet`, `haiku`, `opus`, `inherit`) |
 | `context` | No | `fork` runs in subagent (heavy skills), omit for inline |
 | `agent` | No | Routes to a specific custom agent from `.claude/agents/` |
+
+### Skill Categorization (v2.1.33+)
+
+Every generated skill should be categorized into one of three buckets by adding the appropriate frontmatter flag:
+
+**Category A — Manual-Only** (`disable-model-invocation: true`):
+Claude will NEVER auto-invoke. User must type `/skill-name` explicitly.
+Use for: step commands, deployment, session management, generators — things with side effects.
+
+**Category B — Claude-Invocable** (default, no flag needed):
+Claude auto-invokes when context matches. Shows in `/` menu.
+Use for: core workflow skills like research, security review, frontend design, verification.
+
+**Category C — Background Knowledge** (`user-invocable: false`):
+Claude CAN auto-invoke when relevant, but NOT shown in `/` menu.
+Use for: specialized domain knowledge, tooling-specific skills, niche domains.
+
+**Auto-categorization heuristics:**
+| Detected Pattern | Category | Flag |
+|-----------------|----------|------|
+| Step commands, deploy, scaffold, generator | A (Manual) | `disable-model-invocation: true` |
+| Research, review, design, security, testing | B (Default) | _(none)_ |
+| Framework-specific tooling, scanner configs, niche CRO | C (Background) | `user-invocable: false` |
+
+**Why this matters:** With `SLASH_COMMAND_TOOL_CHAR_BUDGET: "500000"` enabled, all skills get indexed. Categorization controls the `/` menu size and auto-invocation behavior to prevent context flooding.
 
 **When to use `context: fork`:**
 - Skills that scan many files (frontend-aesthetics, backend-engineering)
@@ -364,11 +398,152 @@ Each generated skill MUST be mapped to an agent from `.claude/agents/`. Include 
 | Database | database-modeling | sigma-backend |
 | Full-Stack | full-stack-enforcement | sigma-executor |
 | QA/Testing | agentic-prd-compliance | sigma-qa |
+| Security Lead | owasp-web-security, owasp-api-security, defense-in-depth, security-code-review | sigma-security-lead |
+| Web/API Security | owasp-web-security, owasp-api-security, better-auth-best-practices, create-auth-skill | sigma-security-web-api |
+| AI Safety | owasp-llm-security, dependency-security | sigma-security-ai-safety |
+| Infra Security | dependency-security, secrets-detection | sigma-security-infra |
+| Mobile Security | mobile-app-security, owasp-web-security | sigma-security-mobile |
+| Compliance | saas-security-patterns, security-code-review | sigma-security-compliance |
 
 Optional (recommended): add `references/` files per skill:
 - `references/stack-summary.md`
 - `references/design-token-summary.md` (if design system exists)
 - `references/prd-patterns.md`
+
+---
+
+## Phase 2.25: Generate Project Agents (.claude/agents/)
+
+**Read domain scan results from Step 12** and generate project-appropriate agents in `.claude/agents/`. Each agent file binds skills via `skills:` frontmatter.
+
+### Agent Generation Logic
+
+1. **Read Step 12 outputs**: Check `.claude/agents/` for existing agents from Step 12
+2. **Match domains to agent templates**: Use the source agent definitions in `src/agents/` as templates
+3. **Bind skills**: Each generated agent includes `skills:` frontmatter referencing the project's generated skills
+4. **Generate skill-agent registry**: Create the mapping table for CLAUDE.md injection
+
+### Mandatory Agents (Never Skip)
+
+The following agents are ALWAYS generated regardless of stack detection:
+- `sigma-planner`, `sigma-executor`, `sigma-reviewer`, `sigma-sisyphus`, `sigma-debugger`, `sigma-docs`
+- `sigma-security-lead`
+- **`sigma-devils-advocate`** (adversarial post-implementation review)
+- **`sigma-gap-analyst`** (requirements traceability + auto-fix gate)
+
+### Standard Agent Generation (from domain scan)
+
+| Detected Domain | Agent to Generate | Source Template | Skills to Bind |
+|----------------|-------------------|-----------------|----------------|
+| Frontend (React/Next.js) | `sigma-frontend.md` | `src/agents/frontend-engineer.md` | frontend-aesthetics, frontend-design, react-performance |
+| Backend (API/Actions) | `sigma-backend.md` | `src/agents/lead-architect.md` | backend-engineering, api-security, server-actions-patterns |
+| Testing (any framework) | `sigma-qa.md` | `src/agents/qa-engineer.md` | agentic-prd-compliance, senior-qa, tdd-skill-creation |
+| Always | `sigma-planner.md` | — | deep-research, brainstorming |
+| Always | `sigma-executor.md` | — | executing-plans |
+| Always | `sigma-reviewer.md` | — | verification-before-completion, quality-gates |
+| Always | `sigma-devils-advocate.md` | `src/agents/devils-advocate.md` | verification-before-completion, quality-gates |
+| Always | `sigma-gap-analyst.md` | `src/agents/gap-analyst.md` | gap-analysis, verification-before-completion, quality-gates |
+
+### Security Agent Generation (from domain scan)
+
+Generate security agents based on project characteristics. The security lead is always generated; specialists are conditional.
+
+| Detected Feature | Agent to Generate | Source Template | Skills to Bind |
+|-----------------|-------------------|-----------------|----------------|
+| Always | `sigma-security-lead.md` | `src/agents/security-lead.md` | owasp-web-security, owasp-api-security, defense-in-depth, security-code-review |
+| Web/SaaS (Next.js, Express, API routes) | `sigma-security-web-api.md` | `src/agents/security-web-api.md` | owasp-web-security, owasp-api-security, better-auth-best-practices |
+| AI/LLM (`openai`, `anthropic`, `langchain`) | `sigma-security-ai-safety.md` | `src/agents/security-ai-safety.md` | owasp-llm-security, dependency-security |
+| Infrastructure (Docker, CI/CD, Terraform) | `sigma-security-infra.md` | `src/agents/security-infra.md` | dependency-security, secrets-detection |
+| Mobile (React Native, Expo, ios/, android/) | `sigma-security-mobile.md` | `src/agents/security-mobile.md` | mobile-app-security, owasp-web-security |
+| Compliance (GDPR/HIPAA/SOC2/PCI mentions) | `sigma-security-compliance.md` | `src/agents/security-compliance.md` | saas-security-patterns, security-code-review |
+
+### Generated Agent Format (v2.1.33+)
+
+Each `.claude/agents/` file should follow this format with the `color` field from the matte palette:
+
+```yaml
+---
+name: sigma-security-lead
+description: Security coordinator and threat modeler for this project
+color: "#6B4F4F"
+tools:
+  - Read
+  - Grep
+  - Glob
+  - Bash
+model: sonnet
+permissionMode: acceptEdits
+skills:
+  - owasp-web-security
+  - owasp-api-security
+  - defense-in-depth
+  - security-code-review
+---
+
+# Role: Security Lead
+
+You are the security coordination agent for {{PROJECT_NAME}}.
+
+## Domain
+Threat modeling, security audit coordination, vulnerability prioritization, pen testing methodology.
+
+## Stack Context
+{{SECURITY_RELEVANT_STACK_DETAILS}}
+
+## Behavioral Rules
+1. Always conduct STRIDE analysis before approving new features
+2. Delegate specialized audits to domain-specific security agents
+3. Use CVSS scoring for vulnerability prioritization
+4. Generate actionable remediation roadmaps
+```
+
+### Matte Color Palette (v2.1.33+)
+
+Assign colors from this palette. All colors: 25-40% saturation, 35-55% brightness.
+
+| Agent Role | Color Name | Hex |
+|-----------|------------|-----|
+| Orchestrator/Lead | Slate | `#4A5568` |
+| Lead Architect | Charcoal | `#2D3748` |
+| Frontend | Sage | `#5B8A72` |
+| QA/Testing | Umber | `#7C6F5B` |
+| UX Director | Tan | `#8B7355` |
+| Design Systems | Teal Matte | `#6B8E8B` |
+| Product Owner | Plum | `#7B6B8A` |
+| Executor/Worker | Forest | `#5C7A6B` |
+| Content/Docs | Khaki | `#8A7D6B` |
+| Venture Studio | Indigo Matte | `#6B6B8A` |
+| Devil's Advocate | Brick | `#8B5C5C` |
+| Gap Analyst | Steel | `#5C6B7A` |
+| Security Lead | Maroon Matte | `#6B4F4F` |
+| Security Specialist | Rust | `#7A5C5C` |
+| Security AI | Slate Blue | `#5C5C6B` |
+| Security Infra | Olive | `#6B6B5C` |
+| Security Mobile | Moss | `#5C6B5C` |
+| Security Compliance | Sienna | `#7A6B5C` |
+| Data Engineering | Teal Dark | `#5C7A7A` |
+| Strategy/Quant | Grape | `#6B5C7A` |
+
+Security agents share the red-brown family. Frontend/design share the green family. Use the closest match for custom agents.
+
+### Skill-Agent Registry Generation
+
+After generating agents, create the skill-agent registry mapping for CLAUDE.md:
+
+```markdown
+## Skill-Agent Registry
+
+| Category | Skills | Assigned Agent |
+|----------|--------|---------------|
+| Frontend | frontend-aesthetics, frontend-design | sigma-frontend |
+| Backend | backend-engineering, api-security | sigma-backend |
+| Security Lead | owasp-web-security, defense-in-depth, security-code-review | sigma-security-lead |
+| Web/API Security | owasp-api-security, better-auth-best-practices | sigma-security-web-api |
+{additional mappings based on detected domains}
+```
+
+**HITL checkpoint** → Confirm agent generation before writing.
+**Prompt:** "Will generate [N] agents in `.claude/agents/` (including [M] security agents). Reply `confirm` to continue."
 
 ---
 
@@ -600,6 +775,11 @@ Create a machine-readable section that maps file patterns to agents:
 | `**/db/**`, `**/schema/**` | `@lead-architect` | `@senior-architect` |
 | `**/hooks/**` | `@frontend-engineer` | `@senior-architect` |
 | `docs/prds/**` | `@product-owner` | `@senior-architect` |
+| `**/auth/**`, `**/middleware.*` | `@security-web-api` | `@security-lead` |
+| `**/ai/**`, `**/llm/**`, `**/prompts/**` | `@security-ai-safety` | `@security-lead` |
+| `Dockerfile`, `.github/**`, `**/ci/**` | `@security-infra` | `@security-lead` |
+| `ios/**`, `android/**`, `**/mobile/**` | `@security-mobile` | `@security-lead` |
+| `**/privacy/**`, `**/consent/**` | `@security-compliance` | `@security-lead` |
 
 ### By Acceptance Criteria Type
 
@@ -962,6 +1142,9 @@ These validators enable "Closed Loop Prompt" pattern where agents auto-fix failu
 Return:
 - Detected domains
 - Workspace architecture (single-root vs multi-root)
+- **Agents generated** (list of `.claude/agents/*.md` files with skill bindings)
+- **Security agents generated** (which security agents and why)
+- **Skill-agent registry** (the mapping table injected into CLAUDE.md)
 - Cursor modules created/updated (with location)
 - Claude skills created/updated (with location)
 - Codex skills created/updated (with location, if generated)
@@ -1032,6 +1215,16 @@ If Codex is detected, also require:
 | has_pattern:backend-engineering/SKILL.md:context:\|agent:\|allowed-tools: | Claude skill uses enhanced frontmatter | 4 |
 | has_pattern:frontend-aesthetics/SKILL.md:agent: sigma- | Skill maps to a custom agent | 5 |
 | has_pattern:frontend-aesthetics.mdc:globs: | Cursor frontend rule has globs (if Cursor detected) | 5 |
+
+### Agent Generation (20 points)
+
+| Check | Description | Points |
+|------|-------------|--------|
+| file_exists:.claude/agents/sigma-security-lead.md | Security lead agent always generated | 5 |
+| has_pattern:sigma-security-lead.md:skills: | Security lead has skill binding | 3 |
+| has_pattern:CLAUDE.md:Skill-Agent Registry | CLAUDE.md has skill-agent registry | 5 |
+| has_pattern:CLAUDE.md:Security Agents\|security-lead | CLAUDE.md references security team | 4 |
+| file_count:.claude/agents/:3 | At least 3 agent files generated | 3 |
 
 ### Overlay Integrity (30 points)
 

@@ -1,270 +1,147 @@
-# Fintech App Boilerplate
+# Fintech Trading Platform Boilerplate
 
-> Complete mobile finance application shell for trading apps, banking platforms, and budgeting tools
+Production-ready mobile trading platform with 114+ screens, 21 flow PRDs, broker OAuth integration, subscription management, and a Next.js landing page.
 
-## Overview
+## What's Included
 
-The Fintech boilerplate provides everything you need to build secure, high-performance financial mobile applications. From real-time market data to secure transactions, this shell handles the complex fintech patterns so you can focus on your unique financial product.
-
-**Extends**: [expo-mobile](../../../expo-mobile)
-
-## Screenshots
-
-```
-┌─────────────────┐  ┌─────────────────┐  ┌─────────────────┐
-│   📈 Portfolio  │  │   💰 Trade      │  │   📊 Charts     │
-│                 │  │                 │  │                 │
-│  $24,567.89     │  │   AAPL          │  │   AAPL 1D      │
-│  +$1,234 (5.3%) │  │   $178.50       │  │   ┌──────────┐  │
-│                 │  │   +2.34%        │  │   │    /\    │  │
-│  ┌───────────┐  │  │                 │  │   │   /  \   │  │
-│  │ AAPL +2%  │  │  │  Amount:       │  │   │  /    \  │  │
-│  │ TSLA -1%  │  │  │  [ 10 shares ] │  │   │ /      \ │  │
-│  │ MSFT +3%  │  │  │                 │  │   └──────────┘  │
-│  └───────────┘  │  │  [ BUY $1785 ] │  │   Vol: 45.2M    │
-└─────────────────┘  └─────────────────┘  └─────────────────┘
-```
-
-## Quick Start
-
-```bash
-# Initialize new fintech app
-sigma scaffold my-trading-app --boilerplate=mobile-fintech
-
-# Install dependencies
-cd my-trading-app
-npm install
-
-# Start development
-npx expo start
-```
+| Component | Description |
+|-----------|-------------|
+| `mobile/` | Expo SDK 52 + React Native app (114+ screens) |
+| `landing/` | Next.js 15 marketing landing page with waitlist |
+| `docs/` | Architecture docs, 21 flow PRDs, wireframes, API specs |
 
 ## Tech Stack
 
 | Layer | Technology |
 |-------|------------|
-| Framework | Expo SDK 52+ / React Native |
-| Navigation | Expo Router v3 |
+| Framework | Expo SDK 52 / React Native (New Architecture) |
+| Navigation | Expo Router v3 (typed routes) |
 | State | Zustand + React Query |
-| Backend | Supabase + Edge Functions |
-| Charts | Victory Native / react-native-wagmi-charts |
-| WebSocket | Supabase Realtime / Custom WS |
-| Security | expo-secure-store + Biometrics |
-| Payments | Stripe / Plaid ready |
+| Styling | NativeWind + Tailwind CSS |
+| Backend | Supabase (Auth, Database, Edge Functions, Realtime) |
+| Subscriptions | RevenueCat (3-tier: Basic / Pro / Elite) |
+| Broker | TradeLocker OAuth integration |
+| Landing | Next.js 15 + shadcn/ui |
 
-## Project Structure
+## App Screens & Flows
 
-```
-mobile-fintech/
-├── app/
-│   ├── (tabs)/
-│   │   ├── index.tsx           # Portfolio dashboard
-│   │   ├── markets/            # Market discovery
-│   │   ├── trade/              # Trading interface
-│   │   ├── activity/           # Transaction history
-│   │   └── account/            # Account management
-│   ├── (modals)/
-│   │   ├── buy.tsx             # Buy order flow
-│   │   ├── sell.tsx            # Sell order flow
-│   │   └── transfer.tsx        # Fund transfers
-│   ├── asset/
-│   │   └── [symbol].tsx        # Asset detail page
-│   └── (auth)/
-│       └── verify.tsx          # Additional verification
-├── components/
-│   ├── portfolio/
-│   │   ├── PortfolioCard.tsx
-│   │   ├── HoldingsList.tsx
-│   │   └── PerformanceChart.tsx
-│   ├── trading/
-│   │   ├── OrderForm.tsx
-│   │   ├── PriceDisplay.tsx
-│   │   └── OrderBook.tsx
-│   ├── charts/
-│   │   ├── CandlestickChart.tsx
-│   │   ├── LineChart.tsx
-│   │   └── TimeframeSelector.tsx
-│   └── ui/
-├── hooks/
-│   ├── use-portfolio.ts        # Portfolio state
-│   ├── use-market-data.ts      # Real-time prices
-│   ├── use-orders.ts           # Order management
-│   └── use-biometrics.ts       # Biometric auth
-├── lib/
-│   ├── market-data/            # Price feeds
-│   ├── trading/                # Order execution
-│   └── security/               # Security utilities
-└── modules/
-    ├── portfolio/              # Portfolio logic
-    ├── trading/                # Trading engine
-    ├── markets/                # Market discovery
-    └── compliance/             # KYC/AML hooks
-```
+### 21 Flow PRDs (in `docs/prds/flows/`)
 
-## Key Features
+| # | Flow | Screens |
+|---|------|---------|
+| 01 | Launch | Splash, force update, maintenance |
+| 02 | Access Gating | Waitlist join, invite code, early access |
+| 03 | Onboarding | Welcome, value props (3), biometric, notifications |
+| 04 | Auth | Sign in, sign up, forgot/reset password, OAuth callback |
+| 05 | Broker Connection | Start, TradeLocker OAuth, success/failure |
+| 06 | Portfolio Funding | Minimum info, balance, fund prompt, ready |
+| 07 | Risk Activation | Select strategy, customize, activate, success |
+| 08 | Home | Dashboard, AI status, portfolio summary, notifications |
+| 09 | Income | History, earnings share, history gate (paywall) |
+| 10 | AI | AI assistant, cycle status |
+| 11 | Account Hub | Profile, settings |
+| 12 | Account Brokers | Broker list, add broker |
+| 13 | Subscription | Plans compare, manage, paywall, founding member |
+| 14 | Security | Biometric settings, PIN, 2FA |
+| 15 | Notifications | Preferences, history |
+| 16 | Support | Help center, articles |
+| 17 | Legal | Terms, privacy policy |
+| 18 | Referral | Invite, terms, redeem |
+| 19 | Bonuses | Discord, masterclass, quickstart, skins |
+| 20 | Withdrawal | Confirm, processing, complete |
+| 21 | System States | Offline, error, access denied, no broker, session expired |
 
-### 📈 Portfolio Dashboard
-- Real-time portfolio valuation
-- Gain/loss visualization
-- Holdings breakdown
-- Performance charts (1D, 1W, 1M, 1Y, All)
-- Asset allocation pie chart
-
-### 💰 Trading Interface
-- Market/limit orders
-- Real-time price updates
-- Order book visualization
-- Trade confirmation flow
-- Order history
-
-### 📊 Market Data
-- Real-time quotes
-- Candlestick charts
-- Technical indicators
-- Watchlists
-- Price alerts
-
-### 🔒 Security
-- Biometric authentication
-- PIN/passcode
-- 2FA enforcement
-- Secure storage
-- Session management
-
-## Database Schema
-
-```sql
--- Core tables included
-users
-accounts
-portfolios
-holdings
-orders
-transactions
-watchlists
-alerts
-verification_status
-```
-
-## Real-Time Architecture
+### Screen Groups
 
 ```
-┌─────────────────────────────────────────────────────────┐
-│                     Mobile App                          │
-│  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐     │
-│  │  Portfolio  │  │   Trading   │  │   Markets   │     │
-│  │  Component  │  │  Component  │  │  Component  │     │
-│  └──────┬──────┘  └──────┬──────┘  └──────┬──────┘     │
-│         │                │                │             │
-│         └────────────────┼────────────────┘             │
-│                          │                              │
-│                 ┌────────┴────────┐                     │
-│                 │  Market Data    │                     │
-│                 │    Service      │                     │
-│                 └────────┬────────┘                     │
-└─────────────────────────│──────────────────────────────┘
-                          │
-              ┌───────────┴───────────┐
-              │                       │
-     ┌────────┴────────┐    ┌────────┴────────┐
-     │  Price Feed WS  │    │    Supabase     │
-     │  (Market Data)  │    │   (Portfolio)   │
-     └─────────────────┘    └─────────────────┘
+app/
+  (auth)/       - Sign in, sign up, forgot password, reset, OAuth callback
+  (onboarding)/ - Welcome, value props, biometric setup, notifications
+  (gate)/       - Waitlist, invite code, early access
+  (broker)/     - Broker connection flow (TradeLocker)
+  (portfolio)/  - Portfolio setup and funding
+  (risk)/       - Risk strategy selection and activation
+  (tabs)/       - Main app (home, income, AI, account, withdraw)
+  (system)/     - Error states (offline, expired, denied)
 ```
 
-## Configuration
+## Broker OAuth Flow
 
-```typescript
-// config/fintech.ts
-export const fintechConfig = {
-  trading: {
-    minOrderAmount: 1.00,
-    maxOrderAmount: 100000,
-    supportedOrderTypes: ['market', 'limit'],
-    tradingHours: { start: '09:30', end: '16:00', timezone: 'America/New_York' }
-  },
-  security: {
-    requireBiometrics: true,
-    sessionTimeout: 15, // minutes
-    requirePinForTrade: true
-  },
-  marketData: {
-    refreshInterval: 1000, // ms for real-time
-    chartIntervals: ['1m', '5m', '15m', '1h', '1d', '1w']
-  },
-  compliance: {
-    requireKYC: true,
-    kycProvider: 'plaid', // or 'jumio', 'onfido'
-  }
-}
+The boilerplate includes a complete broker OAuth integration with TradeLocker:
+
+1. User initiates connection from broker screen
+2. App opens TradeLocker OAuth in WebView
+3. User authenticates with their broker credentials
+4. OAuth callback returns tokens to the app
+5. Tokens stored in secure storage (expo-secure-store)
+6. Broker accounts listed in account management
+
+### Supported Brokers (via TradeLocker)
+
+IC Markets, Pepperstone, OANDA, FTMO, FundedNext (configurable in `mobile/lib/constants/brokers.ts`)
+
+## Quick Start
+
+```bash
+# 1. Copy to your project
+cp -r templates/boilerplates/products/mobile/fintech/ my-trading-app/
+
+# 2. Configure branding
+# Edit: mobile/lib/config/brand.ts (app name, colors, bundle ID)
+# Edit: mobile/tailwind.config.js (color palette)
+# Edit: landing/src/lib/config.tsx (site name, copy, pricing)
+
+# 3. Install mobile dependencies
+cd my-trading-app/mobile
+npm install
+
+# 4. Set environment variables
+cp .env.example .env.local
+# Fill in: SUPABASE_URL, SUPABASE_ANON_KEY, REVENUECAT_API_KEY, TRADELOCKER_CLIENT_ID
+
+# 5. Start development
+npx expo start
 ```
 
-## Premium Features (RevenueCat)
+## Environment Variables
 
-The boilerplate includes subscription gates for:
-- Real-time streaming quotes
-- Advanced charting tools
-- Extended trading hours
-- Unlimited watchlists
-- Priority order execution
+| Variable | Service | Required |
+|----------|---------|----------|
+| `EXPO_PUBLIC_SUPABASE_URL` | Supabase | Yes |
+| `EXPO_PUBLIC_SUPABASE_ANON_KEY` | Supabase | Yes |
+| `REVENUECAT_API_KEY` | RevenueCat | For subscriptions |
+| `TRADELOCKER_CLIENT_ID` | TradeLocker | For broker OAuth |
+| `TRADELOCKER_REDIRECT_URI` | TradeLocker | For broker OAuth |
+| `NEXT_PUBLIC_APP_URL` | Landing page | For landing page |
 
-## Security Implementation
+## Configuration Files
 
-### Biometric Authentication
-```typescript
-import { useBiometrics } from '@/hooks/use-biometrics'
+| File | Purpose |
+|------|---------|
+| `mobile/lib/config/brand.ts` | App name, colors, bundle ID |
+| `mobile/lib/config/trading.ts` | Market data providers, trading hours, order types |
+| `mobile/lib/config/integrations.ts` | Broker provider, API endpoints |
+| `mobile/lib/constants/subscription.ts` | Plan tiers, pricing, IAP product IDs |
+| `mobile/lib/constants/brokers.ts` | Supported brokers list |
+| `mobile/tailwind.config.js` | Color palette and theme |
+| `landing/src/lib/config.tsx` | Landing page content, pricing, FAQs |
 
-const { authenticate, isAvailable } = useBiometrics()
+## Documentation
 
-// Required before trading
-await authenticate('Confirm trade')
-```
-
-### Secure Storage
-```typescript
-import { secureStore } from '@/lib/security'
-
-// Tokens, keys, sensitive data
-await secureStore.set('auth_token', token)
-```
-
-## Compliance Hooks
-
-Built-in hooks for regulatory compliance:
-
-```typescript
-// lib/compliance/hooks.ts
-export const complianceHooks = {
-  beforeTrade: async (order) => {
-    // Pattern day trader check
-    // Margin requirements
-    // Account restrictions
-  },
-  afterTrade: async (execution) => {
-    // Audit logging
-    // Reporting
-  }
-}
-```
-
-## Market Data Integration
-
-The boilerplate supports multiple market data providers:
-
-```typescript
-// lib/market-data/providers.ts
-export const providers = {
-  alpaca: AlpacaProvider,     // Stocks
-  polygon: PolygonProvider,   // Stocks (premium)
-  coinbase: CoinbaseProvider, // Crypto
-  mock: MockProvider          // Development
-}
-```
+| Doc | Location |
+|-----|----------|
+| Architecture | `docs/architecture/ARCHITECTURE.md` |
+| Tech Stack | `docs/architecture/TECH-STACK.md` |
+| API Spec | `docs/api/API-SPEC.md` |
+| Database Schema | `docs/database/SCHEMA.md` |
+| Security | `docs/security/SECURITY.md` |
+| Flow Tree | `docs/flows/FLOW-TREE.md` |
+| Screen Inventory | `docs/flows/SCREEN-INVENTORY.md` |
+| UX Design | `docs/ux/UX-DESIGN.md` |
+| All 21 Flow PRDs | `docs/prds/flows/` |
 
 ## See Also
 
 - [FEATURES.md](./FEATURES.md) - Complete feature breakdown
-- [expo-mobile](../../../expo-mobile) - Base boilerplate
-- [SigmaTrade Demo](../../../../demos/showcase/sigma-trade) - Marketing showcase
-
-
+- [mobile/BROKER-QUICK-START.md](./mobile/BROKER-QUICK-START.md) - Broker integration guide
+- [mobile/SUBSCRIPTION-QUICK-START.md](./mobile/SUBSCRIPTION-QUICK-START.md) - Subscription setup guide

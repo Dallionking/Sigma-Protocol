@@ -7,6 +7,7 @@ description: When the user wants help with paid advertising campaigns on Google 
 name: paid-ads
 source: marketing
 version: 1.0.0
+user-invocable: false
 ---
 
 # Paid Ads

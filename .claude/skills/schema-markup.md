@@ -6,6 +6,7 @@ description: When the user wants to add, fix, or optimize schema markup and stru
 name: schema-markup
 source: marketing
 version: 1.0.0
+user-invocable: false
 ---
 
 # Schema Markup

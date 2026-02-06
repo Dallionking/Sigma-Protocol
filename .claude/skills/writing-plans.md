@@ -4,6 +4,7 @@ description: Use when you have a spec or requirements for a multi-step task, bef
 name: writing-plans
 source: superpowers
 version: 1.0.0
+user-invocable: false
 ---
 
 # Writing Plans

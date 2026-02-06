@@ -7,6 +7,7 @@ description: Comprehensive smart contract development advisor based on Trail of 
 name: guidelines-advisor
 source: trailofbits
 version: 1.0.0
+user-invocable: false
 ---
 
 # Guidelines Advisor

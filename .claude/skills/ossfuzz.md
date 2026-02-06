@@ -6,6 +6,7 @@ description: 'OSS-Fuzz provides free continuous fuzzing for open source projects
 name: ossfuzz
 source: trailofbits
 version: 1.0.0
+user-invocable: false
 ---
 
 # OSS-Fuzz

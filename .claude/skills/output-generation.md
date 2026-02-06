@@ -6,6 +6,7 @@ triggers:
   - document-creation
   - artifact-generation
   - report-writing
+disable-model-invocation: true
 ---
 
 # Output Generation Skill

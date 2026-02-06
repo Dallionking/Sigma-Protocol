@@ -6,6 +6,7 @@ description: Provides React Native performance optimization guidelines for FPS, 
 name: react-native-best-practices
 source: callstack
 version: 1.0.0
+user-invocable: false
 ---
 
 # React Native Best Practices

@@ -2,6 +2,7 @@
 name: sigma-exit
 description: Capture rich session context before ending a Claude session
 allowed-tools: Read, Write, Bash, Glob
+disable-model-invocation: true
 ---
 
 # Sigma Exit - Session Context Capture

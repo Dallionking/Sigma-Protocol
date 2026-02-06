@@ -9,6 +9,7 @@ triggers:
   - prd parsing
   - complexity analysis
   - task expansion
+disable-model-invocation: true
 ---
 
 # @taskmaster-integration

@@ -6,6 +6,7 @@ description: 'Techniques for writing effective fuzzing harnesses across language
 name: harness-writing
 source: trailofbits
 version: 1.0.0
+user-invocable: false
 ---
 
 # Writing Fuzzing Harnesses

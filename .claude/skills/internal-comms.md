@@ -7,6 +7,7 @@ description: A set of resources to help me write all kinds of internal communica
 name: internal-comms
 source: anthropics
 version: 1.0.0
+user-invocable: false
 ---
 
 ## When to use this skill

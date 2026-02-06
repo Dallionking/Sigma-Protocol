@@ -3,6 +3,7 @@ description: Build and distribute Expo development clients locally or via TestFl
 name: expo-dev-client
 source: expo
 version: 1.0.0
+user-invocable: false
 ---
 
 Use EAS Build to create development clients for testing native code changes on physical devices. Use this for creating custom Expo Go clients for testing branches of your app.

@@ -6,6 +6,7 @@ description: 'LibAFL is a modular fuzzing library for building custom fuzzers. U
 name: libafl
 source: trailofbits
 version: 1.0.0
+user-invocable: false
 ---
 
 # LibAFL

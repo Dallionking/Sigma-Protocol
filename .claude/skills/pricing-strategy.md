@@ -7,6 +7,7 @@ description: When the user wants help with pricing decisions, packaging, or mone
 name: pricing-strategy
 source: marketing
 version: 1.0.0
+user-invocable: false
 ---
 
 # Pricing Strategy

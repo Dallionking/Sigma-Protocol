@@ -6,6 +6,7 @@ description: Parse, analyze, and process SARIF (Static Analysis Results Intercha
 name: sarif-parsing
 source: trailofbits
 version: 1.0.0
+user-invocable: false
 ---
 
 # SARIF Parsing Best Practices

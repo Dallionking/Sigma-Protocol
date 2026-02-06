@@ -7,6 +7,7 @@ description: Use when interpreting Culture Index surveys, CI profiles, behaviora
 name: interpreting-culture-index
 source: trailofbits
 version: 1.0.0
+user-invocable: false
 ---
 
 <essential_principles>

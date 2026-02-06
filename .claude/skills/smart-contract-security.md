@@ -4,6 +4,7 @@ description: Multi-chain smart contract security patterns and vulnerability dete
 version: 1.0.0
 tags: [security, smart-contracts, blockchain, solana, evm, bridges, audit]
 triggers: [audit, security-review, smart-contract, solidity, rust, anchor, bridge, defi]
+user-invocable: false
 ---
 
 # Smart Contract Security

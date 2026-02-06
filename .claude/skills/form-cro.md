@@ -8,6 +8,7 @@ description: When the user wants to optimize any form that is NOT signup/registr
 name: form-cro
 source: marketing
 version: 1.0.0
+user-invocable: false
 ---
 
 # Form CRO

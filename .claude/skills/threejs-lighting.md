@@ -4,6 +4,7 @@ description: Three.js lighting - light types, shadows, environment lighting. Use
 name: threejs-lighting
 source: threejs
 version: 1.0.0
+user-invocable: false
 ---
 
 # Three.js Lighting

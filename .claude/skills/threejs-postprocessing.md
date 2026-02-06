@@ -5,6 +5,7 @@ description: Three.js post-processing - EffectComposer, bloom, DOF, screen effec
 name: threejs-postprocessing
 source: threejs
 version: 1.0.0
+user-invocable: false
 ---
 
 # Three.js Post-Processing

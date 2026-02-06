@@ -3,6 +3,7 @@ description: Guidelines for upgrading Expo SDK versions and fixing dependency is
 name: upgrading-expo
 source: expo
 version: 1.0.0
+user-invocable: false
 ---
 
 ## References

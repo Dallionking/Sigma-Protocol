@@ -8,6 +8,7 @@ triggers:
   - opencode-agent
   - swarm-agent
   - agent-configuration
+disable-model-invocation: true
 ---
 
 # OpenCode Agent Generator Skill

@@ -5,6 +5,7 @@ description: Three.js textures - texture types, UV mapping, environment maps, te
 name: threejs-textures
 source: threejs
 version: 1.0.0
+user-invocable: false
 ---
 
 # Three.js Textures

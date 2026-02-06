@@ -4,6 +4,7 @@ description: Complete guide for building beautiful apps with Expo Router. Covers
 name: building-native-ui
 source: expo
 version: 1.0.0
+user-invocable: false
 ---
 
 # Expo UI Guidelines

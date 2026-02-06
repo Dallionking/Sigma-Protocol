@@ -6,6 +6,7 @@ description: Provides expertise for analyzing DWARF debug files and understandin
 name: dwarf-expert
 source: trailofbits
 version: 1.0.0
+user-invocable: false
 ---
 
 # Overview

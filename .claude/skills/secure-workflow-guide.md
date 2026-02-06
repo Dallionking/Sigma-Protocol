@@ -6,6 +6,7 @@ description: Guide you through Trail of Bits' 5-step secure development workflow
 name: secure-workflow-guide
 source: trailofbits
 version: 1.0.0
+user-invocable: false
 ---
 
 # Secure Workflow Guide

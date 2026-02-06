@@ -5,6 +5,7 @@ description: Three.js interaction - raycasting, controls, mouse/touch input, obj
 name: threejs-interaction
 source: threejs
 version: 1.0.0
+user-invocable: false
 ---
 
 # Three.js Interaction

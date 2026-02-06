@@ -4,6 +4,7 @@ description: Use when implementing any feature or bugfix, before writing impleme
 name: test-driven-development
 source: superpowers
 version: 1.1.0
+user-invocable: false
 ---
 
 # Test-Driven Development (TDD)

@@ -9,6 +9,7 @@ triggers:
   - decision-history
   - conversation-search
   - project-memory
+disable-model-invocation: true
 ---
 
 # Remembering Conversations Skill

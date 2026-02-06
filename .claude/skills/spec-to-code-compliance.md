@@ -5,6 +5,7 @@ description: Verifies code implements exactly what documentation specifies for b
 name: spec-to-code-compliance
 source: trailofbits
 version: 1.0.0
+user-invocable: false
 ---
 
 ## When to Use

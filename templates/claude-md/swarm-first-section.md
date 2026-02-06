@@ -37,13 +37,19 @@ Every task, no matter how simple, should leverage the agent swarm:
 | Planning/Architecture | sigma-planner | sigma-researcher |
 | Code Implementation | sigma-executor | sigma-backend, sigma-frontend |
 | Bug Fixes | sigma-executor | sigma-reviewer |
-| Research | sigma-researcher | — |
-| Code Review | sigma-reviewer | — |
-| Verification | sigma-sisyphus | — |
+| Research | sigma-researcher | -- |
+| Code Review | sigma-reviewer | -- |
+| Verification | sigma-sisyphus | -- |
 | Frontend Work | sigma-frontend | sigma-executor |
 | Backend Work | sigma-backend | sigma-executor |
 | Testing | sigma-qa | sigma-reviewer |
 | Documentation | sigma-docs | sigma-researcher |
+| Security Audit | sigma-security | sigma-security-web, sigma-security-infra |
+| Auth/API Security | sigma-security-web | sigma-security |
+| Infra/Supply Chain | sigma-security-infra | sigma-security |
+| Compliance | sigma-security-compliance | sigma-security |
+| Mobile Security | sigma-security-mobile | sigma-security |
+| AI/LLM Safety | sigma-security-ai | sigma-security |
 
 ### Spawning Sub-Agents
 
@@ -71,6 +77,12 @@ Use Task tool with:
 | `sigma-backend` | API/Data | @api-design-principles, @architecture-patterns | APIs, databases |
 | `sigma-qa` | Testing | @senior-qa, @quality-gates | Test writing, coverage |
 | `sigma-docs` | Documentation | @skill-writer, @output-generation | Docs, README updates |
+| `sigma-security` | Security Lead | @owasp-web-security, @defense-in-depth, @security-code-review | Security audits, threat modeling |
+| `sigma-security-web` | Web/API Sec | @owasp-web-security, @owasp-api-security, @better-auth-best-practices | Auth review, OWASP Top 10 |
+| `sigma-security-infra` | Infra Sec | @dependency-security, @secrets-detection | Supply chain, CI/CD, containers |
+| `sigma-security-compliance` | Compliance | @saas-security-patterns, @security-code-review | SOC 2, GDPR, HIPAA |
+| `sigma-security-mobile` | Mobile Sec | @mobile-app-security | React Native, iOS, Android |
+| `sigma-security-ai` | AI Safety | @owasp-llm-security | Prompt injection, LLM security |
 
 ### Agent Spawn Examples
 

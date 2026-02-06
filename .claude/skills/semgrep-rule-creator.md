@@ -7,6 +7,7 @@ description: Create custom Semgrep rules for detecting bug patterns and security
 name: semgrep-rule-creator
 source: trailofbits
 version: 1.0.0
+user-invocable: false
 ---
 
 # Semgrep Rule Creator

@@ -5,6 +5,7 @@ description: Use when starting feature work that needs isolation from current wo
 name: using-git-worktrees
 source: superpowers
 version: 1.0.0
+disable-model-invocation: true
 ---
 
 # Using Git Worktrees

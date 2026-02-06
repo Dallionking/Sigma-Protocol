@@ -5,6 +5,7 @@ description: Helps understand and write EAS workflow YAML files for Expo project
 name: expo-cicd-workflows
 source: expo
 version: 1.0.0
+user-invocable: false
 ---
 
 # EAS Workflows Skill

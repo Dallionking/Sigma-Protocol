@@ -7,6 +7,7 @@ description: When the user wants to optimize signup, registration, account creat
 name: signup-flow-cro
 source: marketing
 version: 1.0.0
+user-invocable: false
 ---
 
 # Signup Flow CRO

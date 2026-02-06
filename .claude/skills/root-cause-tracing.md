@@ -11,6 +11,7 @@ triggers:
   - recurring bug
   - bug keeps coming back
   - deep debugging
+user-invocable: false
 ---
 
 # Root Cause Tracing

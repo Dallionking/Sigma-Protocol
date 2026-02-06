@@ -6,6 +6,7 @@ description: 'cargo-fuzz is the de facto fuzzing tool for Rust projects using Ca
 name: cargo-fuzz
 source: trailofbits
 version: 1.0.0
+user-invocable: false
 ---
 
 # cargo-fuzz

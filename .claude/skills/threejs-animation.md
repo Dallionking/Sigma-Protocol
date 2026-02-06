@@ -5,6 +5,7 @@ description: Three.js animation - keyframe animation, skeletal animation, morph 
 name: threejs-animation
 source: threejs
 version: 1.0.0
+user-invocable: false
 ---
 
 # Three.js Animation

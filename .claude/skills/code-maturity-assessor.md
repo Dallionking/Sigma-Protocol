@@ -7,6 +7,7 @@ description: Systematic code maturity assessment using Trail of Bits' 9-category
 name: code-maturity-assessor
 source: trailofbits
 version: 1.0.0
+user-invocable: false
 ---
 
 # Code Maturity Assessor

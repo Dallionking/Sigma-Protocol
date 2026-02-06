@@ -6,6 +6,7 @@ description: 'CodeQL is a static analysis framework that queries code as a datab
 name: codeql
 source: trailofbits
 version: 1.0.0
+user-invocable: false
 ---
 
 # CodeQL

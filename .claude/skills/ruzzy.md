@@ -6,6 +6,7 @@ description: 'Ruzzy is a coverage-guided Ruby fuzzer by Trail of Bits. Use for f
 name: ruzzy
 source: trailofbits
 version: 1.0.0
+user-invocable: false
 ---
 
 # Ruzzy

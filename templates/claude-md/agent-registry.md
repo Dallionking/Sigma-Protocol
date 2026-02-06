@@ -20,7 +20,12 @@ Step 12 injects this into CLAUDE.md during context engine generation.
 | `sigma-backend` | API/Data | `@api-design-principles`, `@architecture-patterns` | APIs, server actions, database |
 | `sigma-qa` | Testing | `@senior-qa`, `@quality-gates`, `@systematic-debugging` | Test writing, coverage |
 | `sigma-docs` | Documentation | `@skill-writer`, `@output-generation` | Docs, README, comments |
-| `sigma-security` | Security | `@security-audit`, `@api-security` | Auth, RLS, vulnerability checks |
+| `sigma-security` | Security Lead | `@owasp-web-security`, `@owasp-api-security`, `@defense-in-depth`, `@security-code-review` | Threat modeling, security audit coordination, risk prioritization |
+| `sigma-security-web` | Web/API Security | `@owasp-web-security`, `@owasp-api-security`, `@better-auth-best-practices` | Auth review, injection checks, XSS, BOLA |
+| `sigma-security-infra` | Infra Security | `@dependency-security`, `@secrets-detection` | Container scanning, CI/CD hardening, supply chain |
+| `sigma-security-compliance` | Compliance | `@saas-security-patterns`, `@security-code-review` | SOC 2, GDPR, HIPAA, PCI-DSS audits |
+| `sigma-security-mobile` | Mobile Security | `@mobile-app-security`, `@owasp-web-security` | React Native security, certificate pinning, secure storage |
+| `sigma-security-ai` | AI Safety | `@owasp-llm-security`, `@dependency-security` | Prompt injection, LLM output validation, AI supply chain |
 
 ### Task Type Routing
 
@@ -34,6 +39,11 @@ Step 12 injects this into CLAUDE.md during context engine generation.
 | `**/styles/**`, `**/design/**` | `sigma-frontend` | `sigma-executor` |
 | `**/db/**`, `**/schema/**` | `sigma-backend` | `sigma-executor` |
 | `docs/prds/**` | `sigma-planner` | `sigma-researcher` |
+| `**/auth/**`, `**/middleware/**` | `sigma-security-web` | `sigma-security` |
+| `**/security/**`, `**/policies/**` | `sigma-security` | `sigma-security-compliance` |
+| `Dockerfile`, `*.yml` (CI/CD) | `sigma-security-infra` | `sigma-security` |
+| `**/ai/**`, `**/llm/**`, `**/prompts/**` | `sigma-security-ai` | `sigma-security` |
+| `**/mobile/**`, `**/ios/**`, `**/android/**` | `sigma-security-mobile` | `sigma-security` |
 
 ### Spawning Pattern
 
@@ -53,6 +63,14 @@ Prompt: "Verify all acceptance criteria for PRD-001. Use @gap-analysis if issues
 <!-- Research before implementation -->
 Task tool: spawn sigma-researcher
 Prompt: "Research Supabase RLS patterns for multi-tenant apps. Use @sigmavue-research skill."
+
+<!-- Security audit -->
+Task tool: spawn sigma-security
+Prompt: "Run full security audit. Coordinate sigma-security-web for OWASP Top 10, sigma-security-infra for dependencies."
+
+<!-- Compliance check -->
+Task tool: spawn sigma-security-compliance
+Prompt: "Run SOC 2 compliance check. Use @saas-security-patterns skill. Output compliance report."
 ```
 
 ### Agent Communication Protocol

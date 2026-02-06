@@ -11,6 +11,7 @@ triggers:
   - visual review
   - inline annotation
   - code location mapping
+user-invocable: false
 ---
 
 # Agentation Skill

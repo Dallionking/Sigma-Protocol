@@ -7,6 +7,7 @@ description: 'Identifies error-prone APIs, dangerous configurations, and footgun
 name: sharp-edges
 source: trailofbits
 version: 1.0.0
+user-invocable: false
 ---
 
 # Sharp Edges Analysis

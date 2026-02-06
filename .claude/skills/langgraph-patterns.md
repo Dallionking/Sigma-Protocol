@@ -4,6 +4,7 @@ description: Use when designing stateful multi-step AI workflows, implementing c
 version: 1.0.0
 tags: [langgraph, state-machine, workflow, checkpointing, human-in-the-loop, stateful]
 triggers: [langgraph, state graph, checkpoint, human approval, workflow state, conditional branching, long-running]
+user-invocable: false
 ---
 
 # LangGraph Patterns: Stateful Multi-Actor AI Workflows

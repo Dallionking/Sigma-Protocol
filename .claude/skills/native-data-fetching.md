@@ -5,6 +5,7 @@ description: Use when implementing or debugging ANY network request, API call, o
 name: native-data-fetching
 source: expo
 version: 1.0.0
+user-invocable: false
 ---
 
 # Expo Networking

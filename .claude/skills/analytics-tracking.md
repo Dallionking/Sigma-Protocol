@@ -6,6 +6,7 @@ description: When the user wants to set up, improve, or audit analytics tracking
 name: analytics-tracking
 source: marketing
 version: 1.0.0
+user-invocable: false
 ---
 
 # Analytics Tracking

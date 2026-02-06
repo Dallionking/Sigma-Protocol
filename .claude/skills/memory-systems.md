@@ -8,6 +8,7 @@ triggers:
   - context persistence
   - knowledge retention
   - project memory
+disable-model-invocation: true
 ---
 
 # AI Memory Systems Skill
