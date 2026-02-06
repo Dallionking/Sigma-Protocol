@@ -24,6 +24,7 @@ All mobile product boilerplates include:
 | [Fitness](./fitness/) | Health & Fitness | Medium | Workout trackers, coaching apps |
 | [Social](./social/) | Social Network | High | Community apps, dating, networking |
 | [Fintech](./fintech/) | Finance | High | Trading, banking, budgeting apps |
+| [Learning Platform](./learning-platform/) | Education | High | Language learning, tutoring, course apps |
 | [Delivery](./delivery/) | On-Demand | High | Food delivery, logistics, gig economy |
 
 ## Quick Start

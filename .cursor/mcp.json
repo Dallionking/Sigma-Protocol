@@ -36,6 +36,12 @@
 		"context7": {
 			"command": "npx",
 			"args": ["-y", "@context7/mcp-server"]
+		},
+		"greptile": {
+			"url": "https://api.greptile.com/mcp",
+			"headers": {
+				"Authorization": "Bearer ${GREPTILE_API_KEY}"
+			}
 		}
 	}
 }

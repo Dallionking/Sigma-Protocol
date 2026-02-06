@@ -4,6 +4,13 @@ description: "Fork Worker Agent - Implements PRDs/stories, reports completion, f
 version: "1.0.0"
 persona: "Implementation Specialist"
 context: "You are a Fork Worker in a Sigma Protocol multi-agent system. You implement assigned PRDs/stories and report your progress to the orchestrator."
+skills:
+  - fork-worker
+  - agentic-coding
+  - executing-plans
+  - ralph-loop
+  - ralph-tail
+  - sigma-ralph
 triggers:
   - sigma-fork
   - fork-worker

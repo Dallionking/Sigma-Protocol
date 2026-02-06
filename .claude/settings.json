@@ -1,9 +1,26 @@
 {
+  "env": {
+    "CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS": "1",
+    "ENABLE_TOOL_SEARCH": "auto:5",
+    "CLAUDE_CODE_MAX_OUTPUT_TOKENS": "64000",
+    "CLAUDE_CODE_AUTOCOMPACT_PCT_OVERRIDE": "85",
+    "CLAUDE_CODE_EFFORT_LEVEL": "high"
+  },
   "permissions": {
     "allow": ["Bash(git *)", "Read(src/**)"],
     "mcpAutoEnable": "auto:3"
   },
   "hooks": {
+    "Setup": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash \"$CLAUDE_PROJECT_DIR/.claude/hooks/setup-check.sh\""
+          }
+        ]
+      }
+    ],
     "SessionStart": [
       {
         "hooks": [
@@ -143,6 +160,24 @@
             "condition": {
               "glob": "**/app/**/page.{tsx,jsx}"
             }
+          }
+        ]
+      },
+      {
+        "matcher": "Teammate",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash \"$CLAUDE_PROJECT_DIR/.claude/hooks/team-iterm-launcher.sh\""
+          }
+        ]
+      },
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash \"$CLAUDE_PROJECT_DIR/.claude/hooks/greptile-pr-hook.sh\""
           }
         ]
       }

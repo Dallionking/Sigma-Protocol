@@ -13,6 +13,10 @@ skills:
   - content-atomizer
   - direct-response-copy
   - brand-voice
+  - marketing-copywriting
+  - marketing-psychology
+  - seo-audit
+  - launch-strategy
 commands:
   - 12-content-ideation
   - 13-content-matrix

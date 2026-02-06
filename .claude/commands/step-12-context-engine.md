@@ -1,7 +1,11 @@
 ---
-version: "4.3.0"
-last_updated: "2026-02-04"
+version: "6.1.0"
+last_updated: "2026-02-05"
 changelog:
+  - "6.1.0: Added security team agents (security-lead, security-web-api, security-ai-safety, security-infra, security-mobile, security-compliance) with conditional generation based on project stack detection"
+  - "6.0.0: Full Claude Code feature integration - path-scoped rules, agent frontmatter (tools/model/skills), settings.json generation, delegation-first CLAUDE.md, hook generation, session continuity hooks"
+  - "5.0.0: Claude Code-first refactor - .claude/rules/ and CLAUDE.md are now primary outputs; Cursor generation is optional"
+  - "4.4.0: Added Claude Code agent generation (.claude/agents/) and CLAUDE.md swarm-first injection"
   - "4.3.0: Added Codex integration outputs (.codex/config.toml + .agents/skills) and detection rules"
   - "4.2.0: Added Full-Stack Enforcement Rules (Section 2.5) - generates backend-completeness.mdc, agentic-readiness.mdc, full-stack-prd-enforcement.mdc to enforce Step 11 v3.0.0 requirements"
   - "4.1.0: Added OpenCode dual-generation (opencode.jsonc + .opencode/{agent,command,skill})"
@@ -24,18 +28,262 @@ parameters:
 
 # /step-12-context-engine — Context Engine & Rule Synthesizer
 
-**Mission**  
-Generate a sophisticated **Context Router** (`.cursorrules`) and a suite of **Domain-Specific Rules** (`.mdc` files).
+**Mission**
+Generate a sophisticated **Context Router** (CLAUDE.md injection + `.claude/rules/*.md`) and a suite of **Domain-Specific Rules**.
 **Context:** You are the **Chief Context Engineer**. You don't just dump text; you architect *how* the AI behaves by creating a modular, intelligent rule system.
+
+**Primary outputs:** `.claude/rules/*.md`, `.claude/agents/*.md`, CLAUDE.md agent registry injection.
+**Secondary outputs (conditional):** `.cursor/rules/*.mdc` and `.cursorrules` (if Cursor detected), OpenCode/Codex artifacts (if detected).
 
 **Single-Agent Rule (No Subagents)**  
 This step must run entirely in the **primary session**. Do **not** spawn subagents or delegate via Task. If multiple roles are needed, simulate them using labeled sections within the same response.
 
 ---
 
-## OpenCode Dual-Generation (NEW — If OpenCode detected)
+## Claude Code Generation (PRIMARY — Always First)
 
-If OpenCode is detected, **also** generate OpenCode-native artifacts in addition to Cursor outputs.
+Claude Code is the **primary platform**. Generate `.claude/rules/*.md`, `.claude/agents/*.md`, and CLAUDE.md injection as the first outputs.
+
+### Detection
+
+Treat Claude Code as "in use" if **any** of these are true:
+
+- `.claude/` directory exists
+- `CLAUDE.md` exists in project root
+- User explicitly asks for "Claude Code support"
+
+### Outputs (always generated first)
+
+#### 1) `.claude/rules/*.md` (primary rule output)
+
+Generate modular rule files in `.claude/rules/`. Each file uses YAML frontmatter with optional path-specific targeting.
+
+**Rule file format:**
+```markdown
+---
+paths:
+  - "src/api/**/*.ts"
+  - "lib/**/*.ts"
+---
+
+# Rule Title
+
+- Rule content here
+```
+
+All domain rules detected in Phase 1 are written here first. See Phase 2 for the full list.
+
+#### 2) `.claude/settings.json` (Agent Teams + Hooks)
+
+Generate or update `.claude/settings.json` to enable agent teams and configure project-level settings:
+
+```json
+{
+  "env": {
+    "CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS": "1"
+  },
+  "teammateMode": "auto"
+}
+```
+
+**Merge rules:** If `.claude/settings.json` already exists, merge new keys without overwriting existing permissions or hooks. Use `env` for feature flags and `teammateMode` for team pane behavior.
+
+#### 3) `.claude/agents/` (custom agent definitions with skill binding)
+
+Create `.claude/agents/` and generate agent markdown files. Each file uses **YAML frontmatter** with tool restrictions, model selection, permission mode, and skill binding.
+
+**Agent file format with frontmatter:**
+
+```yaml
+---
+name: sigma-frontend
+description: Implements UI components, pages, and frontend logic
+tools:
+  - Read
+  - Write
+  - Edit
+  - Bash
+  - Glob
+  - Grep
+  - LSP
+model: sonnet
+permissionMode: acceptEdits
+skills:
+  - frontend-design
+  - react-performance
+---
+
+# Role: Frontend Developer
+
+You are the frontend development agent for {{PROJECT_NAME}}.
+
+## Domain
+UI components, pages, layouts, hooks, styling, accessibility.
+
+## Stack Context
+{{FRONTEND_STACK_DETAILS}}
+
+## Behavioral Rules
+1. Follow the project design system (see .claude/rules/design-system.md)
+2. Use the frontend-design skill for component standards
+3. Use the react-performance skill for optimization patterns
+4. Always verify your work before reporting completion
+```
+
+**Standard agents to generate (with skill binding):**
+
+| Agent File | Tools | Model | Skills | When Generated |
+|------------|-------|-------|--------|----------------|
+| `sigma-planner.md` | Read, Grep, Glob, LSP | inherit | deep-research, brainstorming | Always |
+| `sigma-executor.md` | Read, Write, Edit, Bash, Glob, Grep, LSP | sonnet | executing-plans | Always |
+| `sigma-reviewer.md` | Read, Grep, Glob, LSP | sonnet | verification-before-completion, quality-gates | Always |
+| `sigma-sisyphus.md` | Read, Grep, Bash | inherit | verification-before-completion | Always |
+| `sigma-frontend.md` | Read, Write, Edit, Bash, Glob, Grep, LSP | sonnet | frontend-design, react-performance | Frontend detected |
+| `sigma-backend.md` | Read, Write, Edit, Bash, Glob, Grep, LSP | sonnet | api-design-principles, database-modeling | Backend detected |
+| `sigma-qa.md` | Read, Write, Edit, Bash | sonnet | senior-qa, tdd-skill-creation | Testing framework detected |
+| `sigma-debugger.md` | Read, Grep, Bash, LSP | inherit | systematic-debugging | Always |
+| `sigma-docs.md` | Read, Write, Grep | haiku | writing-clearly | Always |
+| `sigma-security.md` | Read, Grep, Glob, Bash | sonnet | api-security | Backend detected |
+| `sigma-security-lead.md` | Read, Grep, Glob, Bash | sonnet | owasp-web-security, owasp-api-security, defense-in-depth, security-code-review | Always |
+| `sigma-security-web-api.md` | Read, Grep, Glob, Bash | sonnet | owasp-web-security, owasp-api-security, defense-in-depth, better-auth-best-practices | Web/SaaS detected |
+| `sigma-security-ai-safety.md` | Read, Grep, Glob, Bash | sonnet | owasp-llm-security, dependency-security | AI/LLM features detected |
+| `sigma-security-infra.md` | Read, Grep, Glob, Bash | sonnet | dependency-security, secrets-detection | Infrastructure/Docker detected |
+| `sigma-security-mobile.md` | Read, Grep, Glob, Bash | sonnet | mobile-app-security, owasp-web-security | Mobile detected |
+| `sigma-security-compliance.md` | Read, Grep, Glob, Bash | sonnet | saas-security-patterns, security-code-review | Compliance requirements detected |
+
+**Stack-adaptive generation rules:**
+- If React/Next.js detected → include `sigma-frontend.md` with React-specific instructions
+- If no frontend framework → skip `sigma-frontend.md`
+- If Supabase detected → include RLS patterns in `sigma-backend.md` and `sigma-security.md`
+- If no test framework → make `sigma-qa.md` focus on test setup + writing
+- Always include: `sigma-planner`, `sigma-executor`, `sigma-reviewer`, `sigma-sisyphus`, `sigma-debugger`, `sigma-docs`
+
+**Security agent generation rules:**
+- Always generate: `sigma-security-lead` (every project needs a security coordinator)
+- If Web/SaaS detected (Next.js, Express, API routes, `app/api/`) → include `sigma-security-web-api`
+- If AI/LLM features detected (`openai`, `anthropic`, `langchain`, `llm`, `ai` in package.json/code) → include `sigma-security-ai-safety`
+- If Infrastructure detected (Dockerfile, docker-compose, `.github/workflows/`, Terraform, Kubernetes) → include `sigma-security-infra`
+- If Mobile detected (React Native, Expo, `ios/`, `android/`, `mobile/` directories) → include `sigma-security-mobile`
+- If Compliance requirements detected (GDPR, HIPAA, SOC2, PCI-DSS mentions in docs/code, `.env` with compliance vars) → include `sigma-security-compliance`
+
+#### 4) Skill-Agent Category Registry
+
+Generate a skill-to-agent mapping as part of the CLAUDE.md injection (see below). This registry tells the lead agent which teammate to spawn for each domain:
+
+```markdown
+## Skill-Agent Registry
+
+| Category | Skills | Assigned Agent |
+|----------|--------|---------------|
+| Frontend | frontend-design, react-performance | sigma-frontend |
+| Backend | api-design-principles, database-modeling, api-security | sigma-backend |
+| Testing | senior-qa, tdd-skill-creation | sigma-qa |
+| Quality | verification-before-completion, quality-gates | sigma-reviewer |
+| Debug | systematic-debugging | sigma-debugger |
+| Docs | writing-clearly | sigma-docs |
+| Planning | deep-research, brainstorming | sigma-planner |
+| Security | api-security | sigma-security |
+| Security Lead | owasp-web-security, owasp-api-security, defense-in-depth, security-code-review | sigma-security-lead |
+| Web/API Security | owasp-web-security, owasp-api-security, better-auth-best-practices, create-auth-skill | sigma-security-web-api |
+| AI Safety | owasp-llm-security, dependency-security | sigma-security-ai-safety |
+| Infra Security | dependency-security, secrets-detection | sigma-security-infra |
+| Mobile Security | mobile-app-security, owasp-web-security | sigma-security-mobile |
+| Compliance | saas-security-patterns, security-code-review | sigma-security-compliance |
+```
+
+#### 5) CLAUDE.md Injection (Context Router + Agent Registry + Delegation Philosophy)
+
+If CLAUDE.md exists in the target project, inject the context router, delegation-first philosophy, skill-agent registry, and agent registry. **This replaces the `.cursorrules` router as the primary context mechanism.**
+
+**Processing steps:**
+1. Read existing CLAUDE.md
+2. If `## Execution Philosophy` section exists → replace it
+3. If `## Agent Registry` section exists → replace it
+4. If neither exists → append after the last `---` separator
+
+**Inject these sections:**
+
+**a) Delegation-First Execution Philosophy:**
+
+```markdown
+## Execution Philosophy: Delegation-First
+
+**Always delegate to agent teams. Never work solo on multi-step tasks.**
+
+### When to Delegate
+- PRD implementation → spawn team with domain-specific agents
+- Feature development → assign to relevant agents with their skills
+- Bug investigation → spawn sigma-debugger agent
+- Code review → spawn sigma-reviewer agent
+- Documentation → spawn sigma-docs agent
+
+### Agent-Skill Binding
+Each agent comes pre-loaded with domain skills via frontmatter. When spawning teammates:
+- Use `subagent_type` matching the agent definition in `.claude/agents/`
+- The agent's `skills:` field auto-loads relevant skills
+- Skills provide domain-specific patterns, checklists, and standards
+
+### Default Team Structure
+| Agent | Role | Skills |
+|-------|------|--------|
+| `sigma-planner` | Architecture & planning | deep-research, brainstorming |
+| `sigma-executor` | Implementation | executing-plans |
+| `sigma-frontend` | UI implementation | frontend-design, react-performance |
+| `sigma-backend` | API/data layer | api-design-principles, database-modeling |
+| `sigma-qa` | Test coverage | senior-qa, tdd-skill-creation |
+| `sigma-reviewer` | Quality gate | verification-before-completion, quality-gates |
+| `sigma-debugger` | Issue investigation | systematic-debugging |
+| `sigma-docs` | Documentation | writing-clearly |
+
+### Security Team (Conditional on Stack)
+| Agent | Role | Skills | When Generated |
+|-------|------|--------|----------------|
+| `sigma-security-lead` | Security coordination & threat modeling | owasp-web-security, owasp-api-security, defense-in-depth, security-code-review | Always |
+| `sigma-security-web-api` | Web & API vulnerability auditing | owasp-web-security, owasp-api-security, better-auth-best-practices | Web/SaaS |
+| `sigma-security-ai-safety` | LLM safety & prompt injection prevention | owasp-llm-security, dependency-security | AI/LLM features |
+| `sigma-security-infra` | Container, CI/CD, supply chain security | dependency-security, secrets-detection | Infrastructure/Docker |
+| `sigma-security-mobile` | Mobile app security (MASVS) | mobile-app-security, owasp-web-security | Mobile |
+| `sigma-security-compliance` | SOC 2, GDPR, HIPAA, PCI-DSS compliance | saas-security-patterns, security-code-review | Compliance reqs |
+```
+
+**b) Skill-Agent Registry** (from the mapping generated in step 4 above)
+
+**c) Agent Registry** (from the generated agents)
+- Update the agent table to match the actually-generated agents
+- Include the Task Type Routing table for file-pattern → agent mapping
+- Include domain routing rules (equivalent to `.cursorrules` @import directives)
+
+**HITL checkpoint →** Confirm CLAUDE.md injection before writing.
+
+---
+
+## Cursor Generation (OPTIONAL — If Cursor detected)
+
+If Cursor is detected in the project, **also** generate Cursor-native artifacts (`.cursor/rules/*.mdc` and `.cursorrules`) in addition to the primary Claude Code outputs.
+
+### Detection
+
+Treat Cursor as "in use" if **any** of these are true:
+
+- `.cursor/` directory exists
+- `.cursorrules` file exists in project root
+- User explicitly asks for "Cursor support"
+
+### Outputs (when detected)
+
+#### 1) `.cursor/rules/*.mdc` (Cursor rule files)
+
+For each rule generated in `.claude/rules/*.md`, also generate a corresponding `.cursor/rules/*.mdc` file with Cursor-specific frontmatter (`description`, `globs`, `alwaysApply`).
+
+#### 2) `.cursorrules` (Cursor Context Router)
+
+Generate the root `.cursorrules` file that acts as a router, importing `.mdc` files. See Phase 3 for the template.
+
+---
+
+## OpenCode Dual-Generation (If OpenCode detected)
+
+If OpenCode is detected, **also** generate OpenCode-native artifacts in addition to the primary Claude Code outputs.
 
 ### Detection
 
@@ -175,7 +423,7 @@ Do **not** attempt to auto-convert `.mdc` rules. If unsure, skip this.
 
 ## BOILERPLATE PATTERN RULES (NEW - If Using Sigma Boilerplate)
 
-**If your project uses a Sigma boilerplate, generate `boilerplate-patterns.mdc` to enforce extension rules.**
+**If your project uses a Sigma boilerplate, generate `boilerplate-patterns.md` in `.claude/rules/` to enforce extension rules.** If Cursor detected, also generate `boilerplate-patterns.mdc` in `.cursor/rules/`.
 
 ### Detection
 
@@ -291,8 +539,8 @@ Before committing code, verify:
 Add this detection rule:
 
 ```markdown
-| Domain | Trigger | Rule to Generate |
-| **Boilerplate** | `.sigma/boilerplate.json` exists | `boilerplate-patterns.mdc` |
+| Domain | Trigger | Rule to Generate (`.claude/rules/`) |
+| **Boilerplate** | `.sigma/boilerplate.json` exists | `boilerplate-patterns.md` |
 ```
 
 ### Add to Phase 2 Rule Generation
@@ -300,21 +548,21 @@ Add this detection rule:
 Add to section 2.2 Domain Rules:
 
 ```markdown
-*   **`boilerplate-patterns.mdc`**: (If boilerplate detected) Enforces extension rules, ownership boundaries, and stable API usage.
+*   **`boilerplate-patterns.md`**: (If boilerplate detected) Enforces extension rules, ownership boundaries, and stable API usage.
 ```
 
 ### Add to Phase 3 Context Router
 
-Include in `.cursorrules`:
+Include in CLAUDE.md Context Engine section:
+- `boilerplate-patterns.md` — Boilerplate extension rules, ownership boundaries (boilerplate projects)
 
+If Cursor detected, also include in `.cursorrules`:
 ```markdown
-# 🏗️ Boilerplate Patterns (If Using Sigma Boilerplate)
-# Activates for all code files in boilerplate projects.
 # @import .cursor/rules/boilerplate-patterns.mdc
 ```
 
 **HITL checkpoint →** Confirm boilerplate rule generation.
-**Prompt:** "Will generate `boilerplate-patterns.mdc`. Reply `confirm` to continue."
+**Prompt:** "Will generate `boilerplate-patterns.md` in `.claude/rules/`. Reply `confirm` to continue."
 
 ---
 
@@ -581,13 +829,14 @@ fi
 
 ### Add to Phase 3 Context Router
 
-Include in `.cursorrules`:
+Include in CLAUDE.md Context Engine section under Development Mode:
+- Reference `.sigma/tools/` scripts for self-correcting loops
+- List available verification scripts (typecheck, lint, test, build, format-check)
 
+If Cursor detected, also include in `.cursorrules`:
 ```markdown
-# 🛠️ Agentic Tools (Grade 3/4 Skills)
-# Project-local verification scripts for self-correcting loops.
-# Run these to verify your work: .sigma/tools/typecheck.sh, .sigma/tools/lint.sh, etc.
-# See .sigma/tools/ for available scripts.
+# Agentic Tools (Grade 3/4 Skills)
+# Run .sigma/tools/ scripts to verify your work.
 ```
 
 **HITL checkpoint →** Confirm agentic tools generation.
@@ -597,7 +846,7 @@ Include in `.cursorrules`:
 
 ## EPISTEMIC REASONING RULES (NEW - Always Generated)
 
-**Generate `reasoning.mdc` to enforce epistemic caution and anti-sycophancy rules.**
+**Generate `reasoning.md` in `.claude/rules/` to enforce epistemic caution and anti-sycophancy rules.** If Cursor detected, also generate `reasoning.mdc` in `.cursor/rules/`.
 
 This rule file ensures the AI:
 - Requires evidence for external claims (uses Ref/Exa MCPs)
@@ -755,21 +1004,21 @@ Before submitting significant code:
 Add to section 2.1 Core Rules:
 
 ```markdown
-*   **`reasoning.mdc`**: (Always generated) Enforces epistemic caution, evidence requirements, and anti-sycophancy.
+*   **`reasoning.md`**: (Always generated) Enforces epistemic caution, evidence requirements, and anti-sycophancy.
 ```
 
 ### Add to Phase 3 Context Router
 
-Include in `.cursorrules`:
+Include in CLAUDE.md Context Engine section:
+- `reasoning.md` — Epistemic caution, evidence requirements, anti-sycophancy (always active)
 
+If Cursor detected, also include in `.cursorrules`:
 ```markdown
-# 🧠 Epistemic Reasoning (Anti-Hallucination)
-# Always active - ensures evidence-based responses.
 # @import .cursor/rules/reasoning.mdc
 ```
 
 **HITL checkpoint →** Confirm reasoning rule generation.
-**Prompt:** "Will generate `reasoning.mdc` for epistemic caution. Reply `confirm` to continue."
+**Prompt:** "Will generate `reasoning.md` in `.claude/rules/`. Reply `confirm` to continue."
 
 ---
 
@@ -981,29 +1230,39 @@ description: Security requirements for all code
 Add to Phase 1 detection:
 
 ```bash
-# Create rules directories
-mkdir -p .sigma/rules
+# Create primary rules directory (Claude Code)
 mkdir -p .claude/rules
+mkdir -p .claude/agents
+mkdir -p .sigma/rules
 
-# Copy rules to both locations for cross-platform support
-for rule in .sigma/rules/*.md; do
-  cp "$rule" ".claude/rules/$(basename $rule)"
+# Primary output is .claude/rules/ — copy to .sigma/rules/ for cross-platform reference
+for rule in .claude/rules/*.md; do
+  cp "$rule" ".sigma/rules/$(basename $rule)"
 done
+
+# If Cursor detected, also generate .cursor/rules/*.mdc
+if [ -d ".cursor" ] || [ -f ".cursorrules" ]; then
+  mkdir -p .cursor/rules
+  # Convert .claude/rules/*.md → .cursor/rules/*.mdc (add Cursor frontmatter)
+fi
 ```
 
 ### Add to Phase 3 Context Router
 
-Include in `.cursorrules`:
+Include in CLAUDE.md Context Engine section:
+- `code-style.md` — Coding standards and conventions (always active)
+- `testing.md` — Testing conventions (test files)
+- `frontend.md` — Frontend development rules (component files)
+- `backend.md` — Backend development rules (API/action files)
+- `security.md` — Security requirements (always active)
 
+If Cursor detected, also include in `.cursorrules`:
 ```markdown
-# 📋 Modular Rules (Cross-Platform)
-# Path-specific rules for different code areas.
-# See .sigma/rules/ for full list.
 # @import .cursor/rules/code-style.mdc
 ```
 
 **HITL checkpoint →** Confirm modular rules generation.
-**Prompt:** "Will generate `.sigma/rules/` and `.claude/rules/` with modular rules. Reply `confirm` to continue."
+**Prompt:** "Will generate `.claude/rules/` with modular rules. Reply `confirm` to continue."
 
 ---
 
@@ -1017,7 +1276,7 @@ Include in `.cursorrules`:
    - Scan `docs/prds/F[N]-*.md` for domain-specific patterns
    - Extract: Appetites, BDD Scenarios, Rabbit Holes, Quality Gates
 3) **Scan for Domains**: Check for specific patterns (Payment code? AI code? Mobile code? Wireframe prototypes?).
-4) **Create Rules Dir**: `mkdir -p .cursor/rules`.
+4) **Create Rules Dirs**: `mkdir -p .claude/rules .claude/agents`. If Cursor detected: `mkdir -p .cursor/rules`.
 
 ---
 
@@ -1032,169 +1291,354 @@ Detect which "Expert Personas" this project needs based on evidence.
 - **PRD artifacts:** `docs/prds/F*.md` (scan for BDD/Shape Up patterns)
 - **Step 10 outputs:** `docs/implementation/BETTING-TABLE.md`, `docs/implementation/RABBIT-HOLES.md`
 
-| Domain | Trigger (If code/docs contains...) | Rule to Generate |
+| Domain | Trigger (If code/docs contains...) | Rule to Generate (`.claude/rules/`) |
 | :--- | :--- | :--- |
-| **Subscription** | `stripe`, `lemon`, `whop`, `credits` in code/package.json | `credit-subscription-model.mdc` |
-| **AI/Voice** | `openai`, `livekit`, `assemblyai` in code/package.json | `voice-intake-flow.mdc` |
-| **Database** | `supabase`, `drizzle`, `convex` in code/config | `data-models-relationships.mdc` |
-| **Marketing** | `app/(marketing)`, `landing-page` directories exist | `marketing-personas.mdc` |
-| **Design** | `tailwind`, `shadcn`, `framer` in package.json | `design-system.mdc` |
-| **Wireframes** | `/wireframes/` or `/wireframes-mobile/` directory exists | `wireframe-visual-design.mdc` |
-| **PRD/BDD** | `Given/When/Then`, `Appetite:`, `INVEST Score` in `docs/prds/*.md` | `prd-generation-algorithm.mdc` |
-| **Shape Up** | `Betting Table`, `Rabbit Holes` in `docs/implementation/*.md` | `shape-up-workflow.mdc` |
-| **Animation Quality** | `Animation Performance Budget`, `60fps` in `docs/design/DESIGN-SYSTEM.md` | `animation-quality.mdc` |
-| **State Transitions** | `State Transition Performance`, `State Transition Quality` in `docs/states/*.md` | `state-transition-quality.mdc` |
-| **Bulletproof Gates** | `TRACEABILITY-MATRIX.md`, `ZERO-OMISSION-CERTIFICATE.md` in `docs/flows/` | `prd-traceability.mdc` |
-| **Backend Completeness** | `actions/**/*.ts`, `server action`, `use server` in code OR `SECTION 0.5` in PRDs | `backend-completeness.mdc` |
-| **Agentic Readiness** | `File Manifest`, `Implementation Order`, `SECTION 15` in PRDs | `agentic-readiness.mdc` |
-| **Full Stack** | `FULL STACK OVERVIEW`, `Backend Scope` in PRDs or Step 10 outputs | `full-stack-prd-enforcement.mdc` |
+| **Subscription** | `stripe`, `lemon`, `whop`, `credits` in code/package.json | `credit-subscription-model.md` |
+| **AI/Voice** | `openai`, `livekit`, `assemblyai` in code/package.json | `voice-intake-flow.md` |
+| **Database** | `supabase`, `drizzle`, `convex` in code/config | `data-models-relationships.md` |
+| **Marketing** | `app/(marketing)`, `landing-page` directories exist | `marketing-personas.md` |
+| **Design** | `tailwind`, `shadcn`, `framer` in package.json | `design-system.md` |
+| **Wireframes** | `/wireframes/` or `/wireframes-mobile/` directory exists | `wireframe-visual-design.md` |
+| **PRD/BDD** | `Given/When/Then`, `Appetite:`, `INVEST Score` in `docs/prds/*.md` | `prd-generation-algorithm.md` |
+| **Shape Up** | `Betting Table`, `Rabbit Holes` in `docs/implementation/*.md` | `shape-up-workflow.md` |
+| **Animation Quality** | `Animation Performance Budget`, `60fps` in `docs/design/DESIGN-SYSTEM.md` | `animation-quality.md` |
+| **State Transitions** | `State Transition Performance`, `State Transition Quality` in `docs/states/*.md` | `state-transition-quality.md` |
+| **Bulletproof Gates** | `TRACEABILITY-MATRIX.md`, `ZERO-OMISSION-CERTIFICATE.md` in `docs/flows/` | `prd-traceability.md` |
+| **Backend Completeness** | `actions/**/*.ts`, `server action`, `use server` in code OR `SECTION 0.5` in PRDs | `backend-completeness.md` |
+| **Agentic Readiness** | `File Manifest`, `Implementation Order`, `SECTION 15` in PRDs | `agentic-readiness.md` |
+| **Full Stack** | `FULL STACK OVERVIEW`, `Backend Scope` in PRDs or Step 10 outputs | `full-stack-prd-enforcement.md` |
+| **AI/LLM** | `openai`, `anthropic`, `langchain`, `llm`, `ai-sdk` in code/package.json | Security: `sigma-security-ai-safety` agent |
+| **Mobile** | `react-native`, `expo` in package.json OR `ios/`, `android/` dirs exist | Security: `sigma-security-mobile` agent |
+| **Infrastructure** | `Dockerfile`, `docker-compose.*`, `.github/workflows/`, `terraform/` | Security: `sigma-security-infra` agent |
+| **Compliance** | `gdpr`, `hipaa`, `soc2`, `pci` in docs/code, privacy policy files | Security: `sigma-security-compliance` agent |
+
+### Domain-to-Path Mapping (for `paths:` frontmatter)
+
+When generating rules, apply `paths:` frontmatter so rules activate only when Claude works on relevant files. Map each detected domain to file patterns:
+
+| Detected Domain | Generated `paths:` patterns |
+|----------------|---------------------------|
+| Frontend / React / Next.js | `src/components/**/*.tsx`, `src/hooks/**/*.ts`, `app/**/*.tsx`, `components/**/*.tsx` |
+| API / Backend | `src/api/**/*.ts`, `app/api/**/*.ts`, `src/routes/**/*.ts`, `server/**/*.ts`, `actions/**/*.ts` |
+| Database | `src/db/**/*.ts`, `prisma/**`, `drizzle/**`, `supabase/migrations/**` |
+| Testing | `**/*.test.ts`, `**/*.test.tsx`, `**/*.spec.ts`, `tests/**`, `__tests__/**` |
+| Styling / Design | `**/*.css`, `**/*.scss`, `tailwind.config.*`, `src/styles/**` |
+| DevOps / CI | `.github/**`, `Dockerfile`, `docker-compose.*`, `.gitlab-ci.yml` |
+| Subscription / Payments | `**/payments/**`, `**/billing/**`, `**/stripe/**`, `**/credits/**` |
+| Marketing | `app/(marketing)/**`, `src/marketing/**`, `landing/**` |
+| Security | `**/auth/**`, `**/middleware.*`, `**/rls/**`, `supabase/**`, `**/security/**` |
+| AI/LLM Safety | `**/ai/**`, `**/llm/**`, `**/agents/**`, `**/prompts/**` |
+| Mobile | `ios/**`, `android/**`, `**/mobile/**`, `*.swift`, `*.kt` |
+| Infrastructure | `Dockerfile`, `docker-compose.*`, `.github/**`, `terraform/**`, `k8s/**` |
+| Compliance | `**/privacy/**`, `**/consent/**`, `**/audit/**`, `docs/compliance/**` |
+
+**Rules without `paths:`** apply globally (e.g., `project-context.md`, `security.md`, `reasoning.md`).
+
+### Generated Directory Structure
+
+Step 12 Phase 2 output should organize rules into subdirectories for large projects:
+
+```
+.claude/rules/
+├── code-style.md              # Global (no paths:)
+├── project-context.md         # Global
+├── security.md                # Global
+├── reasoning.md               # Global
+├── frontend/
+│   ├── react.md               # paths: ["src/components/**/*.tsx", "app/**/*.tsx"]
+│   └── design-system.md       # paths: ["**/*.css", "tailwind.config.*"]
+├── backend/
+│   ├── api.md                 # paths: ["app/api/**", "actions/**"]
+│   └── database.md            # paths: ["prisma/**", "src/db/**", "drizzle/**"]
+├── testing/
+│   └── conventions.md         # paths: ["**/*.test.*", "**/*.spec.*"]
+└── workflow/
+    ├── project-governance.md  # Global
+    └── shape-up.md            # paths: ["docs/prds/**"]
+```
+
+**Flat vs. nested decision:**
+- If ≤8 rules detected → flat structure (all in `.claude/rules/`)
+- If >8 rules detected → nested structure with subdirectories
 
 ---
 
 ## Phase 2: Modular Rule Generation (The "Expert Modules")
 
-For each detected domain, generate the `.mdc` file using the **Golden Templates** (if they don't exist).
+For each detected domain, generate the rule file in `.claude/rules/*.md` (primary). If Cursor is detected, also generate the corresponding `.cursor/rules/*.mdc` file.
 
-### 2.1 Core Rules (Always Generated)
-*   **`project-context.mdc`**: Extracts Project Name, Vision, and Value Prop from `MASTER_PRD.md`.
-*   **`tech-stack.mdc`**: Hardcodes the specific versions from `stack-profile.json`.
-*   **`coding-standards.mdc`**: Enforces TS Strict, Naming Conventions, Testing.
-*   **`project-governance.mdc`**: Enforces the Step 1-12 Workflow (no skipping steps).
+### 2.1 Core Rules (Always Generated — no `paths:`, always active)
+*   **`project-context.md`** → `.claude/rules/project-context.md`: Extracts Project Name, Vision, and Value Prop from `MASTER_PRD.md`.
+*   **`tech-stack.md`** → `.claude/rules/tech-stack.md`: Hardcodes the specific versions from `stack-profile.json`.
+*   **`coding-standards.md`** → `.claude/rules/coding-standards.md`: Enforces TS Strict, Naming Conventions, Testing.
+*   **`project-governance.md`** → `.claude/rules/project-governance.md`: Enforces the Step 1-12 Workflow (no skipping steps).
+*   **`reasoning.md`** → `.claude/rules/reasoning.md`: Epistemic caution, evidence requirements, anti-sycophancy.
+*   **`security.md`** → `.claude/rules/security.md`: OWASP, auth patterns, secrets management.
 
-### 2.2 Domain Rules (Conditional)
-*   **`design-system.mdc`**: Reads `docs/design/DESIGN-SYSTEM.md` to enforce colors/tokens.
-*   **`credit-subscription-model.mdc`**: (If detected) Enforces credit logic and locking.
-*   **`marketing-personas.mdc`**: (If detected) Enforces Hormozi copy principles.
-*   **`wireframe-visual-design.mdc`**: (If wireframe prototypes exist) Enforces component refinement from wireframe foundation code.
+> **Cursor conditional:** If Cursor detected, also generate `.cursor/rules/project-context.mdc`, `.cursor/rules/tech-stack.mdc`, `.cursor/rules/coding-standards.mdc`, `.cursor/rules/project-governance.mdc` with Cursor-specific frontmatter.
 
-### 2.3 Animation & State Quality Rules (From Step 6/7 Outputs)
-*   **`animation-quality.mdc`**: (If animation framework detected) Enforces 60fps target, GPU-accelerated properties only (`transform`, `opacity`), `prefers-reduced-motion` support, animation performance budgets (<100ms first animation, <300ms complex).
-*   **`state-transition-quality.mdc`**: (If state framework detected) Enforces state transition performance (Empty→Loading 150ms, Loading→Populated 300ms), prohibited properties during transitions (`width`, `height`, `margin`), accessibility requirements.
-*   **`prd-traceability.mdc`**: (If bulletproof artifacts exist) Enforces PRD feature-to-screen verification, zero omission validation, screen count matching between Step 4 and Step 5.
+### 2.2 Domain Rules (Conditional — use `paths:` from Domain-to-Path Mapping)
+
+Each domain rule MUST include a `paths:` frontmatter block using the patterns from the Domain-to-Path Mapping table. Example:
+
+```yaml
+---
+paths:
+  - "src/components/**/*.tsx"
+  - "app/**/*.tsx"
+  - "components/**/*.tsx"
+---
+# Design System Rules
+...
+```
+
+*   **`design-system.md`**: `paths: frontend patterns`. Reads `docs/design/DESIGN-SYSTEM.md` to enforce colors/tokens.
+*   **`credit-subscription-model.md`**: `paths: payments patterns`. (If detected) Enforces credit logic and locking.
+*   **`marketing-personas.md`**: `paths: marketing patterns`. (If detected) Enforces Hormozi copy principles.
+*   **`wireframe-visual-design.md`**: `paths: frontend patterns`. (If wireframe prototypes exist) Enforces component refinement from wireframe foundation code.
+
+### 2.3 Animation & State Quality Rules (From Step 6/7 Outputs — use `paths:` from mapping)
+*   **`animation-quality.md`**: `paths: styling/frontend patterns`. (If animation framework detected) Enforces 60fps target, GPU-accelerated properties only (`transform`, `opacity`), `prefers-reduced-motion` support, animation performance budgets (<100ms first animation, <300ms complex).
+*   **`state-transition-quality.md`**: `paths: frontend patterns`. (If state framework detected) Enforces state transition performance (Empty→Loading 150ms, Loading→Populated 300ms), prohibited properties during transitions (`width`, `height`, `margin`), accessibility requirements.
+*   **`prd-traceability.md`**: `paths: ["docs/prds/**", "docs/flows/**"]`. (If bulletproof artifacts exist) Enforces PRD feature-to-screen verification, zero omission validation, screen count matching between Step 4 and Step 5.
 
 ### 2.4 PRD-Derived Rules (From Step 11 Outputs)
-*   **`prd-generation-algorithm.mdc`**: (If BDD patterns detected) Enforces Given/When/Then acceptance criteria format.
-*   **`shape-up-workflow.mdc`**: (If Shape Up artifacts exist) Enforces Appetite limits, Betting Table structure, Rabbit Hole documentation.
+*   **`prd-generation-algorithm.md`**: (If BDD patterns detected) Enforces Given/When/Then acceptance criteria format.
+*   **`shape-up-workflow.md`**: (If Shape Up artifacts exist) Enforces Appetite limits, Betting Table structure, Rabbit Hole documentation.
 
 ### 2.5 Full-Stack Enforcement Rules (From Step 11 v3.0.0)
-*   **`backend-completeness.mdc`**: (If server actions or PRDs exist) Enforces:
+*   **`backend-completeness.md`**: (If server actions or PRDs exist) Enforces:
     - Every UI component that fetches/mutates data has corresponding server action
     - All server actions include Zod validation schemas
     - Result pattern return types (`{ success: true, data }` or `{ success: false, error }`)
     - OWASP API Security Top 10 considerations per endpoint
     - RLS policies for all new database tables
-*   **`agentic-readiness.mdc`**: (If PRDs exist) Enforces:
+*   **`agentic-readiness.md`**: (If PRDs exist) Enforces:
     - All file paths explicit (not "create a component")
     - Code examples include imports
     - Implementation order specified
     - Dependencies listed with versions
     - Test file paths included
-*   **`full-stack-prd-enforcement.mdc`**: (If PRDs exist) Enforces:
+*   **`full-stack-prd-enforcement.md`**: (If PRDs exist) Enforces:
     - Section 0.5 (Full Stack Overview) present and non-empty
     - Section 15 (Agentic Implementation Guide) present
     - Backend Scope in feature shaping is never "TBD"
     - Gate 7 (Backend Completeness) and Gate 8 (Agentic Readiness) must pass
 
+> **Cursor conditional:** For each domain rule generated above, if Cursor detected, also generate the `.mdc` equivalent in `.cursor/rules/`.
+
 ---
 
-## Phase 3: The Master Context Router (.cursorrules)
+## Phase 3: The Master Context Router
 
-Generate the root `.cursorrules` file. This file acts as a **Router**, dynamically importing the specific `.mdc` files based on what the user is working on.
+### Primary: CLAUDE.md Injection
+
+Inject the context routing section into the target project's `CLAUDE.md`. This replaces the `.cursorrules` file as the primary context mechanism for Claude Code.
+
+**CLAUDE.md injection template:**
+
+```markdown
+## Context Engine (Auto-Generated by Step 12)
+
+### Domain Rules
+Path-specific rules are loaded automatically from `.claude/rules/`:
+- `project-context.md` — Project name, vision, value prop (always active)
+- `tech-stack.md` — Framework versions, language standards (code files)
+- `design-system.md` — Colors, tokens, component patterns (frontend files)
+- `coding-standards.md` — TS strict, naming, testing conventions (all code)
+- `project-governance.md` — Step 1-12 workflow enforcement (process)
+{additional domain rules as detected}
+
+### Agent Registry
+See `.claude/agents/` for specialized agent definitions.
+
+| Agent | Domain | Use With |
+|-------|--------|----------|
+| sigma-planner | Architecture & planning | Task tool subagent_type |
+| sigma-executor | Implementation | Task tool subagent_type |
+| sigma-reviewer | Quality assurance | Task tool subagent_type |
+| sigma-sisyphus | Verification loops | Task tool subagent_type |
+| sigma-security-lead | Security coordination & threat modeling | Task tool subagent_type |
+{additional agents as generated}
+
+### Security Agents (Generated by Stack Detection)
+| Agent | Trigger | When Generated |
+|-------|---------|----------------|
+| sigma-security-lead | security-audit, threat-model | Always |
+| sigma-security-web-api | auth-review, api-security, injection-check | Web/SaaS detected |
+| sigma-security-ai-safety | ai-safety, prompt-injection, llm-security | AI/LLM features |
+| sigma-security-infra | container-scan, dependency-audit, secrets-scan | Infrastructure/Docker |
+| sigma-security-mobile | mobile-security, certificate-pinning | Mobile detected |
+| sigma-security-compliance | compliance-check, gdpr-audit, soc2-check | Compliance requirements |
+
+### MCP Priority
+**Strategy:** Ref (docs) → Exa (code) | Context7 → Perplexity (backup)
+
+1. **Ref**: Official docs/API refs
+2. **Exa**: Code examples/real-world usage
+3. **Context7**: Backup docs
+4. **Perplexity**: Backup research
+5. **Supabase MCP**: DB/Auth specifics
+
+### Development Mode (Agentic Layer)
+
+When running /dev-loop or /implement-prd, operate in **Grade 4 Agentic Mode**:
+
+1. **Read State** — Check `.sigma/memory/active_task.md` for current progress
+2. **Use Tools** — Run `.sigma/tools/` scripts (typecheck, lint, test, build)
+3. **Self-Correct** — If verification fails, run /gap-analysis before asking for help
+4. **Update State** — Write to `.sigma/memory/active_task.md` after each phase
+
+### Valuation Context ($1B Standard)
+You are a **Founding Technical Partner** at a **$1B Unicorn Scale-Up**.
+- **Code:** Rigorous, scalable, typed, tested
+- **UX:** Pixel-perfect, <120s time-to-value, delightful
+- **Ops:** Zero-drift documentation, surgical repo hygiene
+- **Mindset:** Hormozi Value Equation
+```
+
+### Secondary: .cursorrules (If Cursor detected)
+
+If Cursor is detected, **also** generate the `.cursorrules` router file that imports `.cursor/rules/*.mdc` files.
 
 **Template for .cursorrules:**
 
 ```markdown
 # === Sigma Context Router ===
-# The "Context Engineering Dream" System
 # Auto-loads modular rules based on user intent to reduce context noise.
 
-# 🎯 Global Context (Always Active)
-# Loads critical project directives, philosophy, and core implementation rules.
+# Global Context (Always Active)
 # @import .cursor/rules/project-context.mdc
 
-# 🏗️ Technical Stack & Security (Code/Arch)
-# Activates when discussing code, architecture, database, API, or security.
+# Technical Stack & Security (Code/Arch)
 # @import .cursor/rules/tech-stack.mdc
 
-# 🎨 Design System & UI (Frontend)
-# Activates when discussing UI, components, styling, Tailwind, or UX.
+# Design System & UI (Frontend)
 # @import .cursor/rules/design-system.mdc
 
-# 🚨 Governance & Workflow (Process)
-# Activates when discussing files, organization, testing, or process.
+# Governance & Workflow (Process)
 # @import .cursor/rules/project-governance.mdc
 
-# 🧠 Research & MCPs (Intelligence)
-# Activates when needing external knowledge, docs, or best practices.
+# Research & MCPs (Intelligence)
 # @import .cursor/rules/research-guidelines.mdc
 
-# 🔗 Workflow Guide (Steps 1-12)
-# Activates when referencing steps, PRDs, Shape Up, BDD, or the development loop.
+# Workflow Guide (Steps 1-12)
 # @import .cursor/rules/workflow-guide.mdc
-
----
-
-## 🔧 Quick Reference: MCP Priority
-**Strategy:** Ref (docs) → Exa (code) | Context7 → Perplexity (backup)
-
-1.  **Ref (`mcp_Ref`):** Official docs/API refs.
-2.  **Exa (`exa`):** Code examples/real-world usage.
-3.  **Context7 (`mcp_context7`):** Backup docs.
-4.  **Perplexity (`mcp_perplexity-ask`):** Backup research.
-5.  **Supabase (`mcp_supabase-mcp-server`):** DB/Auth specifics.
-6.  **21st.dev (`mcp_21st-devmagic`):** UI components.
-
-**See `.cursor/rules/research-guidelines.mdc` for details.**
-
----
-
-## 🚀 "Unicorn" Valuation Context ($1B Standard)
-You are a **Founding Technical Partner** at a **$1B Unicorn Scale-Up**.
-- **Code:** Must be rigorous, scalable, typed, and tested.
-- **UX:** Must be "pixel-perfect", <120s time-to-value, and delightful.
-- **Ops:** "Zero drift" documentation, "surgical" repo hygiene.
-- **Mindset:** Hormozi Value Equation (Max Value = [Dream Outcome x Likelihood] / [Time x Effort]).
-
----
-
-## 🔧 Development Mode (Agentic Layer)
-
-When running @dev-loop or @implement-prd, operate in **Grade 4 Agentic Mode**:
-
-### 1. Read State
-Check `.sigma/memory/active_task.md` for current progress before starting.
-
-### 2. Use Tools
-Run scripts in `.sigma/tools/` to verify your work:
-- `typecheck.sh` - TypeScript compilation
-- `lint.sh` - Linting
-- `test.sh` - Test suite
-- `build.sh` - Production build
-
-### 3. Self-Correct
-If verification fails, run `@gap-analysis` before asking for human help.
-The loop is: **Build → Test → Fix → Repeat** until green.
-
-### 4. Update State
-Write to `.sigma/memory/active_task.md` after each phase to enable resume support.
-
-### Available Agentic Tools
-See `.sigma/tools/` for project-specific verification scripts.
-See `.sigma/memory/` for session state and continuity.
-
----
-
-**Note:** This file is a *Router*. Refer to the specific `.mdc` files for detailed rules.
 ```
+
+---
+
+## Phase 3.5: Hook Generation
+
+Generate a baseline hooks configuration for the target project. Hooks are configured in `.claude/settings.json` under the `hooks` key.
+
+### Standard Hooks (Always Generated)
+
+| Hook | Event | Purpose | Implementation |
+|------|-------|---------|----------------|
+| Session context | `SessionStart` | Inject project state (git branch, last commit, in-progress work) | Shell script reading git state |
+| Security check | `PreToolUse:Bash` | Block dangerous commands (`rm -rf /`, `DROP TABLE`, `--no-verify`) | Pattern matching in shell |
+| Test reminder | `Stop` | If code was edited but no tests run, remind | Check git diff + test log |
+
+### Conditional Hooks
+
+| Hook | Event | Condition | Purpose |
+|------|-------|-----------|---------|
+| Pre-commit lint | `PreToolUse:Bash` | ESLint detected | Match `git commit` → run lint first |
+| Post-edit format | `PostToolUse:Edit\|Write` | Prettier detected | Auto-format changed files |
+| TypeScript check | `PostToolUse:Edit\|Write` | TypeScript detected | Run tsc on changed files |
+
+### Session Continuity Hooks (Optional — lighter SLAS)
+
+If the user opts in during HITL, generate a session continuity package:
+
+**`SessionStart` hook — inject last session context:**
+```bash
+#!/bin/bash
+# .claude/hooks/session-start-context.sh
+# Reads last session summary and injects as context
+
+SESSION_DIR="docs/sessions"
+LATEST="$SESSION_DIR/latest.md"
+
+if [ -f "$LATEST" ]; then
+  echo "## Previous Session Context"
+  echo ""
+  cat "$LATEST"
+fi
+
+# Always inject git state
+echo "## Current Git State"
+echo "- Branch: $(git branch --show-current)"
+echo "- Last commit: $(git log --oneline -1)"
+echo "- Uncommitted files: $(git status --short | wc -l | tr -d ' ')"
+```
+
+**`Stop` hook — capture session summary:**
+```bash
+#!/bin/bash
+# .claude/hooks/session-end-summary.sh
+# Captures minimal session metadata for next session
+
+SESSION_DIR="docs/sessions"
+mkdir -p "$SESSION_DIR"
+
+cat > "$SESSION_DIR/latest.md" << EOF
+**Last Session:** $(date -u +"%Y-%m-%dT%H:%M:%SZ")
+**Branch:** $(git branch --show-current)
+**Last Commit:** $(git log --oneline -1)
+**Modified Files:**
+$(git diff --name-only HEAD 2>/dev/null | head -20)
+EOF
+```
+
+### Hook Configuration Output
+
+Add to `.claude/settings.json`:
+
+```json
+{
+  "hooks": {
+    "SessionStart": [
+      {
+        "type": "command",
+        "command": ".claude/hooks/session-start-context.sh"
+      }
+    ],
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "type": "command",
+        "command": ".claude/hooks/security-check.sh"
+      }
+    ],
+    "Stop": [
+      {
+        "type": "command",
+        "command": ".claude/hooks/session-end-summary.sh"
+      }
+    ]
+  }
+}
+```
+
+**HITL checkpoint →** Confirm hook generation.
+**Prompt:** "Will generate hooks in `.claude/hooks/` and update `.claude/settings.json`. Include session continuity hooks? [yes/no]"
 
 ---
 
 ## Phase 4: Execution Logic
 
 1.  **Scan**: Identify active domains.
-2.  **Generate Modules**: Write the `.mdc` files to `.cursor/rules/`.
-3.  **Generate Router**: Write the `.cursorrules` to root.
-4.  **Verify**: Check that file paths in `@import` match actual files.
+2.  **Generate Claude Code Rules**: Write `.claude/rules/*.md` files with `paths:` frontmatter (primary output).
+3.  **Generate Claude Code Agents**: Write `.claude/agents/*.md` with YAML frontmatter (tools, model, skills).
+4.  **Generate `.claude/settings.json`**: Enable agent teams, configure hooks.
+5.  **Generate Hooks**: Write `.claude/hooks/` scripts based on detected tooling.
+6.  **Inject CLAUDE.md**: Add context router, delegation philosophy, skill-agent registry, agent registry.
+7.  **Generate Cursor Rules** (if Cursor detected): Write `.cursor/rules/*.mdc` and `.cursorrules`.
+8.  **Generate OpenCode Artifacts** (if OpenCode detected): Write `.opencode/` configs.
+9.  **Generate Codex Artifacts** (if Codex detected): Write `.codex/` configs.
+10. **Verify**: Check that all rule file paths, agent references, and hook paths resolve correctly.
 
 ---
 
@@ -1202,10 +1646,15 @@ See `.sigma/memory/` for session state and continuity.
 
 **Prompt**:
 > "Context Engine initialized.
-> ✅ Generated [X] Domain Rules.
-> ✅ Generated Master Context Router.
+> ✅ Generated [X] Domain Rules in `.claude/rules/` (with path scoping).
+> ✅ Generated [N] Claude Code custom agents in `.claude/agents/` (with skill binding).
+> ✅ Updated `.claude/settings.json` (agent teams enabled, hooks configured).
+> ✅ Generated [H] hooks in `.claude/hooks/`.
+> ✅ Injected delegation-first philosophy, skill-agent registry, and context router into CLAUDE.md.
+> ✅ Generated Cursor rules (if detected): [Y] `.mdc` files + `.cursorrules`.
+> ✅ Generated OpenCode/Codex artifacts (if detected).
 >
-> Your AI is now context-aware. It will auto-load Design rules when doing CSS, and Auth rules when doing Backend.
+> Your AI is now context-aware, delegation-enabled, and hook-wired.
 > Reply `approve step 12` to confirm."
 
 ---
@@ -1217,46 +1666,75 @@ See `.sigma/memory/` for session state and continuity.
 
 | File | Path | Min Size | Points |
 |------|------|----------|--------|
-| Context Router | /.cursorrules | 200B | 6 |
-| Rules Directory | /.cursor/rules/ | exists | 4 |
-| Project Context | /.cursor/rules/project-context.mdc | 200B | 4 |
-| Tech Stack | /.cursor/rules/tech-stack.mdc | 200B | 3 |
-| Design System Rules | /.cursor/rules/design-system.mdc | 200B | 3 |
+| Rules Directory | /.claude/rules/ | exists | 4 |
+| Project Context Rule | /.claude/rules/project-context.md | 200B | 4 |
+| Tech Stack Rule | /.claude/rules/tech-stack.md | 200B | 3 |
+| Design System Rule | /.claude/rules/design-system.md | 200B | 3 |
+| Agents Directory | /.claude/agents/ | exists | 2 |
+| `.claude/agents/sigma-planner.md` | `.claude/agents/` | 200B | 2 |
+| `.claude/agents/sigma-executor.md` | `.claude/agents/` | 200B | 2 |
+
+### Optional Files (Cursor — bonus 5 points)
+
+| File | Path | Condition | Points |
+|------|------|-----------|--------|
+| Context Router | /.cursorrules | If Cursor detected | 2 |
+| Cursor Rules Directory | /.cursor/rules/ | If Cursor detected | 1 |
+| Cursor Rules Count | /.cursor/rules/*.mdc | At least 3 if Cursor detected | 2 |
 
 ### Required Sections (30 points)
 
 | Document | Section | Points |
 |----------|---------|--------|
-| .cursorrules | Global Context | 5 |
-| .cursorrules | Technical Stack | 5 |
-| .cursorrules | Design System | 5 |
-| project-context.mdc | Project Name | 5 |
-| project-context.mdc | Core Philosophy | 5 |
-| tech-stack.mdc | Framework | 5 |
+| CLAUDE.md | Context Engine | 5 |
+| CLAUDE.md | Agent Registry | 5 |
+| CLAUDE.md | Domain Rules | 5 |
+| project-context.md | Project Name | 5 |
+| project-context.md | Core Philosophy | 5 |
+| tech-stack.md | Framework | 5 |
 
 ### Content Quality (30 points)
 
 | Check | Description | Points |
 |-------|-------------|--------|
-| has_pattern:.cursorrules:@import\|import | Context routing configured | 8 |
-| file_count:/.cursor/rules/:3 | At least 3 rule files generated | 8 |
-| has_pattern:project-context.mdc:valuation\|unicorn\|billion | Valuation context present | 5 |
-| has_pattern:tech-stack.mdc:Next\|React\|Supabase | Tech stack referenced | 5 |
-| has_pattern:design-system.mdc:color\|token\|component | Design tokens referenced | 4 |
+| has_pattern:CLAUDE.md:Context Engine\|Domain Rules | Context routing in CLAUDE.md | 8 |
+| file_count:/.claude/rules/:3 | At least 3 rule files generated | 8 |
+| has_pattern:project-context.md:valuation\|unicorn\|billion | Valuation context present | 5 |
+| has_pattern:tech-stack.md:Next\|React\|Supabase | Tech stack referenced | 5 |
+| has_pattern:design-system.md:color\|token\|component | Design tokens referenced | 4 |
+
+### Hooks & Settings (10 points)
+
+| Check | Description | Points |
+|-------|-------------|--------|
+| file_exists:.claude/settings.json | Settings file generated | 2 |
+| has_pattern:settings.json:CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS | Agent teams enabled | 3 |
+| has_pattern:settings.json:hooks | Hooks configured | 3 |
+| file_exists:.claude/hooks/ | Hooks directory exists | 2 |
+
+### Agent Frontmatter Quality (10 points)
+
+| Check | Description | Points |
+|-------|-------------|--------|
+| has_pattern:sigma-executor.md:tools:\|model:\|skills: | Agent has rich frontmatter | 3 |
+| has_pattern:sigma-frontend.md:skills: | Frontend agent has skill binding | 3 |
+| has_pattern:CLAUDE.md:Delegation-First\|delegation-first | Delegation philosophy injected | 4 |
 
 ### Checkpoints (10 points)
 
 | Checkpoint | Evidence | Points |
 |------------|----------|--------|
-| Router Generated | .cursorrules file exists | 5 |
-| Rules Generated | At least 3 .mdc files exist | 5 |
+| CLAUDE.md Injected | CLAUDE.md has Context Engine + Delegation section | 5 |
+| Rules Generated | At least 3 .claude/rules/*.md files with paths: frontmatter | 5 |
 
 ### Success Criteria (10 points)
 
 | Criterion | Check | Points |
 |-----------|-------|--------|
-| Context Aware | Router references relevant rules | 4 |
-| Domain Detection | Conditional rules based on detected domains | 3 |
-| PRD Integration | Rules reference Step 11 PRD patterns | 3 |
+| Context Aware | CLAUDE.md references relevant rules | 2 |
+| Domain Detection | Conditional rules based on detected domains with path scoping | 2 |
+| PRD Integration | Rules reference Step 11 PRD patterns | 2 |
+| Skill-Agent Binding | Agents reference skills in frontmatter | 2 |
+| Hook Wiring | At least 2 hooks configured in settings.json | 2 |
 
 </verification>

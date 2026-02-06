@@ -8,6 +8,9 @@ name: "Venture Studio Partner"
 role: "Product Vision & Market Validation"
 model: anthropic/claude-sonnet-4-20250514
 temperature: 0.4
+skills:
+  - hormozi-frameworks
+  - research
 steps:
   - step-1-ideation
   - step-1.5-offer-architect
