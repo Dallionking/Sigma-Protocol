@@ -122,21 +122,56 @@ Command instructions...
 
 ### Key Features
 
-- **Tools**: Read, Write, Edit, Bash, Glob, Grep, WebFetch, WebSearch, Task
+- **Tools**: Read, Write, Edit, Bash, Glob, Grep, WebFetch, WebSearch, Task, LSP
 - **MCP Support**: Full MCP server integration
-- **Subagents**: Spawn specialized agents with Task tool
-- **Skills**: Auto-loaded from .claude/skills/
+- **Agent Teams**: Native multi-agent collaboration (`TeammateTool` + `SendMessage`)
+- **Custom Agents**: `.claude/agents/*.md` with YAML frontmatter (tools, model, skills, permissionMode)
+- **Path-Scoped Rules**: `.claude/rules/*.md` with `paths:` frontmatter for conditional activation
+- **Hooks**: Event-driven automation (SessionStart, PreToolUse, PostToolUse, Stop)
+- **Skills**: Auto-loaded from `.claude/skills/`, supports `context: fork`, `agent:`, `allowed-tools:`
+- **Tool Search**: Auto-defers MCP tools to save context budget
+
+### Rules Format (`.claude/rules/*.md`)
+
+```yaml
+---
+paths:
+  - "src/components/**/*.tsx"
+  - "app/**/*.tsx"
+---
+# Rule content (markdown)
+Rules without paths: apply globally.
+```
+
+### Agent Format (`.claude/agents/*.md`)
+
+```yaml
+---
+name: sigma-frontend
+description: Implements UI components
+tools: [Read, Write, Edit, Bash, Glob, Grep, LSP]
+model: sonnet
+permissionMode: acceptEdits
+skills: [frontend-design, react-performance]
+---
+Agent instructions (markdown)
+```
 
 ### Configuration
 
 ```json
 // .claude/settings.json
 {
+  "env": {
+    "CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS": "1"
+  },
+  "teammateMode": "auto",
   "permissions": {
     "allow": ["Read", "Write", "Edit", "Bash(npm:*)"]
   },
   "hooks": {
-    "preToolCall": "./scripts/pre-tool-hook.sh"
+    "SessionStart": [{ "type": "command", "command": ".claude/hooks/session-start.sh" }],
+    "PreToolUse": [{ "matcher": "Bash", "type": "command", "command": ".claude/hooks/security-check.sh" }]
   }
 }
 ```

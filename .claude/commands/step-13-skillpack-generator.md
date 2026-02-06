@@ -1,7 +1,8 @@
 ---
-version: "2.0.0"
+version: "3.0.0"
 last_updated: "2026-02-05"
 changelog:
+  - "3.0.0: Enhanced skill frontmatter (context: fork, agent:, allowed-tools:, dynamic context, $ARGUMENTS), skill-agent category mapping"
   - "2.0.0: Claude Code-first refactor - .claude/skills/ is primary output; Cursor .mdc generation is conditional on detection"
   - "1.6.0: Added Codex skill generation (.agents/skills/*) and platform selection support"
   - "1.5.0: Added Full-Stack Enforcement skills (full-stack-enforcement, api-security, server-actions-patterns, agentic-prd-compliance) to align with Step 11 v3.0.0 requirements"
@@ -269,14 +270,100 @@ Create/update:
 - `server-actions-patterns/SKILL.md` (if server actions detected)
 - `agentic-prd-compliance/SKILL.md` (if agentic PRD patterns detected)
 
-**Each SKILL.md must:**
-- Use YAML frontmatter with:
-  - `name`
-  - `description` (third-person + trigger phrases)
-  - `version`
-- Use imperative style in body (instructional)
+**Each SKILL.md must use enhanced YAML frontmatter:**
+
+```yaml
+---
+name: frontend-aesthetics
+description: "This skill should be used when building UI components, pages, or layouts. It provides project-specific design system enforcement and component patterns."
+version: "1.0.0"
+# Claude Code v2.1.32 enhanced frontmatter:
+user-invocable: true
+argument-hint: "[component-name or file:line]"
+allowed-tools:
+  - Read
+  - Write
+  - Edit
+  - Bash
+  - Glob
+  - Grep
+  - LSP
+model: inherit
+context: fork          # Runs in subagent to protect main context
+agent: sigma-frontend  # Routes to the frontend agent from .claude/agents/
+---
+```
+
+**Frontmatter field reference:**
+
+| Field | Required | Purpose |
+|-------|----------|---------|
+| `name` | Yes | Skill identifier (kebab-case) |
+| `description` | Yes | Third-person trigger description |
+| `version` | Yes | Semver version |
+| `user-invocable` | No | If `true`, available as `/skill-name` command |
+| `argument-hint` | No | Placeholder shown in command palette |
+| `allowed-tools` | No | Restricts which tools this skill can use |
+| `model` | No | Model override (`sonnet`, `haiku`, `opus`, `inherit`) |
+| `context` | No | `fork` runs in subagent (heavy skills), omit for inline |
+| `agent` | No | Routes to a specific custom agent from `.claude/agents/` |
+
+**When to use `context: fork`:**
+- Skills that scan many files (frontend-aesthetics, backend-engineering)
+- Skills with heavy research (deep-research, api-security)
+- Skills that generate large outputs
+
+**When to omit `context:`:**
+- Lightweight checklist skills
+- Skills that need to modify the current conversation context
+
+**Dynamic context with `!` backtick:**
+
+Skills can include runtime data injection using the `!` backtick syntax:
+
+```markdown
+# Frontend Aesthetics
+
+## Current Git State
+!`git log --oneline -3`
+
+## Project Dependencies
+!`cat package.json | jq '.dependencies | keys[]' 2>/dev/null | head -20`
+
+## Design Tokens
+!`cat docs/design/DESIGN-SYSTEM.md 2>/dev/null | head -50`
+```
+
+**`$ARGUMENTS` substitution:**
+
+For parameterized skills, use `$ARGUMENTS` to accept user input:
+
+```markdown
+# Debug: $ARGUMENTS[0]
+
+Investigate the issue described: $ARGUMENTS[0]
+
+!`git log --oneline -5`
+!`git diff --stat HEAD`
+```
+
+**Skill body requirements:**
+- Use imperative style (instructional)
 - Include the Overlay block (anchors + non-negotiables + precedence) at the top
 - Reference project docs instead of duplicating them
+- Use dynamic context (`!` backtick) for runtime data when useful
+
+### Skill-Agent Category Mapping
+
+Each generated skill MUST be mapped to an agent from `.claude/agents/`. Include this mapping in the CLAUDE.md injection:
+
+| Skill Category | Skills | Assigned Agent |
+|----------------|--------|---------------|
+| Frontend | frontend-aesthetics | sigma-frontend |
+| Backend | backend-engineering, api-security, server-actions-patterns | sigma-backend |
+| Database | database-modeling | sigma-backend |
+| Full-Stack | full-stack-enforcement | sigma-executor |
+| QA/Testing | agentic-prd-compliance | sigma-qa |
 
 Optional (recommended): add `references/` files per skill:
 - `references/stack-summary.md`
@@ -937,12 +1024,14 @@ If Codex is detected, also require:
 
 | Check | Description | Points |
 |------|-------------|--------|
-| has_pattern:frontend-aesthetics/SKILL.md:^description: This skill should be used when | Claude skill has third-person triggers | 8 |
-| has_pattern:backend-engineering/SKILL.md:^description: This skill should be used when | Claude skill has third-person triggers | 7 |
-| has_pattern:frontend-aesthetics/SKILL.md:name:\|version: | Claude skill has proper frontmatter | 5 |
-| has_pattern:backend-engineering/SKILL.md:name:\|version: | Claude skill has proper frontmatter | 5 |
+| has_pattern:frontend-aesthetics/SKILL.md:^description: This skill should be used when | Claude skill has third-person triggers | 5 |
+| has_pattern:backend-engineering/SKILL.md:^description: This skill should be used when | Claude skill has third-person triggers | 5 |
+| has_pattern:frontend-aesthetics/SKILL.md:name:\|version: | Claude skill has proper frontmatter | 3 |
+| has_pattern:backend-engineering/SKILL.md:name:\|version: | Claude skill has proper frontmatter | 3 |
+| has_pattern:frontend-aesthetics/SKILL.md:context:\|agent:\|allowed-tools: | Claude skill uses enhanced frontmatter | 5 |
+| has_pattern:backend-engineering/SKILL.md:context:\|agent:\|allowed-tools: | Claude skill uses enhanced frontmatter | 4 |
+| has_pattern:frontend-aesthetics/SKILL.md:agent: sigma- | Skill maps to a custom agent | 5 |
 | has_pattern:frontend-aesthetics.mdc:globs: | Cursor frontend rule has globs (if Cursor detected) | 5 |
-| has_pattern:backend-engineering.mdc:globs: | Cursor backend rule has globs (if Cursor detected) | 5 |
 
 ### Overlay Integrity (30 points)
 
