@@ -14,8 +14,21 @@
 A platform-agnostic 13-step product development methodology for AI-assisted development.
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
-[![Platforms](https://img.shields.io/badge/Platforms-Claude%20Code%20%7C%20Cursor%20%7C%20OpenCode%20%7C%20Codex%20%7C%20Factory%20Droid%20%7C%20Antigravity-green.svg)](#supported-platforms)
-[![Version](https://img.shields.io/badge/Version-1.0.0--alpha.1-purple.svg)](#)
+[![Version](https://img.shields.io/badge/Version-1.0.0--alpha.2-purple.svg)](CHANGELOG.md)
+[![Claude Code](https://img.shields.io/badge/Primary-Claude%20Code-orange.svg)](#supported-platforms)
+
+---
+
+## What's New in 1.0.0-alpha.2
+
+- **Claude Code-first**: Claude Code is the primary platform. All features, skills, and commands are developed and tested here first.
+- **Open-source ready**: Cleaned up repo structure, added `CLAUDE.md.example` template, improved documentation.
+- **Agent Teams**: Native multi-agent collaboration via Claude Code v2.1.32 `TeammateTool`.
+- **185+ commands** and **150+ skills** across the full 13-step workflow.
+- **Ralph Loop**: Autonomous PRD-to-implementation pipeline.
+- **Platform sync**: Weekly `/platform-sync` keeps secondary platforms up to date.
+
+See [CHANGELOG.md](CHANGELOG.md) for full release history.
 
 ---
 
@@ -25,7 +38,7 @@ Sigma Protocol guides AI assistants through a complete product development workf
 
 - **13 structured steps** from idea to shipping
 - **185+ commands** across 7 categories
-- **180+ skills** for specialized tasks
+- **150+ skills** for specialized tasks
 - **Quality gates** with verification scoring (target: 80+)
 - **Human-in-the-loop checkpoints** for critical decisions
 - **Ralph Loop** for autonomous task execution
@@ -34,43 +47,35 @@ Sigma Protocol guides AI assistants through a complete product development workf
 
 ---
 
-## How to Use
+## Quick Start
 
-### For New Projects
+### 1. Clone the Repository
 
-**Step 1: Install Sigma Protocol**
 ```bash
-# Install globally
-npm install -g sigma-protocol
-
-# Or clone and link locally
-git clone https://github.com/Dallionking/Sigma-Protocol.git
-cd Sigma-Protocol
+git clone https://github.com/dallionking/sigma-protocol.git
+cd sigma-protocol
 npm install
-npm link
 ```
 
-**Step 2: Run Sigma**
+> **Note:** The package is not yet published to npm. Install from source using `git clone`.
+
+### 2. Run the CLI
+
 ```bash
-# Just type sigma
+# Link the CLI locally
+npm link
+
+# Interactive menu
 sigma
 
-# This opens the interactive menu
-```
-
-**Step 3: Create a New Project**
-```bash
-# Interactive project wizard
+# Or go directly to project setup
 sigma new
-
-# Or add to existing project
-cd your-project
-sigma retrofit
 ```
 
-**Step 3: Start the Workflow in Your AI Assistant**
+### 3. Start the Workflow
 
-Open your project in Claude Code, Cursor, OpenCode, Codex, or Antigravity and run:
+Open your project in Claude Code and run:
+
 ```bash
 /step-1-ideation "Your product idea here"
 ```
@@ -81,7 +86,8 @@ The AI will guide you through:
 3. Checkpoints for your approval
 4. Next step recommendations
 
-**Step 4: Continue Through the Steps**
+### 4. Continue Through the Steps
+
 ```bash
 /step-2-architecture    # Design system architecture
 /step-3-ux-design       # Plan user experience
@@ -90,7 +96,7 @@ The AI will guide you through:
 # ... continue through step 13
 ```
 
-### For Existing Projects
+### Adding to an Existing Project
 
 **Option 1: Full Retrofit**
 ```bash
@@ -98,23 +104,21 @@ cd your-existing-project
 sigma retrofit
 ```
 
-This will:
-- Analyze your codebase structure
-- Create `.claude/` configuration directory
-- Generate `CLAUDE.md` with project context
-- Install relevant skills
+This will analyze your codebase, create `.claude/` configuration, generate a `CLAUDE.md` from the provided template, and install relevant skills.
 
 **Option 2: Manual Setup**
 
-Copy these to your project:
+Copy the configuration to your project:
 ```bash
-# Required
-cp -r Sigma-Protocol/.claude your-project/
-cp Sigma-Protocol/CLAUDE.md your-project/
+# Required: copy .claude/ directory and the CLAUDE.md template
+cp -r sigma-protocol/.claude your-project/
+cp sigma-protocol/CLAUDE.md.example your-project/CLAUDE.md
 
-# Optional (for Cursor)
-cp -r Sigma-Protocol/.cursor your-project/
+# Optional: for Cursor support
+cp -r sigma-protocol/.cursor your-project/
 ```
+
+> **Important:** `CLAUDE.md` is gitignored because it contains project-specific configuration. Copy `CLAUDE.md.example` and customize it for your project.
 
 **Option 3: Start from Any Step**
 ```bash
@@ -148,16 +152,18 @@ cp -r Sigma-Protocol/.cursor your-project/
 
 ## Supported Platforms
 
-| Platform | Command Style | Configuration | Skills |
-|----------|---------------|---------------|--------|
-| **Claude Code** | `/command` | `.claude/` + `CLAUDE.md` | 151 |
-| **Cursor** | `@command` | `.cursor/rules/` | 27 rules |
-| **OpenCode** | `/command` | `.opencode/` + `AGENTS.md` | 167 |
-| **Codex** | `$command` (skills) | `.codex/` + `.codex/skills/` + `.agents/skills/` (legacy) + `AGENTS.md` | 180 |
-| **Factory Droid** | `/command` | `.factory/` + `AGENTS.md` | 163 |
-| **Antigravity** | `/command` | `.agent/` + `SKILL.md` | 15 |
+| Platform | Status | Configuration | Skills |
+|----------|--------|---------------|--------|
+| **Claude Code** | **Primary** | `.claude/` + `CLAUDE.md` | 151 |
+| **Cursor** | Secondary | `.cursor/rules/` | 27 rules |
+| **Factory Droid** | Production | `.factory/` + `AGENTS.md` | 163 |
+| **OpenCode** | Planned | `.opencode/` + `AGENTS.md` | -- |
+| **Codex** | Planned | `.codex/` + `AGENTS.md` | -- |
+| **Antigravity** | Experimental | `.agent/` + `SKILL.md` | -- |
 
-> **Tip:** Run `/platform-sync` weekly to keep skills current with platform updates.
+Claude Code is the canonical source for all skills and commands. Other platforms receive synced copies via `/platform-sync`.
+
+> **Tip:** Run `/platform-sync` weekly to keep secondary platform skills current.
 
 ---
 
@@ -297,7 +303,7 @@ Commands:
 ### Hormozi Value Equation
 Every feature is evaluated using:
 ```
-Value = (Dream Outcome × Perceived Likelihood) / (Time Delay × Effort & Sacrifice)
+Value = (Dream Outcome x Perceived Likelihood) / (Time Delay x Effort & Sacrifice)
 ```
 
 ### Quality Gates
@@ -305,49 +311,6 @@ Each step has verification criteria. Target: **80+/100** score to proceed.
 
 ### HITL Checkpoints
 Commands pause for human approval at critical decision points. Never skip these.
-
----
-
-## Documentation
-
-| Document | Description |
-|----------|-------------|
-| [WORKFLOW-OVERVIEW.md](docs/WORKFLOW-OVERVIEW.md) | Complete workflow guide |
-| [FOUNDATION-SKILLS.md](docs/FOUNDATION-SKILLS.md) | 39 Foundation skills |
-| [EXTERNAL-SKILLS.md](docs/EXTERNAL-SKILLS.md) | 124 external skills |
-| [PLATFORMS.md](docs/PLATFORMS.md) | Platform configuration |
-| [RALPH-MODE.md](docs/RALPH-MODE.md) | Autonomous implementation |
-| [COMMANDS.md](docs/COMMANDS.md) | Full command catalog (185 commands) |
-
----
-
-## Project Structure
-
-```
-sigma-protocol/
-├── .claude/            # Claude Code configuration
-│   ├── commands/       # All command definitions
-│   ├── skills/         # Skill files
-│   └── agents-legacy/  # Deprecated agent files
-├── .cursor/            # Cursor configuration
-│   └── rules/          # Cursor rule files (.mdc)
-├── .codex/             # Codex project config (optional)
-├── .agents/            # Codex skills (repo-scoped)
-│   └── skills/         # Skill folders (SKILL.md)
-├── .factory/           # Factory Droid configuration
-├── platforms/          # Platform-specific configs
-│   ├── claude-code/
-│   ├── cursor/
-│   ├── opencode/
-│   ├── codex/
-│   └── factory-droid/
-├── templates/
-│   ├── steps/          # Canonical step definitions
-│   └── boilerplates/   # Project starter templates
-├── scripts/ralph/      # Ralph loop scripts
-├── cli/                # CLI entry point
-└── docs/               # Documentation
-```
 
 ---
 
@@ -372,6 +335,99 @@ npm install
 
 ---
 
+## Project Structure
+
+```
+sigma-protocol/
+├── .claude/            # Claude Code configuration (primary)
+│   ├── commands/       # All command definitions
+│   ├── skills/         # Skill files (canonical source)
+│   └── settings.json   # Permissions and hooks
+├── .cursor/            # Cursor configuration (secondary)
+│   └── rules/          # Cursor rule files (.mdc)
+├── .factory/           # Factory Droid configuration
+├── platforms/          # Platform-specific configs
+│   ├── claude-code/
+│   ├── cursor/
+│   ├── opencode/
+│   ├── codex/
+│   └── factory-droid/
+├── templates/
+│   ├── steps/          # Canonical step definitions
+│   └── boilerplates/   # Project starter templates
+├── scripts/ralph/      # Ralph loop scripts
+├── cli/                # CLI entry point
+├── docs/               # Documentation
+├── CLAUDE.md.example   # Template for project CLAUDE.md
+└── CONTRIBUTING.md     # Contribution guidelines
+```
+
+---
+
+## Documentation
+
+| Document | Description |
+|----------|-------------|
+| [WORKFLOW-OVERVIEW.md](docs/WORKFLOW-OVERVIEW.md) | Complete workflow guide |
+| [FOUNDATION-SKILLS.md](docs/FOUNDATION-SKILLS.md) | 39 Foundation skills |
+| [EXTERNAL-SKILLS.md](docs/EXTERNAL-SKILLS.md) | 124 external skills |
+| [PLATFORMS.md](docs/PLATFORMS.md) | Platform configuration |
+| [RALPH-MODE.md](docs/RALPH-MODE.md) | Autonomous implementation |
+| [COMMANDS.md](docs/COMMANDS.md) | Full command catalog (185 commands) |
+
+---
+
+## Troubleshooting
+
+### MCP Tools Not Available
+
+Some skills reference MCP tools (Firecrawl, EXA, Ref) that require separate setup. If a command fails with "tool not found":
+
+1. Check which MCP servers are configured: look at `.claude/settings.json` under `mcpServers`
+2. Install the missing MCP server following its documentation
+3. Most commands work without MCP tools -- they provide enhanced research but are not required
+
+### Step Verification Failures
+
+If `/step-verify` scores below 80:
+
+1. Review the specific criteria that failed
+2. Re-run the step with the feedback: `/step-N-name --fix`
+3. Focus on the lowest-scoring areas first
+4. Run `/step-verify` again after fixes
+
+### CLI Not Found After Install
+
+```bash
+# Make sure npm link was run
+cd sigma-protocol
+npm link
+
+# Verify it's available
+which sigma
+```
+
+### CLAUDE.md Not Found
+
+`CLAUDE.md` is gitignored because it contains project-specific settings. For new projects:
+
+```bash
+cp CLAUDE.md.example CLAUDE.md
+# Then customize for your project
+```
+
+### Platform Skills Out of Sync
+
+```bash
+# Re-sync skills to all platforms
+./scripts/sync-skills-to-platforms.sh
+
+# Or sync a specific platform
+./scripts/sync-skills-to-platforms.sh --platform cursor
+```
+
+---
+
 ## Contributing
 
 See [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
@@ -384,7 +440,7 @@ MIT License - see [LICENSE](LICENSE) for details.
 
 <p align="center">
   <b>Built for AI-Native Development</b><br>
-  <a href="https://github.com/Dallionking/Sigma-Protocol">GitHub</a> •
-  <a href="docs/WORKFLOW-OVERVIEW.md">Documentation</a> •
+  <a href="https://github.com/dallionking/sigma-protocol">GitHub</a> &bull;
+  <a href="docs/WORKFLOW-OVERVIEW.md">Documentation</a> &bull;
   <a href="docs/COMMANDS.md">Commands</a>
 </p>

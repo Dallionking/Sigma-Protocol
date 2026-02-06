@@ -1,7 +1,7 @@
 # Platform Reference Guide
 
-**Version:** 1.0.0-alpha.1
-**Last Updated:** 2026-02-04
+**Version:** 1.0.0-alpha.2
+**Last Updated:** 2026-02-05
 **Maintainer:** Sigma Protocol Team
 
 ---
@@ -10,14 +10,16 @@
 
 Sigma Protocol supports multiple AI coding platforms with platform-specific configurations. Each platform has its own directory structure, file formats, and integration patterns.
 
-| Platform | Status | Skills | Commands | Primary Use |
-|----------|--------|--------|----------|-------------|
-| **Claude Code** | Production | 151 | 122 | Anthropic CLI (Canonical Source) |
-| **OpenCode** | Production | 167 | 122 | Open-source alternative |
-| **Codex** | Production | 180 | 122 | OpenAI Codex App/CLI |
-| **Cursor** | Production | 27 rules | 26 | IDE integration |
-| **Factory Droid** | Production | 163 | 120+ | Enterprise automation |
-| **Antigravity** | New | 15 | 10+ | Universal agent protocol |
+| Platform | Status | Deployed | Skills | Commands | Primary Use |
+|----------|--------|----------|--------|----------|-------------|
+| **Claude Code** | Production (Primary) | Yes | 151 | 128 | Anthropic CLI (Canonical Source) |
+| **Cursor** | Production (Secondary) | Yes | 27 rules | 26 | IDE integration |
+| **Factory Droid** | Production | Yes | 163 | 120+ | Enterprise automation |
+| **OpenCode** | Planned | No | 0 | 0 | Open-source alternative |
+| **Codex** | Planned | No | 0 | 0 | OpenAI Codex App/CLI |
+| **Antigravity** | Experimental | No | 0 | 0 | Universal agent protocol |
+
+> **Note:** OpenCode, Codex, and Antigravity have platform config *designed* but skills/commands are not yet deployed. Skill counts shown are for deployed artifacts only.
 
 ---
 
@@ -560,7 +562,7 @@ triggers:
 | frontend-design | .md | SKILL.md | SKILL.md | .mdc | SKILL.md | SKILL.md |
 | react-performance | .md | SKILL.md | SKILL.md | .mdc | SKILL.md | SKILL.md |
 | verification | .md | SKILL.md | SKILL.md | .mdc | SKILL.md | SKILL.md |
-| ... (151 total) | 151 | 167 | 180 | 27 rules | 163 | 15 |
+| ... (151 total) | 151 | 0 (planned) | 0 (planned) | 27 rules | 163 | 0 (planned) |
 
 ### Commands
 
@@ -569,7 +571,7 @@ triggers:
 | step-1-ideation | .md | .md | SKILL.md | .mdc | .md | - |
 | implement-prd | .md | .md | SKILL.md | - | .md | - |
 | gap-analysis | .md | .md | SKILL.md | - | .md | - |
-| ... (122 total) | 122 | 122 | skills-based | 26 | 120+ | 10+ |
+| ... (128 total) | 128 | 0 (planned) | 0 (planned) | 26 | 120+ | 0 (planned) |
 
 ---
 

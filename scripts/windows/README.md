@@ -34,7 +34,7 @@ wsl -d Ubuntu -e sudo apt update
 wsl -d Ubuntu -e sudo apt install tmux jq
 
 REM Install Claude Code or OpenCode in WSL
-wsl -d Ubuntu -e npm install -g @anthropic/claude-code
+wsl -d Ubuntu -e bash -c "claude install"  REM Or: npm install -g @anthropic-ai/claude-code (legacy)
 ```
 
 ### Option 2: Git Bash

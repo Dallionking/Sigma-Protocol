@@ -186,6 +186,7 @@ RUN apt-get update && apt-get install -y \
 RUN npm install -g typescript tsx
 
 # Install Claude Code CLI
+# Install Claude Code CLI (native installer preferred, npm fallback for Docker)
 RUN npm install -g @anthropic-ai/claude-code 2>/dev/null || true
 
 WORKDIR /workspace
