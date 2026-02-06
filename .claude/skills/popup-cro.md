@@ -7,6 +7,7 @@ description: When the user wants to create or optimize popups, modals, overlays,
 name: popup-cro
 source: marketing
 version: 1.0.0
+user-invocable: false
 ---
 
 # Popup CRO

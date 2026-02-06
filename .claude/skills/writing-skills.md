@@ -4,6 +4,7 @@ description: Use when creating new skills, editing existing skills, or verifying
 name: writing-skills
 source: superpowers
 version: 1.0.0
+disable-model-invocation: true
 ---
 
 # Writing Skills

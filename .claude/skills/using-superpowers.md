@@ -5,6 +5,7 @@ description: Use when starting any conversation - establishes how to find and us
 name: using-superpowers
 source: superpowers
 version: 1.0.0
+disable-model-invocation: true
 ---
 
 <EXTREMELY-IMPORTANT>

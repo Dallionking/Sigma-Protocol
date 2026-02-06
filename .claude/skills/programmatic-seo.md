@@ -7,6 +7,7 @@ description: When the user wants to create SEO-driven pages at scale using templ
 name: programmatic-seo
 source: marketing
 version: 1.0.0
+user-invocable: false
 ---
 
 # Programmatic SEO

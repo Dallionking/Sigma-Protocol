@@ -7,6 +7,7 @@ description: When the user wants to optimize post-signup onboarding, user activa
 name: onboarding-cro
 source: marketing
 version: 1.0.0
+user-invocable: false
 ---
 
 # Onboarding CRO

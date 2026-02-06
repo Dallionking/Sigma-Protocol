@@ -11,6 +11,7 @@ triggers:
   - tabs
   - osascript
   - multi-agent terminal
+disable-model-invocation: true
 ---
 
 # @terminal-automation

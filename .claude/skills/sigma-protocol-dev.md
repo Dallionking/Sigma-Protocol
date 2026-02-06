@@ -8,6 +8,7 @@ triggers:
   - orchestration development
   - cli development
   - protocol iteration
+disable-model-invocation: true
 ---
 
 # @sigma-protocol-dev

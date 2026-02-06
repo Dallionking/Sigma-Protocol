@@ -7,6 +7,7 @@ description: 'Meta-skill that analyzes the Trail of Bits Testing Handbook (appse
 name: testing-handbook-generator
 source: trailofbits
 version: 1.0.0
+user-invocable: false
 ---
 
 # Testing Handbook Skill Generator

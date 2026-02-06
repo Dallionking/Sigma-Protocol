@@ -8,6 +8,7 @@ description: Comprehensive token integration and implementation analyzer based o
 name: token-integration-analyzer
 source: trailofbits
 version: 1.0.0
+user-invocable: false
 ---
 
 # Token Integration Analyzer

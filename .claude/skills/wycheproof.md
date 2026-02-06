@@ -6,6 +6,7 @@ description: 'Wycheproof provides test vectors for validating cryptographic impl
 name: wycheproof
 source: trailofbits
 version: 1.0.0
+user-invocable: false
 ---
 
 # Wycheproof

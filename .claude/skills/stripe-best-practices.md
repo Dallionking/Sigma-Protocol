@@ -3,6 +3,7 @@ description: Best practices for building a Stripe integrations
 name: stripe-best-practices
 source: stripe
 version: 1.0.0
+user-invocable: false
 ---
 
 When designing an integration, always prefer the documentation in [Stripe's Integration Options doc](https://docs.stripe.com/payments/payment-methods/integration-options.md)

@@ -4,6 +4,7 @@ description: Use when designing role-based multi-agent systems, defining agent r
 version: 1.0.0
 tags: [crewai, multi-agent, roles, delegation, collaboration, agent-framework]
 triggers: [crew, agent roles, delegation, researcher, writer, reviewer, agent team, crewai]
+user-invocable: false
 ---
 
 # CrewAI Patterns: Role-Based Multi-Agent Framework

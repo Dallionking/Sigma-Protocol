@@ -5,6 +5,7 @@ description: Use when implementation is complete, all tests pass, and you need t
 name: finishing-a-development-branch
 source: superpowers
 version: 1.0.0
+disable-model-invocation: true
 ---
 
 # Finishing a Development Branch

@@ -7,6 +7,7 @@ description: Scans Android APKs for Firebase security misconfigurations includin
 name: firebase-apk-scanner
 source: trailofbits
 version: 1.0.0
+user-invocable: false
 ---
 
 # Firebase APK Security Scanner

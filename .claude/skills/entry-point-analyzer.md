@@ -9,6 +9,7 @@ description: Analyzes smart contract codebases to identify state-changing entry 
 name: entry-point-analyzer
 source: trailofbits
 version: 1.0.0
+user-invocable: false
 ---
 
 # Entry Point Analyzer

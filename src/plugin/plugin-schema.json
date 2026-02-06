@@ -1,0 +1,83 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Sigma Protocol Plugin Manifest",
+  "description": "Schema for the Sigma Protocol plugin distribution manifest",
+  "type": "object",
+  "required": ["name", "version", "description", "components"],
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "Plugin identifier (kebab-case)",
+      "pattern": "^[a-z][a-z0-9-]*$"
+    },
+    "version": {
+      "type": "string",
+      "description": "Plugin version (semver or date-based)"
+    },
+    "description": {
+      "type": "string",
+      "description": "Human-readable plugin description"
+    },
+    "author": {
+      "type": "string",
+      "description": "Plugin author name or organization"
+    },
+    "license": {
+      "type": "string",
+      "description": "SPDX license identifier"
+    },
+    "built_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "ISO 8601 build timestamp"
+    },
+    "components": {
+      "type": "object",
+      "description": "Counts and metadata for packaged components",
+      "required": ["skills", "agents", "commands", "hooks", "rules"],
+      "properties": {
+        "skills": {
+          "type": "object",
+          "required": ["total"],
+          "properties": {
+            "total": { "type": "integer", "minimum": 0 },
+            "manual_only": { "type": "integer", "minimum": 0, "description": "Category A: disable-model-invocation: true" },
+            "claude_invocable": { "type": "integer", "minimum": 0, "description": "Category B: default (no flag)" },
+            "background": { "type": "integer", "minimum": 0, "description": "Category C: user-invocable: false" }
+          }
+        },
+        "agents": { "type": "integer", "minimum": 0 },
+        "commands": { "type": "integer", "minimum": 0 },
+        "hooks": { "type": "integer", "minimum": 0 },
+        "rules": { "type": "integer", "minimum": 0 }
+      }
+    },
+    "platforms": {
+      "type": "object",
+      "description": "Platform compatibility requirements",
+      "properties": {
+        "claude_code": {
+          "type": "object",
+          "properties": {
+            "min_version": { "type": "string" },
+            "features": {
+              "type": "array",
+              "items": { "type": "string" }
+            }
+          }
+        }
+      }
+    },
+    "install": {
+      "type": "object",
+      "description": "Installation directory mapping",
+      "properties": {
+        "skills_dir": { "type": "string" },
+        "agents_dir": { "type": "string" },
+        "commands_dir": { "type": "string" },
+        "hooks_dir": { "type": "string" },
+        "rules_dir": { "type": "string" }
+      }
+    }
+  }
+}

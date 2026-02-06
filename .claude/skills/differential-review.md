@@ -8,6 +8,7 @@ description: 'Performs security-focused differential review of code changes (PRs
 name: differential-review
 source: trailofbits
 version: 1.0.0
+user-invocable: false
 ---
 
 # Differential Security Review

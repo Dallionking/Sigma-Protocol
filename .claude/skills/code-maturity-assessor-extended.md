@@ -4,6 +4,7 @@ description: Extended codebase readiness evaluation inspired by Obra. Covers tec
 version: 1.0.0
 tags: [assessment, technical-debt, refactoring, architecture, migration, code-quality]
 triggers: [assess, evaluate, readiness, migration, refactor, technical-debt, health-check, audit]
+user-invocable: false
 ---
 
 # Code Maturity Assessor Extended

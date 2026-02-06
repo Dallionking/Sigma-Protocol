@@ -4,6 +4,7 @@ description: Use when completing tasks, implementing major features, or before m
 name: requesting-code-review
 source: superpowers
 version: 1.0.0
+user-invocable: false
 ---
 
 # Requesting Code Review

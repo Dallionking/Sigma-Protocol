@@ -8,6 +8,7 @@ description: When the user wants to create or optimize in-app paywalls, upgrade 
 name: paywall-upgrade-cro
 source: marketing
 version: 1.0.0
+user-invocable: false
 ---
 
 # Paywall and Upgrade Screen CRO

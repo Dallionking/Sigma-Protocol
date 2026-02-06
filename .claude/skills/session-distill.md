@@ -2,6 +2,7 @@
 name: session-distill
 description: Distill patterns from session history to generate developer preferences
 allowed-tools: Read, Write, Bash, Glob, Grep
+disable-model-invocation: true
 ---
 
 # Session Distill - Pattern Extraction from History

@@ -6,6 +6,7 @@ description: Searches and explores Burp Suite project files (.burp) from the com
 name: burpsuite-project-parser
 source: trailofbits
 version: 1.0.0
+user-invocable: false
 ---
 
 # Burp Project Parser

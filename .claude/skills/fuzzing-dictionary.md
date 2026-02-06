@@ -6,6 +6,7 @@ description: 'Fuzzing dictionaries guide fuzzers with domain-specific tokens. Us
 name: fuzzing-dictionary
 source: trailofbits
 version: 1.0.0
+user-invocable: false
 ---
 
 # Fuzzing Dictionary

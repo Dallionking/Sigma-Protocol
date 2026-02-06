@@ -7,6 +7,7 @@ description: When the user wants help creating, scheduling, or optimizing social
 name: social-content
 source: marketing
 version: 1.0.0
+user-invocable: false
 ---
 
 # Social Content

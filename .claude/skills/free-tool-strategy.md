@@ -8,6 +8,7 @@ description: When the user wants to plan, evaluate, or build a free tool for mar
 name: free-tool-strategy
 source: marketing
 version: 1.0.0
+user-invocable: false
 ---
 
 # Free Tool Strategy (Engineering as Marketing)

@@ -4,6 +4,7 @@ description: Use when orchestrating multiple AI agents for complex tasks, coordi
 version: 1.0.0
 tags: [multi-agent, orchestration, coordination, parallel-execution, conflict-resolution]
 triggers: [multi-agent, orchestration, coordinate, parallel agents, swarm, loki, agent coordination]
+user-invocable: false
 ---
 
 # Loki Mode: Multi-Agent Orchestration

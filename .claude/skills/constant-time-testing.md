@@ -6,6 +6,7 @@ description: 'Constant-time testing detects timing side channels in cryptographi
 name: constant-time-testing
 source: trailofbits
 version: 1.0.0
+user-invocable: false
 ---
 
 # Constant-Time Testing

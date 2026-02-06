@@ -4,6 +4,7 @@ description: Deploying Expo apps to iOS App Store, Android Play Store, web hosti
 name: expo-deployment
 source: expo
 version: 1.0.0
+user-invocable: false
 ---
 
 # Deployment

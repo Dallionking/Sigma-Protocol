@@ -7,6 +7,7 @@ description: When the user wants to create or optimize an email sequence, drip c
 name: email-sequence
 source: marketing
 version: 1.0.0
+user-invocable: false
 ---
 
 # Email Sequence Design

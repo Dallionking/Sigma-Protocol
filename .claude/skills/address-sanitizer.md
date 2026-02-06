@@ -6,6 +6,7 @@ description: 'AddressSanitizer detects memory errors during fuzzing. Use when fu
 name: address-sanitizer
 source: trailofbits
 version: 1.0.0
+user-invocable: false
 ---
 
 # AddressSanitizer (ASan)

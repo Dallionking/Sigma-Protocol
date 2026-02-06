@@ -10,6 +10,7 @@ triggers:
   - autonomous implementation
   - start ralph
   - /ralph
+disable-model-invocation: true
 ---
 
 # Ralph Loop - Autonomous Story Implementation

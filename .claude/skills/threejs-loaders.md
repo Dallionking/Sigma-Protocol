@@ -4,6 +4,7 @@ description: Three.js asset loading - GLTF, textures, images, models, async patt
 name: threejs-loaders
 source: threejs
 version: 1.0.0
+user-invocable: false
 ---
 
 # Three.js Loaders

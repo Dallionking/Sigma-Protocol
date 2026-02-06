@@ -13,7 +13,7 @@ skills:
   - content-atomizer
   - direct-response-copy
   - brand-voice
-  - marketing-copywriting
+  - copywriting
   - marketing-psychology
   - seo-audit
   - launch-strategy

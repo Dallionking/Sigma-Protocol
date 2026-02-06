@@ -9,6 +9,7 @@ description: 'When the user wants to create competitor comparison or alternative
 name: competitor-alternatives
 source: marketing
 version: 1.0.0
+user-invocable: false
 ---
 
 # Competitor & Alternative Pages

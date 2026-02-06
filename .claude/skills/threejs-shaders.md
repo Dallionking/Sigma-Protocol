@@ -5,6 +5,7 @@ description: Three.js shaders - GLSL, ShaderMaterial, uniforms, custom effects. 
 name: threejs-shaders
 source: threejs
 version: 1.0.0
+user-invocable: false
 ---
 
 # Three.js Shaders

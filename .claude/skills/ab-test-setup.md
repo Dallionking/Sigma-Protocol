@@ -6,6 +6,7 @@ description: When the user wants to plan, design, or implement an A/B test or ex
 name: ab-test-setup
 source: marketing
 version: 1.0.0
+user-invocable: false
 ---
 
 # A/B Test Setup

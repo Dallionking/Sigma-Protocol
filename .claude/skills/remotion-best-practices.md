@@ -3,6 +3,7 @@ description: Best practices for Remotion - Video creation in React
 name: remotion-best-practices
 source: remotion-dev
 version: 1.0.0
+user-invocable: false
 ---
 
 ## When to use

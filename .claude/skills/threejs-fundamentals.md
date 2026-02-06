@@ -5,6 +5,7 @@ description: Three.js scene setup, cameras, renderer, Object3D hierarchy, coordi
 name: threejs-fundamentals
 source: threejs
 version: 1.0.0
+user-invocable: false
 ---
 
 # Three.js Fundamentals

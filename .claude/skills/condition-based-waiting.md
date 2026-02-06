@@ -12,6 +12,7 @@ triggers:
   - wait for
   - polling
   - async timing
+user-invocable: false
 ---
 
 # Condition-Based Waiting

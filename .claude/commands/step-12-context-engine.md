@@ -1,7 +1,8 @@
 ---
-version: "6.1.0"
-last_updated: "2026-02-05"
+version: "7.0.0"
+last_updated: "2026-02-06"
 changelog:
+  - "7.0.0: v2.1.33 optimization - slim CLAUDE.md (~95 lines), .claude/rules/ modular extraction, TeammateIdle/TaskCompleted hooks, SLASH_COMMAND_TOOL_CHAR_BUDGET, delegate mode, agent color field, skill categorization flags"
   - "6.1.0: Added security team agents (security-lead, security-web-api, security-ai-safety, security-infra, security-mobile, security-compliance) with conditional generation based on project stack detection"
   - "6.0.0: Full Claude Code feature integration - path-scoped rules, agent frontmatter (tools/model/skills), settings.json generation, delegation-first CLAUDE.md, hook generation, session continuity hooks"
   - "5.0.0: Claude Code-first refactor - .claude/rules/ and CLAUDE.md are now primary outputs; Cursor generation is optional"
@@ -80,13 +81,38 @@ Generate or update `.claude/settings.json` to enable agent teams and configure p
 ```json
 {
   "env": {
-    "CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS": "1"
+    "CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS": "1",
+    "SLASH_COMMAND_TOOL_CHAR_BUDGET": "500000"
   },
   "teammateMode": "auto"
 }
 ```
 
 **Merge rules:** If `.claude/settings.json` already exists, merge new keys without overwriting existing permissions or hooks. Use `env` for feature flags and `teammateMode` for team pane behavior.
+
+**Required hooks (v2.1.33+):** In addition to standard hooks, generate these team-aware hooks:
+
+```json
+{
+  "hooks": {
+    "TeammateIdle": [{
+      "hooks": [{
+        "type": "command",
+        "command": "bash \"$CLAUDE_PROJECT_DIR/.claude/hooks/teammate-idle-handler.sh\""
+      }]
+    }],
+    "TaskCompleted": [{
+      "hooks": [{
+        "type": "command",
+        "command": "bash \"$CLAUDE_PROJECT_DIR/.claude/hooks/task-completed-handler.sh\""
+      }]
+    }]
+  }
+}
+```
+
+- **`teammate-idle-handler.sh`**: Check for pending unblocked tasks and surface reminders to the lead
+- **`task-completed-handler.sh`**: Check if completed task unblocks Devil's Advocate or Gap Analyst gates
 
 #### 3) `.claude/agents/` (custom agent definitions with skill binding)
 
@@ -150,13 +176,15 @@ UI components, pages, layouts, hooks, styling, accessibility.
 | `sigma-security-infra.md` | Read, Grep, Glob, Bash | sonnet | dependency-security, secrets-detection | Infrastructure/Docker detected |
 | `sigma-security-mobile.md` | Read, Grep, Glob, Bash | sonnet | mobile-app-security, owasp-web-security | Mobile detected |
 | `sigma-security-compliance.md` | Read, Grep, Glob, Bash | sonnet | saas-security-patterns, security-code-review | Compliance requirements detected |
+| `sigma-devils-advocate.md` | Read, Grep, Glob, Bash | sonnet | verification-before-completion, quality-gates | Always |
+| `sigma-gap-analyst.md` | Read, Write, Edit, Grep, Glob, Bash | sonnet | gap-analysis, verification-before-completion, quality-gates | Always |
 
 **Stack-adaptive generation rules:**
 - If React/Next.js detected → include `sigma-frontend.md` with React-specific instructions
 - If no frontend framework → skip `sigma-frontend.md`
 - If Supabase detected → include RLS patterns in `sigma-backend.md` and `sigma-security.md`
 - If no test framework → make `sigma-qa.md` focus on test setup + writing
-- Always include: `sigma-planner`, `sigma-executor`, `sigma-reviewer`, `sigma-sisyphus`, `sigma-debugger`, `sigma-docs`
+- Always include: `sigma-planner`, `sigma-executor`, `sigma-reviewer`, `sigma-sisyphus`, `sigma-debugger`, `sigma-docs`, `sigma-devils-advocate`, `sigma-gap-analyst`
 
 **Security agent generation rules:**
 - Always generate: `sigma-security-lead` (every project needs a security coordinator)
@@ -189,6 +217,8 @@ Generate a skill-to-agent mapping as part of the CLAUDE.md injection (see below)
 | Infra Security | dependency-security, secrets-detection | sigma-security-infra |
 | Mobile Security | mobile-app-security, owasp-web-security | sigma-security-mobile |
 | Compliance | saas-security-patterns, security-code-review | sigma-security-compliance |
+| Adversarial Review | verification-before-completion, quality-gates | sigma-devils-advocate |
+| Gap Analysis | gap-analysis, verification-before-completion, quality-gates | sigma-gap-analyst |
 ```
 
 #### 5) CLAUDE.md Injection (Context Router + Agent Registry + Delegation Philosophy)
@@ -234,6 +264,8 @@ Each agent comes pre-loaded with domain skills via frontmatter. When spawning te
 | `sigma-reviewer` | Quality gate | verification-before-completion, quality-gates |
 | `sigma-debugger` | Issue investigation | systematic-debugging |
 | `sigma-docs` | Documentation | writing-clearly |
+| `sigma-devils-advocate` | Adversarial review | verification-before-completion, quality-gates |
+| `sigma-gap-analyst` | Final quality gate | gap-analysis, verification-before-completion, quality-gates |
 
 ### Security Team (Conditional on Stack)
 | Agent | Role | Skills | When Generated |
@@ -1435,67 +1467,107 @@ paths:
 
 Inject the context routing section into the target project's `CLAUDE.md`. This replaces the `.cursorrules` file as the primary context mechanism for Claude Code.
 
-**CLAUDE.md injection template:**
+**CLAUDE.md injection template (~95 lines):**
+
+The injected CLAUDE.md should be slim. Detailed references go in `.claude/rules/`. Target ~95 lines.
 
 ```markdown
-## Context Engine (Auto-Generated by Step 12)
+# {{PROJECT_NAME}} - Claude Code Configuration
 
-### Domain Rules
-Path-specific rules are loaded automatically from `.claude/rules/`:
-- `project-context.md` — Project name, vision, value prop (always active)
-- `tech-stack.md` — Framework versions, language standards (code files)
-- `design-system.md` — Colors, tokens, component patterns (frontend files)
-- `coding-standards.md` — TS strict, naming, testing conventions (all code)
-- `project-governance.md` — Step 1-12 workflow enforcement (process)
-{additional domain rules as detected}
+**Version:** 1.0.0 | **Generated:** {{DATE}} by Step 12
 
-### Agent Registry
+## Overview
+
+{{PROJECT_DESCRIPTION}}
+
+| Platform | Configuration | Status |
+|----------|---------------|--------|
+| **Claude Code** | `.claude/` | Production |
+{additional platforms as detected}
+
+## Quick Start
+
+```bash
+claude "Run step 1 ideation for {{PROJECT_NAME}}"
+claude "Continue to step 2"
+claude "Verify step 1"
+```
+
+## Key Principles
+
+### Value Equation (Hormozi)
+```
+Value = (Dream Outcome × Perceived Likelihood) / (Time Delay × Effort & Sacrifice)
+```
+
+### HITL Checkpoints
+Commands pause for human approval at critical points. Never skip these.
+
+### Quality Gates
+Each step has verification criteria. Target: 80+/100 score.
+
+### TODO Policy
+- TODOs in production code must include an issue reference: `TODO(#issue-id): ...`
+
+## Execution Philosophy: Delegate-First
+
+**For all multi-agent work, use `Shift+Tab` to enter delegate mode.** The orchestrator delegates to specialized agents — never implements directly.
+
+- Never work solo on complex tasks. Use agent swarms for PRD execution.
+- Match agent team size to PRD complexity (5-20 agents).
+- Every team MUST include Devil's Advocate + Gap Analyst gates.
+- Before ANY planning, auto-invoke `deep-research` skill.
+
+## Self-Learning Preferences (Auto-Generated)
+
+> Last updated: {{DATE}} | Sessions analyzed: 0 | Confidence: 0%
+
+### Key Behaviors
+- Autonomy: low - Confirm before significant changes
+- Verbosity: standard - Provide appropriate detail
+
+_Generated by SLAS. Run `/session-distill` to update._
+
+## Rules & References
+
+Detailed command reference, workflow, skills catalog, MCP tools, swarm orchestration, and SLAS documentation are in `.claude/rules/`:
+
+- `commands-reference.md` — All available commands
+- `workflow.md` — Step 0-13 flow diagram
+- `swarm-orchestration.md` — Swarm sizing, mandatory agents, auto-skill invocation
+- `skills-reference.md` — Skills by category
+- `mcp-tools.md` — MCP tools + Task management
+- `slas-system.md` — Self-Learning Agent System
+- `documentation-links.md` — Documentation links
+
+## Agent Registry
+
 See `.claude/agents/` for specialized agent definitions.
 
-| Agent | Domain | Use With |
-|-------|--------|----------|
-| sigma-planner | Architecture & planning | Task tool subagent_type |
-| sigma-executor | Implementation | Task tool subagent_type |
-| sigma-reviewer | Quality assurance | Task tool subagent_type |
-| sigma-sisyphus | Verification loops | Task tool subagent_type |
-| sigma-security-lead | Security coordination & threat modeling | Task tool subagent_type |
-{additional agents as generated}
+| Agent | Domain |
+|-------|--------|
+| sigma-planner | Architecture & planning |
+| sigma-executor | Implementation |
+| sigma-reviewer | Quality assurance |
+| sigma-devils-advocate | Adversarial review gate |
+| sigma-gap-analyst | Requirements traceability gate |
+| sigma-security-lead | Security coordination |
+{additional agents as generated by stack detection}
 
-### Security Agents (Generated by Stack Detection)
-| Agent | Trigger | When Generated |
-|-------|---------|----------------|
-| sigma-security-lead | security-audit, threat-model | Always |
-| sigma-security-web-api | auth-review, api-security, injection-check | Web/SaaS detected |
-| sigma-security-ai-safety | ai-safety, prompt-injection, llm-security | AI/LLM features |
-| sigma-security-infra | container-scan, dependency-audit, secrets-scan | Infrastructure/Docker |
-| sigma-security-mobile | mobile-security, certificate-pinning | Mobile detected |
-| sigma-security-compliance | compliance-check, gdpr-audit, soc2-check | Compliance requirements |
+## Documentation
 
-### MCP Priority
-**Strategy:** Ref (docs) → Exa (code) | Context7 → Perplexity (backup)
-
-1. **Ref**: Official docs/API refs
-2. **Exa**: Code examples/real-world usage
-3. **Context7**: Backup docs
-4. **Perplexity**: Backup research
-5. **Supabase MCP**: DB/Auth specifics
-
-### Development Mode (Agentic Layer)
-
-When running /dev-loop or /implement-prd, operate in **Grade 4 Agentic Mode**:
-
-1. **Read State** — Check `.sigma/memory/active_task.md` for current progress
-2. **Use Tools** — Run `.sigma/tools/` scripts (typecheck, lint, test, build)
-3. **Self-Correct** — If verification fails, run /gap-analysis before asking for help
-4. **Update State** — Write to `.sigma/memory/active_task.md` after each phase
-
-### Valuation Context ($1B Standard)
-You are a **Founding Technical Partner** at a **$1B Unicorn Scale-Up**.
-- **Code:** Rigorous, scalable, typed, tested
-- **UX:** Pixel-perfect, <120s time-to-value, delightful
-- **Ops:** Zero-drift documentation, surgical repo hygiene
-- **Mindset:** Hormozi Value Equation
+- [WORKFLOW-OVERVIEW.md](docs/WORKFLOW-OVERVIEW.md)
+- [PLATFORMS.md](docs/PLATFORMS.md)
 ```
+
+**Key changes from previous template:**
+- Reduced from ~70 lines of injection to ~95 lines total CLAUDE.md
+- Moved command tables, workflow diagrams, skill catalogs, MCP details, SLAS docs to `.claude/rules/`
+- Added delegate mode instruction
+- Added `.claude/rules/` reference pointer
+- Removed inline security agent table (lives in `swarm-orchestration.md` rule)
+- Removed MCP priority section (lives in `mcp-tools.md` rule)
+- Removed Development Mode section (lives in `workflow.md` rule)
 
 ### Secondary: .cursorrules (If Cursor detected)
 

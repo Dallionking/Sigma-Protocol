@@ -7,6 +7,7 @@ description: 'Semgrep is a fast static analysis tool for finding bugs and enforc
 name: semgrep
 source: trailofbits
 version: 1.0.0
+user-invocable: false
 ---
 
 # Semgrep

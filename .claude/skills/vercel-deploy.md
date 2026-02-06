@@ -6,6 +6,7 @@ description: Deploy applications and websites to Vercel. Use this skill when the
 name: vercel-deploy
 source: vercel-labs
 version: 1.0.0
+disable-model-invocation: true
 ---
 
 # Vercel Deploy
