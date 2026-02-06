@@ -170,5 +170,15 @@ CHANGELOG-*.md
 !docs/specs/
 !templates/
 
+# Project-level Claude Code / agent config (personal, not distributable)
+CLAUDE.md
+AGENTS.md
+
+# Legacy agents (deprecated, replaced by commands)
+.claude/agents-legacy/
+
+# Build artifacts in packages
+packages/*/dist/
+
 # Archived documentation
 .archive/
