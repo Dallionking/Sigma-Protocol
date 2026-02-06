@@ -41,6 +41,16 @@
 | `better-auth-best-practices` | auth, authentication | Authentication implementation patterns |
 | `create-auth-skill` | auth-setup, auth-flow | Auth system scaffolding |
 
+## Mobile Development
+| Skill | Auto-Trigger | Description |
+|-------|--------------|-------------|
+| `react-native-patterns` | react-native, expo, nativewind | FlashList v2, Reanimated 4, Expo Router, Zustand + MMKV |
+| `swiftui-patterns` | swiftui, swift, xcode | @Observable MVVM, NavigationStack, SwiftData, Xcode MCP |
+| `swift-concurrency` | swift, async, concurrency | Structured concurrency, actors, Sendable, Swift 6 |
+| `mobile-ui-testing` | maestro, detox, mobile-test | Maestro, Detox, ViewInspector, Prefire, Storybook 9 |
+| `platform-design-guidelines` | hig, material-design, platform-native | Apple HIG, Material Design 3, platform adaptation |
+| `rn-component-library` | shadcn-mobile, bklit, chart | RN Reusables (shadcn/ui), Bklit UI charts |
+
 ## Marketing
 | Skill | Auto-Trigger | Description |
 |-------|--------------|-------------|

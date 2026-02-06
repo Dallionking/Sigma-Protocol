@@ -1,7 +1,8 @@
 ---
-version: "2.5.0"
-last_updated: "2026-01-07"
+version: "2.6.0"
+last_updated: "2026-02-06"
 changelog:
+  - "2.6.0: Added mobile styling decision matrix (NativeWind 5 vs Uniwind vs Unistyles 3), Bklit UI chart specs, platform-design-guidelines + rn-component-library skill references"
   - "2.5.0: Added react-performance.md reference in animation implementation checklist"
   - "2.4.0: Added SwiftUI Design Tokens format (Swift DesignTokens struct with Colors, Typography, Spacing, Radius, Shadows, Motion)"
   - "2.3.2: Added App Shell layout guardrails (wide vs narrow containers, sidebar width rules, dashboard grid patterns, surface layering checks) to prevent narrow/flat dashboards"
@@ -145,6 +146,35 @@ const outfit = Outfit({
 
 **HITL checkpoint →** Confirm boilerplate extension approach.
 **Prompt:** "Using boilerplate theming. Reply `confirm extend` to continue, or `custom system` to build from scratch."
+
+---
+
+## MOBILE STYLING DECISION MATRIX (If Mobile Platform)
+
+**When building a mobile app (React Native/Expo), choose a styling approach early. This decision affects theming, web compatibility, and bundle size.**
+
+| Feature | NativeWind 5 | Uniwind | Unistyles 3 |
+|---------|-------------|---------|-------------|
+| **Approach** | Tailwind utility classes via Babel | Tailwind-like API, no Babel plugin | JSS + theme engine |
+| **Web Compat** | Yes (React Native Web) | Limited | No |
+| **Themes** | Tailwind config (`tailwind.config.ts`) | Config-based | Built-in theme engine |
+| **Dark Mode** | Tailwind `dark:` prefix | Config toggle | Built-in `useStyles` |
+| **Performance** | Compile-time via Babel | Runtime, lightweight | Runtime, optimized |
+| **Best For** | Web + Mobile shared codebase | Minimal bundle, no Babel | Complex theming, platform-specific |
+
+**Recommendation:**
+- **Default choice**: NativeWind 5 (Tailwind classes work everywhere, strongest ecosystem)
+- **No-Babel preference**: Uniwind (lighter, but less community support)
+- **Complex theming**: Unistyles 3 (built-in dark/light/custom themes, but no web support)
+
+### Mobile Chart & Visualization Components
+
+For mobile data visualization, include **Bklit UI** in the design system spec:
+- Bklit UI charts (Line, Area, Bar, Ring, Pie, Radar) should inherit design system color tokens
+- Charts must match the overall design system theme (light/dark adaptive)
+- Use Victory Native for complex customizations beyond what Bklit UI provides
+
+> **Reference Skills:** `platform-design-guidelines` for platform-specific design rules, `rn-component-library` for component scaffolding patterns.
 
 ---
 

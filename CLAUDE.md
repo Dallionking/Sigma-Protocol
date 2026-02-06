@@ -11,7 +11,7 @@ Sigma Protocol is a **platform-agnostic 13-step product development methodology*
 
 | Platform | Configuration | Skills | Status |
 |----------|---------------|--------|--------|
-| **Claude Code** | `.claude/` | 183 | Production |
+| **Claude Code** | `.claude/` | 189 | Production |
 | **OpenCode** | `.opencode/` | 167 | Production |
 | **Codex** | `.codex/` + `.codex/skills/` + `.agents/skills/` (legacy) | 180 | Production |
 | **Cursor** | `.cursor/rules/` | 27 rules | Production |

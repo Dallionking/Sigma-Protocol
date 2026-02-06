@@ -1,7 +1,8 @@
 ---
-version: "7.0.0"
+version: "7.1.0"
 last_updated: "2026-02-06"
 changelog:
+  - "7.1.0: Added sigma-mobile agent with stack-adaptive skill binding (RN vs SwiftUI), MCP conditional injection (xcode + ios-simulator), mobile row in Skill-Agent Registry"
   - "7.0.0: v2.1.33 optimization - slim CLAUDE.md (~95 lines), .claude/rules/ modular extraction, TeammateIdle/TaskCompleted hooks, SLASH_COMMAND_TOOL_CHAR_BUDGET, delegate mode, agent color field, skill categorization flags"
   - "6.1.0: Added security team agents (security-lead, security-web-api, security-ai-safety, security-infra, security-mobile, security-compliance) with conditional generation based on project stack detection"
   - "6.0.0: Full Claude Code feature integration - path-scoped rules, agent frontmatter (tools/model/skills), settings.json generation, delegation-first CLAUDE.md, hook generation, session continuity hooks"
@@ -174,6 +175,7 @@ UI components, pages, layouts, hooks, styling, accessibility.
 | `sigma-security-web-api.md` | Read, Grep, Glob, Bash | sonnet | owasp-web-security, owasp-api-security, defense-in-depth, better-auth-best-practices | Web/SaaS detected |
 | `sigma-security-ai-safety.md` | Read, Grep, Glob, Bash | sonnet | owasp-llm-security, dependency-security | AI/LLM features detected |
 | `sigma-security-infra.md` | Read, Grep, Glob, Bash | sonnet | dependency-security, secrets-detection | Infrastructure/Docker detected |
+| `sigma-mobile.md` | Read, Write, Edit, Bash, Glob, Grep, LSP | sonnet | react-native-patterns OR swiftui-patterns + swift-concurrency, mobile-ui-testing, platform-design-guidelines, rn-component-library | Mobile detected |
 | `sigma-security-mobile.md` | Read, Grep, Glob, Bash | sonnet | mobile-app-security, owasp-web-security | Mobile detected |
 | `sigma-security-compliance.md` | Read, Grep, Glob, Bash | sonnet | saas-security-patterns, security-code-review | Compliance requirements detected |
 | `sigma-devils-advocate.md` | Read, Grep, Glob, Bash | sonnet | verification-before-completion, quality-gates | Always |
@@ -193,6 +195,30 @@ UI components, pages, layouts, hooks, styling, accessibility.
 - If Infrastructure detected (Dockerfile, docker-compose, `.github/workflows/`, Terraform, Kubernetes) → include `sigma-security-infra`
 - If Mobile detected (React Native, Expo, `ios/`, `android/`, `mobile/` directories) → include `sigma-security-mobile`
 - If Compliance requirements detected (GDPR, HIPAA, SOC2, PCI-DSS mentions in docs/code, `.env` with compliance vars) → include `sigma-security-compliance`
+
+**Mobile agent generation rules (stack-adaptive):**
+- If Mobile detected (React Native, Expo, `ios/`, `android/`, `mobile/` directories) → include `sigma-mobile`
+- If project uses RN/Expo → bind skills: `react-native-patterns`, `mobile-ui-testing`, `platform-design-guidelines`, `rn-component-library`
+- If project uses SwiftUI → bind skills: `swiftui-patterns`, `swift-concurrency`, `mobile-ui-testing`, `platform-design-guidelines`
+
+**MCP conditional injection (mobile):**
+When mobile project detected, include xcode + ios-simulator MCPs in the generated project `.mcp.json`:
+```json
+{
+  "mcpServers": {
+    "xcode": {
+      "command": "npx",
+      "args": ["-y", "@anthropic/mcp-xcode"],
+      "when": "mobile-detected"
+    },
+    "ios-simulator": {
+      "command": "npx",
+      "args": ["-y", "@anthropic/mcp-ios-simulator"],
+      "when": "mobile-detected"
+    }
+  }
+}
+```
 
 #### 4) Skill-Agent Category Registry
 
@@ -215,6 +241,7 @@ Generate a skill-to-agent mapping as part of the CLAUDE.md injection (see below)
 | Web/API Security | owasp-web-security, owasp-api-security, better-auth-best-practices, create-auth-skill | sigma-security-web-api |
 | AI Safety | owasp-llm-security, dependency-security | sigma-security-ai-safety |
 | Infra Security | dependency-security, secrets-detection | sigma-security-infra |
+| Mobile | react-native-patterns, swiftui-patterns, swift-concurrency, rn-component-library, mobile-ui-testing, platform-design-guidelines | sigma-mobile |
 | Mobile Security | mobile-app-security, owasp-web-security | sigma-security-mobile |
 | Compliance | saas-security-patterns, security-code-review | sigma-security-compliance |
 | Adversarial Review | verification-before-completion, quality-gates | sigma-devils-advocate |

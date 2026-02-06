@@ -1,7 +1,8 @@
 ---
-version: "4.0.0"
+version: "4.1.0"
 last_updated: "2026-02-06"
 changelog:
+  - "4.1.0: Verified sigma-mobile agent generation with 6 mobile skills (react-native-patterns, swiftui-patterns, swift-concurrency, rn-component-library, mobile-ui-testing, platform-design-guidelines), stack-adaptive skill binding, conditional mobile domain detection"
   - "4.0.0: v2.1.33 optimization - skill categorization flags (disable-model-invocation, user-invocable: false), agent color field from matte palette, Claude Code native frontmatter format, SLASH_COMMAND_TOOL_CHAR_BUDGET awareness"
   - "3.1.0: Added agent generation from domain scan - generates .claude/agents/ with project-appropriate agents, binds skills via frontmatter, generates skill-agent registry in CLAUDE.md, security team agent generation"
   - "3.0.0: Enhanced skill frontmatter (context: fork, agent:, allowed-tools:, dynamic context, $ARGUMENTS), skill-agent category mapping"
@@ -252,8 +253,8 @@ Detect which domains to generate based on evidence:
 | **API Security (NEW)** | PRDs mention `OWASP` or `RLS` OR `supabase` in stack | `api-security` |
 | **Server Actions (NEW)** | repo has `actions/**` OR PRDs contain `use server` patterns | `server-actions-patterns` |
 | **Agentic PRD (NEW)** | PRDs contain `SECTION 15` or `File Manifest` or `Implementation Order` | `agentic-prd-compliance` |
+| **Mobile Development** | `react-native`, `expo` in package.json OR `ios/`, `android/`, `mobile/` directories | Agent: `sigma-mobile` + `sigma-security-mobile` |
 | **AI/LLM** | `openai`, `anthropic`, `langchain`, `llm`, `ai-sdk` in package.json/code | Agent: `sigma-security-ai-safety` |
-| **Mobile** | `react-native`, `expo` in package.json OR `ios/`, `android/` directories | Agent: `sigma-security-mobile` |
 | **Infrastructure** | `Dockerfile`, `docker-compose.*`, `.github/workflows/`, `terraform/` | Agent: `sigma-security-infra` |
 | **Compliance** | GDPR/HIPAA/SOC2/PCI mentions in docs, privacy policy files | Agent: `sigma-security-compliance` |
 
@@ -402,6 +403,7 @@ Each generated skill MUST be mapped to an agent from `.claude/agents/`. Include 
 | Web/API Security | owasp-web-security, owasp-api-security, better-auth-best-practices, create-auth-skill | sigma-security-web-api |
 | AI Safety | owasp-llm-security, dependency-security | sigma-security-ai-safety |
 | Infra Security | dependency-security, secrets-detection | sigma-security-infra |
+| Mobile Development | react-native-patterns, swiftui-patterns, swift-concurrency, rn-component-library, mobile-ui-testing, platform-design-guidelines | sigma-mobile |
 | Mobile Security | mobile-app-security, owasp-web-security | sigma-security-mobile |
 | Compliance | saas-security-patterns, security-code-review | sigma-security-compliance |
 
@@ -438,6 +440,7 @@ The following agents are ALWAYS generated regardless of stack detection:
 | Frontend (React/Next.js) | `sigma-frontend.md` | `src/agents/frontend-engineer.md` | frontend-aesthetics, frontend-design, react-performance |
 | Backend (API/Actions) | `sigma-backend.md` | `src/agents/lead-architect.md` | backend-engineering, api-security, server-actions-patterns |
 | Testing (any framework) | `sigma-qa.md` | `src/agents/qa-engineer.md` | agentic-prd-compliance, senior-qa, tdd-skill-creation |
+| Mobile (RN/Expo/SwiftUI) | `sigma-mobile.md` | `src/agents/frontend-engineer.md` | react-native-patterns OR swiftui-patterns + swift-concurrency, mobile-ui-testing, platform-design-guidelines, rn-component-library |
 | Always | `sigma-planner.md` | — | deep-research, brainstorming |
 | Always | `sigma-executor.md` | — | executing-plans |
 | Always | `sigma-reviewer.md` | — | verification-before-completion, quality-gates |
@@ -537,6 +540,7 @@ After generating agents, create the skill-agent registry mapping for CLAUDE.md:
 |----------|--------|---------------|
 | Frontend | frontend-aesthetics, frontend-design | sigma-frontend |
 | Backend | backend-engineering, api-security | sigma-backend |
+| Mobile Development | react-native-patterns, swiftui-patterns, swift-concurrency, rn-component-library, mobile-ui-testing, platform-design-guidelines | sigma-mobile |
 | Security Lead | owasp-web-security, defense-in-depth, security-code-review | sigma-security-lead |
 | Web/API Security | owasp-api-security, better-auth-best-practices | sigma-security-web-api |
 {additional mappings based on detected domains}

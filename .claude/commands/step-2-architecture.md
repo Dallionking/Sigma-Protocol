@@ -809,9 +809,27 @@ struct UserListFeature {
 | `@Observable` (iOS 17+) | Macro-based | Modern replacement |
 | `@Bindable` (iOS 17+) | For @Observable | Create bindings |
 
+**Xcode MCP Integration (Xcode 26.3+):**
+
+If using Xcode 26.3+, the native MCP bridge (`xcrun mcpbridge`) provides tools for CI and preview validation:
+- `xcode_build` — Build projects/workspaces from AI agent context
+- `xcode_test` — Run unit and UI test suites
+- `xcode_preview` — Render SwiftUI `#Preview` macros for visual verification
+
+Configure in MCP settings:
+```json
+{ "xcode": { "type": "stdio", "command": "xcrun", "args": ["mcpbridge"] } }
+```
+
+For Xcode < 26.3, use XcodeBuildMCP as a fallback (`brew install xcodebuildmcp`).
+
 **Reference Documents:**
 - `/docs/swiftui/SWIFTUI-BEST-PRACTICES.md` — Architecture patterns, HIG, experts
 - `/docs/swiftui/SWIFTUI-LIBRARIES.md` — Package reference
+
+**Foundation Skills for iOS Projects:**
+- `swiftui-patterns` — SwiftUI architecture patterns (MVVM, TCA, @Observable), HIG compliance, navigation
+- `swift-concurrency` — async/await, actors, structured concurrency, Sendable conformance
 
 **SwiftUI-Specific ADR Required:**
 ```markdown
@@ -855,10 +873,13 @@ Using [MVVM / TCA / MV] because:
 3) **Frontend Stack Evaluation**:
    - Framework - Web (Next.js 15+ / TanStack Start / Remix / Vue / Svelte)
    - Framework - Mobile (Expo + React Native / React Native CLI)
-   - Styling (Tailwind CSS v4 / NativeWind / CSS Modules)
+   - List rendering - Mobile (FlashList v2 for high-perf flat/section lists)
+   - Image processing - Mobile (NitroImage for native-speed image transforms)
+   - Styling (Tailwind CSS v4 / NativeWind / Uniwind / Unistyles 3 / CSS Modules)
    - Icons (Lucide React / Phosphor / Tabler / Heroicons)
-   - State management (Zustand / Redux / Jotai / TanStack Query / Convex hooks)
-   - Testing (Vitest / Jest / Playwright / Maestro)
+   - State management (Zustand / Redux / Jotai / TanStack Query / Convex hooks / Legend-State v3)
+   - Charting - Mobile (Bklit UI for React Native charts)
+   - Testing (Vitest / Jest / Playwright / Maestro / Detox / Storybook 9)
    - Build tools (Vite / Turbopack / Metro / webpack)
 
 4) **Backend Stack Evaluation**:

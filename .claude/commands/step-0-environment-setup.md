@@ -361,7 +361,7 @@ sudo snap install android-studio --classic
 # iOS Simulator not available on Linux
 ```
 
-#### All Platforms: Expo CLI
+#### All Platforms: Expo CLI & Maestro
 
 ```bash
 # Install Expo CLI globally
@@ -369,6 +369,10 @@ npm install -g expo-cli
 
 # Or use npx (no global install needed)
 npx expo --version
+
+# Install Maestro (cross-platform mobile E2E testing)
+curl -Ls "https://get.maestro.mobile.dev" | bash
+maestro --version
 ```
 
 **HITL checkpoint →** Confirm mobile setup complete.
@@ -419,6 +423,37 @@ xcbeautify --version
 swiftformat --version
 ```
 
+#### Xcode MCP Detection (Xcode 26.3+)
+
+**Check Xcode version:**
+```bash
+xcodebuild -version
+```
+
+**If Xcode >= 26.3:** Native MCP bridge is available via `xcrun mcpbridge`. Add to your MCP config:
+
+```json
+{
+  "mcpServers": {
+    "xcode": {
+      "type": "stdio",
+      "command": "xcrun",
+      "args": ["mcpbridge"]
+    }
+  }
+}
+```
+
+**Tools provided by `xcrun mcpbridge`:**
+- `xcode_build` — Build Xcode projects/workspaces
+- `xcode_test` — Run unit and UI tests
+- `xcode_preview` — Render SwiftUI previews for validation
+
+**If Xcode < 26.3:** Use XcodeBuildMCP as a fallback:
+```bash
+brew install xcodebuildmcp
+```
+
 #### SweetPad Extension (Cursor/Xcode Integration)
 
 **SweetPad** enables building and running SwiftUI apps from Cursor with Xcode's build system.
@@ -463,6 +498,26 @@ dependencies: [
 ]
 ```
 
+#### SwiftUI Testing Tools (SPM Packages)
+
+| Package | Purpose | SPM URL |
+|---------|---------|---------|
+| **Prefire** | Auto-generate snapshot tests from `#Preview` macros | `https://github.com/nicklama/prefire` |
+| **ViewInspector** | Unit test SwiftUI views programmatically | `https://github.com/nicklama/ViewInspector` |
+| **swift-snapshot-testing** | Pixel-level snapshot comparisons | `https://github.com/pointfreeco/swift-snapshot-testing` |
+
+Add to `Package.swift` (test target):
+```swift
+.testTarget(
+    name: "MyAppTests",
+    dependencies: [
+        .product(name: "Prefire", package: "prefire"),
+        .product(name: "ViewInspector", package: "ViewInspector"),
+        .product(name: "SnapshotTesting", package: "swift-snapshot-testing"),
+    ]
+)
+```
+
 #### Essential SwiftUI Reference Documents
 
 The following reference docs are available for SwiftUI development:
@@ -496,12 +551,15 @@ Add to `~/.cursor/mcp.json` or `.cursor/mcp.json`:
 {
   "mcpServers": {
     "ios-simulator": {
+      "type": "stdio",
       "command": "npx",
-      "args": ["-y", "@joshuayoes/ios-simulator-mcp"]
+      "args": ["-y", "ios-simulator-mcp"]
     }
   }
 }
 ```
+
+**Note:** For Claude Code / non-Cursor platforms, add the same config to your platform's MCP settings (e.g., `.claude/settings.json`).
 
 **Capabilities:**
 - `get_booted_sim_id` — Get current simulator ID
@@ -1313,6 +1371,17 @@ ls -la .opencode/skill/*/SKILL.md
 | `opencode-agent-generator` | Create OpenCode agents | opencode agent |
 | `creating-opencode-plugins` | Create OpenCode plugins | opencode plugin |
 
+**Mobile Development Skills:**
+
+| Skill | Description | Auto-Triggers |
+|-------|-------------|---------------|
+| `react-native-patterns` | RN architecture, navigation, native modules | react-native, expo, mobile |
+| `swiftui-patterns` | SwiftUI architecture, MVVM/TCA, HIG compliance | swiftui, ios-native, swift |
+| `swift-concurrency` | async/await, actors, structured concurrency | swift, concurrency, async |
+| `mobile-ui-testing` | Maestro, Detox, snapshot testing, ViewInspector | mobile-test, e2e, snapshot |
+| `platform-design-guidelines` | Apple HIG + Material Design 3 compliance | hig, material, platform-ui |
+| `rn-component-library` | Shared RN component patterns, Storybook integration | rn-components, storybook |
+
 **Note:** Step 13 (Skillpack Generator) creates **project-specific skill overlays** that build on these foundation skills with your project's design system, patterns, and conventions.
 
 ---
@@ -1404,10 +1473,12 @@ ls -la .opencode/skill/*/SKILL.md
 
 ### Styling
 
-| Platform | Library | Install |
-|----------|---------|---------|
-| **Web** | Tailwind CSS v4 | Included with create-next-app |
-| **Mobile** | NativeWind | `npm i nativewind tailwindcss` |
+| Platform | Library | Install | Notes |
+|----------|---------|---------|-------|
+| **Web** | Tailwind CSS v4 | Included with create-next-app | Default |
+| **Mobile** | NativeWind | `npm i nativewind tailwindcss` | Tailwind for RN (default) |
+| **Mobile** | Uniwind | `npm i uniwind` | Lighter Tailwind-like alternative |
+| **Mobile** | Unistyles 3 | `npm i react-native-unistyles` | High-perf C++ runtime, typed themes |
 
 **Note:** Framework scaffolding happens in Step 5 (Wireframe Prototypes). This reference is for planning purposes.
 

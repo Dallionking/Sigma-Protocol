@@ -1,7 +1,8 @@
 ---
-version: "3.7.0"
-last_updated: "2026-01-07"
+version: "3.8.0"
+last_updated: "2026-02-06"
 changelog:
+  - "3.8.0: Added FlashList v2, React Native Reusables (shadcn/ui for RN), expo-image/NitroImage, Reanimated 4 CSS Animations API, react-native-css-animations, Bklit UI charts (Line/Area/Bar/Ring/Pie/Radar), rn-component-library skill reference"
   - "3.7.0: Added Superdesign AI Design Agent integration - rapid UI mockup generation, wireframe prototyping, design system extraction. References superdesign-integration.md foundation skill"
   - "3.6.0: Added Section 5B Backend Data Operations - ensures wireframe PRDs document data operations needed, enabling full-stack Step 11 PRDs"
   - "3.5.0: Added iOS Native (SwiftUI) as platform option with SF Symbols icon reference"
@@ -630,14 +631,16 @@ npx expo install expo-gl expo-three three
 | **Web** | Motion Primitives | `npx motion-primitives@latest add [component]` | Premium pre-built components |
 | **Web** | GSAP | `npm i gsap` | Complex timelines, scroll animations |
 | **Mobile** | Moti | `npm i moti` | Declarative, Framer-like API |
-| **Mobile** | Reanimated 3 | `npx expo install react-native-reanimated` | High-performance, worklet-based |
+| **Mobile** | Reanimated 4 | `npx expo install react-native-reanimated` | High-performance, worklet-based + CSS Animations API |
+| **Mobile** | react-native-css-animations | `npm i react-native-css-animations` | Lightweight CSS-based animations (no worklets) |
 | **Mobile** | Screen Transitions | `npm i react-native-screen-transitions` | Shared elements, gesture-driven nav |
 | **Mobile** | Lottie | `npx expo install lottie-react-native` | After Effects animations as JSON |
 | **Mobile** | React Native Fiesta | `npm i react-native-fiesta` | Celebrations (confetti, stars) |
 
 **Animation Philosophy:**
 - Use **Framer Motion** (web) or **Moti** (mobile) for 90% of animations
-- Use **Reanimated 3** for performance-critical mobile animations
+- Use **Reanimated 4** for performance-critical mobile animations (now with CSS Animations API for declarative keyframes)
+- Use **react-native-css-animations** for simple CSS-based animations without worklet overhead
 - Use **Screen Transitions** for Instagram/Apple Music style shared element transitions
 - Use **Lottie** for complex illustrations/mascots and splash screens
 - Use **Motion Primitives** for premium web components
@@ -669,7 +672,7 @@ npx expo install expo-gl expo-three three
 | **Screen Transitions** | Custom per app personality | react-native-screen-transitions presets |
 | **Loading States** | Branded skeleton OR custom Lottie | Moti Skeleton or LottieFiles |
 | **Success States** | Celebration appropriate to action | Confetti, checkmark animation, haptic |
-| **Charts** | Themed to design system colors | Victory Native with custom theme |
+| **Charts** | Themed to design system colors | Victory Native or Bklit UI with custom theme |
 | **Micro-interactions** | Physics-based, not linear | Moti/Reanimated spring configs |
 
 ### Animation Uniqueness Checklist (Per App)
@@ -1084,6 +1087,39 @@ When speccing screens, include these libraries based on screen type:
 | **Dashboards** | react-query, recharts | zustand (UI state) |
 | **Chat/AI** | ai (Vercel SDK), react-query | zustand (chat history) |
 | **Auth Flows** | zod, react-hook-form, tRPC | - |
+
+### Mobile Data Visualization with Bklit UI
+
+**For mobile prototypes requiring charts and data visualization, use Bklit UI (@bklit/ui).**
+
+| Chart Type | Component | Use Case |
+|-----------|-----------|----------|
+| **Line** | `<LineChart />` | Time series, trends, progress tracking |
+| **Area** | `<AreaChart />` | Revenue, cumulative metrics |
+| **Bar** | `<BarChart />` | Category comparisons, rankings |
+| **Ring** | `<RingChart />` | Budget allocation, completion % |
+| **Pie** | `<PieChart />` | Distribution, market share |
+| **Radar** | `<RadarChart />` | Multi-axis comparisons, skill maps |
+
+```typescript
+// Example: Bklit UI chart in a mobile dashboard PRD
+import { LineChart, BarChart, RingChart } from '@bklit/ui';
+
+// Revenue trend
+<LineChart data={revenueData} height={200} />
+
+// Category breakdown
+<BarChart data={categoryData} height={180} />
+
+// Goal completion
+<RingChart progress={0.73} size={120} />
+```
+
+**When to use Bklit UI vs Victory Native:**
+- **Bklit UI**: Quick, opinionated charts that match design system tokens out of the box
+- **Victory Native**: Complex, highly customized visualizations with animation control
+
+> **Reference:** Use the `rn-component-library` skill for component scaffolding patterns when building mobile prototype components.
 
 ---
 
@@ -1712,24 +1748,37 @@ npm install lucide-react-native react-native-svg
 # npm install phosphor-react-native        # 9,000+ icons with weight variants
 # npm install @tabler/icons-react-native   # 2,200+ MIT icons
 
-# 5. Install animation libraries (PREMIUM STACK)
-npx expo install react-native-reanimated
-npm install moti react-native-screen-transitions
-npx expo install lottie-react-native       # Animated icons & splash screens
+# 5. Install list rendering (PERFORMANCE-CRITICAL)
+npm install @shopify/flash-list             # FlashList v2 — 5x faster than FlatList
 
-# 6. Install charts & data visualization
+# 6. Install component library (shadcn/ui for React Native)
+npx react-native-reusables@latest init      # React Native Reusables — shadcn/ui primitives for RN
+
+# 7. Install image handling
+npx expo install expo-image                 # Optimized image component (caching, blurhash, transitions)
+# Optional for advanced image processing:
+# npm install react-native-nitro-image     # NitroImage for GPU-accelerated image manipulation
+
+# 8. Install animation libraries (PREMIUM STACK)
+npx expo install react-native-reanimated    # Reanimated 4 with CSS Animations API
+npm install moti react-native-screen-transitions
+npm install react-native-css-animations     # Lightweight CSS keyframe animations
+npx expo install lottie-react-native        # Animated icons & splash screens
+
+# 9. Install charts & data visualization
 npm install victory-native                  # React-style charts with animations
+npm install @bklit/ui                       # Bklit UI charts (Line, Area, Bar, Ring, Pie, Radar)
 # Optional for GPU-accelerated graphics:
 # npx expo install @shopify/react-native-skia
 
-# 7. Install special effects & polish
+# 10. Install special effects & polish
 npx expo install expo-blur                  # Frosted glass / blur effects
 npx expo install expo-haptics               # Tactile feedback
 npx expo install expo-linear-gradient       # Gradient backgrounds
 npm install @gorhom/bottom-sheet            # Premium bottom sheets
 npm install react-native-confetti-cannon   # Celebration effects
 
-# 8. Install utilities
+# 11. Install utilities
 npm install clsx tailwind-merge zod react-hook-form @hookform/resolvers
 ```
 

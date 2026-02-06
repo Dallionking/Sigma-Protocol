@@ -56,6 +56,12 @@ Before executing ANY task, match keywords and auto-invoke:
 | dependency, supply-chain, secrets | `dependency-security` + `secrets-detection` |
 | LLM, AI safety, prompt injection | `owasp-llm-security` |
 | mobile security, certificate pinning | `mobile-app-security` |
+| react-native, expo, nativewind | `react-native-patterns` + `mobile-app-security` |
+| swiftui, swift, xcode, ios-native | `swiftui-patterns` + `swift-concurrency` |
+| maestro, detox, mobile-test | `mobile-ui-testing` |
+| hig, material-design, platform-native | `platform-design-guidelines` |
+| chart, data-viz, bklit | `rn-component-library` |
+| shadcn-mobile, react-native-reusables | `rn-component-library` |
 | 3+ independent tasks | `dispatching-parallel-agents` |
 
 ## Agent Skill Assignment
@@ -65,7 +71,9 @@ When distributing to swarm, assign skills by role:
 | Agent Role | Skills |
 |------------|--------|
 | **Planning Agents** | deep-research, brainstorming, executing-plans |
-| **Frontend Agents** | frontend-design, react-performance, web-artifacts-builder |
+| **Frontend Agents** | frontend-design, react-performance, web-artifacts-builder, react-native-patterns, rn-component-library |
+| **Mobile Agents (RN/Expo)** | react-native-patterns, rn-component-library, mobile-ui-testing, platform-design-guidelines |
+| **Mobile Agents (SwiftUI)** | swiftui-patterns, swift-concurrency, mobile-ui-testing, platform-design-guidelines |
 | **Backend Agents** | verification-before-completion, api-design-principles |
 | **QA Agents** | verification-before-completion, tdd-skill-creation, greptile-pr-review |
 | **Security Lead** | owasp-web-security, owasp-api-security, defense-in-depth, security-code-review |

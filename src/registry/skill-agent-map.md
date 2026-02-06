@@ -83,6 +83,12 @@ When Step 12/13 generates project-specific agents, they are created in `.claude/
 | 52 | `mobile-app-security` | Security | security-mobile | -- |
 | 53 | `better-auth-best-practices` | Security | security-web-api | -- |
 | 54 | `create-auth-skill` | Security | security-web-api | -- |
+| 55 | `react-native-patterns` | Mobile | frontend-engineer | qa-engineer |
+| 56 | `swiftui-patterns` | Mobile | frontend-engineer | lead-architect |
+| 57 | `swift-concurrency` | Mobile | lead-architect | frontend-engineer |
+| 58 | `mobile-ui-testing` | QA & Testing | qa-engineer | frontend-engineer |
+| 59 | `platform-design-guidelines` | Design Systems | design-systems-architect | ux-director, frontend-engineer |
+| 60 | `rn-component-library` | Frontend | frontend-engineer | design-systems-architect |
 
 ---
 
@@ -104,6 +110,7 @@ When Step 12/13 generates project-specific agents, they are created in `.claude/
 | `frontend-design` | Distinctive UI aesthetics, CVA patterns |
 | `react-performance` | Vercel's 57 optimization rules |
 | `web-artifacts-builder` | Web artifact and component generation |
+| `rn-component-library` | RN Reusables + Bklit UI charts |
 
 ### UX/Design (agent: ux-director)
 
@@ -113,6 +120,17 @@ When Step 12/13 generates project-specific agents, they are created in `.claude/
 | `browser-verification` | Platform-adaptive browser testing |
 | `agent-browser-validation` | Agent-driven browser validation |
 
+### Mobile Development (agents: frontend-engineer, lead-architect, qa-engineer, design-systems-architect)
+
+| Skill | Primary Agent | Description |
+|-------|---------------|-------------|
+| `react-native-patterns` | frontend-engineer | RN/Expo best practices, FlashList v2, Reanimated 4 |
+| `swiftui-patterns` | frontend-engineer | SwiftUI MVVM, @Observable, NavigationStack, Xcode MCP |
+| `swift-concurrency` | lead-architect | Structured concurrency, actors, Sendable, Swift 6 |
+| `mobile-ui-testing` | qa-engineer | Maestro, Detox, ViewInspector, Prefire, Storybook 9 |
+| `platform-design-guidelines` | design-systems-architect | Apple HIG, Material Design 3, platform adaptation |
+| `rn-component-library` | frontend-engineer | RN Reusables (shadcn/ui), Bklit UI charts |
+
 ### Design Systems (agent: design-systems-architect)
 
 | Skill | Description |
@@ -120,6 +138,7 @@ When Step 12/13 generates project-specific agents, they are created in `.claude/
 | `applying-brand-guidelines` | Brand guideline application |
 | `superdesign-integration` | SuperDesign tool integration |
 | `frontend-design` | (shared) Design token patterns |
+| `platform-design-guidelines` | (shared) Apple HIG + Material Design 3 |
 
 ### QA & Testing (agent: qa-engineer)
 
@@ -131,6 +150,7 @@ When Step 12/13 generates project-specific agents, they are created in `.claude/
 | `bdd-scenarios` | BDD scenario writing |
 | `specialized-validation` | Specialized validation rules |
 | `systematic-debugging` | Systematic debugging methodology |
+| `mobile-ui-testing` | (shared) Maestro, Detox, snapshot testing |
 
 ### Security (agents: security-lead, security-web-api, security-infra, security-compliance, security-mobile, security-ai-safety)
 
@@ -220,15 +240,15 @@ When Step 12/13 generates project-specific agents, they are created in `.claude/
 
 | Agent | Skill Count | Skills |
 |-------|-------------|--------|
-| **lead-architect** | 4 | architecture-patterns, monorepo-architecture, senior-architect, api-design-principles |
+| **lead-architect** | 5 | architecture-patterns, monorepo-architecture, senior-architect, api-design-principles, swift-concurrency |
 | **ux-director** | 3 | ux-designer, browser-verification, agent-browser-validation |
-| **design-systems-architect** | 3 | applying-brand-guidelines, superdesign-integration, frontend-design (shared) |
-| **qa-engineer** | 6 | senior-qa, quality-gates, verification, bdd-scenarios, specialized-validation, systematic-debugging |
+| **design-systems-architect** | 4 | applying-brand-guidelines, superdesign-integration, frontend-design (shared), platform-design-guidelines |
+| **qa-engineer** | 7 | senior-qa, quality-gates, verification, bdd-scenarios, specialized-validation, systematic-debugging, mobile-ui-testing |
 | **product-owner** | 2 | hormozi-frameworks, brainstorming |
 | **venture-studio-partner** | 2 | hormozi-frameworks, research |
 | **fork-worker** | 5 | fork-worker, agentic-coding, ralph-loop, ralph-tail, sigma-ralph |
 | **orchestrator** | 7 | orchestrator-admin, memory-systems, remembering-conversations, agent-development, creating-opencode-plugins, opencode-agent-generator, skill-creator |
-| **frontend-engineer** | 3 | frontend-design, react-performance, web-artifacts-builder |
+| **frontend-engineer** | 6 | frontend-design, react-performance, web-artifacts-builder, react-native-patterns, swiftui-patterns, rn-component-library |
 | **content-director** | 9 | video-hooks, content-atomizer, direct-response-copy, brand-voice, docx-generation, pdf-manipulation, pptx, xlsx, output-generation |
 | **security-lead** | 4 | owasp-web-security, owasp-api-security, defense-in-depth, security-code-review |
 | **security-web-api** | 5 | owasp-web-security, owasp-api-security, defense-in-depth, better-auth-best-practices, create-auth-skill |
@@ -236,7 +256,7 @@ When Step 12/13 generates project-specific agents, they are created in `.claude/
 | **security-compliance** | 2 | saas-security-patterns, security-code-review |
 | **security-mobile** | 2 | mobile-app-security, owasp-web-security |
 | **security-ai-safety** | 2 | owasp-llm-security, dependency-security |
-| **Total** | 54 | All skills mapped (includes shared skills across agents) |
+| **Total** | 60 | All skills mapped (includes shared skills across agents) |
 
 ---
 

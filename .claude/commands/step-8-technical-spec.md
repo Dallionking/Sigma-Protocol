@@ -1,7 +1,8 @@
 ---
-version: "2.3.0"
-last_updated: "2026-01-07"
+version: "2.4.0"
+last_updated: "2026-02-06"
 changelog:
+  - "2.4.0: Updated mobile framework refs (Expo 55 + RN 0.83, Reanimated 4, FlashList v2), added Maestro/Detox/XCTest testing decision matrix, mobile-ui-testing skill reference"
   - "2.3.0: Added Step 11 PRD Framework Alignment section in Phase H - ensures technical specs align with Step 11's new backend frameworks (OWASP, RLS, Result Pattern, etc.)"
   - "2.2.0: Added Boilerplate Foundation section for documenting extensions vs full system specs"
   - "2.1.0: Added TanStack Start as web framework option, added icon library recommendations (Lucide, Phosphor), expanded framework decision guide"
@@ -646,8 +647,10 @@ Reference Step 2 Architecture decisions. The technologies below are **templates*
    | Category | Options | Document Version |
    |----------|---------|------------------|
    | Framework (Web) | Next.js / TanStack Start / Remix / Vue / Svelte | e.g., Next.js 15, TanStack Start |
-   | Framework (Mobile) | Expo + React Native | e.g., Expo SDK 52 |
-   | Styling | Tailwind CSS v4 / NativeWind (mobile) / CSS Modules | e.g., Tailwind 4.0 |
+   | Framework (Mobile) | Expo 55 + React Native 0.83 | e.g., Expo SDK 55, RN 0.83 |
+   | Styling | Tailwind CSS v4 / NativeWind 5 (mobile) / CSS Modules | e.g., Tailwind 4.0 |
+   | Lists (Mobile) | FlashList v2 | High-performance list rendering |
+   | Animation (Mobile) | Reanimated 4 / Moti | CSS Animations API + worklets |
    | State | Zustand / Redux / Jotai / TanStack Query | e.g., Zustand 5.0 |
    | Forms | React Hook Form + Zod / Formik + Yup | Document choice |
    | Icons | Lucide React / Phosphor / Tabler / Heroicons | Lucide (recommended) |
@@ -1052,6 +1055,23 @@ Reference Step 2 Architecture decisions. The technologies below are **templates*
    - Overall: 80%+
    - Critical paths: 100%
    - Mutation score: 70%+
+
+5) **Mobile Testing** (if mobile platform):
+
+   **Mobile Testing Framework Decision Matrix:**
+
+   | Framework | Type | Platform | Speed | Best For |
+   |-----------|------|----------|-------|----------|
+   | **Maestro** | E2E | Cross-platform (iOS + Android) | Fast | Flow testing, CI integration, YAML-based |
+   | **Detox** | Gray-box | React Native | Medium | Component interaction, deep RN integration |
+   | **XCTest** | Unit/UI | iOS only | Fast | SwiftUI unit testing, XCUITest for UI |
+
+   **Recommendation:**
+   - **Default (RN/Expo)**: Maestro for E2E flows + Jest/Testing Library for unit tests
+   - **Deep RN testing**: Detox for gray-box component tests alongside Maestro
+   - **iOS Native (SwiftUI)**: XCTest for units + XCUITest for UI + Maestro for cross-platform E2E
+
+   > **Reference:** Use the `mobile-ui-testing` skill for detailed mobile testing patterns and CI configuration.
 
 **HITL checkpoint →** Confirm testing strategy.  
 **Prompt:** "Approve testing strategy? Reply `approve testing` or `revise: …`."
