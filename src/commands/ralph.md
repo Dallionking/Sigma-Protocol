@@ -150,7 +150,8 @@ Run Step 5b or Step 11a to create `prd.json` files:
 ### "Engine not found: claude"
 Install Claude Code CLI:
 ```bash
-npm install -g @anthropic-ai/claude-code
+claude install  # Recommended (native installer)
+# Or legacy: npm install -g @anthropic-ai/claude-code
 ```
 
 ### Story keeps failing

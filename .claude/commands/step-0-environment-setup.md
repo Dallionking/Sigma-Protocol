@@ -1200,8 +1200,8 @@ Designs are saved locally in `.superdesign/`:
 **Ask the user:**
 > "Which AI development platform(s) will you use for this project?
 > 
+> - **Claude Code** (recommended) — `.claude/skills/*` (SKILL.md format)
 > - **Cursor** — `.cursor/rules/*.mdc` (keyword/glob auto-triggers)
-> - **Claude Code** — `.claude/skills/*` (SKILL.md format)
 > - **OpenCode** — `.opencode/skill/*` (SKILL.md format)
 > 
 > Reply with your selection (e.g., `cursor`, `claude`, `opencode`, or `all`)"
@@ -1211,8 +1211,8 @@ Designs are saved locally in `.superdesign/`:
 {
   "version": "1.0.0",
   "platforms": {
-    "cursor": true,
-    "claude_code": false,
+    "claude_code": true,
+    "cursor": false,
     "opencode": false
   },
   "skills_installed": true,
@@ -1234,6 +1234,15 @@ Designs are saved locally in `.superdesign/`:
 
 **Installation by Platform:**
 
+#### Claude Code Installation (recommended)
+```bash
+# Copy Sigma foundation skills to project
+mkdir -p .claude/skills
+
+# The Sigma CLI installs these automatically:
+npx sigma-protocol install-skills --platform claude-code
+```
+
 #### Cursor Installation
 ```bash
 # Copy Sigma foundation rules to project
@@ -1245,15 +1254,6 @@ npx sigma-protocol install
 
 # Or install skills separately:
 npx sigma-protocol install-skills --platform cursor
-```
-
-#### Claude Code Installation
-```bash
-# Copy Sigma foundation skills to project
-mkdir -p .claude/skills
-
-# The Sigma CLI installs these automatically:
-npx sigma-protocol install-skills --platform claude-code
 ```
 
 #### OpenCode Installation
@@ -1270,11 +1270,11 @@ npx sigma-protocol install-skills --platform opencode
 **Check skills are installed:**
 
 ```bash
+# Claude Code (recommended)
+ls -la .claude/skills/*/SKILL.md
+
 # Cursor
 ls -la .cursor/rules/*.mdc
-
-# Claude Code
-ls -la .claude/skills/*/SKILL.md
 
 # OpenCode
 ls -la .opencode/skill/*/SKILL.md
@@ -1422,7 +1422,7 @@ ls -la .opencode/skill/*/SKILL.md
 |------|------|----------|--------|
 | Environment Report | /docs/ops/ENVIRONMENT-SETUP.md | 1KB | 10 |
 | Docs Directory | /docs/ | exists | 5 |
-| Rules Directory | /.cursor/rules/ | exists | 5 |
+| Platform Config | /.claude/ or /.cursor/rules/ | exists | 5 |
 
 ### Required Sections (30 points)
 

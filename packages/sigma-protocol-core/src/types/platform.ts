@@ -12,7 +12,7 @@ import type { HITLCheckpoint, StepDefinition } from "./step.js";
 /**
  * Supported platform types
  */
-export type PlatformType = "opencode" | "claude-code" | "cursor" | "factory-droid";
+export type PlatformType = "opencode" | "claude-code" | "cursor" | "factory-droid" | "codex" | "antigravity";
 
 /**
  * Log levels for platform logging

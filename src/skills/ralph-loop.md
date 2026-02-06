@@ -211,7 +211,8 @@ Configure in your project's `AGENTS.md`:
 ### Engine not found
 ```bash
 # Install Claude Code
-npm install -g @anthropic-ai/claude-code
+claude install  # Recommended (native installer)
+# Or legacy: npm install -g @anthropic-ai/claude-code
 
 # Or OpenCode
 npm install -g opencode

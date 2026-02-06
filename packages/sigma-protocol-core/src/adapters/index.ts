@@ -7,7 +7,17 @@
 // OpenCode adapter (reference implementation)
 export * from "./opencode/index.js";
 
-// Future adapters:
-// export * from "./claude-code/index.js";
-// export * from "./cursor/index.js";
-// export * from "./factory-droid/index.js";
+// Claude Code adapter
+export * from "./claude-code/index.js";
+
+// Cursor adapter
+export * from "./cursor/index.js";
+
+// Factory Droid adapter
+export * from "./factory-droid/index.js";
+
+// Codex adapter
+export * from "./codex/index.js";
+
+// Antigravity adapter
+export * from "./antigravity/index.js";

@@ -1,7 +1,8 @@
 ---
-version: "1.6.0"
-last_updated: "2026-02-04"
+version: "2.0.0"
+last_updated: "2026-02-05"
 changelog:
+  - "2.0.0: Claude Code-first refactor - .claude/skills/ is primary output; Cursor .mdc generation is conditional on detection"
   - "1.6.0: Added Codex skill generation (.agents/skills/*) and platform selection support"
   - "1.5.0: Added Full-Stack Enforcement skills (full-stack-enforcement, api-security, server-actions-patterns, agentic-prd-compliance) to align with Step 11 v3.0.0 requirements"
   - "1.4.0: Clarified relationship with Foundation Skills (Step 0) — Step 13 creates project overlays, not foundation skills"
@@ -24,13 +25,16 @@ parameters:
 
 # /step-13-skillpack-generator — Project Skillpack Generator (Overlay Pattern)
 
-**Mission**  
-Generate a **project-tailored Skillpack** that makes the right “expert mode” auto-trigger for both:
+**Mission**
+Generate a **project-tailored Skillpack** that makes the right "expert mode" auto-trigger.
 
-- **Cursor IDE** (rule modules): `.cursor/rules/*.mdc` + router updates in `.cursorrules`
-- **Claude Code** (skills): `.claude/skills/*/SKILL.md` + a reusable plugin scaffold (`claude-code/plugins/sigma-skillpack/`)
-- **OpenCode** (skills): `.opencode/skill/*/SKILL.md` + optional agents
-- **Codex** (skills): `.agents/skills/*/SKILL.md` + optional `.codex/config.toml`
+**Primary output:**
+- **Claude Code** (skills): `.claude/skills/*/SKILL.md` + a reusable plugin scaffold
+
+**Secondary outputs (conditional on detection):**
+- **Cursor IDE** (rule modules): `.cursor/rules/*.mdc` + router updates in `.cursorrules` (if Cursor detected)
+- **OpenCode** (skills): `.opencode/skill/*/SKILL.md` + optional agents (if OpenCode detected)
+- **Codex** (skills): `.agents/skills/*/SKILL.md` + optional `.codex/config.toml` (if Codex detected)
 
 **Context:** You are the **Skillpack Architect**. You do not write generic prompts; you produce *auto-triggering, project-constrained* skill modules that build on the Foundation Skills installed in Step 0.
 
@@ -143,8 +147,8 @@ Detection hints:
 
 **Select platforms to generate configuration for:**
 
+- [ ] **Claude Code** (recommended) — `.claude/skills/*` + plugin scaffold
 - [ ] **Cursor** — `.cursor/rules/*.mdc` + `.cursorrules` router
-- [ ] **Claude Code** — `.claude/skills/*` + plugin scaffold
 - [ ] **OpenCode** — `.opencode/skill/*` + optional agents
 - [ ] **Codex** — `.agents/skills/*` + optional `.codex/config.toml`
 
@@ -248,15 +252,50 @@ Keep the initial set small; prioritize quality over breadth.
 
 ---
 
-## Phase 2: Generate Cursor modules (skill-equivalent)
+## Phase 2: Generate Claude Code skills (PRIMARY)
+
+**Location decision:**
+- **Multi-root workspace:** Create in `docs/.claude/skills/` (canonical, use symlinks in repos)
+- **Single-root workspace:** Create in `.claude/skills/` (repo root)
+
+Create/update:
+- `frontend-aesthetics/SKILL.md`
+- `backend-engineering/SKILL.md`
+- `database-modeling/SKILL.md` (conditional)
+
+### Full-Stack Enforcement Skills (from Step 11 v3.0.0)
+- `full-stack-enforcement/SKILL.md` (if full-stack detected)
+- `api-security/SKILL.md` (if API/Supabase detected)
+- `server-actions-patterns/SKILL.md` (if server actions detected)
+- `agentic-prd-compliance/SKILL.md` (if agentic PRD patterns detected)
+
+**Each SKILL.md must:**
+- Use YAML frontmatter with:
+  - `name`
+  - `description` (third-person + trigger phrases)
+  - `version`
+- Use imperative style in body (instructional)
+- Include the Overlay block (anchors + non-negotiables + precedence) at the top
+- Reference project docs instead of duplicating them
+
+Optional (recommended): add `references/` files per skill:
+- `references/stack-summary.md`
+- `references/design-token-summary.md` (if design system exists)
+- `references/prd-patterns.md`
+
+---
+
+## Phase 2.5: Generate Cursor modules (If Cursor detected)
+
+**Skip this phase entirely if Cursor is not detected in the project.**
 
 **Location decision:**
 - **Multi-root workspace:** Create in `docs/.cursor/rules/` (canonical)
 - **Single-root workspace:** Create in `.cursor/rules/` (repo root)
 
-Create/update rule modules with strong metadata (`globs`, `keywords`).
+Create/update rule modules with strong metadata (`globs`, `keywords`). Mirror the same skills generated for Claude Code.
 
-### Required
+### Required (if Cursor detected)
 
 1) `.cursor/rules/frontend-aesthetics.mdc`
 - Overlay: project anchors + non-negotiables (design tokens, typography, a11y, motion budgets)
@@ -310,34 +349,7 @@ Update `.cursorrules` to include `@import` lines for newly created modules.
 
 ---
 
-## Phase 3: Generate Claude Code skills (project-local)
-
-**Location decision:**
-- **Multi-root workspace:** Create in `docs/.claude/skills/` (canonical, use symlinks in repos)
-- **Single-root workspace:** Create in `.claude/skills/` (repo root)
-
-Create/update:
-- `frontend-aesthetics/SKILL.md`
-- `backend-engineering/SKILL.md`
-- `database-modeling/SKILL.md` (conditional)
-
-**Each SKILL.md must:**
-- Use YAML frontmatter with:
-  - `name`
-  - `description` (third-person + trigger phrases)
-  - `version`
-- Use imperative style in body (instructional)
-- Include the Overlay block (anchors + non-negotiables + precedence) at the top
-- Reference project docs instead of duplicating them
-
-Optional (recommended): add `references/` files per skill:
-- `references/stack-summary.md`
-- `references/design-token-summary.md` (if design system exists)
-- `references/prd-patterns.md`
-
----
-
-## Phase 3.5: Generate OpenCode skills (project-local)
+## Phase 3: Generate OpenCode skills (If OpenCode detected)
 
 If OpenCode is detected, also create/update OpenCode-native skills at:
 
@@ -380,7 +392,7 @@ If the project uses OpenCode heavily, also scaffold `.opencode/agent/` with:
 
 ---
 
-## Phase 3.75: Generate Codex skills (project-local)
+## Phase 3.5: Generate Codex skills (If Codex detected)
 
 If Codex is detected, also create/update Codex-native skills at:
 
@@ -891,48 +903,54 @@ Return:
 
 | Item | Path | Min Size | Points |
 |------|------|----------|--------|
-| Cursor frontend module | /.cursor/rules/frontend-aesthetics.mdc | 400B | 8 |
-| Cursor backend module | /.cursor/rules/backend-engineering.mdc | 400B | 8 |
-| Cursor router | /.cursorrules | 200B | 6 |
-| Claude skill frontend | /.claude/skills/frontend-aesthetics/SKILL.md | 400B | 7 |
-| Claude skill backend | /.claude/skills/backend-engineering/SKILL.md | 400B | 6 |
+| Claude skill frontend | /.claude/skills/frontend-aesthetics/SKILL.md | 400B | 10 |
+| Claude skill backend | /.claude/skills/backend-engineering/SKILL.md | 400B | 10 |
+| Claude skills directory | /.claude/skills/ | exists | 5 |
 
-### OpenCode Outputs (Conditional — only if OpenCode detected)
+### Cursor Outputs (Conditional — only if Cursor detected, bonus 10 points)
+
+| Item | Path | Min Size | Points |
+|------|------|----------|--------|
+| Cursor frontend module | /.cursor/rules/frontend-aesthetics.mdc | 400B | 4 |
+| Cursor backend module | /.cursor/rules/backend-engineering.mdc | 400B | 3 |
+| Cursor router | /.cursorrules | 200B | 3 |
+
+### OpenCode Outputs (Conditional — only if OpenCode detected, bonus 5 points)
 
 If OpenCode is detected, also require:
 
 | Item | Path | Min Size | Points |
 |------|------|----------|--------|
-| OpenCode skill frontend | /.opencode/skill/frontend-aesthetics/SKILL.md | 400B | 5 |
-| OpenCode skill backend | /.opencode/skill/backend-engineering/SKILL.md | 400B | 5 |
+| OpenCode skill frontend | /.opencode/skill/frontend-aesthetics/SKILL.md | 400B | 3 |
+| OpenCode skill backend | /.opencode/skill/backend-engineering/SKILL.md | 400B | 2 |
 
-### Codex Outputs (Conditional — only if Codex detected)
+### Codex Outputs (Conditional — only if Codex detected, bonus 5 points)
 
 If Codex is detected, also require:
 
 | Item | Path | Min Size | Points |
 |------|------|----------|--------|
-| Codex skill frontend | /.agents/skills/frontend-aesthetics/SKILL.md | 400B | 5 |
-| Codex skill backend | /.agents/skills/backend-engineering/SKILL.md | 400B | 5 |
+| Codex skill frontend | /.agents/skills/frontend-aesthetics/SKILL.md | 400B | 3 |
+| Codex skill backend | /.agents/skills/backend-engineering/SKILL.md | 400B | 2 |
 
 ### Metadata & Trigger Quality (35 points)
 
 | Check | Description | Points |
 |------|-------------|--------|
-| has_pattern:frontend-aesthetics.mdc:globs: | Cursor frontend rule has globs | 6 |
-| has_pattern:frontend-aesthetics.mdc:keywords: | Cursor frontend rule has keywords | 6 |
-| has_pattern:backend-engineering.mdc:globs: | Cursor backend rule has globs | 6 |
-| has_pattern:backend-engineering.mdc:keywords: | Cursor backend rule has keywords | 6 |
-| has_pattern:frontend-aesthetics/SKILL.md:^description: This skill should be used when | Claude skill has third-person triggers | 6 |
-| has_pattern:backend-engineering/SKILL.md:^description: This skill should be used when | Claude skill has third-person triggers | 5 |
+| has_pattern:frontend-aesthetics/SKILL.md:^description: This skill should be used when | Claude skill has third-person triggers | 8 |
+| has_pattern:backend-engineering/SKILL.md:^description: This skill should be used when | Claude skill has third-person triggers | 7 |
+| has_pattern:frontend-aesthetics/SKILL.md:name:\|version: | Claude skill has proper frontmatter | 5 |
+| has_pattern:backend-engineering/SKILL.md:name:\|version: | Claude skill has proper frontmatter | 5 |
+| has_pattern:frontend-aesthetics.mdc:globs: | Cursor frontend rule has globs (if Cursor detected) | 5 |
+| has_pattern:backend-engineering.mdc:globs: | Cursor backend rule has globs (if Cursor detected) | 5 |
 
 ### Overlay Integrity (30 points)
 
 | Check | Description | Points |
 |------|-------------|--------|
-| has_pattern:frontend-aesthetics:(Project Anchors|Non-negotiables|Precedence) | Overlay present in frontend skill/module | 10 |
-| has_pattern:backend-engineering:(Project Anchors|Non-negotiables|Precedence) | Overlay present in backend skill/module | 10 |
-| has_pattern:.cursorrules:@import | Router imports present | 10 |
+| has_pattern:frontend-aesthetics/SKILL.md:(Project Anchors\|Non-negotiables\|Precedence) | Overlay present in Claude frontend skill | 10 |
+| has_pattern:backend-engineering/SKILL.md:(Project Anchors\|Non-negotiables\|Precedence) | Overlay present in Claude backend skill | 10 |
+| has_pattern:CLAUDE.md:Ralph Loop Integration | CLAUDE.md has Ralph Loop section | 10 |
 
 ### Ralph Loop Integration (Bonus — 20 points)
 

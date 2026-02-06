@@ -97,11 +97,11 @@ cat docs/.platform-versions.json 2>/dev/null || echo '{"last_sync": "never"}'
 **Version Tracking File** (`docs/.platform-versions.json`):
 ```json
 {
-  "last_sync": "2026-01-28",
+  "last_sync": "2026-02-05",
   "platforms": {
     "claude-code": {
-      "version": "2.1.4",
-      "last_checked": "2026-01-28"
+      "version": "2.1.32",
+      "last_checked": "2026-02-05"
     },
     "opencode": {
       "version": "1.1.2",
@@ -110,6 +110,10 @@ cat docs/.platform-versions.json 2>/dev/null || echo '{"last_sync": "never"}'
     "cursor": {
       "version": "2.4.0",
       "last_checked": "2026-01-28"
+    },
+    "codex": {
+      "version": "unknown",
+      "last_checked": "2026-02-04"
     },
     "factory-droid": {
       "version": "0.5.0",

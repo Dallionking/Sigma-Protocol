@@ -22,7 +22,7 @@ This command runs the full step-5a-prototype-prep workflow including:
 # step-5a-prototype-prep
 
 **Source:** Sigma Protocol steps module
-**Version:** 1.1.0
+**Version:** 1.2.0
 
 ---
 
@@ -118,8 +118,8 @@ grep -h "^[A-Z_]*=" docs/prds/flows/*.md 2>/dev/null | sort -u
 
 ```bash
 # Auto-detect platform based on directory structure
+if [ -d ".claude" ]; then echo "Claude Code detected (recommended)"; fi
 if [ -d ".cursor" ]; then echo "Cursor detected"; fi
-if [ -d ".claude" ]; then echo "Claude Code detected"; fi
 if [ -d ".opencode" ]; then echo "OpenCode detected"; fi
 ```
 
@@ -140,17 +140,17 @@ Foundation Skills are installed during Step 0 and provide the AI coding capabili
 
 **Verification Commands:**
 
+For **Claude Code** (recommended):
+```bash
+# Check .claude/skills/ for skill directories
+ls -d .claude/skills/*/ 2>/dev/null | wc -l
+# Should show >= 5 Foundation Skills
+```
+
 For **Cursor**:
 ```bash
 # Check .cursor/rules/ for sss-* files
 ls .cursor/rules/sss-*.mdc 2>/dev/null | wc -l
-# Should show >= 5 Foundation Skills
-```
-
-For **Claude Code**:
-```bash
-# Check .claude/skills/ for skill directories
-ls -d .claude/skills/*/ 2>/dev/null | wc -l
 # Should show >= 5 Foundation Skills
 ```
 
@@ -188,8 +188,8 @@ async function autoInstallMissingSkills(platform: 'cursor' | 'claude-code' | 'op
 
   // Determine target directory based on platform
   const targetConfig = {
-    'cursor': { dir: '.cursor/rules', suffix: '.mdc', prefix: 'sss-' },
     'claude-code': { dir: '.claude/skills', suffix: '/SKILL.md', prefix: '' },
+    'cursor': { dir: '.cursor/rules', suffix: '.mdc', prefix: 'sss-' },
     'opencode': { dir: '.opencode/skill', suffix: '/SKILL.md', prefix: '' },
   }[platform];
 
@@ -202,14 +202,14 @@ async function autoInstallMissingSkills(platform: 'cursor' | 'claude-code' | 'op
     const sourcePath = `${sssProtocolDir}/${skillConfig.sourcePath}`;
 
     let targetPath: string;
-    if (platform === 'cursor') {
-      // Cursor: .cursor/rules/sss-frontend-design.mdc
-      targetPath = `${targetConfig.dir}/${targetConfig.prefix}${skillName}${targetConfig.suffix}`;
-    } else {
+    if (platform === 'claude-code' || platform === 'opencode') {
       // Claude Code / OpenCode: .claude/skills/frontend-design/SKILL.md
       targetPath = `${targetConfig.dir}/${skillName}${targetConfig.suffix}`;
       // Create directory if needed
       await mkdir(`${targetConfig.dir}/${skillName}`, { recursive: true });
+    } else {
+      // Cursor: .cursor/rules/sss-frontend-design.mdc
+      targetPath = `${targetConfig.dir}/${targetConfig.prefix}${skillName}${targetConfig.suffix}`;
     }
 
     // Copy skill file
@@ -247,25 +247,25 @@ async function findSssProtocolDir(): Promise<string> {
 
 **Skills Auto-Installed:**
 
-| Skill | Source | Cursor Target | Claude Code Target |
-|-------|--------|---------------|-------------------|
-| `frontend-design` | `src/skills/frontend-design.md` | `.cursor/rules/sss-frontend-design.mdc` | `.claude/skills/frontend-design/SKILL.md` |
-| `systematic-debugging` | `src/skills/systematic-debugging.md` | `.cursor/rules/sss-systematic-debugging.mdc` | `.claude/skills/systematic-debugging/SKILL.md` |
-| `quality-gates` | `src/skills/quality-gates.md` | `.cursor/rules/sss-quality-gates.mdc` | `.claude/skills/quality-gates/SKILL.md` |
-| `ux-designer` | `src/skills/ux-designer.md` | `.cursor/rules/sss-ux-designer.mdc` | `.claude/skills/ux-designer/SKILL.md` |
+| Skill | Source | Claude Code Target | Cursor Target |
+|-------|--------|-------------------|---------------|
+| `frontend-design` | `src/skills/frontend-design.md` | `.claude/skills/frontend-design/SKILL.md` | `.cursor/rules/sss-frontend-design.mdc` |
+| `systematic-debugging` | `src/skills/systematic-debugging.md` | `.claude/skills/systematic-debugging/SKILL.md` | `.cursor/rules/sss-systematic-debugging.mdc` |
+| `quality-gates` | `src/skills/quality-gates.md` | `.claude/skills/quality-gates/SKILL.md` | `.cursor/rules/sss-quality-gates.mdc` |
+| `ux-designer` | `src/skills/ux-designer.md` | `.claude/skills/ux-designer/SKILL.md` | `.cursor/rules/sss-ux-designer.mdc` |
 
 **Manual Installation (Alternative):**
 
 ```bash
 # Via Sigma CLI
-npx sigma-protocol install-skills --platform [cursor|claude-code|opencode]
+npx sigma-protocol install-skills --platform [claude-code|cursor|opencode]
+
+# Or copy manually for Claude Code (recommended)
+mkdir -p .claude/skills/frontend-design
+cp node_modules/sigma-protocol/src/skills/frontend-design.md .claude/skills/frontend-design/SKILL.md
 
 # Or copy manually for Cursor
 cp node_modules/sigma-protocol/src/skills/frontend-design.md .cursor/rules/sss-frontend-design.mdc
-
-# Or copy manually for Claude Code
-mkdir -p .claude/skills/frontend-design
-cp node_modules/sigma-protocol/src/skills/frontend-design.md .claude/skills/frontend-design/SKILL.md
 ```
 
 **Quality Gate B:**
@@ -280,6 +280,10 @@ cp node_modules/sigma-protocol/src/skills/frontend-design.md .claude/skills/fron
 ---
 
 ## PHASE C: RECOMMENDED SKILLS FOR PROTOTYPE WORK
+
+> **Note:** The skills listed below describe capabilities available in your platform.
+> They are loaded automatically when available — do not try to invoke them during this step.
+> The full prototype methodology is self-contained in Phases A and B above.
 
 ### C.1 Core Required Skills
 
@@ -606,8 +610,8 @@ After passing this step:
 npx sigma-protocol install-skills --platform [your-platform]
 
 # Verify installation
+ls -la .claude/skills/           # For Claude Code (recommended)
 ls -la .cursor/rules/sss-*.mdc   # For Cursor
-ls -la .claude/skills/           # For Claude Code
 ```
 
 ### PRDs Missing Required Sections

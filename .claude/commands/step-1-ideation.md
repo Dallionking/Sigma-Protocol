@@ -37,7 +37,7 @@ This command:
 
 ## Prerequisites
 
-- **@brainstorming skill**: This command invokes the brainstorming skill for divergent exploration phases. The skill generates multiple competing options with evaluation matrices before converging on decisions.
+- **Brainstorming framework**: This command includes the brainstorming framework for divergent exploration phases. The framework generates multiple competing options with evaluation matrices before converging on decisions.
 
 ---
 
@@ -50,7 +50,7 @@ Step 1 Start
     ↓
 1.2: Scope Questionnaire
     ↓
-1.2.5: @brainstorming - Problem Interpretation Divergence
+1.2.5: Brainstorming - Problem Interpretation Divergence
     ↓
 CHECKPOINT 1: "Proceed with [Selected Angle]?" [Y/N]
     ↓
@@ -66,7 +66,7 @@ CHECKPOINT 2: "Proceed, pivot, or refine?" [P/V/R]
     ↓
 1.5: Tech Stack Discovery
     ↓
-1.5.2.5: @brainstorming - Stack Category Divergence
+1.5.2.5: Brainstorming - Stack Category Divergence
     ↓
 CHECKPOINT 3: "Approve stack: [STACK]?" [Y/N]
     ↓
@@ -74,7 +74,7 @@ CHECKPOINT 3: "Approve stack: [STACK]?" [Y/N]
     ↓
 CHECKPOINT 4: "Technical complexity [RATING]. Proceed?" [Y/N]
     ↓
-2.0.5: @brainstorming - Feature Set Exploration
+2.0.5: Brainstorming - Feature Set Exploration
     ↓
 CHECKPOINT 5: "Feature scope: [Option]. Confirm?" [Y/N]
     ↓
@@ -413,7 +413,7 @@ project/
 
 **Purpose:** Before diving into research, explore multiple interpretations of the problem space. Different angles reveal different markets, competitors, and opportunities.
 
-**Invoke @brainstorming skill for divergent exploration.**
+**Apply the brainstorming framework below for divergent exploration.**
 
 ```markdown
 ## Problem Interpretation Divergence
@@ -660,7 +660,7 @@ Before finalizing stack, verify MCP integration capability:
 
 **Purpose:** For each critical stack choice, explore multiple options systematically before committing. Stack decisions have long-term architectural implications.
 
-**Invoke @brainstorming skill for stack exploration.**
+**Apply the brainstorming framework below for stack exploration.**
 
 For each **critical stack category** (database, auth, payments), generate 3 options:
 
@@ -878,7 +878,7 @@ Identify any technical risks that could impact the PRD:
 
 **Purpose:** Before writing the PRD, explore multiple scope options for each major feature category. This prevents scope creep and ensures conscious trade-off decisions.
 
-**Invoke @brainstorming skill for feature scope exploration.**
+**Apply the brainstorming framework below for feature scope exploration.**
 
 For each **major feature category** identified in the ideation, generate 3 scope options:
 
