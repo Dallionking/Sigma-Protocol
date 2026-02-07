@@ -86,3 +86,40 @@ When distributing to swarm, assign skills by role:
 | **Devil's Advocate** | verification-before-completion, quality-gates |
 | **Gap Analyst** | gap-analysis, verification-before-completion, quality-gates |
 | **Marketing Agents** | marketing-copywriting, marketing-psychology, seo-audit |
+
+## Agent Memory Configuration
+
+Agents with `memory:` in their frontmatter persist a MEMORY.md across sessions. The first 200 lines are injected into the agent's system prompt at session start.
+
+| Agent | Scope | What It Remembers |
+|-------|-------|-------------------|
+| **sigma-orchestrator** | `project` | Delegation patterns, swarm configurations, team composition history |
+| **sigma-product-owner** | `project` | PRD quality learnings, stakeholder preferences |
+| **sigma-venture-studio** | `user` | Cross-project market insights, business model learnings |
+| **sigma-lead-architect** | `project` | Architecture decisions, tech stack rationale |
+| **sigma-ux-director** | `project` | UX decisions, design constraints |
+| **sigma-frontend** | `project` | Component patterns, performance history |
+| **sigma-design-systems** | `project` | Token decisions, component library choices |
+| **sigma-qa** | `project` | Test strategy baselines, known flaky areas |
+| **sigma-security-lead** | `local` | Threat models, vulnerability findings (sensitive) |
+| **sigma-security-compliance** | `local` | Compliance status, framework mappings (sensitive) |
+| **sigma-market-data** | `project` | Data source configs, symbol mappings |
+| **sigma-quant-strategist** | `project` | Strategy performance, Base Hit calibrations |
+| **sigma-content-director** | `user` | Brand voice notes, platform-specific learnings |
+
+**Scope definitions:**
+- `project` — Stored in `.claude/agent-memory/`, committed to git, shared across team
+- `local` — Stored in `.claude/agent-memory-local/`, gitignored (sensitive data)
+- `user` — Stored in `~/.claude/agent-memory/`, spans all repositories
+
+**No memory:** sigma-executor (stateless fork worker), sigma-devils-advocate (fixed checklist), sigma-gap-analyst (fresh each run), 5 security leaf agents (stateless auditors).
+
+## Subagent Spawning Restrictions
+
+Only coordinators can spawn subagents via the Task tool. All other agents are leaf workers.
+
+| Agent | Task Tool Access | Allowed Subagent Types |
+|-------|-----------------|----------------------|
+| **sigma-orchestrator** | Unrestricted | All agent types |
+| **sigma-security-lead** | Restricted | sigma-security-web-api, sigma-security-infra, sigma-security-mobile, sigma-security-compliance, sigma-security-ai-safety |
+| **All other agents (18)** | None | Cannot spawn subagents |

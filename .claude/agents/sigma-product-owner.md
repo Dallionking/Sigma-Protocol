@@ -9,6 +9,7 @@ tools:
   - Bash
   - Glob
   - Grep
+memory: project
 model: sonnet
 permissionMode: acceptEdits
 skills:

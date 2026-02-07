@@ -10,6 +10,7 @@ tools:
   - Glob
   - Grep
   - LSP
+memory: project
 model: sonnet
 permissionMode: acceptEdits
 skills:

@@ -7,6 +7,7 @@ tools:
   - Grep
   - Glob
   - Bash
+memory: local
 model: sonnet
 permissionMode: default
 skills:

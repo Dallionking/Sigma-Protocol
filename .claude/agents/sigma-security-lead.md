@@ -7,6 +7,8 @@ tools:
   - Grep
   - Glob
   - Bash
+  - "Task(sigma-security-web-api, sigma-security-infra, sigma-security-mobile, sigma-security-compliance, sigma-security-ai-safety)"
+memory: local
 model: sonnet
 permissionMode: default
 skills:

@@ -6,6 +6,8 @@ tools:
   - Read
   - Write
   - Grep
+  - Glob
+memory: user
 model: sonnet
 permissionMode: acceptEdits
 skills:
