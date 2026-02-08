@@ -7,6 +7,8 @@ tools:
   - Grep
   - Glob
   - Bash
+  - Task
+memory: project
 model: inherit
 permissionMode: default
 skills:
