@@ -126,6 +126,14 @@ docs/ralph/NATIVE-TASK-INTEGRATION.md
 # Experiments (internal R&D, not distributable)
 experiments/
 
+# WIP / internal planning docs
+v2/
+cli/REFACTORING-PLAN.md
+cli/__tests__/
+
+# Internal UX working docs
+docs/ux/
+
 # Work-in-progress plugins (not ready for public release)
 packages/sigma-protocol-plugin/
 packages/sss-harness/

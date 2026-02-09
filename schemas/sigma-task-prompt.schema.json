@@ -1,0 +1,142 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://sss.dev/schemas/sigma-task-prompt.schema.json",
+  "title": "Sigma Enhanced Task Prompt",
+  "description": "Schema for prompt-enhanced task prompts following the Sigma Prompting Methodology. Each task uses three levels: intent (what/why), direction (where to look/how it should feel), and quality_bar (what good looks like). See docs/SIGMA-PROMPTING-METHODOLOGY.md for the full methodology.",
+  "type": "object",
+  "required": ["tasks"],
+  "properties": {
+    "$schema": {
+      "type": "string",
+      "description": "Schema reference"
+    },
+    "feature": {
+      "type": "string",
+      "description": "Human-readable feature name (e.g., 'User Authentication')"
+    },
+    "context": {
+      "type": "string",
+      "description": "Business context for this feature set — the WHY at the feature level"
+    },
+    "architecture_constraints": {
+      "type": "array",
+      "description": "Explicit architectural decisions that agents must follow (not discoverable)",
+      "items": {
+        "type": "string"
+      }
+    },
+    "design_constraints": {
+      "type": "array",
+      "description": "Design system constraints from DESIGN-SYSTEM.md and STATE-SPEC.md",
+      "items": {
+        "type": "string"
+      }
+    },
+    "tasks": {
+      "type": "array",
+      "description": "Ordered list of enhanced task prompts. Each task carries intent, direction, and quality bar.",
+      "minItems": 1,
+      "items": {
+        "$ref": "#/definitions/EnhancedTask"
+      }
+    }
+  },
+  "definitions": {
+    "EnhancedTask": {
+      "type": "object",
+      "required": ["id", "intent", "direction", "quality_bar"],
+      "description": "A single prompt-enhanced task following the three-level format: intent (Level 1), direction (Level 2), quality_bar (Level 3).",
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^[A-Z]+-[0-9]+$",
+          "description": "Unique task identifier (e.g., AUTH-001, CART-002, UI-003)"
+        },
+        "intent": {
+          "type": "string",
+          "minLength": 20,
+          "description": "Level 1: The WHAT and WHY. Business-level description of what needs to be built and why it matters. Should answer: What is the agent building? Why does this feature exist? What value does it deliver?"
+        },
+        "direction": {
+          "type": "string",
+          "minLength": 20,
+          "description": "Level 2: The WHERE TO LOOK and HOW IT SHOULD FEEL. Pointers that help the agent orient itself without dictating exact paths. Should reference patterns to explore, areas to discover, and the desired feel of the implementation."
+        },
+        "quality_bar": {
+          "type": "string",
+          "minLength": 20,
+          "description": "Level 3: Observable, testable criteria for done. Must be behavioral (what the code DOES) not structural (where files LIVE). Should be verifiable by running tests, checking endpoints, or observing behavior."
+        },
+        "dependencies": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^[A-Z]+-[0-9]+$"
+          },
+          "description": "Task IDs that must complete before this task can start"
+        },
+        "tags": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Categorical tags for filtering and grouping (e.g., AUTH, API, UI, SECURITY)"
+        },
+        "skills": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Skill names to inject for this task (e.g., better-auth-best-practices, frontend-design). Ralph's dynamic matching may add more at runtime."
+        },
+        "discovery_hints": {
+          "$ref": "#/definitions/DiscoveryHints"
+        },
+        "estimated_tokens": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Estimated token budget for this task (for orchestrator planning). Includes task prompt + skills + discovery."
+        },
+        "complexity": {
+          "type": "string",
+          "enum": ["simple", "medium", "complex"],
+          "description": "Implementation complexity estimate"
+        }
+      }
+    },
+    "DiscoveryHints": {
+      "type": "object",
+      "description": "Hints that guide the agent's discovery phase without dictating exact paths. The agent uses these as starting points for exploration, not as hard requirements.",
+      "properties": {
+        "patterns": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Keywords and patterns to search for when exploring the codebase (e.g., 'service', 'route', 'middleware', 'error'). The agent greps/globs for these to find relevant existing code."
+        },
+        "explore_dirs": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Directories to explore first (e.g., 'src/', 'lib/', 'app/'). These are suggestions, not requirements — the agent should also look elsewhere if these don't contain what it needs."
+        },
+        "reference_domains": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Existing features or domains in the codebase that follow similar patterns (e.g., 'user-profile', 'product-catalog'). The agent can study these as implementation references."
+        },
+        "anti_patterns": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Patterns or approaches to avoid (e.g., 'raw SQL queries', 'global state', 'synchronous file I/O'). Stated as positive guidance for what NOT to do."
+        }
+      }
+    }
+  }
+}
