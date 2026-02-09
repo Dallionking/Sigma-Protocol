@@ -24,7 +24,7 @@ A platform-agnostic 13-step product development methodology for AI-assisted deve
 - **Claude Code-first**: Claude Code is the primary platform. All features, skills, and commands are developed and tested here first.
 - **Open-source ready**: Cleaned up repo structure, added `CLAUDE.md.example` template, improved documentation.
 - **Agent Teams**: Native multi-agent collaboration via Claude Code v2.1.32 `TeammateTool`.
-- **185+ commands** and **150+ skills** across the full 13-step workflow.
+- **189+ commands** and **185+ skills** across the full 13-step workflow.
 - **Ralph Loop**: Autonomous PRD-to-implementation pipeline.
 - **Platform sync**: Weekly `/platform-sync` keeps secondary platforms up to date.
 
@@ -37,8 +37,8 @@ See [CHANGELOG.md](CHANGELOG.md) for full release history.
 Sigma Protocol guides AI assistants through a complete product development workflow - from ideation to deployment. It provides:
 
 - **13 structured steps** from idea to shipping
-- **185+ commands** across 7 categories
-- **150+ skills** for specialized tasks
+- **189+ commands** across 7 categories
+- **185+ skills** for specialized tasks
 - **Quality gates** with verification scoring (target: 80+)
 - **Human-in-the-loop checkpoints** for critical decisions
 - **Ralph Loop** for autonomous task execution
@@ -95,6 +95,25 @@ The AI will guide you through:
 /step-5-wireframe-prototypes  # Create wireframes
 # ... continue through step 13
 ```
+
+### Platform-Specific Setup
+
+**Claude Code** (primary):
+```bash
+sigma install --platform claude-code
+# Then open in Claude Code
+/step-1-ideation "Your idea"
+```
+
+**Codex CLI**:
+```bash
+sigma install --platform codex
+# Then open in Codex
+codex --profile sigma-dev
+> Run step 1 ideation for "Your idea"
+```
+
+See [CODEX-GUIDE.md](docs/CODEX-GUIDE.md) for the full Codex workflow.
 
 ### Adding to an Existing Project
 
@@ -154,11 +173,11 @@ cp -r sigma-protocol/.cursor your-project/
 
 | Platform | Status | Configuration | Skills |
 |----------|--------|---------------|--------|
-| **Claude Code** | **Primary** | `.claude/` + `CLAUDE.md` | 151 |
-| **Cursor** | Secondary | `.cursor/rules/` | 27 rules |
+| **Claude Code** | **Primary** | `.claude/` + `CLAUDE.md` | 185 |
+| **Codex** | Production | `.codex/` + `AGENTS.md` (GPT-5.3-Codex) | 182 |
+| **OpenCode** | Production | `.opencode/` + `AGENTS.md` | 167 |
 | **Factory Droid** | Production | `.factory/` + `AGENTS.md` | 163 |
-| **OpenCode** | Planned | `.opencode/` + `AGENTS.md` | -- |
-| **Codex** | Planned | `.codex/` + `AGENTS.md` | -- |
+| **Cursor** | Secondary | `.cursor/rules/` | 27 rules |
 | **Antigravity** | Experimental | `.agent/` + `SKILL.md` | -- |
 
 Claude Code is the canonical source for all skills and commands. Other platforms receive synced copies via `/platform-sync`.
@@ -265,8 +284,11 @@ Ralph Loop enables autonomous task execution:
 # 1. Convert PRDs to JSON backlog
 /step-5b-prd-to-json --all-prds
 
-# 2. Run Ralph loop
+# 2. Run Ralph loop (Claude Code)
 ./scripts/ralph/sigma-ralph.sh . docs/ralph/prototype/prd.json claude-code
+
+# 2b. Run Ralph loop (Codex)
+./scripts/ralph/sigma-ralph.sh . docs/ralph/prototype/prd.json codex
 ```
 
 How it works:
@@ -294,6 +316,12 @@ Commands:
   sigma status          Show workflow status
   sigma search <query>  Search commands and skills
   sigma help            Show all commands
+
+Platform install:
+  sigma install --platform claude-code   # Install Claude Code config + skills
+  sigma install --platform codex         # Install Codex config + skills
+  sigma install --platform opencode      # Install OpenCode config + skills
+  sigma doctor                           # Check all platforms
 ```
 
 ---
@@ -343,6 +371,10 @@ sigma-protocol/
 │   ├── commands/       # All command definitions
 │   ├── skills/         # Skill files (canonical source)
 │   └── settings.json   # Permissions and hooks
+├── .codex/             # Codex configuration
+│   ├── config.toml     # Model, profiles, MCP servers
+│   ├── rules/          # Execution policy rules (Starlark)
+│   └── skills/         # Sigma skills (SKILL.md format)
 ├── .cursor/            # Cursor configuration (secondary)
 │   └── rules/          # Cursor rule files (.mdc)
 ├── .factory/           # Factory Droid configuration
@@ -372,8 +404,9 @@ sigma-protocol/
 | [FOUNDATION-SKILLS.md](docs/FOUNDATION-SKILLS.md) | 39 Foundation skills |
 | [EXTERNAL-SKILLS.md](docs/EXTERNAL-SKILLS.md) | 124 external skills |
 | [PLATFORMS.md](docs/PLATFORMS.md) | Platform configuration |
+| [CODEX-GUIDE.md](docs/CODEX-GUIDE.md) | Codex CLI setup and workflow |
 | [RALPH-MODE.md](docs/RALPH-MODE.md) | Autonomous implementation |
-| [COMMANDS.md](docs/COMMANDS.md) | Full command catalog (185 commands) |
+| [COMMANDS.md](docs/COMMANDS.md) | Full command catalog (189 commands) |
 
 ---
 
@@ -425,6 +458,20 @@ cp CLAUDE.md.example CLAUDE.md
 # Or sync a specific platform
 ./scripts/sync-skills-to-platforms.sh --platform cursor
 ```
+
+### Codex Config Not Loading
+
+If Codex ignores your config:
+
+1. Verify config location: `.codex/config.toml`
+2. Check for schema errors: `codex --config .codex/config.toml`
+3. Ensure `model_reasoning_effort` (not `reasoning_effort`) is used in config
+
+### Codex Rules Not Triggering
+
+1. Rules must use `.rules` extension (Starlark format, not TOML)
+2. Check rules location: `.codex/rules/*.rules`
+3. Verify with: `codex execpolicy check`
 
 ---
 

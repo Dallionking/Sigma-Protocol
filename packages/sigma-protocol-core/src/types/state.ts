@@ -12,7 +12,7 @@ export const STATE_SCHEMA_VERSION = "1.0.0" as const;
 /**
  * Supported platform types
  */
-export type PlatformType = "opencode" | "claude-code" | "cursor" | "factory-droid";
+export type PlatformType = "opencode" | "claude-code" | "cursor" | "factory-droid" | "codex" | "antigravity";
 
 /**
  * Step completion status

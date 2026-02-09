@@ -1,0 +1,149 @@
+# Sigma Quality Rules — Execution Policy
+# Guards for quality-sensitive commands: testing, building, linting, and dependency management.
+# Allows safe read/build commands; prompts before publishing or modifying CI.
+#
+# Syntax: prefix_rule(pattern, decision, justification, match, not_match)
+# Reference: https://developers.openai.com/codex/exec-policy/
+# Validate:  codex execpolicy check --pretty --rules .codex/rules/sigma-quality.rules -- <cmd>
+#
+# NOTE: File-content rules (TODO hygiene, test skip detection, TypeScript strict mode,
+# console.log in production) cannot be expressed as prefix_rules — they require
+# linters or pre-commit hooks. Configure these via ESLint, Biome, or Lefthook.
+
+# ── Testing — allow without prompting ────────────────────────────────────
+
+prefix_rule(
+    pattern    = ["npm", "test"],
+    decision   = "allow",
+    justification = "Running tests is always safe and encouraged.",
+    match      = ["npm test", "npm test -- --watch"],
+)
+
+prefix_rule(
+    pattern    = ["npm", "run", ["test", "test:unit", "test:e2e", "test:integration", "test:ci"]],
+    decision   = "allow",
+    justification = "Running test scripts is always safe.",
+    match      = ["npm run test", "npm run test:unit", "npm run test:e2e"],
+)
+
+prefix_rule(
+    pattern    = ["npx", ["vitest", "jest", "playwright", "cypress"]],
+    decision   = "allow",
+    justification = "Running test frameworks directly is safe.",
+    match      = ["npx vitest", "npx jest", "npx playwright test"],
+)
+
+prefix_rule(
+    pattern    = ["pnpm", ["test", "vitest"]],
+    decision   = "allow",
+    justification = "Running tests via pnpm is safe.",
+    match      = ["pnpm test", "pnpm vitest"],
+)
+
+# ── Building — allow without prompting ───────────────────────────────────
+
+prefix_rule(
+    pattern    = ["npm", "run", ["build", "build:prod", "build:dev", "dev", "start"]],
+    decision   = "allow",
+    justification = "Building and running dev servers is safe.",
+    match      = ["npm run build", "npm run dev", "npm run start"],
+)
+
+prefix_rule(
+    pattern    = ["npx", ["tsc", "next", "vite", "turbo", "expo"]],
+    decision   = "allow",
+    justification = "Running build tools directly is safe.",
+    match      = ["npx tsc --noEmit", "npx next build", "npx vite build"],
+)
+
+# ── Linting — allow without prompting ────────────────────────────────────
+
+prefix_rule(
+    pattern    = ["npm", "run", ["lint", "lint:fix", "format", "typecheck", "check"]],
+    decision   = "allow",
+    justification = "Running linters and formatters is safe.",
+    match      = ["npm run lint", "npm run lint:fix", "npm run format"],
+)
+
+prefix_rule(
+    pattern    = ["npx", ["eslint", "biome", "prettier", "oxlint"]],
+    decision   = "allow",
+    justification = "Running linters directly is safe.",
+    match      = ["npx eslint .", "npx biome check", "npx prettier --write ."],
+)
+
+# ── Dependency management — prompt for review ────────────────────────────
+
+prefix_rule(
+    pattern    = ["npm", "install"],
+    decision   = "prompt",
+    justification = "Installing packages modifies node_modules and lockfile. Review the package name.",
+    match      = ["npm install lodash", "npm install"],
+    not_match  = ["npm test", "npm run build"],
+)
+
+prefix_rule(
+    pattern    = ["npm", ["uninstall", "remove", "rm"]],
+    decision   = "prompt",
+    justification = "Removing packages affects the dependency tree. Confirm the package name.",
+    match      = ["npm uninstall lodash", "npm remove express"],
+    not_match  = ["npm list", "npm outdated"],
+)
+
+prefix_rule(
+    pattern    = ["pnpm", ["add", "remove", "install"]],
+    decision   = "prompt",
+    justification = "Modifying dependencies affects the lockfile. Review the change.",
+    match      = ["pnpm add react", "pnpm remove lodash", "pnpm install"],
+    not_match  = ["pnpm test", "pnpm build"],
+)
+
+prefix_rule(
+    pattern    = ["yarn", "add"],
+    decision   = "prompt",
+    justification = "Adding packages modifies the lockfile. Review the package name.",
+    match      = ["yarn add react", "yarn add -D typescript"],
+)
+
+# ── Database operations — prompt before executing ────────────────────────
+
+prefix_rule(
+    pattern    = ["npx", "drizzle-kit", ["push", "drop", "migrate"]],
+    decision   = "prompt",
+    justification = "Database migrations modify schema. Verify the migration before applying.",
+    match      = ["npx drizzle-kit push", "npx drizzle-kit migrate"],
+    not_match  = ["npx drizzle-kit generate", "npx drizzle-kit studio"],
+)
+
+prefix_rule(
+    pattern    = ["npx", "prisma", ["migrate", "db"]],
+    decision   = "prompt",
+    justification = "Prisma migrations modify the database schema. Review before applying.",
+    match      = ["npx prisma migrate deploy", "npx prisma db push"],
+    not_match  = ["npx prisma generate", "npx prisma studio"],
+)
+
+prefix_rule(
+    pattern    = [["psql", "mysql", "sqlite3"]],
+    decision   = "prompt",
+    justification = "Direct database access should be reviewed. Prefer ORM migrations.",
+    match      = ["psql -d mydb", "mysql -u root", "sqlite3 data.db"],
+)
+
+# ── CI/CD configuration — prompt before modifying ────────────────────────
+
+prefix_rule(
+    pattern    = ["gh", "workflow", "run"],
+    decision   = "prompt",
+    justification = "Triggering a GitHub Actions workflow affects CI/CD. Confirm the workflow.",
+    match      = ["gh workflow run deploy.yml"],
+    not_match  = ["gh workflow list", "gh workflow view"],
+)
+
+prefix_rule(
+    pattern    = ["gh", "release", "create"],
+    decision   = "prompt",
+    justification = "Creating a release publishes artifacts. Confirm the tag and notes.",
+    match      = ["gh release create v1.0.0"],
+    not_match  = ["gh release list", "gh release view v1.0.0"],
+)

@@ -78,11 +78,11 @@
     },
     "codex": {
       "version": "0.98.0",
-      "last_checked": "2026-02-06",
+      "last_checked": "2026-02-08",
       "changelog_url": "https://github.com/openai/codex/releases",
       "config_path": ".codex/",
-      "skills_synced": 0,
-      "deployed": false,
+      "skills_synced": 182,
+      "deployed": true,
       "notable_features_since_last_sync": [
         "GPT-5.3-Codex model (v0.98.0)",
         "Steer mode default — Enter sends immediately (v0.98.0)",

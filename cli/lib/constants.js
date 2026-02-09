@@ -76,6 +76,8 @@ export const PLATFORMS = {
     skillsDir: ".codex/skills",
     legacySkillsDir: ".agents/skills",
     orchestrator: "AGENTS.md",
+    scriptsDir: "scripts/ralph",
+    schemasDir: ".codex/schemas",
   },
   "claude-code": {
     name: "Claude Code",

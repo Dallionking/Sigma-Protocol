@@ -250,11 +250,10 @@ ${chalk.cyan.bold("Directory Structure")}
     opencode.json         # Configuration
     AGENTS.md             # Orchestrator file
 
-  ${chalk.gray("Codex:")}
-    .codex/config.toml    # Project config (optional)
-    .codex/rules/         # Starlark rules (optional)
+  ${chalk.gray("Codex (GPT-5.3-Codex):")}
+    .codex/config.toml    # Project config (profiles, model, MCP)
+    .codex/rules/*.rules  # Execution policy rules (Starlark)
     .codex/skills/        # Skills (SKILL.md format)
-    .agents/skills/       # Legacy skills (fallback)
     AGENTS.md             # Orchestrator file
 
 ${chalk.cyan.bold("Cross-Platform Note")}

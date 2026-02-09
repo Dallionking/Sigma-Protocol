@@ -5,6 +5,27 @@ All notable changes to Sigma Protocol are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Added
+- **Codex GPT-5.3-Codex upgrade**: Full production integration with combined coding + reasoning model (~25% faster than GPT-5.1).
+- **Codex configuration profiles**: `sigma-dev`, `sigma-strict`, `sigma-fast` presets in `.codex/config.toml`.
+- **Codex execution policy rules**: Starlark-based safety rules (`sigma-safety.rules`, `sigma-workflow.rules`, `sigma-quality.rules`) with `prefix_rule()` format.
+- **Codex MCP server config**: Firecrawl, EXA, Ref, Context7, Task Master AI configured in `config.toml`.
+- **Codex GitHub Action**: `openai/codex-action@v1` integration for automated PR review and cloud tasks.
+- **docs/CODEX-GUIDE.md**: Comprehensive user guide covering profiles, steer mode, Desktop App, GitHub Action, MCP, and Claude Code comparison.
+- **180 Codex skills deployed**: Skills synced from canonical `.claude/skills/` source.
+
+### Changed
+- **platforms/codex/README.md**: Complete rewrite with configuration reference, steer mode tips, session management, Desktop App, troubleshooting.
+- **docs/PLATFORMS.md**: Codex section expanded from 33 to 145 lines with feature comparison, profiles, execution policy, MCP, cloud tasks.
+- **CLAUDE.md**: Codex platform row updated to reflect GPT-5.3-Codex model.
+- **Step 12 (Context Engine)**: Updated Codex rules references to `.codex/rules/*.rules` (Starlark `prefix_rule()` format) across all platform copies.
+- **CLI help text**: Updated Codex section to show Starlark rules and GPT-5.3-Codex model.
+- **docs/FILE-PATH-REFERENCE.md**: Codex rules path corrected to `.codex/rules/*.rules`.
+- **docs/.platform-versions.json**: Codex marked as deployed with 180 skills.
+
+
 ## [1.0.0-alpha.2] - 2026-02-05
 
 ### Added

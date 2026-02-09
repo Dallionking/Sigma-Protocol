@@ -14,7 +14,10 @@ build/
 .idea/
 .vscode/
 .cursor/projects/
+.cursor/settings.json
 .claude/projects/
+.claude/settings.json
+.mcp.json
 *.swp
 *.swo
 *.code-workspace
@@ -90,6 +93,7 @@ temp/
 
 # Sigma Protocol specific
 .sigma/
+.sigma-manifest.json
 .tracking-db/
 *.tracking.json
 
@@ -113,6 +117,14 @@ mprocs.yaml
 streams.json
 orchestration-*.log
 *.preview-url
+
+# Ralph execution state (generated during runs)
+**/progress.txt
+docs/ralph/implementation/
+docs/ralph/NATIVE-TASK-INTEGRATION.md
+
+# Experiments (internal R&D, not distributable)
+experiments/
 
 # Work-in-progress plugins (not ready for public release)
 packages/sigma-protocol-plugin/
@@ -142,6 +154,11 @@ marketing-book-research/
 # Analysis directories & generated outputs
 docs/prds/
 docs/sessions/
+docs/products/
+docs/reviews/
+docs/architecture/
+docs/.manifest.json
+docs/.platform-versions.json
 
 # Planning & temporary analysis docs
 CLI-ENHANCEMENT-ANALYSIS.md
@@ -174,7 +191,8 @@ CHANGELOG-*.md
 CLAUDE.md
 AGENTS.md
 
-# Agent memory (local scope - sensitive, not committed)
+# Agent memory (session learning data - not distributable)
+.claude/agent-memory/
 .claude/agent-memory-local/
 
 # Legacy agents (deprecated, replaced by commands)

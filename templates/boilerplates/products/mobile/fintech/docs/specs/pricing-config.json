@@ -1,0 +1,200 @@
+{
+  "$schema": "pricing-config-v1",
+  "created": "2025-12-11",
+  "offer_name": "The Trading Protocol",
+  "tagline": "Trade Smarter. Execute Faster.",
+  
+  "tiers": {
+    "basic": {
+      "name": "Basic",
+      "display_name": "Basic",
+      "monthly_price": 700,
+      "annual_price": 7000,
+      "stripe_price_id_monthly": null,
+      "stripe_price_id_annual": null,
+      "revenuecat_product_id": "basic_monthly",
+      "target_segment": "Testers, skeptics, small deposits",
+      "features": {
+        "auto_invest_engine": true,
+        "auto_invest_speed": "standard",
+        "ai_cycle_frequency": "1x_daily",
+        "balance_updates": "daily",
+        "income_feed_history": 7,
+        "ai_dashboard_level": "basic",
+        "risk_customization": "presets_only",
+        "notifications": "daily_summary",
+        "weekly_reports": false,
+        "support_level": "community",
+        "premium_ui": false,
+        "founding_member_badge": false
+      },
+      "limits": {
+        "deposit_limit_monthly": 500000,
+        "withdrawal_limit_daily": 100000
+      }
+    },
+    "pro": {
+      "name": "Pro",
+      "display_name": "Pro",
+      "is_recommended": true,
+      "monthly_price": 1500,
+      "annual_price": 15000,
+      "stripe_price_id_monthly": null,
+      "stripe_price_id_annual": null,
+      "revenuecat_product_id": "pro_monthly",
+      "target_segment": "Core customers, engaged investors",
+      "features": {
+        "auto_invest_engine": true,
+        "auto_invest_speed": "accelerated",
+        "ai_cycle_frequency": "4x_daily",
+        "balance_updates": "hourly",
+        "income_feed_history": 30,
+        "ai_dashboard_level": "enhanced",
+        "risk_customization": "presets_and_custom",
+        "notifications": "customizable",
+        "weekly_reports": true,
+        "weekly_reports_format": "email",
+        "support_level": "email_24h",
+        "premium_ui": false,
+        "founding_member_badge": false
+      },
+      "limits": {
+        "deposit_limit_monthly": 2500000,
+        "withdrawal_limit_daily": 500000
+      }
+    },
+    "elite": {
+      "name": "Elite",
+      "display_name": "Elite",
+      "monthly_price": 2900,
+      "annual_price": 29000,
+      "stripe_price_id_monthly": null,
+      "stripe_price_id_annual": null,
+      "revenuecat_product_id": "elite_monthly",
+      "target_segment": "Power users, status seekers, high deposits",
+      "features": {
+        "auto_invest_engine": true,
+        "auto_invest_speed": "maximum",
+        "ai_cycle_frequency": "realtime",
+        "balance_updates": "realtime",
+        "income_feed_history": -1,
+        "ai_dashboard_level": "full",
+        "risk_customization": "full_control_with_ai_suggestions",
+        "notifications": "priority_alerts",
+        "weekly_reports": true,
+        "weekly_reports_format": "detailed_pdf",
+        "support_level": "priority_4h",
+        "premium_ui": true,
+        "premium_dashboard_skin": true,
+        "founding_member_badge": true,
+        "discord_access": true,
+        "feature_voting": true
+      },
+      "limits": {
+        "deposit_limit_monthly": -1,
+        "withdrawal_limit_daily": -1
+      }
+    }
+  },
+  
+  "founding_member": {
+    "enabled": true,
+    "max_spots": 1000,
+    "benefits": [
+      "Locked pricing forever",
+      "Founding Member badge",
+      "Early access to new features",
+      "Direct line to founders"
+    ],
+    "price_lock_guarantee": true
+  },
+  
+  "guarantee": {
+    "name": "48-Hour AI Guarantee",
+    "type": "conditional_outcome",
+    "time_window_hours": 48,
+    "conditions": [
+      "Minimum $50 deposit",
+      "Auto-Invest activated"
+    ],
+    "outcome": "First AI-generated return visible",
+    "remedy": "First month free",
+    "fallback": {
+      "type": "unconditional",
+      "time_window_days": 30,
+      "remedy": "Full refund"
+    }
+  },
+  
+  "bonuses": [
+    {
+      "id": "quick_start_guide",
+      "name": "Quick-Start Guide",
+      "description": "Your First $100 in Passive Income - 7-day activation blueprint",
+      "perceived_value": 4700,
+      "tiers": ["basic", "pro", "elite"],
+      "delivery": "in_app_pdf"
+    },
+    {
+      "id": "ai_confidence_masterclass",
+      "name": "AI Confidence Masterclass",
+      "description": "Understanding your AI's decision signals",
+      "perceived_value": 9700,
+      "tiers": ["pro", "elite"],
+      "delivery": "video_series"
+    },
+    {
+      "id": "weekly_digest",
+      "name": "Weekly Performance Digest",
+      "description": "Automated email with earnings breakdown + AI insights",
+      "perceived_value": 2900,
+      "tiers": ["pro", "elite"],
+      "delivery": "email"
+    },
+    {
+      "id": "discord_community",
+      "name": "The Vault - Private Discord",
+      "description": "Access to fellow Trading Platform users",
+      "perceived_value": 1900,
+      "tiers": ["elite"],
+      "delivery": "discord_invite"
+    },
+    {
+      "id": "feature_voting",
+      "name": "Priority Feature Voting",
+      "description": "Vote on upcoming features, early access to new modes",
+      "perceived_value": 4900,
+      "tiers": ["elite"],
+      "delivery": "in_app"
+    },
+    {
+      "id": "premium_dashboard",
+      "name": "Premium Dashboard Skin",
+      "description": "Exclusive UI with advanced visualizations",
+      "perceived_value": 7900,
+      "tiers": ["elite"],
+      "delivery": "ui_unlock"
+    }
+  ],
+  
+  "unit_economics": {
+    "cogs_per_user_monthly": 125,
+    "apple_fee_percentage": 15,
+    "target_arpu": 1450,
+    "target_ltv": 29000,
+    "target_cac": 2500,
+    "target_ltv_cac_ratio": 11.6,
+    "target_payback_months": 2,
+    "target_monthly_churn": 5
+  },
+  
+  "scarcity_urgency": {
+    "founding_member_limit": 1000,
+    "price_lock_enabled": true,
+    "annual_discount_percentage": 17,
+    "launch_cohort_messaging": true
+  }
+}
+
+
+

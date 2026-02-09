@@ -1,0 +1,92 @@
+{
+  "project": "trading-platform-hq",
+  "platform": "mobile",
+  "frontend": "expo",
+  "framework": "react-native",
+  "database": "supabase",
+  "auth": "supabase-auth",
+  "realtime": true,
+  "ai": {
+    "provider": "custom",
+    "description": "Proprietary allocation engine (abstracted)"
+  },
+  "payments": {
+    "provider": "revenuecat",
+    "model": "subscription",
+    "processor": "apple_iap",
+    "subscriptions": "revenuecat",
+    "banking": "plaid",
+    "backup_processor": "stripe",
+    "tiers": ["basic", "pro", "elite"],
+    "has_usage_billing": false,
+    "has_credits": false,
+    "has_founding_member": true
+  },
+  "pricing": {
+    "basic": {
+      "monthly": 7,
+      "annual": 70,
+      "revenuecat_id": "basic_monthly"
+    },
+    "pro": {
+      "monthly": 15,
+      "annual": 150,
+      "is_recommended": true,
+      "revenuecat_id": "pro_monthly"
+    },
+    "elite": {
+      "monthly": 29,
+      "annual": 290,
+      "revenuecat_id": "elite_monthly"
+    }
+  },
+  "offer": {
+    "name": "The Trading Protocol",
+    "tagline": "Trade Smarter. Execute Faster.",
+    "guarantee": "48-Hour AI Guarantee",
+    "founding_member_limit": 1000
+  },
+  "hosting": {
+    "backend": "render",
+    "edge": "cloudflare"
+  },
+  "notifications": "expo-notifications",
+  "analytics": "mixpanel",
+  "mcp_compatibility": {
+    "score": "9/10",
+    "supported": [
+      "supabase",
+      "stripe",
+      "expo",
+      "render"
+    ],
+    "partial": [
+      "revenuecat",
+      "plaid"
+    ]
+  },
+  "design": {
+    "primaryBackground": "#000000",
+    "primaryAccent": "#6366F1",
+    "secondaryAccent": "#818CF8",
+    "theme": "dark",
+    "style": "modern-minimal"
+  },
+  "target": {
+    "os": "iOS",
+    "minVersion": "15.0",
+    "devices": "iPhone 12+"
+  },
+  "unit_economics": {
+    "cogs_per_user": 1.25,
+    "target_arpu": 14.50,
+    "target_ltv": 290,
+    "target_cac": 25,
+    "ltv_cac_ratio": 11.6,
+    "payback_months": 2,
+    "monthly_churn": 0.05
+  }
+}
+
+
+

@@ -1,0 +1,52 @@
+<svg width="256" height="500" viewBox="0 0 256 500" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- iPhone Frame -->
+  <rect x="2" y="2" width="252" height="496" rx="36" fill="#0A0A0A" stroke="#1a1a1a" stroke-width="2"/>
+  <rect x="12" y="12" width="232" height="476" rx="28" fill="#111111"/>
+  
+  <!-- Status Bar -->
+  <text x="24" y="32" fill="#666" font-family="system-ui" font-size="11">9:41</text>
+  <circle cx="220" cy="28" r="6" fill="#6366F1" opacity="0.8"/>
+  
+  <!-- Dynamic Island -->
+  <rect x="88" y="16" width="80" height="24" rx="12" fill="#000"/>
+  
+  <!-- Header -->
+  <text x="24" y="70" fill="#6366F1" font-family="system-ui" font-size="14" font-weight="600">AUTO TRADING</text>
+  <rect x="180" y="56" width="50" height="22" rx="11" fill="#6366F1"/>
+  <text x="192" y="71" fill="#000" font-family="system-ui" font-size="9" font-weight="600">LIVE</text>
+  
+  <!-- Active Bot Card -->
+  <rect x="16" y="90" width="224" height="120" rx="12" fill="#0f0f28" stroke="#6366F1" stroke-width="1"/>
+  <text x="28" y="115" fill="#6366F1" font-family="system-ui" font-size="11">> AI-BOT ALPHA</text>
+  <text x="28" y="140" fill="#fff" font-family="system-ui" font-size="20" font-weight="700">+$2,847.50</text>
+  <text x="28" y="160" fill="#888" font-family="system-ui" font-size="11">Today's P/L</text>
+  <text x="28" y="195" fill="#6366F1" font-family="system-ui" font-size="11">� Running " 14 trades today</text>
+  
+  <!-- Stats Grid -->
+  <rect x="16" y="222" width="107" height="70" rx="8" fill="#1a1a1a"/>
+  <text x="28" y="248" fill="#888" font-family="system-ui" font-size="10">Win Rate</text>
+  <text x="28" y="275" fill="#6366F1" font-family="system-ui" font-size="20" font-weight="700">78%</text>
+  
+  <rect x="133" y="222" width="107" height="70" rx="8" fill="#1a1a1a"/>
+  <text x="145" y="248" fill="#888" font-family="system-ui" font-size="10">Avg Profit</text>
+  <text x="145" y="275" fill="#6366F1" font-family="system-ui" font-size="20" font-weight="700">$142</text>
+  
+  <!-- Recent Trades -->
+  <text x="16" y="318" fill="#888" font-family="system-ui" font-size="10">RECENT EXECUTIONS</text>
+  
+  <rect x="16" y="328" width="224" height="44" rx="6" fill="#0f0f28"/>
+  <text x="28" y="348" fill="#fff" font-family="system-ui" font-size="12" font-weight="500">AAPL Buy</text>
+  <text x="28" y="364" fill="#888" font-family="system-ui" font-size="9">2 min ago</text>
+  <text x="180" y="352" fill="#6366F1" font-family="system-ui" font-size="12" font-weight="600">+$87.20</text>
+  
+  <rect x="16" y="380" width="224" height="44" rx="6" fill="#0f0f28"/>
+  <text x="28" y="400" fill="#fff" font-family="system-ui" font-size="12" font-weight="500">NVDA Sell</text>
+  <text x="28" y="416" fill="#888" font-family="system-ui" font-size="9">8 min ago</text>
+  <text x="180" y="404" fill="#6366F1" font-family="system-ui" font-size="12" font-weight="600">+$234.50</text>
+  
+  <!-- Bottom Nav -->
+  <rect x="16" y="440" width="224" height="40" rx="20" fill="#1a1a1a"/>
+  <circle cx="58" cy="460" r="12" fill="transparent"/>
+  <circle cx="128" cy="460" r="12" fill="transparent"/>
+  <circle cx="198" cy="460" r="12" fill="#6366F1" opacity="0.2"/>
+</svg>

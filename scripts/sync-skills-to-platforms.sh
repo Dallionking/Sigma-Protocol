@@ -77,18 +77,22 @@ SYNCED_opencode=0
 SYNCED_cursor=0
 SYNCED_factory=0
 SYNCED_antigravity=0
+SYNCED_codex=0
 SKIPPED_opencode=0
 SKIPPED_cursor=0
 SKIPPED_factory=0
 SKIPPED_antigravity=0
+SKIPPED_codex=0
 TRANSFORMED_opencode=0
 TRANSFORMED_cursor=0
 TRANSFORMED_factory=0
 TRANSFORMED_antigravity=0
+TRANSFORMED_codex=0
 ERRORS_opencode=0
 ERRORS_cursor=0
 ERRORS_factory=0
 ERRORS_antigravity=0
+ERRORS_codex=0
 
 # Get/set counter value
 get_counter() {

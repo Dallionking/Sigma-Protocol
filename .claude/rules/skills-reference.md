@@ -50,6 +50,8 @@
 | `mobile-ui-testing` | maestro, detox, mobile-test | Maestro, Detox, ViewInspector, Prefire, Storybook 9 |
 | `platform-design-guidelines` | hig, material-design, platform-native | Apple HIG, Material Design 3, platform adaptation |
 | `rn-component-library` | shadcn-mobile, bklit, chart | RN Reusables (shadcn/ui), Bklit UI charts |
+| `xcode-intelligence` | xcode mcp, xcode tools, render preview, documentation search | Xcode 26.3 MCP tools reference — 20 native tools, XcodeBuildMCP fallback |
+| `xcode-agent-workflow` | xcode agent, agentic xcode, xcode workflow | Agentic coding patterns — build-preview-fix loop, Xcode Agent vs Claude Code |
 
 ## Marketing
 | Skill | Auto-Trigger | Description |

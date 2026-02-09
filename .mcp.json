@@ -52,6 +52,16 @@
 			"headers": {
 				"Authorization": "Bearer ${GREPTILE_API_KEY}"
 			}
+		},
+		"xcode": {
+			"type": "stdio",
+			"command": "xcrun",
+			"args": ["mcpbridge"]
+		},
+		"XcodeBuildMCP": {
+			"type": "stdio",
+			"command": "npx",
+			"args": ["-y", "xcodebuildmcp@beta", "mcp"]
 		}
 	}
 }

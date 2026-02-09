@@ -1,0 +1,56 @@
+<svg width="256" height="500" viewBox="0 0 256 500" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- iPhone Frame -->
+  <rect x="2" y="2" width="252" height="496" rx="36" fill="#0A0A0A" stroke="#1a1a1a" stroke-width="2"/>
+  <rect x="12" y="12" width="232" height="476" rx="28" fill="#111111"/>
+  
+  <!-- Status Bar -->
+  <text x="24" y="32" fill="#666" font-family="system-ui" font-size="11">9:41</text>
+  <circle cx="220" cy="28" r="6" fill="#6366F1" opacity="0.8"/>
+  
+  <!-- Dynamic Island -->
+  <rect x="88" y="16" width="80" height="24" rx="12" fill="#000"/>
+  
+  <!-- Header -->
+  <text x="24" y="70" fill="#6366F1" font-family="system-ui" font-size="14" font-weight="600">AI SIGNALS</text>
+  <circle cx="224" cy="66" r="12" fill="#6366F1" opacity="0.1"/>
+  <text x="220" y="70" fill="#6366F1" font-family="system-ui" font-size="10">�</text>
+  
+  <!-- Signal Card 1 - Buy -->
+  <rect x="16" y="90" width="224" height="80" rx="12" fill="#0f0f28" stroke="#6366F1" stroke-width="1" opacity="0.8"/>
+  <text x="28" y="112" fill="#6366F1" font-family="system-ui" font-size="12" font-weight="600">BUY SIGNAL</text>
+  <text x="28" y="132" fill="#fff" font-family="system-ui" font-size="16" font-weight="700">AAPL</text>
+  <text x="80" y="132" fill="#888" font-family="system-ui" font-size="12">Apple Inc.</text>
+  <text x="28" y="156" fill="#6366F1" font-family="system-ui" font-size="20" font-weight="700">$187.42</text>
+  <text x="120" y="156" fill="#6366F1" font-family="system-ui" font-size="12">� 2.4%</text>
+  <rect x="180" y="140" width="50" height="24" rx="6" fill="#6366F1"/>
+  <text x="193" y="156" fill="#000" font-family="system-ui" font-size="10" font-weight="600">94%</text>
+  
+  <!-- Signal Card 2 - Buy -->
+  <rect x="16" y="182" width="224" height="80" rx="12" fill="#0f0f28" stroke="#6366F1" stroke-width="1" opacity="0.6"/>
+  <text x="28" y="204" fill="#6366F1" font-family="system-ui" font-size="12" font-weight="600">BUY SIGNAL</text>
+  <text x="28" y="224" fill="#fff" font-family="system-ui" font-size="16" font-weight="700">NVDA</text>
+  <text x="80" y="224" fill="#888" font-family="system-ui" font-size="12">NVIDIA Corp</text>
+  <text x="28" y="248" fill="#6366F1" font-family="system-ui" font-size="20" font-weight="700">$485.20</text>
+  <text x="130" y="248" fill="#6366F1" font-family="system-ui" font-size="12">� 3.1%</text>
+  <rect x="180" y="232" width="50" height="24" rx="6" fill="#6366F1" opacity="0.8"/>
+  <text x="193" y="248" fill="#000" font-family="system-ui" font-size="10" font-weight="600">89%</text>
+  
+  <!-- Signal Card 3 - Sell -->
+  <rect x="16" y="274" width="224" height="80" rx="12" fill="#1f0d0d" stroke="#ff4444" stroke-width="1" opacity="0.6"/>
+  <text x="28" y="296" fill="#ff4444" font-family="system-ui" font-size="12" font-weight="600">SELL SIGNAL</text>
+  <text x="28" y="316" fill="#fff" font-family="system-ui" font-size="16" font-weight="700">META</text>
+  <text x="80" y="316" fill="#888" font-family="system-ui" font-size="12">Meta Platforms</text>
+  <text x="28" y="340" fill="#ff4444" font-family="system-ui" font-size="20" font-weight="700">$325.18</text>
+  <text x="130" y="340" fill="#ff4444" font-family="system-ui" font-size="12">� 1.8%</text>
+  <rect x="180" y="324" width="50" height="24" rx="6" fill="#ff4444" opacity="0.8"/>
+  <text x="193" y="340" fill="#fff" font-family="system-ui" font-size="10" font-weight="600">76%</text>
+  
+  <!-- More signals indicator -->
+  <text x="100" y="380" fill="#666" font-family="system-ui" font-size="12">+ 12 more signals</text>
+  
+  <!-- Bottom Nav -->
+  <rect x="16" y="440" width="224" height="40" rx="20" fill="#1a1a1a"/>
+  <circle cx="58" cy="460" r="12" fill="#6366F1" opacity="0.2"/>
+  <circle cx="128" cy="460" r="12" fill="transparent"/>
+  <circle cx="198" cy="460" r="12" fill="transparent"/>
+</svg>

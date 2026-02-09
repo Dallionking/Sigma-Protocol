@@ -27,4 +27,4 @@ export {
 } from "./opencode.js";
 
 // Codex platform
-export { buildCodex } from "./codex.js";
+export { buildCodex, generateCodexAgentsMd } from "./codex.js";

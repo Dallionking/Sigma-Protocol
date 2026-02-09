@@ -1,0 +1,57 @@
+<svg width="256" height="500" viewBox="0 0 256 500" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- iPhone Frame -->
+  <rect x="2" y="2" width="252" height="496" rx="36" fill="#0A0A0A" stroke="#1a1a1a" stroke-width="2"/>
+  <rect x="12" y="12" width="232" height="476" rx="28" fill="#111111"/>
+  
+  <!-- Status Bar -->
+  <text x="24" y="32" fill="#666" font-family="system-ui" font-size="11">9:41</text>
+  <circle cx="220" cy="28" r="6" fill="#6366F1" opacity="0.8"/>
+  
+  <!-- Dynamic Island -->
+  <rect x="88" y="16" width="80" height="24" rx="12" fill="#000"/>
+  
+  <!-- Header -->
+  <text x="24" y="70" fill="#6366F1" font-family="system-ui" font-size="14" font-weight="600">PORTFOLIO</text>
+  
+  <!-- Portfolio Value -->
+  <text x="24" y="110" fill="#888" font-family="system-ui" font-size="11">Total Value</text>
+  <text x="24" y="145" fill="#fff" font-family="system-ui" font-size="28" font-weight="700">$124,847.32</text>
+  <text x="24" y="170" fill="#6366F1" font-family="system-ui" font-size="14">� $3,421.50 (2.82%)</text>
+  
+  <!-- Mini Chart -->
+  <rect x="16" y="185" width="224" height="60" rx="8" fill="#0f0f28"/>
+  <polyline points="30,230 60,220 90,225 120,210 150,215 180,200 210,195 225,190" 
+            stroke="#6366F1" stroke-width="2" fill="none"/>
+  <text x="28" y="200" fill="#888" font-family="system-ui" font-size="9">1D</text>
+  <text x="205" y="200" fill="#888" font-family="system-ui" font-size="9">NOW</text>
+  
+  <!-- Holdings -->
+  <text x="16" y="270" fill="#888" font-family="system-ui" font-size="10">HOLDINGS</text>
+  
+  <!-- Holding 1 -->
+  <rect x="16" y="280" width="224" height="50" rx="6" fill="#1a1a1a"/>
+  <text x="28" y="302" fill="#fff" font-family="system-ui" font-size="13" font-weight="600">AAPL</text>
+  <text x="28" y="320" fill="#888" font-family="system-ui" font-size="10">50 shares</text>
+  <text x="150" y="302" fill="#fff" font-family="system-ui" font-size="13" font-weight="600">$9,371.00</text>
+  <text x="175" y="320" fill="#6366F1" font-family="system-ui" font-size="10">+2.4%</text>
+  
+  <!-- Holding 2 -->
+  <rect x="16" y="338" width="224" height="50" rx="6" fill="#1a1a1a"/>
+  <text x="28" y="360" fill="#fff" font-family="system-ui" font-size="13" font-weight="600">NVDA</text>
+  <text x="28" y="378" fill="#888" font-family="system-ui" font-size="10">25 shares</text>
+  <text x="140" y="360" fill="#fff" font-family="system-ui" font-size="13" font-weight="600">$12,130.00</text>
+  <text x="175" y="378" fill="#6366F1" font-family="system-ui" font-size="10">+3.1%</text>
+  
+  <!-- Holding 3 -->
+  <rect x="16" y="396" width="224" height="50" rx="6" fill="#1a1a1a"/>
+  <text x="28" y="418" fill="#fff" font-family="system-ui" font-size="13" font-weight="600">BTC</text>
+  <text x="28" y="436" fill="#888" font-family="system-ui" font-size="10">2.5 coins</text>
+  <text x="135" y="418" fill="#fff" font-family="system-ui" font-size="13" font-weight="600">$108,125.00</text>
+  <text x="175" y="436" fill="#6366F1" font-family="system-ui" font-size="10">+1.8%</text>
+  
+  <!-- Bottom Nav -->
+  <rect x="16" y="450" width="224" height="40" rx="20" fill="#1a1a1a"/>
+  <circle cx="58" cy="470" r="12" fill="transparent"/>
+  <circle cx="128" cy="470" r="12" fill="#6366F1" opacity="0.2"/>
+  <circle cx="198" cy="470" r="12" fill="transparent"/>
+</svg>

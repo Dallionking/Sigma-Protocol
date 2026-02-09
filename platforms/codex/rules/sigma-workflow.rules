@@ -1,0 +1,139 @@
+# Sigma Workflow Rules — Execution Policy
+# Guards for git and deployment workflows. Prompts before irreversible actions,
+# allows read-only git commands without interruption.
+#
+# Syntax: prefix_rule(pattern, decision, justification, match, not_match)
+# Reference: https://developers.openai.com/codex/exec-policy/
+# Validate:  codex execpolicy check --pretty --rules .codex/rules/sigma-workflow.rules -- <cmd>
+
+# ── Git read operations — allow without prompting ────────────────────────
+
+prefix_rule(
+    pattern    = ["git", "status"],
+    decision   = "allow",
+    justification = "git status is read-only and always safe.",
+    match      = ["git status", "git status -s"],
+)
+
+prefix_rule(
+    pattern    = ["git", "log"],
+    decision   = "allow",
+    justification = "git log is read-only and always safe.",
+    match      = ["git log", "git log --oneline -10"],
+)
+
+prefix_rule(
+    pattern    = ["git", "diff"],
+    decision   = "allow",
+    justification = "git diff is read-only and always safe.",
+    match      = ["git diff", "git diff --staged", "git diff HEAD~1"],
+)
+
+prefix_rule(
+    pattern    = ["git", "branch"],
+    decision   = "allow",
+    justification = "git branch (list) is read-only.",
+    match      = ["git branch", "git branch -a"],
+)
+
+prefix_rule(
+    pattern    = ["git", "show"],
+    decision   = "allow",
+    justification = "git show is read-only.",
+    match      = ["git show HEAD", "git show abc123"],
+)
+
+# ── GitHub CLI read operations — allow without prompting ─────────────────
+
+prefix_rule(
+    pattern    = ["gh", "pr", ["view", "list", "status", "diff", "checks"]],
+    decision   = "allow",
+    justification = "Read-only GitHub PR operations are always safe.",
+    match      = ["gh pr view 123", "gh pr list", "gh pr status"],
+    not_match  = ["gh pr merge 123", "gh pr close 123"],
+)
+
+prefix_rule(
+    pattern    = ["gh", "issue", ["view", "list", "status"]],
+    decision   = "allow",
+    justification = "Read-only GitHub issue operations are always safe.",
+    match      = ["gh issue view 456", "gh issue list"],
+    not_match  = ["gh issue close 456"],
+)
+
+prefix_rule(
+    pattern    = ["gh", "repo", ["view", "list", "clone"]],
+    decision   = "allow",
+    justification = "Read-only GitHub repo operations are always safe.",
+    match      = ["gh repo view", "gh repo list", "gh repo clone org/repo"],
+)
+
+# ── Git write operations — prompt for review ─────────────────────────────
+
+prefix_rule(
+    pattern    = ["git", "merge"],
+    decision   = "prompt",
+    justification = "Merging can introduce conflicts. Confirm the source branch.",
+    match      = ["git merge feature/login", "git merge --no-ff develop"],
+    not_match  = ["git log --merges"],
+)
+
+prefix_rule(
+    pattern    = ["git", "rebase"],
+    decision   = "prompt",
+    justification = "Rebasing rewrites history. Confirm the base branch and that the branch is not shared.",
+    match      = ["git rebase main", "git rebase -i HEAD~3"],
+    not_match  = ["git log --oneline"],
+)
+
+prefix_rule(
+    pattern    = ["git", "stash", "drop"],
+    decision   = "prompt",
+    justification = "Dropping a stash is permanent. Confirm the stash is no longer needed.",
+    match      = ["git stash drop", "git stash drop stash@{0}"],
+    not_match  = ["git stash list", "git stash pop"],
+)
+
+prefix_rule(
+    pattern    = ["git", "branch", ["-D", "-d", "--delete"]],
+    decision   = "prompt",
+    justification = "Deleting a branch is hard to undo if not merged. Confirm the branch is fully merged.",
+    match      = ["git branch -D old-feature", "git branch --delete fix/typo"],
+    not_match  = ["git branch", "git branch -a"],
+)
+
+# ── GitHub CLI write operations — prompt for review ──────────────────────
+
+prefix_rule(
+    pattern    = ["gh", "pr", ["merge", "close", "reopen"]],
+    decision   = "prompt",
+    justification = "Merging or closing a PR affects the shared repository. Confirm the PR number.",
+    match      = ["gh pr merge 123", "gh pr close 456"],
+    not_match  = ["gh pr view 123", "gh pr list"],
+)
+
+prefix_rule(
+    pattern    = ["gh", "issue", ["close", "delete", "reopen"]],
+    decision   = "prompt",
+    justification = "Closing or deleting issues affects project tracking. Confirm the issue number.",
+    match      = ["gh issue close 456"],
+    not_match  = ["gh issue view 456", "gh issue list"],
+)
+
+# ── Deployment commands — prompt before executing ────────────────────────
+
+prefix_rule(
+    pattern    = ["vercel", ["--prod", "deploy"]],
+    decision   = "prompt",
+    justification = "Production deployment should be reviewed before executing.",
+    match      = ["vercel --prod", "vercel deploy"],
+    not_match  = ["vercel ls", "vercel env ls"],
+)
+
+prefix_rule(
+    pattern    = ["fly", "deploy"],
+    decision   = "prompt",
+    justification = "Fly.io deployment should be reviewed before executing.",
+    match      = ["fly deploy", "fly deploy --app myapp"],
+    not_match  = ["fly status", "fly logs"],
+)

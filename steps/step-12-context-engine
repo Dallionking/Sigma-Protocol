@@ -175,8 +175,7 @@ Ensure `AGENTS.md` exists and lists Sigma steps + usage guidance.
 
 #### 4) `.codex/rules/*.rules` (optional)
 
-Only create `.codex/rules/*.rules` if you can author **Starlark** rules.  
-Do **not** attempt to auto-convert `.mdc` rules. If unsure, skip this.
+Codex execution policy rules use **Starlark** format (`.rules` extension). Each rule uses `prefix_rule()` with a `trigger`, regex `pattern`, and `action` (deny/warn/allow). See `platforms/codex/rules/sigma-safety.rules` for examples. Three rule files ship with Sigma: `sigma-safety.rules`, `sigma-workflow.rules`, `sigma-quality.rules`.
 
 ---
 

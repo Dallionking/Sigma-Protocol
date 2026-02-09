@@ -16,10 +16,10 @@ Sigma Protocol supports multiple AI coding platforms with platform-specific conf
 | **Cursor** | Production (Secondary) | Yes | 27 rules | 26 | IDE integration |
 | **Factory Droid** | Production | Yes | 163 | 120+ | Enterprise automation |
 | **OpenCode** | Planned | No | 0 | 0 | Open-source alternative |
-| **Codex** | Planned | No | 0 | 0 | OpenAI Codex App/CLI |
+| **Codex** | Production | Yes | 180 | 0 | OpenAI Codex CLI/Desktop (GPT-5.3-Codex) |
 | **Antigravity** | Experimental | No | 0 | 0 | Universal agent protocol |
 
-> **Note:** OpenCode, Codex, and Antigravity have platform config *designed* but skills/commands are not yet deployed. Skill counts shown are for deployed artifacts only.
+> **Note:** OpenCode and Antigravity have platform config *designed* but skills/commands are not yet deployed. Skill counts shown are for deployed artifacts only.
 
 ---
 
@@ -250,35 +250,151 @@ skills:
 
 ## Codex
 
-**OpenAI Codex App/CLI with project-scoped configuration.**
+**OpenAI Codex CLI / Desktop App powered by GPT-5.3-Codex.**
+
+GPT-5.3-Codex is a combined coding + reasoning model (~25% faster than GPT-5.1). Codex operates as a CLI (`codex`), Desktop App with parallel agents, and GitHub Action (`openai/codex-action@v1`).
+
+### Feature Comparison
+
+| Feature | Claude Code | Codex | Notes |
+|---------|-------------|-------|-------|
+| Interactive mode | Chat (default) | Steer (default) | Both support inline refinement |
+| Background tasks | Task tool (subagents) | Background mode + Cloud tasks | Codex offloads to cloud infra |
+| Parallel agents | Agent Teams (experimental) | Desktop App (native) | Codex uses GUI panes |
+| Config format | JSON (settings.json) | TOML (config.toml) | Both support project + user levels |
+| Safety rules | Hooks (PreToolUse) | Execution policy (Starlark `.rules`) | Codex rules use `prefix_rule()` |
+| CI/CD | MCP + hooks | GitHub Action (v1) | Codex has first-party Action |
+| MCP support | Full (stdio + HTTP) | Full (stdio + HTTP) | Both support all transports |
+| Profiles | Permission modes | Named profiles (TOML) | Codex profiles override all settings |
+| Session management | Conversation resume | Fork, resume, share | Codex supports session forking |
 
 ### Directory Structure
 
 ```
 .codex/
-├── config.toml         # Project config (optional)
-└── rules/
-    └── *.rules         # Starlark rules (optional)
-
-.agents/
+├── config.toml              # Project config (profiles, model, MCP, features)
+├── rules/
+│   ├── sigma-safety.rules   # Execution policy: destructive ops, force-push, chmod
+│   ├── sigma-workflow.rules # Execution policy: git + deploy workflow guards
+│   └── sigma-quality.rules  # Execution policy: build, test, dependency guards
 └── skills/
     └── <skill-name>/
-        └── SKILL.md
+        └── SKILL.md          # Synced from .claude/skills/ (canonical source)
 
-AGENTS.md               # Project-wide instructions
+~/.codex/
+├── config.toml              # User-level defaults (applied first)
+└── rules/
+    └── *.rules              # User-level execution policy (Starlark)
+
+AGENTS.md                    # Project-wide instructions (cross-platform standard)
 ```
 
-### Key Facts (Official)
+### Configuration Profiles
 
-- **Config files:** Codex reads user config from `~/.codex/config.toml` and project overrides from `.codex/config.toml`.
-- **Rules:** Codex loads Starlark rules from `~/.codex/rules/*.rules` and `.codex/rules/*.rules`.
-- **Skills:** Codex reads skills from `.codex/skills` in your home folder and in git repositories (legacy fallback: `.agents/skills`); each skill lives in a folder with `SKILL.md`.
-- **AGENTS.md:** Codex discovers `AGENTS.md` using a defined search order (repo first, then parent paths, then home).
+Profiles are named presets in `config.toml`. Switch at launch with `codex --profile <name>`.
 
-### Sigma Integration Notes
+| Profile | Approval | Reasoning | Sandbox | Use Case |
+|---------|----------|-----------|---------|----------|
+| `sigma-dev` | on-request | high | workspace-write | Daily development (default) |
+| `sigma-strict` | untrusted | high | read-only | Code review and audit |
+| `sigma-fast` | on-failure | medium | workspace-write | Rapid prototyping |
 
-- **Steps = Skills:** Sigma steps are installed as Codex skills so each step remains a full prompt (no sub-agent indirection).
+```toml
+[profiles.sigma-dev]
+approval_policy = "on-request"
+reasoning_effort = "high"
+sandbox_mode = "workspace-write"
+
+[profiles.sigma-strict]
+approval_policy = "untrusted"
+reasoning_effort = "high"
+sandbox_mode = "read-only"
+
+[profiles.sigma-fast]
+approval_policy = "on-failure"
+reasoning_effort = "medium"
+sandbox_mode = "workspace-write"
+```
+
+### Execution Policy Rules
+
+Starlark rules in `.codex/rules/` block dangerous operations at the sandbox level:
+
+```python
+prefix_rule(
+    pattern       = ["git", "push", ["--force", "-f"]],
+    decision      = "prompt",
+    justification = "Force-pushing can overwrite remote history. Confirm the target branch.",
+    match         = ["git push --force origin feature"],
+    not_match     = ["git push origin main"],
+)
+```
+
+Three rule files ship with Sigma:
+
+| File | Coverage |
+|------|----------|
+| `sigma-safety.rules` | rm -rf, force-push, chmod 777, npm publish, kill -9 |
+| `sigma-workflow.rules` | Git workflow guards, GitHub CLI, deployment commands |
+| `sigma-quality.rules` | Build/test/lint allow-listing, dependency install prompts, DB migration guards |
+
+### MCP Integration
+
+Codex supports both stdio and HTTP/Streamable HTTP MCP servers.
+
+```toml
+[mcp_servers.firecrawl]
+command = "npx"
+args = ["-y", "firecrawl-mcp"]
+
+[mcp_servers.exa]
+command = "npx"
+args = ["-y", "@anthropic/exa-mcp-server"]
+
+[mcp_servers.context7]
+command = "npx"
+args = ["-y", "@context7/mcp-server"]
+
+[mcp_servers.task-master-ai]
+command = "npx"
+args = ["-y", "--package=task-master-ai", "task-master-ai"]
+
+# HTTP server (remote)
+[mcp_servers.greptile]
+type = "http"
+url = "https://api.greptile.com/mcp"
+bearer_token_env_var = "GREPTILE_API_KEY"
+```
+
+### Cloud Tasks & Desktop App
+
+| Capability | Interface | Description |
+|------------|-----------|-------------|
+| Cloud tasks | CLI / Action | Offload long-running work to OpenAI cloud infrastructure |
+| Parallel agents | Desktop App | Run multiple PRDs simultaneously in separate agent panes |
+| Session fork | CLI / Desktop | Branch a session to explore alternatives without losing context |
+| Session resume | CLI / Desktop | Resume any prior session by ID |
+
+### GitHub Action
+
+```yaml
+# .github/workflows/codex-review.yml
+- uses: openai/codex-action@v1
+  with:
+    openai-api-key: ${{ secrets.OPENAI_API_KEY }}
+    task: "Review this PR for correctness and security."
+    profile: sigma-strict
+```
+
+### Sigma Integration
+
+- **Steps = Skills:** Sigma steps are installed as Codex skills (full prompts, no sub-agent indirection).
+- **Canonical source:** Skills sync from `.claude/skills/` to `.codex/skills/<name>/SKILL.md`.
+- **AGENTS.md:** Shared cross-platform project instructions (Codex, Claude Code, Factory Droid).
 - **Foundation skills:** Install via `sigma install-skills --platform codex`.
+- **Sync:** Run `./scripts/sync-skills-to-platforms.sh --platform codex`.
+
+See [platforms/codex/README.md](../platforms/codex/README.md) for the full configuration reference and [CODEX-GUIDE.md](./CODEX-GUIDE.md) for the user guide.
 
 ---
 
@@ -597,7 +713,7 @@ triggers:
 | frontend-design | .md | SKILL.md | SKILL.md | .mdc | SKILL.md | SKILL.md |
 | react-performance | .md | SKILL.md | SKILL.md | .mdc | SKILL.md | SKILL.md |
 | verification | .md | SKILL.md | SKILL.md | .mdc | SKILL.md | SKILL.md |
-| ... (151 total) | 151 | 0 (planned) | 0 (planned) | 27 rules | 163 | 0 (planned) |
+| ... (151 total) | 151 | 0 (planned) | 180 | 27 rules | 163 | 0 (planned) |
 
 ### Commands
 
@@ -607,6 +723,7 @@ triggers:
 | implement-prd | .md | .md | SKILL.md | - | .md | - |
 | gap-analysis | .md | .md | SKILL.md | - | .md | - |
 | ... (128 total) | 128 | 0 (planned) | 0 (planned) | 26 | 120+ | 0 (planned) |
+
 
 ---
 

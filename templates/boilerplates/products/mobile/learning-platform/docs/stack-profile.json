@@ -1,0 +1,100 @@
+{
+  "project": "Learning Platform",
+  "offer_name": "The Learning Confidence System",
+  "platform": "mobile",
+  "frontend": "expo",
+  "framework": "react-native",
+  "database": "supabase",
+  "auth": "supabase-auth",
+  "realtime": true,
+  
+  "ai": {
+    "llm": {
+      "provider": "openai",
+      "model": "gpt-4o",
+      "use_cases": ["ai_tutor_chat", "grammar_help", "story_mode", "drill_mode"]
+    },
+    "tts": {
+      "provider": "elevenlabs",
+      "use_cases": ["pronunciation_audio", "talk_to_tutor_mode", "lesson_narration"],
+      "voice_clone": true
+    },
+    "stt": {
+      "provider": "openai-whisper",
+      "use_cases": ["speaking_exercises", "pronunciation_feedback", "voice_chat"]
+    }
+  },
+  
+  "video": {
+    "provider": "livekit",
+    "use_cases": ["1on1_sessions", "group_calls"],
+    "features": ["screen_share", "chat", "recording"]
+  },
+  
+  "payments": {
+    "mobile": {
+      "provider": "revenuecat",
+      "handles": ["apple_iap", "google_play"]
+    },
+    "web": {
+      "provider": "stripe",
+      "handles": ["subscriptions", "one_time"]
+    },
+    "model": "subscription",
+    "tiers": ["free", "essential", "pro", "vip"],
+    "has_usage_billing": false,
+    "has_credits": false
+  },
+  
+  "pricing": {
+    "essential": {
+      "monthly": 29,
+      "annual": 290
+    },
+    "pro": {
+      "monthly": 79,
+      "annual": 790,
+      "is_recommended": true
+    },
+    "vip": {
+      "monthly": 199,
+      "annual": 1990,
+      "founding_member_monthly": 149
+    }
+  },
+  
+  "hosting": {
+    "api": "render",
+    "web_admin": "vercel",
+    "mobile": "expo_eas"
+  },
+  
+  "mcpCompatibility": "10/10",
+  
+  "cost_estimates": {
+    "cogs_per_user": {
+      "essential": 4.50,
+      "pro": 7.50,
+      "vip": 15.00
+    },
+    "services": {
+      "openai_gpt4o": "$2.50 input + $10 output per 1M tokens",
+      "elevenlabs": "$0.18/min at Creator tier",
+      "whisper": "$0.006/min",
+      "supabase_pro": "$25/mo base",
+      "livekit": "$0.004/min voice"
+    }
+  },
+  
+  "notes": {
+    "expo": "Cross-platform (iOS + Android), hot reload, EAS for builds",
+    "supabase": "Postgres + Auth + Realtime + Storage, native Expo support",
+    "livekit": "Open-source, React Native SDK, <500ms latency",
+    "revenuecat": "Handles Apple/Google IAP, analytics, paywalls",
+    "elevenlabs": "Best-in-class TTS for pronunciation, voice cloning for AI Tutor",
+    "openai_whisper": "Accurate speech recognition for pronunciation feedback"
+  },
+  
+  "last_synced": "2025-12-17",
+  "source_of_truth": "/docs/specs/OFFER_ARCHITECTURE.md"
+}

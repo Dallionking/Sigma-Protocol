@@ -1,0 +1,211 @@
+{
+  "$schema": "pricing-config-v1",
+  "created": "2025-12-17",
+  "updated": "2025-12-17",
+  "offer_name": "The Learning Confidence System",
+  "offer_tagline": "From frozen to fluent in 90 days",
+  
+  "tiers": {
+    "free": {
+      "name": "Free",
+      "display_name": "Free Trial",
+      "monthly_price": 0,
+      "annual_price": 0,
+      "features": {
+        "lessons": "limited",
+        "lesson_limit": 5,
+        "ai_chat": "limited",
+        "ai_chat_daily_limit": 10,
+        "ai_voice": false,
+        "speaking_exercises": false,
+        "worksheets": false,
+        "slang_modules": false,
+        "content_feed": "view_only",
+        "group_calls": false,
+        "vip_community": false,
+        "booking_1on1": false,
+        "pronunciation_coaching": false,
+        "direct_messaging": false
+      },
+      "limits": {
+        "ai_chat_messages_daily": 10,
+        "ai_voice_minutes_monthly": 0,
+        "storage_mb": 50
+      }
+    },
+    "essential": {
+      "name": "Essential",
+      "display_name": "Essential",
+      "monthly_price": 29,
+      "annual_price": 290,
+      "annual_savings_percent": 17,
+      "stripe_price_id_monthly": "price_essential_monthly",
+      "stripe_price_id_annual": "price_essential_annual",
+      "revenuecat_product_id_monthly": "essential_monthly",
+      "revenuecat_product_id_annual": "essential_annual",
+      "features": {
+        "lessons": "full",
+        "lesson_limit": -1,
+        "ai_chat": "unlimited",
+        "ai_chat_daily_limit": -1,
+        "ai_voice": "limited",
+        "ai_voice_monthly_minutes": 30,
+        "speaking_exercises": "basic",
+        "worksheets": true,
+        "slang_modules": "limited",
+        "slang_regions": 1,
+        "content_feed": "full",
+        "group_calls": false,
+        "vip_community": false,
+        "booking_1on1": false,
+        "pronunciation_coaching": false,
+        "direct_messaging": false
+      },
+      "limits": {
+        "ai_chat_messages_daily": -1,
+        "ai_voice_minutes_monthly": 30,
+        "storage_mb": 500
+      },
+      "cogs_estimate": 4.50,
+      "target_margin": 6.4
+    },
+    "pro": {
+      "name": "Pro",
+      "display_name": "Pro",
+      "is_recommended": true,
+      "monthly_price": 79,
+      "annual_price": 790,
+      "annual_savings_percent": 17,
+      "stripe_price_id_monthly": "price_pro_monthly",
+      "stripe_price_id_annual": "price_pro_annual",
+      "revenuecat_product_id_monthly": "pro_monthly",
+      "revenuecat_product_id_annual": "pro_annual",
+      "features": {
+        "lessons": "full",
+        "lesson_limit": -1,
+        "ai_chat": "unlimited",
+        "ai_chat_daily_limit": -1,
+        "ai_voice": "unlimited",
+        "ai_voice_monthly_minutes": -1,
+        "speaking_exercises": "advanced",
+        "speaking_scoring": true,
+        "worksheets": true,
+        "slang_modules": "full",
+        "slang_regions": -1,
+        "content_feed": "full",
+        "group_calls": true,
+        "group_calls_frequency": "weekly",
+        "vip_community": true,
+        "booking_1on1": "regular_rates",
+        "pronunciation_coaching": false,
+        "direct_messaging": false
+      },
+      "limits": {
+        "ai_chat_messages_daily": -1,
+        "ai_voice_minutes_monthly": -1,
+        "storage_mb": 2000
+      },
+      "cogs_estimate": 7.50,
+      "target_margin": 10.5
+    },
+    "vip": {
+      "name": "VIP",
+      "display_name": "VIP",
+      "monthly_price": 199,
+      "annual_price": 1990,
+      "annual_savings_percent": 17,
+      "founding_member_monthly": 149,
+      "founding_member_limit": 100,
+      "stripe_price_id_monthly": "price_vip_monthly",
+      "stripe_price_id_annual": "price_vip_annual",
+      "revenuecat_product_id_monthly": "vip_monthly",
+      "revenuecat_product_id_annual": "vip_annual",
+      "features": {
+        "lessons": "full",
+        "lesson_limit": -1,
+        "ai_chat": "unlimited",
+        "ai_chat_daily_limit": -1,
+        "ai_voice": "unlimited",
+        "ai_voice_monthly_minutes": -1,
+        "speaking_exercises": "advanced",
+        "speaking_scoring": true,
+        "speaking_coaching": true,
+        "worksheets": true,
+        "slang_modules": "full",
+        "slang_regions": -1,
+        "content_feed": "full",
+        "group_calls": true,
+        "group_calls_frequency": "weekly",
+        "vip_community": true,
+        "vip_community_priority": true,
+        "booking_1on1": "priority_discounted",
+        "pronunciation_coaching": true,
+        "direct_messaging": true,
+        "personalized_learning_path": true
+      },
+      "limits": {
+        "ai_chat_messages_daily": -1,
+        "ai_voice_minutes_monthly": -1,
+        "storage_mb": 5000
+      },
+      "cogs_estimate": 15.00,
+      "target_margin": 13.3
+    }
+  },
+  
+  "guarantee": {
+    "name": "90-Day Learning Confidence Guarantee",
+    "type": "conditional_outcome",
+    "days": 90,
+    "conditions": [
+      "Complete at least 50% of recommended lessons",
+      "Pass 5-minute conversation evaluation"
+    ],
+    "claim_process": "Request in-app → Schedule evaluation → Free extension if needed",
+    "extension_duration_days": 30,
+    "statement": "Pass your first skills assessment in 90 days, or we extend your access FREE until you do."
+  },
+  
+  "scarcity_triggers": {
+    "founding_member": {
+      "enabled": true,
+      "tier": "vip",
+      "discount_percent": 25,
+      "price": 149,
+      "limit": 100,
+      "locked_for_life": true
+    },
+    "annual_price_lock": {
+      "enabled": true,
+      "message": "Lock in this year's pricing before next increase"
+    },
+    "limited_1on1_slots": {
+      "enabled": true,
+      "max_vip_members": 60,
+      "message": "AI Tutor can only personally work with 60 VIP members at a time"
+    }
+  },
+  
+  "unit_economics": {
+    "blended_ltv": 750,
+    "target_cac": 50,
+    "ltv_cac_ratio": 15,
+    "payback_months": 2,
+    "target_monthly_churn": 0.05,
+    "free_to_paid_conversion": 0.12,
+    "essential_to_pro_upgrade": 0.30,
+    "pro_to_vip_upgrade": 0.10
+  },
+  
+  "payment_providers": {
+    "mobile": {
+      "provider": "revenuecat",
+      "handles": ["apple_iap", "google_play"]
+    },
+    "web": {
+      "provider": "stripe",
+      "handles": ["card", "apple_pay", "google_pay"]
+    }
+  }
+}
+

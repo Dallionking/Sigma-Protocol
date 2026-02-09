@@ -165,9 +165,24 @@ const CHECKS = {
           const hasConfig = await fs.pathExists(codexConfig);
           const hasSkills = await fs.pathExists(codexSkills);
           const hasAgents = await fs.pathExists(agentsMd);
+          const hasRules = await fs.pathExists(path.join(targetDir, ".codex", "rules"));
+
+          // Validate config.toml has real content (not empty/placeholder)
+          let configValid = false;
+          if (hasConfig) {
+            const configContent = await fs.readFile(codexConfig, "utf8");
+            configValid = configContent.length > 50 && configContent.includes("model");
+          }
+
+          if (hasConfig && configValid && hasSkills && hasAgents && hasRules) {
+            return { status: "pass", message: "config.toml, skills, rules, and AGENTS.md present" };
+          }
 
           if (hasConfig && hasSkills && hasAgents) {
-            return { status: "pass", message: "config.toml, skills, and AGENTS.md present" };
+            const missing = [];
+            if (!hasRules) missing.push("rules");
+            if (!configValid) missing.push("config.toml has no model setting");
+            return { status: "warn", message: `Setup mostly complete (missing: ${missing.join(", ")})` };
           }
 
           if (hasSkills || hasAgents) {

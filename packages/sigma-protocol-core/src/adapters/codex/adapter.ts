@@ -41,6 +41,36 @@ export interface CodexAdapterConfig extends AdapterConfig {
    * Path to legacy skills directory (.agents/skills/)
    */
   legacySkillsDir?: string;
+
+  /**
+   * Path to rules directory
+   */
+  rulesDir?: string;
+
+  /**
+   * Sigma execution profile
+   */
+  profile?: "sigma-dev" | "sigma-strict" | "sigma-fast";
+
+  /**
+   * Codex sandbox mode
+   */
+  sandboxMode?: "workspace-write" | "read-only" | "network";
+
+  /**
+   * Tool approval policy
+   */
+  approvalPolicy?: "on-request" | "untrusted" | "on-failure" | "auto";
+
+  /**
+   * Reasoning effort level (maps to model_reasoning_effort in config.toml)
+   */
+  modelReasoningEffort?: "low" | "medium" | "high";
+
+  /**
+   * Web search capability
+   */
+  webSearch?: "enabled" | "cached" | "disabled";
 }
 
 /**
@@ -421,7 +451,7 @@ export class CodexAdapter extends BaseAdapter {
             systemPrompt: content,
             model: {
               provider: "openai",
-              modelId: "o3",
+              modelId: "gpt-5.3-codex",
             },
             capabilities: {},
             triggers: [],

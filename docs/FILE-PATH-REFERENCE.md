@@ -123,7 +123,7 @@ This document defines the **official file paths** for all outputs created by the
 **Command:** `@step-12-context-engine` (plus `sigma install --platform codex`)
 **Outputs:**
 - `.codex/config.toml` (project config; optional)
-- `.codex/rules/*.rules` (Codex Starlark rules; optional)
+- `.codex/rules/*.rules` (Codex execution policy rules; Starlark format)
 - `.codex/skills/<skill>/SKILL.md` (Sigma steps and foundation skills)
 - `.agents/skills/<skill>/SKILL.md` (Legacy Codex skills fallback)
 

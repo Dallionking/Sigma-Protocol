@@ -1,0 +1,131 @@
+# Sigma Safety Rules — Execution Policy
+# Blocks destructive, dangerous, and irreversible commands.
+#
+# Syntax: prefix_rule(pattern, decision, justification, match, not_match)
+#   pattern      — list of command prefix tokens; each element is a string or
+#                  list of alternatives (union).  The rule fires when a command's
+#                  leading tokens match every position in the pattern.
+#   decision     — "allow" | "prompt" | "forbidden"
+#                  (most restrictive wins when multiple rules match)
+#   justification — human-readable reason shown in the approval prompt
+#   match        — (optional) inline test commands that SHOULD match this rule
+#   not_match    — (optional) inline test commands that should NOT match
+#
+# Reference: https://developers.openai.com/codex/exec-policy/
+# Validate:  codex execpolicy check --pretty --rules .codex/rules/sigma-safety.rules -- <cmd>
+
+# ── Destructive filesystem operations ────────────────────────────────────
+
+prefix_rule(
+    pattern    = ["rm", ["-rf", "-Rf", "-rF", "-fr"], ["/", "~", "$HOME"]],
+    decision   = "forbidden",
+    justification = "Recursive deletion of root, home, or $HOME is never allowed.",
+    match      = ["rm -rf /", "rm -Rf ~/", "rm -rf $HOME"],
+    not_match  = ["rm -rf ./build", "rm -rf node_modules"],
+)
+
+prefix_rule(
+    pattern    = ["rm", ["-rf", "-Rf", "-rF", "-fr"], "/*"],
+    decision   = "forbidden",
+    justification = "Recursive deletion with root wildcard (/*) is never allowed.",
+    match      = ["rm -rf /*"],
+    not_match  = ["rm -rf ./dist/*"],
+)
+
+prefix_rule(
+    pattern    = ["sudo", "rm", ["-rf", "-Rf", "-rF", "-fr"]],
+    decision   = "forbidden",
+    justification = "sudo rm -rf is never allowed. Remove files without sudo or use specific paths.",
+    match      = ["sudo rm -rf /var/log"],
+    not_match  = ["rm -rf ./build"],
+)
+
+# ── Git force-push protection ────────────────────────────────────────────
+
+prefix_rule(
+    pattern    = ["git", "push", ["--force", "--force-with-lease", "-f"]],
+    decision   = "prompt",
+    justification = "Force-pushing can overwrite remote history. Confirm the target branch is not shared.",
+    match      = ["git push --force origin feature", "git push -f"],
+    not_match  = ["git push origin main", "git pull --force"],
+)
+
+prefix_rule(
+    pattern    = ["git", "reset", "--hard"],
+    decision   = "prompt",
+    justification = "git reset --hard discards all uncommitted changes. Ensure work is saved first.",
+    match      = ["git reset --hard HEAD~1", "git reset --hard origin/main"],
+    not_match  = ["git reset --soft HEAD~1", "git reset HEAD"],
+)
+
+prefix_rule(
+    pattern    = ["git", "clean", ["-f", "-fd", "-fx", "-fxd", "-fdx"]],
+    decision   = "prompt",
+    justification = "git clean removes untracked files permanently. Review what will be deleted.",
+    match      = ["git clean -fd", "git clean -fx"],
+    not_match  = ["git clean -n", "git clean --dry-run"],
+)
+
+# ── Dangerous permission changes ────────────────────────────────────────
+
+prefix_rule(
+    pattern    = ["chmod", "777"],
+    decision   = "forbidden",
+    justification = "World-writable permissions (777) are a security risk. Use 755 for directories or 644 for files.",
+    match      = ["chmod 777 /var/www", "chmod 777 ."],
+    not_match  = ["chmod 755 ./script.sh", "chmod 644 config.toml"],
+)
+
+prefix_rule(
+    pattern    = ["chmod", "-R", "777"],
+    decision   = "forbidden",
+    justification = "Recursive world-writable permissions are never allowed.",
+    match      = ["chmod -R 777 /var/www"],
+    not_match  = ["chmod -R 755 ./dist"],
+)
+
+# ── Container and infrastructure ─────────────────────────────────────────
+
+prefix_rule(
+    pattern    = ["docker", "system", "prune", ["-a", "--all"]],
+    decision   = "prompt",
+    justification = "docker system prune -a removes ALL unused images and containers. Confirm this is intentional.",
+    match      = ["docker system prune -a", "docker system prune --all"],
+    not_match  = ["docker system prune", "docker image prune"],
+)
+
+prefix_rule(
+    pattern    = ["docker", "volume", "prune"],
+    decision   = "prompt",
+    justification = "docker volume prune deletes all unused volumes (including data). Back up first.",
+    match      = ["docker volume prune"],
+    not_match  = ["docker volume ls"],
+)
+
+# ── Process management ───────────────────────────────────────────────────
+
+prefix_rule(
+    pattern    = ["kill", "-9"],
+    decision   = "prompt",
+    justification = "kill -9 (SIGKILL) does not allow graceful shutdown. Prefer kill (SIGTERM) first.",
+    match      = ["kill -9 1234"],
+    not_match  = ["kill 1234", "kill -15 1234"],
+)
+
+prefix_rule(
+    pattern    = ["killall"],
+    decision   = "prompt",
+    justification = "killall terminates all processes by name. Confirm the target process.",
+    match      = ["killall node", "killall python"],
+    not_match  = ["kill 1234"],
+)
+
+# ── Package publishing ───────────────────────────────────────────────────
+
+prefix_rule(
+    pattern    = ["npm", "publish"],
+    decision   = "prompt",
+    justification = "Publishing to npm is irreversible within 72 hours. Confirm version and registry.",
+    match      = ["npm publish", "npm publish --access public"],
+    not_match  = ["npm pack", "npm version patch"],
+)

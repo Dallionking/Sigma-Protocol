@@ -22,7 +22,7 @@ export type { ModelId, ModelProvider };
  */
 export const TOP_TIER_MODELS: Record<ModelProvider, ModelId> = {
   anthropic: "claude-opus-4-5-20251101",  // Always Opus 4.5
-  openai: "gpt-5.2",                       // Always GPT 5.2 / Codex 5.2
+  openai: "gpt-5.3-codex",                  // Always GPT 5.3 Codex
   google: "gemini-3",                      // Always Gemini 3
   local: "local",                          // Local model
 } as const;
@@ -75,7 +75,7 @@ export type ToolName = McpTool | CoreTool | string;
 /**
  * Supported platforms for plugin generation
  */
-export type Platform = "claude-code" | "opencode" | "factory-droid";
+export type Platform = "claude-code" | "opencode" | "factory-droid" | "codex";
 
 /**
  * Platform-specific configuration
@@ -151,6 +151,23 @@ export const PLATFORM_CONFIGS: Record<Platform, PlatformConfig> = {
       triggers: "triggers",
       model: "model",
       capabilities: "capabilities",
+    },
+  },
+  "codex": {
+    platform: "codex",
+    outputRoot: ".codex",
+    skillsDir: "skills",
+    commandsDir: "skills",
+    filePattern: "folder",
+    defaultModel: TOP_TIER_MODELS.openai,
+    fieldMappings: {
+      id: "name",
+      name: "name",
+      description: "description",
+      triggers: "triggers",
+      model: "model",
+      version: "version",
+      source: "source",
     },
   },
 };
