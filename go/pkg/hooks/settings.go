@@ -5,8 +5,12 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"regexp"
 	"strings"
 )
+
+// safeDestPathPattern validates paths for command generation to prevent injection
+var safeDestPathPattern = regexp.MustCompile(`^\.claude/hooks/[a-zA-Z0-9_\-/]+\.(sh|py|js)$`)
 
 // SettingsJSON represents the Claude Code settings.json structure
 type SettingsJSON struct {
@@ -53,7 +57,10 @@ func GenerateSettingsJSON(registry *HookRegistry, projectRoot string) error {
 			}
 
 			for _, hook := range matcherHooks {
-				cmd := buildHookCommand(&hook, event)
+				cmd, err := buildHookCommand(&hook, event)
+				if err != nil {
+					return fmt.Errorf("failed to build command for hook %s: %w", hook.Name, err)
+				}
 				entry.Hooks = append(entry.Hooks, cmd)
 			}
 
@@ -68,10 +75,17 @@ func GenerateSettingsJSON(registry *HookRegistry, projectRoot string) error {
 }
 
 // buildHookCommand constructs the command string for a hook
-func buildHookCommand(hook *Hook, event HookEvent) HookCommand {
+// Returns an error if the destination path is invalid (potential command injection)
+func buildHookCommand(hook *Hook, event HookEvent) (HookCommand, error) {
+	// Validate destination path to prevent command injection
+	normalizedPath := filepath.ToSlash(filepath.Clean(hook.DestPath))
+	if !safeDestPathPattern.MatchString(normalizedPath) {
+		return HookCommand{}, fmt.Errorf("invalid hook path (potential injection): %s", hook.DestPath)
+	}
+
 	cmd := HookCommand{
 		Type:    "command",
-		Command: fmt.Sprintf("bash \"$CLAUDE_PROJECT_DIR/%s\"", hook.DestPath),
+		Command: fmt.Sprintf("bash \"$CLAUDE_PROJECT_DIR/%s\"", normalizedPath),
 	}
 
 	// Add file path argument for validators (PostToolUse events)
@@ -79,7 +93,7 @@ func buildHookCommand(hook *Hook, event HookEvent) HookCommand {
 		cmd.Command += " \"$CLAUDE_FILE_PATH\""
 	}
 
-	return cmd
+	return cmd, nil
 }
 
 // groupHooksByEvent organizes hooks by their event type

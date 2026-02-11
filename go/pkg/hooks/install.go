@@ -5,8 +5,38 @@ import (
 	"io"
 	"os"
 	"path/filepath"
+	"regexp"
 	"strings"
 )
+
+// validDestPathPattern matches safe destination paths within .claude/hooks/
+var validDestPathPattern = regexp.MustCompile(`^\.claude/hooks/[a-zA-Z0-9_\-/]+\.(sh|py|js)$`)
+
+// sanitizeDestPath validates and cleans a destination path to prevent path traversal
+func sanitizeDestPath(destPath string) (string, error) {
+	// Clean the path to resolve . and .. components
+	cleaned := filepath.Clean(destPath)
+
+	// Convert to forward slashes for consistent validation
+	normalized := filepath.ToSlash(cleaned)
+
+	// Check for path traversal attempts
+	if strings.HasPrefix(normalized, "..") || strings.Contains(normalized, "/../") {
+		return "", fmt.Errorf("path traversal detected in destPath: %s", destPath)
+	}
+
+	// Reject absolute paths
+	if filepath.IsAbs(cleaned) {
+		return "", fmt.Errorf("absolute paths not allowed: %s", destPath)
+	}
+
+	// Validate against allowed pattern
+	if !validDestPathPattern.MatchString(normalized) {
+		return "", fmt.Errorf("destPath must match pattern .claude/hooks/<name>.(sh|py|js): got %s", destPath)
+	}
+
+	return cleaned, nil
+}
 
 // InstallHooks copies hooks to .claude/hooks/ with correct permissions
 func InstallHooks(registry *HookRegistry, projectRoot string) error {
@@ -16,7 +46,13 @@ func InstallHooks(registry *HookRegistry, projectRoot string) error {
 			continue
 		}
 
-		destPath := filepath.Join(projectRoot, hook.DestPath)
+		// Validate destination path to prevent path traversal
+		sanitizedPath, err := sanitizeDestPath(hook.DestPath)
+		if err != nil {
+			return fmt.Errorf("invalid hook destination for %s: %w", hook.Name, err)
+		}
+
+		destPath := filepath.Join(projectRoot, sanitizedPath)
 
 		// Create nested directory structure
 		destDir := filepath.Dir(destPath)
@@ -95,7 +131,13 @@ func InstallHooksWithProgress(registry *HookRegistry, projectRoot string, progre
 			progressCallback(i+1, total, hook.Name)
 		}
 
-		destPath := filepath.Join(projectRoot, hook.DestPath)
+		// Validate destination path to prevent path traversal
+		sanitizedPath, err := sanitizeDestPath(hook.DestPath)
+		if err != nil {
+			return fmt.Errorf("invalid hook destination for %s: %w", hook.Name, err)
+		}
+
+		destPath := filepath.Join(projectRoot, sanitizedPath)
 
 		// Create nested directory structure
 		destDir := filepath.Dir(destPath)

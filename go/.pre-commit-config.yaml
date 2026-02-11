@@ -1,0 +1,77 @@
+# Pre-commit hooks for Sigma CLI
+# Install: pip install pre-commit && pre-commit install
+# Run all: pre-commit run --all-files
+
+repos:
+  # Go formatting and linting
+  - repo: https://github.com/dnephin/pre-commit-golang
+    rev: v0.5.1
+    hooks:
+      - id: go-fmt
+        name: gofmt
+        description: Format Go code
+
+      - id: go-imports
+        name: goimports
+        description: Update imports
+
+      - id: go-vet
+        name: go vet
+        description: Check for suspicious constructs
+
+      - id: go-build
+        name: go build
+        description: Verify code compiles
+
+  # golangci-lint (comprehensive linting)
+  - repo: https://github.com/golangci/golangci-lint
+    rev: v1.62.2
+    hooks:
+      - id: golangci-lint
+        name: golangci-lint
+        description: Run golangci-lint
+        entry: golangci-lint run
+        types: [go]
+        language: golang
+        pass_filenames: false
+
+  # General hooks
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v5.0.0
+    hooks:
+      - id: trailing-whitespace
+        name: Trim trailing whitespace
+        exclude: \.md$
+
+      - id: end-of-file-fixer
+        name: Fix end of files
+
+      - id: check-yaml
+        name: Check YAML syntax
+
+      - id: check-json
+        name: Check JSON syntax
+
+      - id: check-merge-conflict
+        name: Check for merge conflicts
+
+      - id: check-added-large-files
+        name: Check for large files
+        args: ['--maxkb=500']
+
+  # Security scanning
+  - repo: https://github.com/Yelp/detect-secrets
+    rev: v1.5.0
+    hooks:
+      - id: detect-secrets
+        name: Detect secrets
+        args: ['--baseline', '.secrets.baseline']
+        exclude: go\.sum$
+
+# Configuration
+default_language_version:
+  golang: "1.23"
+
+ci:
+  autofix_commit_msg: 'style: auto-fix by pre-commit hooks'
+  autoupdate_commit_msg: 'chore: update pre-commit hooks'

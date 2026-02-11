@@ -213,7 +213,8 @@ func TestBuildHookCommand(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			cmd := buildHookCommand(&tt.hook, tt.event)
+			cmd, err := buildHookCommand(&tt.hook, tt.event)
+			assert.NoError(t, err)
 			assert.Equal(t, "command", cmd.Type)
 			assert.Equal(t, tt.wantCmd, cmd.Command)
 		})

@@ -1,0 +1,39 @@
+# Build artifacts
+dist/
+bin/
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+
+# Test artifacts
+coverage.out
+coverage.html
+*.test
+*.prof
+
+# IDE and editor files
+.idea/
+*.swp
+*.swo
+*~
+.vscode/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Go workspace files (if using workspaces)
+go.work
+go.work.sum
+
+# Dependency directories
+vendor/
+
+# Debug binaries
+__debug_bin*
+
+# Local environment
+.env
+.env.local
