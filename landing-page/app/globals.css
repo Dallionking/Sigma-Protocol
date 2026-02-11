@@ -1,0 +1,74 @@
+@import "tailwindcss";
+
+:root {
+  /* Gotham Night Color Palette */
+  --gotham-purple: #9D4EDD;
+  --gotham-blue: #00D9FF;
+  --gotham-bg: #0D1117;
+  --gotham-surface: #161B22;
+  --gotham-neon: #39FF14;
+  --gotham-gold: #FFD60A;
+  --text-primary: #E6EDF3;
+  --text-secondary: #8B949E;
+
+  /* Semantic tokens */
+  --background: var(--gotham-bg);
+  --foreground: var(--text-primary);
+  --surface: var(--gotham-surface);
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-surface: var(--surface);
+
+  /* Gotham palette as Tailwind colors */
+  --color-gotham-purple: var(--gotham-purple);
+  --color-gotham-blue: var(--gotham-blue);
+  --color-gotham-bg: var(--gotham-bg);
+  --color-gotham-surface: var(--gotham-surface);
+  --color-gotham-neon: var(--gotham-neon);
+  --color-gotham-gold: var(--gotham-gold);
+  --color-text-primary: var(--text-primary);
+  --color-text-secondary: var(--text-secondary);
+
+  /* Font families */
+  --font-heading: 'Inter', system-ui, -apple-system, sans-serif;
+  --font-body: 'Inter', system-ui, -apple-system, sans-serif;
+  --font-mono: 'JetBrains Mono', 'Courier New', monospace;
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-body);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Reduced motion accessibility */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+  }
+}
+
+/* Scrollbar styling for dark theme */
+::-webkit-scrollbar {
+  width: 12px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--gotham-bg);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--gotham-surface);
+  border-radius: 6px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--gotham-purple);
+}

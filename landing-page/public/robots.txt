@@ -1,0 +1,6 @@
+# robots.txt for Sigma Protocol Landing Page
+User-agent: *
+Allow: /
+
+# Sitemaps
+Sitemap: https://sigmaprotocol.dev/sitemap.xml
