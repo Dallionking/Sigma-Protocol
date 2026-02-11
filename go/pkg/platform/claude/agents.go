@@ -187,7 +187,8 @@ func (a *Agent) Validate() error {
 }
 
 // isValidTool checks if a tool name is valid.
-// Valid tools include core tools, web tools, collaboration tools, and MCP tools (mcp__*__*).
+// Valid tools include core tools, web tools, collaboration tools, MCP tools (mcp__*__*),
+// and restricted Task tools (Task(<subagent-types>)) for agents with limited subagent spawning.
 func isValidTool(tool string) bool {
 	// Check if it's a core/web/collaboration tool
 	if contains(validTools, tool) {
@@ -198,6 +199,14 @@ func isValidTool(tool string) bool {
 	if strings.HasPrefix(tool, "mcp__") {
 		parts := strings.Split(tool, "__")
 		return len(parts) == 3 && parts[1] != "" && parts[2] != ""
+	}
+
+	// Check if it's a restricted Task tool (format: Task(<allowed-subagent-types>))
+	// This allows agents to spawn only specific subagent types (e.g., security-lead can only spawn security agents)
+	if strings.HasPrefix(tool, "Task(") && strings.HasSuffix(tool, ")") {
+		inner := strings.TrimPrefix(tool, "Task(")
+		inner = strings.TrimSuffix(inner, ")")
+		return strings.TrimSpace(inner) != ""
 	}
 
 	return false

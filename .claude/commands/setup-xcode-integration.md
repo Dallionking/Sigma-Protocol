@@ -1,3 +1,10 @@
+---
+description: "Setup Xcode 26.3 Claude Agent Integration"
+allowed-tools:
+  - Bash
+  - Read
+---
+
 # Setup Xcode 26.3 Claude Agent Integration
 
 Set up the Xcode 26.3 Claude Agent integration for this project. This symlinks Ball-AI skills and commands to Xcode's ClaudeAgentConfig directory and registers the MCP bridge.
