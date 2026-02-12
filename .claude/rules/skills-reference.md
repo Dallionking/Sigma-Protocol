@@ -53,6 +53,23 @@
 | `xcode-intelligence` | xcode mcp, xcode tools, render preview, documentation search | Xcode 26.3 MCP tools reference — 20 native tools, XcodeBuildMCP fallback |
 | `xcode-agent-workflow` | xcode agent, agentic xcode, xcode workflow | Agentic coding patterns — build-preview-fix loop, Xcode Agent vs Claude Code |
 
+## Community & Media
+| Skill | Auto-Trigger | Description |
+|-------|--------------|-------------|
+| `discord-bot-development` | discord, bot, server | discord.js scaffolding, slash commands, embeds, deployment |
+| `discord-community-management` | discord, community, moderation | Channel/role management, moderation, analytics |
+| `telegram-bot-development` | telegram, botfather, grammy | grammy/telegraf bots, inline keyboards, webhooks |
+| `telegram-community-management` | telegram, group, channel | Group admin, content posting, invite links |
+| `community-analytics` | community, engagement, metrics | Cross-platform community health metrics |
+| `social-content` | social media, LinkedIn, Twitter | Platform-specific content strategy and templates |
+| `media-generation` | image, banner, thumbnail, video-gen | AI image (Nano Banana Pro) and video (Veo 3.1) generation |
+| `notebooklm-workflow` | notebooklm, podcast, audio-overview | Document-to-NotebookLM conversion for AI podcasts |
+| `x-twitter-research` | x, twitter, tweet, thread | X/Twitter content research and analysis |
+| `youtube-transcription` | transcript, youtube, video-research | YouTube transcription via yt-dlp + Whisper |
+| `video-hooks` | video, hooks, script | Video hook formulas and script patterns |
+| `content-atomizer` | content, repurpose, atomize | Pillar content to multi-platform distribution |
+| `brand-voice` | brand, voice, tone | Brand voice guidelines and consistency |
+
 ## Marketing
 | Skill | Auto-Trigger | Description |
 |-------|--------------|-------------|
