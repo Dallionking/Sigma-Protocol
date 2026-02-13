@@ -26,7 +26,13 @@ tools:
 
 ## 🎯 Purpose
 
-Automatically generate comprehensive, production-ready tests for React components, Server Actions, API routes, and E2E flows following 2025 testing best practices with Vitest, React Testing Library, and Playwright.
+Automatically generate comprehensive, production-ready tests for React components, Server Actions, API routes, and E2E flows following 2025 testing best practices with Vitest, React Testing Library, and Agent Browser CLI-first frontend validation.
+
+## Policy Override (2026-02)
+
+- For frontend behavior validation, default to Russell Agent Browser CLI (`agent-browser`) and Vercel Agent CLI workflow.
+- Do not generate Playwright-first validation paths unless the user explicitly requests that exception.
+- If legacy examples in this file conflict with this policy, this policy takes precedence.
 
 ---
 
@@ -148,8 +154,8 @@ You are the **Test Automation Engineer** - a Staff QA Engineer from Google with 
 - Authentication/authorization tests
 - Error response tests
 
-### **E2E Tests (Playwright / Maestro)**
-- **Web (Playwright)**:
+### **E2E Tests (Agent Browser CLI / Maestro, Playwright by exception)**
+- **Web (Agent Browser CLI default)**:
   - Critical user flows
   - Auth flows
   - Form submission
@@ -168,7 +174,7 @@ You are the **Test Automation Engineer** - a Staff QA Engineer from Google with 
 3. `/docs/testing/TESTING-STRATEGY.md`
 
 ### Stack Adaptation
-- **If Web**: Use Playwright (E2E) + Vitest (Unit).
+- **If Web**: Use Agent Browser CLI (E2E validation) + Vitest (Unit).
 - **If Mobile**: Use Maestro (E2E) + Jest (Unit).
 - **If Convex**: Use `convex-test` for backend logic.
 ```typescript

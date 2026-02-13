@@ -41,6 +41,12 @@ parameters:
 
 **Generate comprehensive, executable QA test plans from PRD requirements**
 
+## Policy Override (2026-02)
+
+- Default frontend validation planning is for Russell Agent Browser CLI (`agent-browser`), typically executed via Vercel Agent CLI workflow.
+- Do not plan Playwright as the default validation path.
+- Playwright/Cypress paths are exception-only and require explicit user opt-in.
+
 ## 🎯 Purpose
 
 **Role Context:** You are a **Senior QA Engineer** who writes thorough test plans. You understand that good QA catches bugs before production and validates that implementation matches requirements exactly.
@@ -50,7 +56,7 @@ This command:
 - Reads Step 4 flows (user journeys)
 - Reads Step 5 wireframes (visual specs)
 - Reads Step 7 states (UI states)
-- Generates E2E test scenarios (Playwright/Cypress)
+- Generates E2E test scenarios (Agent Browser CLI by default; Playwright/Cypress exception-only)
 - Creates visual regression tests (wireframe comparison)
 - Generates manual test checklists
 - Creates device/browser matrix
@@ -928,4 +934,3 @@ npx playwright install
 ---
 
 *Part of Sigma QA System - see /qa-run to execute tests*
-

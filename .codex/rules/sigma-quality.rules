@@ -9,6 +9,10 @@
 # NOTE: File-content rules (TODO hygiene, test skip detection, TypeScript strict mode,
 # console.log in production) cannot be expressed as prefix_rules — they require
 # linters or pre-commit hooks. Configure these via ESLint, Biome, or Lefthook.
+#
+# Frontend validation policy:
+# - Default browser validation tool: `agent-browser` (Vercel Agent Browser CLI).
+# - Playwright is exception-only and should require explicit review/confirmation.
 
 # ── Testing — allow without prompting ────────────────────────────────────
 
@@ -27,10 +31,24 @@ prefix_rule(
 )
 
 prefix_rule(
-    pattern    = ["npx", ["vitest", "jest", "playwright", "cypress"]],
+    pattern    = ["npx", ["vitest", "jest", "cypress"]],
     decision   = "allow",
     justification = "Running test frameworks directly is safe.",
-    match      = ["npx vitest", "npx jest", "npx playwright test"],
+    match      = ["npx vitest", "npx jest", "npx cypress run"],
+)
+
+prefix_rule(
+    pattern    = ["agent-browser"],
+    decision   = "allow",
+    justification = "Agent Browser CLI is the default frontend validation path.",
+    match      = ["agent-browser open http://localhost:3000", "agent-browser snapshot -i"],
+)
+
+prefix_rule(
+    pattern    = ["npx", "playwright"],
+    decision   = "prompt",
+    justification = "Playwright is exception-only for frontend validation. Confirm explicit override before use.",
+    match      = ["npx playwright test", "npx playwright install"],
 )
 
 prefix_rule(

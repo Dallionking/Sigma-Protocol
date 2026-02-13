@@ -49,12 +49,18 @@ parameters:
 
 **Execute QA tests with Cursor browser agent for visual + functional validation**
 
+## Policy Override (2026-02)
+
+- Default frontend validation tool is Russell Agent Browser CLI (`agent-browser`), typically via Vercel Agent CLI workflow.
+- Do not use Playwright unless the user explicitly requests an exception.
+- If any legacy example below conflicts with this policy, this policy takes precedence.
+
 ## 🎯 Purpose
 
 **Role Context:** You are a **QA Automation Engineer + Manual Tester**. You execute comprehensive test suites, capture visual regressions, and validate that implementation matches requirements.
 
 This command:
-- Runs E2E tests (Playwright)
+- Runs E2E UI validation (Agent Browser CLI by default)
 - Executes visual regression tests **using Cursor browser**
 - Guides manual testing interactively
 - Captures screenshots and compares to wireframes
@@ -78,7 +84,7 @@ This command:
 # Run all tests (E2E + Visual + prompts for Manual)
 /qa-run --prd-id=F1
 
-# Run E2E tests only (Playwright)
+# Run E2E tests only (Agent Browser CLI default)
 /qa-run --prd-id=F1 --mode=e2e
 
 # Run visual regression only (Cursor browser)
@@ -106,7 +112,7 @@ This command:
 
 | Mode | What It Does | Duration |
 |------|--------------|----------|
-| `e2e` | Run Playwright E2E tests | 2-5 min |
+| `e2e` | Run Agent Browser E2E validation | 2-5 min |
 | `visual` | Visual regression with Cursor browser | 3-10 min |
 | `manual` | Interactive manual test guide | 15-30 min |
 | `all` | E2E + Visual (no manual prompts) | 5-15 min |
@@ -743,4 +749,3 @@ Add proper `[data-testid]` attributes or update selectors
 ---
 
 *Part of Sigma QA System - Next: /qa-report for comprehensive reporting*
-
