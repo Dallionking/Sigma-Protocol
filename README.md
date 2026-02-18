@@ -145,20 +145,19 @@ curl -sSL https://raw.githubusercontent.com/dallionking/sigma-protocol/main/SIGM
 # Tell Cursor: "Run step 1 ideation for [your product idea]"
 ```
 
-### Path C: Full CLI Install
+### Path C: Manual Setup (No CLI)
 
-Install the `sigma` CLI for the full experience with TUI dashboard, health checks, and multi-platform support.
+You don't need a CLI to use Sigma Protocol. Just read the step files directly.
 
 ```bash
-# Install (15 seconds, no Go required)
-curl -sSL https://raw.githubusercontent.com/dallionking/sigma-protocol/main/install.sh | sh
+# 1. Clone the repo for reference
+git clone https://github.com/dallionking/sigma-protocol.git
 
-# Initialize your project
-cd your-project
-sigma init
+# 2. Copy SIGMA-GUIDE.md into your project
+cp sigma-protocol/SIGMA-GUIDE.md your-project/.claude/skills/
 
-# Launch the interactive dashboard
-sigma
+# 3. Read the step files in steps/ for the full methodology
+#    Then tell your AI: "Run step 1 ideation for [your product idea]"
 ```
 
 ---
