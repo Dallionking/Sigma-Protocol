@@ -1,0 +1,73 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://sss.dev/schemas/ralph-prd-map.schema.json",
+  "title": "SSS-Ralph PRD Map",
+  "description": "Traceability mapping from source PRD files to Ralph backlog story IDs",
+  "type": "object",
+  "required": ["$schema", "meta", "mappings"],
+  "properties": {
+    "$schema": {
+      "type": "string",
+      "description": "Schema reference"
+    },
+    "meta": {
+      "type": "object",
+      "required": ["generatedAt", "backlogPath"],
+      "properties": {
+        "generatedAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "backlogPath": {
+          "type": "string",
+          "description": "Path to the corresponding prd.json backlog"
+        },
+        "totalPRDs": {
+          "type": "integer"
+        },
+        "totalStories": {
+          "type": "integer"
+        }
+      }
+    },
+    "mappings": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["prdPath", "storyIds"],
+        "properties": {
+          "prdPath": {
+            "type": "string",
+            "description": "Relative path to source PRD file"
+          },
+          "prdTitle": {
+            "type": "string",
+            "description": "PRD document title"
+          },
+          "screenId": {
+            "type": "string",
+            "description": "Screen ID if this is a screen-based PRD"
+          },
+          "flowId": {
+            "type": "string",
+            "description": "Flow ID if this PRD is part of a flow"
+          },
+          "featureId": {
+            "type": "string",
+            "description": "Feature ID (e.g., F1) if this is a Step 11 PRD"
+          },
+          "storyIds": {
+            "type": "array",
+            "items": { "type": "string" },
+            "description": "Story IDs generated from this PRD"
+          },
+          "storyCount": {
+            "type": "integer"
+          }
+        }
+      }
+    }
+  }
+}
+
+

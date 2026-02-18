@@ -1,0 +1,31 @@
+{
+  "project": "TaskFlow",
+  "version": "1.0.0",
+  "stack": {
+    "frontend": {
+      "framework": "Next.js 15.1.0",
+      "ui": "React 19.0.0",
+      "styling": "Tailwind CSS 4.0",
+      "components": "shadcn/ui",
+      "dnd": "@dnd-kit 6.x",
+      "forms": "React Hook Form 7.x + Zod 3.x"
+    },
+    "backend": {
+      "database": "Convex 1.17.0",
+      "auth": "Clerk 5.x",
+      "email": "Resend 3.x",
+      "storage": "Convex Storage"
+    },
+    "infrastructure": {
+      "hosting": "Vercel",
+      "ci": "GitHub Actions",
+      "monitoring": "Axiom",
+      "errors": "Sentry"
+    }
+  },
+  "features": ["task-boards", "team-collaboration", "real-time-sync", "search", "integrations"],
+  "deployment": {
+    "environments": ["development", "preview", "staging", "production"],
+    "region": "us-east-1"
+  }
+}
